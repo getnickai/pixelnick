@@ -39,7 +39,7 @@ export default function AiReadyCard() {
       </div>
 
       {/* Logo */}
-      <div className="absolute left-[64px] top-[63px] h-[30px] w-[140.211px]">
+      <div className="absolute left-16 top-[63px] h-[30px] w-[140.211px]">
         <div className="absolute inset-[0_-2.32%_0_0]">
           <img
             alt="NickAI"
@@ -50,7 +50,7 @@ export default function AiReadyCard() {
       </div>
 
       {/* Card content stack */}
-      <div className="absolute left-[64px] top-1/2 flex w-[522px] -translate-y-[calc(50%+30.5px)] flex-col gap-[72px]">
+      <div className="absolute left-16 top-1/2 flex w-[522px] -translate-y-[calc(50%+30.5px)] flex-col gap-[72px]">
         {/* Top: Type indicator + headline */}
         <div className="flex w-full flex-col gap-4">
           {/* Type indicator pill */}
@@ -78,15 +78,17 @@ export default function AiReadyCard() {
           {/* Metrics row */}
           <div className="flex w-full flex-col items-start justify-center gap-14">
             {/* Total PNL */}
-            <div className="relative flex w-full flex-col items-start gap-8">
+            <div className="relative flex w-full flex-col items-start gap-4">
               <p className="w-full text-2xl font-semibold leading-[1.2] text-white">
                 Total PNL
               </p>
-              <div className="flex items-center justify-center gap-6">
+              <div className="relative flex items-center justify-center gap-6">
+                {/* Decorative left-edge green bar aligned with PNL amount */}
+                <div className="absolute -left-[86px] top-1/2 h-[41px] w-[39px] -translate-y-1/2 rounded-lg bg-[#5be59c]" />
                 <p className="whitespace-nowrap text-5xl font-medium leading-[1.4] text-green-400">
                   +$4,012.95
                 </p>
-                <div className="flex flex-col items-start gap-3">
+                <div className="flex flex-col items-start gap-1">
                   <div className="flex items-center gap-2">
                     <div className="relative size-2 shrink-0">
                       <img
@@ -113,12 +115,10 @@ export default function AiReadyCard() {
                   </div>
                 </div>
               </div>
-              {/* Decorative left-edge green bar */}
-              <div className="absolute -bottom-[5.02px] -left-[86px] h-[41px] w-[39px] rounded-lg bg-[#5be59c]" />
             </div>
 
             {/* Profit % */}
-            <div className="flex w-[219px] flex-col items-start gap-8">
+            <div className="flex w-[219px] flex-col items-start gap-3">
               <p className="w-full text-2xl font-semibold leading-[1.2] text-white">
                 Profit %
               </p>
@@ -188,7 +188,7 @@ export default function AiReadyCard() {
       </div>
 
       {/* Author footer */}
-      <div className="absolute bottom-[45px] left-[64px] flex items-center gap-5">
+      <div className="absolute bottom-[45px] left-16 flex items-center gap-5">
         <div className="relative size-12 shrink-0 overflow-hidden rounded-full">
           <img
             alt="Franklin"
