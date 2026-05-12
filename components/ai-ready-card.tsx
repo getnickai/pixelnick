@@ -23,6 +23,22 @@ export default function AiReadyCard() {
         </div>
       </div>
 
+      {/* Agent illustration (decorative, sits above the glow) */}
+      <div
+        className="pointer-events-none opacity-10 absolute left-[-326px] top-[-222px] flex h-[865px] w-[1347px] items-center justify-center"
+        data-node-id="196:260"
+      >
+        <div className="-rotate-90 -scale-y-100">
+          <div className="relative h-[1347px] w-[865px]">
+            <img
+              alt=""
+              src={`${ASSET}/agent-illustration.svg`}
+              className="absolute inset-0 block size-full max-w-none"
+            />
+          </div>
+        </div>
+      </div>
+
       {/* Top-right notch */}
       <div className="absolute right-[-2px] top-[195.55px] flex h-[27.619px] w-[141.619px] items-center justify-center">
         <div className="-scale-y-100 rotate-180">
@@ -187,20 +203,28 @@ export default function AiReadyCard() {
         </div>
       </div>
 
-      {/* Author footer */}
-      <div className="absolute bottom-[45px] left-16 flex items-center gap-5">
-        <div className="relative size-12 shrink-0 overflow-hidden rounded-full">
-          <img
-            alt="Franklin"
-            src={`${ASSET}/avatar-franklin.png`}
-            width={48}
-            height={48}
-            className="absolute inset-0 block size-full max-w-none"
-          />
-        </div>
-        <p className="w-[219px] text-2xl font-semibold leading-[1.2] text-white">
-          Franklin
+      {/* Author block: "Built By:" label snaps to author-name column */}
+      <div className="absolute bottom-[45px] left-16 flex flex-col gap-[26px]">
+        <p
+          className="pl-[68px] text-xl leading-4 text-grey-400"
+          data-node-id="196:258"
+        >
+          Built By:
         </p>
+        <div className="flex items-center gap-5">
+          <div className="relative size-12 shrink-0 overflow-hidden rounded-full">
+            <img
+              alt="Franklin"
+              src={`${ASSET}/avatar-franklin.png`}
+              width={48}
+              height={48}
+              className="absolute inset-0 block size-full max-w-none"
+            />
+          </div>
+          <p className="w-[219px] text-2xl font-semibold leading-[1.2] text-white">
+            Franklin
+          </p>
+        </div>
       </div>
     </article>
   );
