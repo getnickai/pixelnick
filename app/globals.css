@@ -1,26 +1,42 @@
 @import "tailwindcss";
 
-:root {
-  --background: #ffffff;
-  --foreground: #171717;
+@theme {
+  --font-sans:
+    var(--font-rethink-sans), ui-sans-serif, system-ui, -apple-system,
+    BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial,
+    "Noto Sans", sans-serif;
+
+  /* Custom `grey` ramp (replaces TW's built-in `gray`).
+     400 / 950 are confirmed from the Figma frame;
+     the rest are interpolated and can be updated when the DS file exposes them. */
+  --color-grey-50: #f4f5f6;
+  --color-grey-100: #e8eaec;
+  --color-grey-200: #cdd0d4;
+  --color-grey-300: #a8acb3;
+  --color-grey-400: #858a93;
+  --color-grey-500: #686d76;
+  --color-grey-600: #50545c;
+  --color-grey-700: #3c3f45;
+  --color-grey-800: #292c30;
+  --color-grey-900: #14171a;
+  --color-grey-950: #080b0c;
+
+  /* Custom `brand` ramp built around NickAI's logo blue (#4EAEF9 at 500). */
+  --color-brand-50: #eff8ff;
+  --color-brand-100: #dcefff;
+  --color-brand-200: #b9e0ff;
+  --color-brand-300: #8acbff;
+  --color-brand-400: #5cb5f5;
+  --color-brand-500: #4eaef9;
+  --color-brand-600: #2a8edd;
+  --color-brand-700: #1f6ec0;
+  --color-brand-800: #1a589c;
+  --color-brand-900: #134276;
+  --color-brand-950: #0a2747;
 }
 
-@theme inline {
-  --color-background: var(--background);
-  --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
-}
-
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
-  }
-}
-
+html,
 body {
-  background: var(--background);
-  color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+  background: #000;
+  color: #fff;
 }
