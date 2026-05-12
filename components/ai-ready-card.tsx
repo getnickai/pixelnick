@@ -25,7 +25,7 @@ export default function AiReadyCard() {
 
       {/* Agent illustration (decorative, sits above the glow) */}
       <div
-        className="pointer-events-none opacity-10 absolute left-[-326px] top-[-222px] flex h-[865px] w-[1347px] items-center justify-center"
+        className="pointer-events-none opacity-25 absolute left-[-326px] top-[-222px] flex h-[865px] w-[1347px] items-center justify-center"
         data-node-id="196:260"
       >
         <div className="-rotate-90 -scale-y-100">
@@ -35,21 +35,6 @@ export default function AiReadyCard() {
               src={`${ASSET}/agent-illustration.svg`}
               className="absolute inset-0 block size-full max-w-none"
             />
-          </div>
-        </div>
-      </div>
-
-      {/* Top-right notch */}
-      <div className="absolute right-[-2px] top-[195.55px] flex h-[27.619px] w-[141.619px] items-center justify-center">
-        <div className="-scale-y-100 rotate-180">
-          <div className="relative h-[27.619px] w-[141.619px]">
-            <div className="absolute inset-[-1.81%_-0.35%]">
-              <img
-                alt=""
-                src={`${ASSET}/notch.svg`}
-                className="block size-full max-w-none"
-              />
-            </div>
           </div>
         </div>
       </div>
@@ -100,7 +85,7 @@ export default function AiReadyCard() {
               </p>
               <div className="relative flex items-center justify-center gap-6">
                 {/* Decorative left-edge green bar aligned with PNL amount */}
-                <div className="absolute -left-[86px] top-1/2 h-[41px] w-[39px] -translate-y-1/2 rounded-lg bg-[#5be59c]" />
+                <div className="absolute -left-[87px] top-1/2 size-10 -translate-y-1/2 rounded-lg bg-green-400" />
                 <p className="whitespace-nowrap text-5xl font-medium leading-[1.4] text-green-400">
                   +$4,012.95
                 </p>
@@ -224,6 +209,67 @@ export default function AiReadyCard() {
           <p className="w-[219px] text-2xl font-semibold leading-[1.2] text-white">
             Franklin
           </p>
+        </div>
+      </div>
+
+      {/* Remix CTA — "Try in NickAI" */}
+      <div
+        className="absolute bottom-8 left-[404px] flex items-start"
+        data-node-id="204:278"
+      >
+        {/* Left decorative tab (rotated 180°) */}
+        <div className="relative h-[56px] w-[46px] shrink-0 rotate-180">
+          <img
+            alt=""
+            src={`${ASSET}/cta-tab.svg`}
+            className="absolute inset-0 block size-full max-w-none"
+          />
+        </div>
+
+        {/* Button body with gradient + backdrop blur */}
+        <div
+          className="relative flex shrink-0 items-center gap-[9px] rounded-r-[12px] py-4 pr-5 backdrop-blur-[16px]"
+          style={{
+            backgroundImage:
+              "linear-gradient(162.836deg, rgba(74, 222, 128, 0.5) 17.138%, rgba(48, 197, 255, 0.5) 89.208%), linear-gradient(90deg, rgb(48, 197, 255) 0%, rgb(48, 197, 255) 100%)",
+          }}
+        >
+          <p className="whitespace-nowrap text-xl font-semibold leading-[1.2] text-grey-950">
+            Try in NickAI
+          </p>
+          <div className="relative size-6 shrink-0">
+            <img
+              alt=""
+              src={`${ASSET}/arrow-right.svg`}
+              className="absolute inset-0 block size-full max-w-none"
+            />
+          </div>
+        </div>
+
+        {/* Color-dodge overlay across the full CTA */}
+        <div
+          className="pointer-events-none absolute left-0 top-0 h-[56px] w-[211px] rotate-180"
+          style={{ mixBlendMode: "color-dodge" }}
+        >
+          <img
+            alt=""
+            src={`${ASSET}/cta-overlay.svg`}
+            className="absolute inset-0 block size-full max-w-none"
+          />
+        </div>
+      </div>
+
+      {/* LineGraph (top-most decorative layer) */}
+      <div
+        className="pointer-events-none absolute -bottom-10 left-[-270px] h-[329.506px] w-[1389.202px]"
+        data-node-id="199:271"
+      >
+        <div className="absolute inset-[-0.15%_0]">
+          <img
+            alt=""
+            src={`${ASSET}/line-graph.svg`}
+            className="block size-full max-w-none"
+          />
         </div>
       </div>
     </article>
