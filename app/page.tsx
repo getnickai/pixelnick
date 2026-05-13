@@ -1,9 +1,5 @@
-import AiReadyCard from "@/components/ai-ready-card";
+import { redirect } from "next/navigation";
 
 export default function Home() {
-  return (
-    <main className="min-h-dvh bg-black flex items-center justify-center py-[30px]">
-      <AiReadyCard />
-    </main>
-  );
+  redirect("/performance-card");
 }

@@ -1,6 +1,8 @@
 import type { Metadata } from "next";
 import { Rethink_Sans } from "next/font/google";
 import "./globals.css";
+import { AppSidebar } from "@/components/app-sidebar";
+import { SidebarInset, SidebarProvider } from "@/components/ui/sidebar";
 
 const rethinkSans = Rethink_Sans({
   variable: "--font-rethink-sans",
@@ -20,7 +22,12 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en" className={`${rethinkSans.variable} antialiased`}>
-      <body className="bg-black text-white font-sans">{children}</body>
+      <body className="font-sans">
+        <SidebarProvider>
+          <AppSidebar />
+          <SidebarInset>{children}</SidebarInset>
+        </SidebarProvider>
+      </body>
     </html>
   );
 }
