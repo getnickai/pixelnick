@@ -20,6 +20,13 @@ export type PerformanceCardProps = {
   nodes: number;
   /** Pre-formatted display string, e.g. "6h 2m" */
   nextRun: string;
+  /**
+   * Numeric count-up style. `true` (default) = slot-machine slide;
+   * `false` = simple per-frame digit snap (web counter style).
+   * Toggled live from the `/motion` page via the vertical icon toggle
+   * next to the Player.
+   */
+  slide?: boolean;
 };
 
 /**
@@ -37,4 +44,5 @@ export const performanceCardDefaultProps: PerformanceCardProps = {
   activeSince: "16 Mar 17,2026",
   nodes: 9,
   nextRun: "6h 2m",
+  slide: true,
 };

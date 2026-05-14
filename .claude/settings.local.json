@@ -3,7 +3,9 @@
     "allow": [
       "Bash(bun add *)",
       "Bash(bun run *)",
-      "mcp__Claude_Preview__preview_start"
+      "mcp__Claude_Preview__preview_start",
+      "Bash(gh api *)",
+      "WebFetch(domain:motion-primitives.com)"
     ]
   }
 }
