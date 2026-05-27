@@ -90,23 +90,50 @@ key. If a producer emits a stable internal agent ID as `slug`, renaming the agen
 won't create a duplicate card. If omitted, it's derived from `agentName` (so a
 rename looks like a brand-new agent).
 
-Drop the file at `data/incoming/agents.json` (gitignored, the convention for
-real data) or anywhere you like and point `--data=` at it.
+## Where the feed comes from
+
+The generator reads the feed from one of three sources (in precedence order):
+
+1. **`--data=<source>`** — explicit. The source can be:
+   - an **S3 URL**: `s3://nickai-cards-feed/input/agents.json` (production)
+   - an **HTTPS URL**: `https://.../agents.json`
+   - a **local path**: `data/incoming/agents.json` (testing; `data/incoming/` is
+     gitignored, the convention for real local data)
+2. **`$S3_FEED_URL`** — if set, used when no `--data=` is passed. This is the
+   production default: point it at the S3 key NickAI writes to, then
+   `bun run cards` just works.
+3. **bundled mock data** — if neither is set.
+
+**Production setup (S3):** NickAI writes the feed to an S3 key (e.g.
+`s3://nickai-cards-feed/input/agents.json`); this pipeline reads it. AWS
+credentials use the standard SDK chain — set in `.env.local` (or rely on an AWS
+profile / instance role):
+```
+S3_FEED_URL=s3://nickai-cards-feed/input/agents.json
+AWS_REGION=us-east-1
+AWS_ACCESS_KEY_ID=...
+AWS_SECRET_ACCESS_KEY=...
+```
+The generator needs `s3:GetObject` on that key; the NickAI producer needs
+`s3:PutObject`. Never commit AWS keys — `.env.local` is gitignored.
 
 ## Running it
 
 From the repo root:
 
 ```bash
-# Render every agent in the feed (PNG + MP4) and post new/changed to Slack:
+# Production: feed from S3 (or set $S3_FEED_URL and just run `bun run cards`):
+bun scripts/generate-cards.ts --data=s3://nickai-cards-feed/input/agents.json
+
+# Local file (testing):
 bun scripts/generate-cards.ts --data=data/incoming/agents.json
 
 # Preview the plan without rendering or posting anything:
-bun scripts/generate-cards.ts --data=data/incoming/agents.json --dry-run
+bun scripts/generate-cards.ts --data=s3://nickai-cards-feed/input/agents.json --dry-run
 
-# Convenience scripts (use the bundled mock data):
-bun run cards         # all mock agents, PNG + MP4
-bun run cards:png     # mock agents, PNG only (fast)
+# Convenience scripts (read $S3_FEED_URL if set, else bundled mock data):
+bun run cards         # PNG + MP4
+bun run cards:png     # PNG only (fast)
 ```
 
 ### Flags

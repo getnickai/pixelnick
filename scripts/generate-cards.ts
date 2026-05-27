@@ -34,6 +34,7 @@ import {
   removedSlugs,
 } from "./ledger";
 import { slackConfigFromEnv, postCardToSlack, buildCaption } from "./slack";
+import { readFeed } from "./feed";
 
 const COMPOSITION_ID = "performance-card";
 const OUT_DIR = path.join(process.cwd(), "out");
@@ -77,13 +78,21 @@ function outputsExist(slug: string, flags: Flags): boolean {
   return pngOk && mp4Ok;
 }
 
-/** Load the agent list from a JSON input file or fall back to mock data. */
-function loadAgents(flags: Flags): AgentCardData[] {
-  if (!flags.data) return mockAgents;
-  const raw = fs.readFileSync(path.resolve(process.cwd(), flags.data), "utf8");
+/**
+ * Resolve the agent list. Source precedence:
+ *   1. --data=<source>     (explicit: s3://, https://, or local path)
+ *   2. $S3_FEED_URL        (env default, e.g. s3://nickai-cards-feed/input/agents.json)
+ *   3. bundled mock data   (no source configured)
+ */
+async function loadAgents(flags: Flags): Promise<AgentCardData[]> {
+  const source = flags.data ?? process.env.S3_FEED_URL;
+  if (!source) return mockAgents;
+
+  console.log(`Reading feed: ${source}`);
+  const raw = await readFeed(source);
   const parsed = JSON.parse(raw) as AgentInput[];
   if (!Array.isArray(parsed)) {
-    throw new Error(`${flags.data} must contain a JSON array of agents.`);
+    throw new Error(`Feed ${source} must contain a JSON array of agents.`);
   }
   const now = new Date();
   return parsed.map((input) => toCardData(input, now));
@@ -114,7 +123,7 @@ async function resolveAvatars(agents: AgentCardData[]): Promise<void> {
 async function main() {
   const flags = parseFlags(process.argv.slice(2));
 
-  let agents = loadAgents(flags);
+  let agents = await loadAgents(flags);
   if (flags.slug) agents = agents.filter((a) => a.slug === flags.slug);
 
   if (agents.length === 0) {

@@ -12,6 +12,7 @@
     "cards:png": "bun scripts/generate-cards.ts --png"
   },
   "dependencies": {
+    "@aws-sdk/client-s3": "^3.1054.0",
     "@base-ui/react": "^1.4.1",
     "@remotion/player": "4.0.460",
     "class-variance-authority": "^0.7.1",
