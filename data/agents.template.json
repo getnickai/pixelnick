@@ -1,0 +1,23 @@
+[
+  {
+    "agentName": "Mag 7 Rotator V2 — Rotation 25% Cap",
+    "pnl": 4012.95,
+    "profitPercent": 27.97,
+    "runs": 12,
+    "trades": 26,
+    "nodes": 9,
+    "builderName": "Franklin",
+    "builderAvatarUrl": "https://cdn.getnick.ai/avatars/franklin.png",
+    "activeSinceISO": "2026-03-17T00:00:00Z",
+    "nextRunISO": "2026-05-27T19:30:00Z",
+    "slug": "mag-7-rotator-v2"
+  },
+  {
+    "agentName": "BTC Momentum Scalper",
+    "pnl": 8841.40,
+    "profitPercent": 41.12,
+    "runs": 48,
+    "trades": 132,
+    "nodes": 14
+  }
+]
