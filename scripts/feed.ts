@@ -19,7 +19,7 @@ import path from "node:path";
 import { S3Client, GetObjectCommand } from "@aws-sdk/client-s3";
 
 /** Parse "s3://bucket/some/key.json" into its parts. */
-function parseS3Url(url: string): { bucket: string; key: string } {
+export function parseS3Url(url: string): { bucket: string; key: string } {
   const without = url.slice("s3://".length);
   const slash = without.indexOf("/");
   if (slash === -1) throw new Error(`Invalid S3 URL (no key): ${url}`);
@@ -34,7 +34,7 @@ function parseS3Url(url: string): { bucket: string; key: string } {
  * Path-style addressing is enabled when an endpoint is set because R2 (and
  * most compatibles) don't support virtual-hosted style.
  */
-function s3Client(): S3Client {
+export function s3Client(): S3Client {
   const endpoint = process.env.S3_ENDPOINT;
   if (endpoint) {
     return new S3Client({

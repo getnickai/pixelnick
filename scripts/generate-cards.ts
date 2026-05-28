@@ -35,6 +35,9 @@ import {
 } from "./ledger";
 import { slackConfigFromEnv, postCardToSlack, buildCaption } from "./slack";
 import { readFeed } from "./feed";
+import { pullAgentsFromR2 } from "./r2-source";
+import { loadPullLog, savePullLog } from "./pull-log";
+import { toCardDataFromR2 } from "../data/agent-output";
 
 const COMPOSITION_ID = "performance-card";
 const OUT_DIR = path.join(process.cwd(), "out");
@@ -44,6 +47,12 @@ const AVATAR_DIR = path.join(PUBLIC_DIR, "figma", "avatars");
 type Flags = {
   slug?: string;
   data?: string;
+  /** R2 prefix override (else taken from $R2_AGENTS_PREFIX). */
+  fromR2?: string;
+  /** Top N agents to render in R2 mode. Default 5. */
+  topN: number;
+  /** Treat R2 watermark as if it weren't set (process everything). */
+  fullPull: boolean;
   pngOnly: boolean;
   mp4Only: boolean;
   force: boolean;
@@ -51,8 +60,12 @@ type Flags = {
   noSlack: boolean;
 };
 
+const DEFAULT_TOP_N = 5;
+
 function parseFlags(argv: string[]): Flags {
   const flags: Flags = {
+    topN: Number(process.env.TOP_N ?? DEFAULT_TOP_N) || DEFAULT_TOP_N,
+    fullPull: false,
     pngOnly: false,
     mp4Only: false,
     force: false,
@@ -62,6 +75,10 @@ function parseFlags(argv: string[]): Flags {
   for (const arg of argv) {
     if (arg.startsWith("--slug=")) flags.slug = arg.slice("--slug=".length);
     else if (arg.startsWith("--data=")) flags.data = arg.slice("--data=".length);
+    else if (arg.startsWith("--from-r2=")) flags.fromR2 = arg.slice("--from-r2=".length);
+    else if (arg === "--from-r2") flags.fromR2 = process.env.R2_AGENTS_PREFIX;
+    else if (arg.startsWith("--top-n=")) flags.topN = Number(arg.slice("--top-n=".length));
+    else if (arg === "--full-pull") flags.fullPull = true;
     else if (arg === "--png") flags.pngOnly = true;
     else if (arg === "--mp4") flags.mp4Only = true;
     else if (arg === "--force") flags.force = true;
@@ -80,22 +97,77 @@ function outputsExist(slug: string, flags: Flags): boolean {
 
 /**
  * Resolve the agent list. Source precedence:
- *   1. --data=<source>     (explicit: s3://, https://, or local path)
- *   2. $S3_FEED_URL        (env default, e.g. s3://nickai-cards-feed/input/agents.json)
- *   3. bundled mock data   (no source configured)
+ *   1. --data=<source>            curated JSON (s3://, https://, or local path)
+ *   2. --from-r2 / $R2_AGENTS_PREFIX   structured R2 mode (list + rank Top N)
+ *   3. $S3_FEED_URL               curated JSON via env (back-compat)
+ *   4. bundled mock data
+ *
+ * In R2 mode, this is also where the pull-log watermark gates which agents
+ * we touch and where we advance it after a successful run. We update the
+ * watermark to the max snapshot LastModified seen — not "now" — so a render
+ * that finishes minutes after R2 writes more data still picks the new objects
+ * up next time.
  */
 async function loadAgents(flags: Flags): Promise<AgentCardData[]> {
-  const source = flags.data ?? process.env.S3_FEED_URL;
-  if (!source) return mockAgents;
+  // Curated single-file mode (explicit --data, or env S3_FEED_URL).
+  const curatedSource = flags.data ?? process.env.S3_FEED_URL;
+  const r2Prefix = flags.fromR2 ?? (flags.data ? undefined : process.env.R2_AGENTS_PREFIX);
 
-  console.log(`Reading feed: ${source}`);
-  const raw = await readFeed(source);
-  const parsed = JSON.parse(raw) as AgentInput[];
-  if (!Array.isArray(parsed)) {
-    throw new Error(`Feed ${source} must contain a JSON array of agents.`);
+  if (curatedSource && !flags.data && r2Prefix) {
+    // Both env vars are set; prefer R2 structured mode in production.
+    // (Explicit --data= still wins above — that's the testing override.)
   }
-  const now = new Date();
-  return parsed.map((input) => toCardData(input, now));
+
+  if (flags.data || (!r2Prefix && curatedSource)) {
+    const source = (flags.data ?? curatedSource)!;
+    console.log(`Reading curated feed: ${source}`);
+    const raw = await readFeed(source);
+    const parsed = JSON.parse(raw) as AgentInput[];
+    if (!Array.isArray(parsed)) {
+      throw new Error(`Feed ${source} must contain a JSON array of agents.`);
+    }
+    const now = new Date();
+    return parsed.map((input) => toCardData(input, now));
+  }
+
+  if (r2Prefix) {
+    const log = loadPullLog();
+    const since = flags.fullPull ? null : log.lastPulledISO;
+    console.log(
+      `Pulling agents from ${r2Prefix}` +
+        (since ? ` (since ${since})` : " (full pull)"),
+    );
+    const fresh = await pullAgentsFromR2(r2Prefix, since);
+    console.log(`  fresh snapshots: ${fresh.length}`);
+
+    // Rank by profitPercent desc; take Top N.
+    fresh.sort((a, b) => b.snapshot.profitPercent - a.snapshot.profitPercent);
+    const topN = Math.max(1, flags.topN);
+    const selected = fresh.slice(0, topN);
+    console.log(`  ranking Top ${topN} by profitPercent:`);
+    for (const f of selected) {
+      console.log(`    · ${f.profile.agentName}  ${f.snapshot.profitPercent}%`);
+    }
+
+    // Advance watermark to the max LastModified we observed (over ALL fresh
+    // agents, not just the Top N — otherwise non-selected agents would replay
+    // every run).
+    if (!flags.dryRun && fresh.length > 0) {
+      const maxLastMod = fresh
+        .map((f) => f.snapshotLastModifiedISO)
+        .sort()
+        .at(-1)!;
+      log.lastPulledISO = maxLastMod;
+      log.pullCount += 1;
+      for (const f of fresh) log.agentsSeen[f.agentId] = f.snapshotLastModifiedISO;
+      savePullLog(log);
+    }
+
+    const now = new Date();
+    return selected.map((f) => toCardDataFromR2(f.profile, f.snapshot, now));
+  }
+
+  return mockAgents;
 }
 
 /**
