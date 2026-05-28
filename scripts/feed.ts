@@ -7,10 +7,12 @@
  *   - https://...       → fetched over HTTP
  *   - any other string  → treated as a local file path (relative to cwd)
  *
- * Production setup: NickAI writes the feed to an S3 key (e.g.
- * s3://nickai-cards-feed/input/agents.json); this reads it. AWS creds come from
- * the standard environment (AWS_ACCESS_KEY_ID / AWS_SECRET_ACCESS_KEY /
- * AWS_REGION) — never hardcoded here.
+ * Production setup: NickAI writes the feed to a bucket key (e.g.
+ * s3://nickai-cards-feed/input/agents.json); this reads it. Works with both
+ * AWS S3 and any S3-compatible store — point `S3_ENDPOINT` at Cloudflare R2
+ * (https://<account_id>.r2.cloudflarestorage.com) and you're done. Credentials
+ * come from the standard env chain (AWS_ACCESS_KEY_ID / AWS_SECRET_ACCESS_KEY)
+ * — never hardcoded here.
  */
 import fs from "node:fs";
 import path from "node:path";
@@ -24,10 +26,29 @@ function parseS3Url(url: string): { bucket: string; key: string } {
   return { bucket: without.slice(0, slash), key: without.slice(slash + 1) };
 }
 
+/**
+ * Build an S3Client that targets either real AWS S3 or any S3-compatible
+ * provider (R2, MinIO, Wasabi, etc.). The provider is selected purely by env:
+ *   - `S3_ENDPOINT` set       → S3-compatible. For R2, also set AWS_REGION=auto.
+ *   - `S3_ENDPOINT` unset     → real AWS S3 with region from AWS_REGION.
+ * Path-style addressing is enabled when an endpoint is set because R2 (and
+ * most compatibles) don't support virtual-hosted style.
+ */
+function s3Client(): S3Client {
+  const endpoint = process.env.S3_ENDPOINT;
+  if (endpoint) {
+    return new S3Client({
+      endpoint,
+      region: process.env.AWS_REGION ?? "auto",
+      forcePathStyle: true,
+    });
+  }
+  return new S3Client({}); // AWS S3, default chain (region + creds from env)
+}
+
 async function readS3(url: string): Promise<string> {
   const { bucket, key } = parseS3Url(url);
-  const client = new S3Client({}); // region + creds from env / default chain
-  const res = await client.send(new GetObjectCommand({ Bucket: bucket, Key: key }));
+  const res = await s3Client().send(new GetObjectCommand({ Bucket: bucket, Key: key }));
   if (!res.Body) throw new Error(`Empty S3 object: ${url}`);
   return res.Body.transformToString();
 }

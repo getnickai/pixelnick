@@ -104,18 +104,20 @@ The generator reads the feed from one of three sources (in precedence order):
    `bun run cards` just works.
 3. **bundled mock data** — if neither is set.
 
-**Production setup (S3):** NickAI writes the feed to an S3 key (e.g.
-`s3://nickai-cards-feed/input/agents.json`); this pipeline reads it. AWS
-credentials use the standard SDK chain — set in `.env.local` (or rely on an AWS
-profile / instance role):
+**Production setup — Cloudflare R2 (S3-compatible):** NickAI writes the feed
+to an R2 bucket key; this pipeline reads it via the AWS S3 SDK pointed at the
+R2 endpoint. Set in `.env.local`:
 ```
 S3_FEED_URL=s3://nickai-cards-feed/input/agents.json
-AWS_REGION=us-east-1
-AWS_ACCESS_KEY_ID=...
-AWS_SECRET_ACCESS_KEY=...
+S3_ENDPOINT=https://<account_id>.r2.cloudflarestorage.com
+AWS_REGION=auto
+AWS_ACCESS_KEY_ID=<r2-access-key-id>
+AWS_SECRET_ACCESS_KEY=<r2-secret>
 ```
-The generator needs `s3:GetObject` on that key; the NickAI producer needs
-`s3:PutObject`. Never commit AWS keys — `.env.local` is gitignored.
+The R2 API token used here needs **Object Read** on the feed key (the NickAI
+producer needs **Object Write** on the same key). For real AWS S3 instead,
+leave `S3_ENDPOINT` unset and use the bucket's region. Never commit credentials
+— `.env.local` is gitignored.
 
 ## Running it
 
