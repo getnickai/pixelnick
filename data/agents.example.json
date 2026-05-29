@@ -1,0 +1,13 @@
+[
+  {
+    "agentName": "Solana Breakout Hunter",
+    "pnl": 9214.6,
+    "profitPercent": 38.4,
+    "runs": 61,
+    "trades": 154,
+    "nodes": 13,
+    "builderName": "Franklin",
+    "activeSinceISO": "2026-02-09T00:00:00Z",
+    "nextRunISO": "2026-05-27T19:30:00Z"
+  }
+]

@@ -17,6 +17,11 @@
 /.next/
 /out/
 
+# downloaded remote avatars (fetched per-run, not source)
+/public/figma/avatars/
+# live data inputs (the .example template stays committed)
+/data/incoming/
+
 # production
 /build
 
