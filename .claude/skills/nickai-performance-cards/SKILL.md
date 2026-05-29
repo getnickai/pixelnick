@@ -109,6 +109,11 @@ contract (for testing only) is in `data/agent-input.ts` with an example at
 
 ## Adding a new workflow to the pipeline (producer-side setup)
 
+For a step-by-step walkthrough of wiring up a NickAI workflow to produce card
+data — including the function-node sharing caveat, the troubleshooting flow,
+and the table of "who does what" — see **[PRODUCER_GUIDE.md](./PRODUCER_GUIDE.md)**.
+The short version is below.
+
 The hard lessons from wiring up the first live workflow — read this before
 hooking a new one to the pipeline, otherwise you'll burn an afternoon
 chasing the same regressions we already chased.
