@@ -17,6 +17,9 @@ import type { AgentCardData } from "../data/mock-agents";
 export const LEDGER_PATH = path.join(process.cwd(), "data", "cards-built.json");
 
 export type LedgerEntry = {
+  /** Source the agent came from (e.g. "nickai", "swarm-arena"). */
+  source: string;
+  slug: string;
   agentName: string;
   hash: string;
   builtAt: string;
@@ -27,8 +30,14 @@ export type LedgerEntry = {
 
 export type Ledger = {
   generatedAt: string;
+  /** Keyed by `<source>/<slug>` so identical slugs in different sources don't collide. */
   cards: Record<string, LedgerEntry>;
 };
+
+/** Composite key under which a card is stored in the ledger. */
+export function ledgerKey(source: string, slug: string): string {
+  return `${source}/${slug}`;
+}
 
 /** Stable content hash of the card-relevant fields (excludes slug + nextRun). */
 export function hashCard(agent: AgentCardData): string {
@@ -67,6 +76,7 @@ export function saveLedger(ledger: Ledger): void {
 
 export type BuildReason = "new" | "updated" | "missing-files" | "forced";
 export type Plan = {
+  source: string;
   slug: string;
   agent: AgentCardData;
   build: boolean;
@@ -76,28 +86,41 @@ export type Plan = {
 /**
  * Decide, per agent, whether to build and why. `outputsExist` checks the actual
  * files on disk so a deleted `out/` (fresh clone) triggers a rebuild even when
- * the hash matches.
+ * the hash matches. Caller passes the source so the ledger key is composite.
  */
 export function planBuilds(
+  source: string,
   agents: AgentCardData[],
   ledger: Ledger,
   opts: { force: boolean; outputsExist: (slug: string) => boolean },
 ): Plan[] {
   return agents.map((agent) => {
     const hash = hashCard(agent);
-    const prev = ledger.cards[agent.slug];
+    const prev = ledger.cards[ledgerKey(source, agent.slug)];
     let reason: Plan["reason"];
     if (opts.force) reason = "forced";
     else if (!prev) reason = "new";
     else if (prev.hash !== hash) reason = "updated";
     else if (!opts.outputsExist(agent.slug)) reason = "missing-files";
     else reason = "unchanged";
-    return { slug: agent.slug, agent, build: reason !== "unchanged", reason };
+    return {
+      source,
+      slug: agent.slug,
+      agent,
+      build: reason !== "unchanged",
+      reason,
+    };
   });
 }
 
-/** Slugs present in the ledger but absent from the current pull. */
-export function removedSlugs(agents: AgentCardData[], ledger: Ledger): string[] {
-  const current = new Set(agents.map((a) => a.slug));
-  return Object.keys(ledger.cards).filter((slug) => !current.has(slug));
+/** Slugs present in the ledger for this source but absent from the current pull. */
+export function removedSlugs(
+  source: string,
+  agents: AgentCardData[],
+  ledger: Ledger,
+): string[] {
+  const current = new Set(agents.map((a) => ledgerKey(source, a.slug)));
+  return Object.keys(ledger.cards)
+    .filter((k) => k.startsWith(`${source}/`) && !current.has(k))
+    .map((k) => k.slice(source.length + 1));
 }

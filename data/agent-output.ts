@@ -1,20 +1,25 @@
 /**
- * Schemas for NickAI agent outputs written to R2.
+ * Schemas for the JSON outputs NickAI workflows write to R2.
  *
- * NickAI agents write three kinds of objects per agent under
- * `agents/{agentId}/`:
- *   - profile.json   — rarely changes (name, builder, activeSince, nodes)
- *   - snapshot.json  — overwritten each run; current cumulative totals
- *   - runs/{runId}.json — append-only per-run record incl. individual trades
+ * Canonical paths (per source, e.g. nickai or swarm-arena):
+ *   s3://<bucket>/<source>/agents/{workflowId}/profile.json
+ *   s3://<bucket>/<source>/agents/{workflowId}/snapshot.json
+ *   s3://<bucket>/<source>/agents/{workflowId}/runs/{date}/{executionId}.json
  *
  * Today's card pipeline reads (profile, snapshot) and ranks by profitPercent.
- * The `runs/` records are forward-compatible for future trade-highlight cards.
+ * The `runs/{date}/{executionId}.json` layer is forward-compatible — when
+ * trade-highlight cards arrive, listing only today's runs is a single
+ * prefix scan instead of a full enumeration.
+ *
+ * Internal terminology is "workflow" (NickAI's data model); the public-facing
+ * card copy still says "agent". `agents/` stays as the path segment for that
+ * reason — public surface aligned with what the card displays.
  */
 import type { AgentCardData } from "./mock-agents";
 import { slugify } from "./agent-input";
 
 export type AgentProfile = {
-  agentId: string;
+  workflowId: string;
   agentName: string;
   /** Optional. If absent, derived from agentName. */
   slug?: string;
@@ -24,7 +29,7 @@ export type AgentProfile = {
 };
 
 export type AgentSnapshot = {
-  agentId: string;
+  workflowId: string;
   /** When this snapshot was produced. */
   asOfISO: string;
   pnlUsd: number;
@@ -50,9 +55,14 @@ export type Trade = {
   closedISO: string;
 };
 
+/**
+ * A single workflow execution. Path: `agents/{workflowId}/runs/{date}/{executionId}.json`.
+ * `date` is the execution day in YYYY-MM-DD; lets us list "runs since X" as
+ * a cheap prefix scan when trade-highlight cards land later.
+ */
 export type AgentRun = {
-  runId: string;
-  agentId: string;
+  executionId: string;
+  workflowId: string;
   startedISO: string;
   completedISO: string;
   pnlDeltaUsd: number;
@@ -91,9 +101,8 @@ function formatRelative(iso?: string, now: Date = new Date()): string {
 
 /**
  * Map a (profile + snapshot) pair into the renderer's `AgentCardData` shape.
- * This is the single seam between the R2 output schema and the card schema —
- * if either side changes, you adjust this mapping and the rest of the pipeline
- * is unaffected.
+ * The single seam between the R2 output schema and the card schema — change
+ * either side, adjust this mapping, the rest of the pipeline is unaffected.
  */
 export function toCardDataFromR2(
   profile: AgentProfile,

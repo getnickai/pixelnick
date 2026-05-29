@@ -80,22 +80,32 @@ Four things make repeated runs safe and efficient:
 
 ## The R2 layout NickAI writes to
 
-Each agent has its own folder under the agents prefix:
+The pipeline supports multiple **sources** (e.g. `nickai` and `swarm-arena`).
+Each source has its own top-level namespace in the bucket:
 ```
 nickai-cards-feed/
-└── agents/
-    └── {agentId}/
-        ├── profile.json    # name, builder, activeSince, nodes (rarely changes)
-        ├── snapshot.json   # current cumulative totals (overwritten each run)
-        └── runs/
-            └── {runId}.json   # per-run record incl. individual trades (append-only)
+├── nickai/
+│   └── agents/{workflowId}/
+│       ├── profile.json    # name, builder, activeSince, nodes (rarely changes)
+│       ├── snapshot.json   # current cumulative totals (overwritten each run)
+│       └── runs/
+│           └── {date}/
+│               └── {executionId}.json   # per-run record incl. individual trades
+└── swarm-arena/
+    └── agents/{workflowId}/
+        ├── profile.json
+        ├── snapshot.json
+        └── runs/{date}/{executionId}.json
 ```
 
-The pipeline reads `profile.json` + `snapshot.json` today. `runs/*.json` is
-forward-compatible — when "best trade" cards arrive, the data is already there
-with no schema migration. The authoritative typed schemas are in
-`data/agent-output.ts`; the curated single-file contract (for testing) is in
-`data/agent-input.ts`, and `data/agents.template.json` is a copy-paste example.
+Internal id is `workflowId` (NickAI's data model); the public-facing card copy
+still says "agent" so the path segment stays `agents/`. The date partition
+under `runs/` lets us list "today's runs" cheaply when trade-highlight cards
+arrive — until then, the pipeline only reads profile + snapshot.
+
+Authoritative typed schemas: `data/agent-output.ts`. The curated single-file
+contract (for testing only) is in `data/agent-input.ts` with an example at
+`data/agents.template.json`.
 
 ## The input data (curated mode — testing only)
 
@@ -148,18 +158,37 @@ The generator reads the feed from one of three sources (in precedence order):
    `bun run cards` just works.
 3. **bundled mock data** — if neither is set.
 
-**Production setup — Cloudflare R2 (S3-compatible).** Set in `.env.local`:
+**Production setup — Cloudflare R2 + multi-source.** Set in `.env.local`:
 ```
-R2_AGENTS_PREFIX=s3://nickai-cards-feed/agents/
+# List of sources to process (comma-separated). Drives everything below.
+SOURCES=nickai,swarm-arena
+
+# Per-source config. Source name -> uppercase, hyphens -> underscores:
+#   nickai       -> R2_FEED_NICKAI / SLACK_CHANNEL_NICKAI / TOP_N_NICKAI
+#   swarm-arena  -> R2_FEED_SWARM_ARENA / SLACK_CHANNEL_SWARM_ARENA / TOP_N_SWARM_ARENA
+R2_FEED_NICKAI=s3://nickai-cards-feed/nickai/agents/
+SLACK_CHANNEL_NICKAI=C09Q2AVTCCF        # #tests-agents-output
+TOP_N_NICKAI=5
+
+R2_FEED_SWARM_ARENA=s3://nickai-cards-feed/swarm-arena/agents/
+SLACK_CHANNEL_SWARM_ARENA=C0AGQ57SM60   # #product-swarm-arena
+TOP_N_SWARM_ARENA=10
+
+# Optional human label override (defaults: smart title-case from source name).
+# SOURCE_LABEL_NICKAI=NickAI
+# SOURCE_LABEL_SWARM_ARENA=Swarm Arena
+
+# R2 (S3-compatible) credentials — shared across sources.
 S3_ENDPOINT=https://<account_id>.r2.cloudflarestorage.com
 AWS_REGION=auto
 AWS_ACCESS_KEY_ID=<r2-access-key-id>
 AWS_SECRET_ACCESS_KEY=<r2-secret>
 ```
-Note the prefix ends in `/`. Required permissions on the R2 API token:
-**Object Read** on the agents prefix for the generator; the NickAI producer
-needs **Object Write** on the same prefix. For real AWS S3, leave `S3_ENDPOINT`
-unset and use the bucket's region. Never commit credentials — `.env.local`
+Permissions: R2 token needs **Object Read** on every configured prefix; the
+NickAI producer needs **Object Write** on its source's prefix. Both source
+Slack channels must have the bot invited (file uploads need channel
+membership). For real AWS S3 instead of R2, leave `S3_ENDPOINT` unset and set
+`AWS_REGION` to the bucket's region. Never commit credentials — `.env.local`
 is gitignored.
 
 ## Running it
@@ -167,69 +196,87 @@ is gitignored.
 From the repo root:
 
 ```bash
-# PRODUCTION (R2 structured mode): with $R2_AGENTS_PREFIX set in env you can
-# just run `bun run cards`. Otherwise pass --from-r2 explicitly:
-bun scripts/generate-cards.ts --from-r2 --top-n=5
+# PRODUCTION: with SOURCES configured in env, this iterates every source,
+# pulls each from R2, ranks Top N per source, renders + posts to each
+# source's Slack channel:
+bun run cards
 
-# Curated JSON mode (testing / one-off):
+# Curated JSON mode (testing / one-off — overrides SOURCES for this run):
 bun scripts/generate-cards.ts --data=data/incoming/agents.json
 
-# Preview the plan without rendering or posting anything:
-bun scripts/generate-cards.ts --from-r2 --dry-run
-bun scripts/generate-cards.ts --data=... --dry-run
+# Preview the plan across all sources without rendering or posting:
+bun run cards --dry-run
+# (or explicitly:)
+bun scripts/generate-cards.ts --dry-run
 
-# Convenience scripts (auto-pick R2 mode if $R2_AGENTS_PREFIX is set):
+# Convenience scripts:
 bun run cards         # PNG + MP4
 bun run cards:png     # PNG only (fast)
 ```
 
 ### Flags
-- `--from-r2[=<prefix>]` — structured R2 mode. With no `=`, reads
-  `$R2_AGENTS_PREFIX`. Lists snapshots since the watermark, ranks by
-  `profitPercent`, takes the Top N.
-- `--top-n=<n>` — number of top agents to render in R2 mode (default 5; also
-  configurable via `$TOP_N`).
+- `--data=<source>` — curated single-file mode (testing). Source can be
+  `s3://`, `https://`, or a local path. Bypasses SOURCES for that run.
+- `--slug=<slug>` — render just one agent (filters across whatever batch
+  contains it).
 - `--full-pull` — ignore the watermark this run (treats every snapshot as
-  fresh). Useful after a schema change or for a "rebuild everything" pass.
-- `--data=<source>` — curated single-file mode. Source can be `s3://`,
-  `https://`, or a local path. Wins over R2 mode if set.
-- `--slug=<slug>` — render just one agent (from whatever source).
+  fresh). Useful after a schema change or a "rebuild everything" pass.
 - `--png` / `--mp4` — limit output to one format. PNG-only is much faster.
 - `--force` — rebuild everything, ignoring the build ledger (hashes).
-- `--dry-run` — print the plan; write nothing, post nothing, don't advance
-  the watermark.
-- `--no-slack` — render only; never post (also auto-skipped if Slack env unset).
+- `--dry-run` — print the plan across all sources; write nothing, post
+  nothing, don't advance any watermark.
+- `--no-slack` — render only; never post (also auto-skipped if `SLACK_BOT_TOKEN`
+  is unset).
+
+Top N and channels are **per-source** via env (`TOP_N_<NAME>`,
+`SLACK_CHANNEL_<NAME>`), not flags.
 
 ### Recommended flow for a real run
 1. `--dry-run` first to see what's new vs unchanged.
 2. If it looks right, run without `--dry-run` to render + post.
 
 ## Outputs
-- Files land in `out/<slug>.png` and `out/<slug>.mp4` (the `out/` dir is
-  gitignored — the media is not committed).
-- Each built card is recorded in `data/cards-built.json` with a content hash,
-  build time, output paths, and the Slack permalink (`publishedTo`).
+- Files land in `out/<source>/<slug>.png` and `out/<source>/<slug>.mp4`
+  (the `out/` dir is gitignored — the media is not committed).
+- Each built card is recorded in `data/cards-built.json` under key
+  `<source>/<slug>` with content hash, build time, output paths, and the
+  Slack permalink (`publishedTo`).
 
-## How the pull-log decides what to fetch (R2 mode)
-The pull-log at `data/pull-log.json` holds a single `lastPulledISO` watermark.
-On each pull the pipeline:
-1. Lists every `agents/*/snapshot.json` under the prefix.
-2. Filters to those whose S3/R2 `LastModified` is **strictly after** the
-   watermark.
-3. For each fresh snapshot, loads the matching `profile.json`.
-4. Ranks the result by `profitPercent` desc and slices to Top N.
-5. After a successful (non-dry-run) pull, advances the watermark to the
-   **max `LastModified` observed across ALL fresh agents** (not just the Top N)
-   — otherwise non-selected agents would replay every run.
+## How the pull-log decides what to fetch (per source)
+The pull-log at `data/pull-log.json` is **keyed by source**:
+```json
+{
+  "sources": {
+    "nickai":      { "lastPulledISO": "...", "agentsSeen": { ... } },
+    "swarm-arena": { "lastPulledISO": "...", "agentsSeen": { ... } }
+  },
+  "pullCount": 42
+}
+```
+For each configured source, the pipeline:
+1. Lists every `agents/{workflowId}/snapshot.json` under the source's prefix.
+2. Filters to snapshots whose S3/R2 `LastModified` is **strictly after** that
+   source's `lastPulledISO`.
+3. Loads the matching `profile.json` per fresh agent.
+4. Ranks by `profitPercent` desc and slices to that source's Top N.
+5. After a successful (non-dry-run) pull, advances the source's watermark to
+   the **max `LastModified` observed across ALL fresh agents in that source**
+   (not just the Top N) — otherwise non-selected agents would replay every run.
 
-`--full-pull` ignores the watermark for that run. The pull-log is committed so
-the watermark survives fresh clones.
+`--full-pull` ignores every source's watermark for that run. The pull-log is
+committed so watermarks survive fresh clones.
 
 ## How the ledger decides what to build
-Per agent, the pipeline compares a content hash against the ledger:
+The build ledger at `data/cards-built.json` is keyed by `<source>/<slug>` so a
+collision between e.g. `nickai/mag-7-rotator` and `swarm-arena/mag-7-rotator`
+is impossible. Each entry stores its `source`, `slug`, content hash, build
+time, output paths, and Slack permalink.
+
+Per agent, the pipeline compares a content hash against the entry at
+`ledgerKey(source, slug)`:
 | Situation | Action |
 |---|---|
-| slug not in ledger | build (new) |
+| key not in ledger | build (new) |
 | hash changed (PNL/%/runs/trades/nodes/name/builder/activeSince) | rebuild (updated) |
 | hash same + output files exist | skip |
 | hash same but files missing (e.g. fresh clone) | rebuild |
@@ -239,12 +286,14 @@ changes every run, and hashing it would force needless rebuilds. A card only
 rebuilds when real performance data moves.
 
 ## Slack post format
-Each new/changed card posts as one message with the PNG and MP4 attached, with a
-caption like:
+Each new/changed card posts as one message with the PNG and MP4 attached to
+the source's Slack channel. Caption (with `via <SourceLabel>` so the reader
+always knows the origin):
 ```
 *BTC Momentum Scalper*
 +$8,841.40 PNL  ·  41.12% profit  ·  48 runs, 132 trades
 Built by Franklin  ·  14 nodes
+via NickAI
 Try it for free now: getnick.ai
 ```
 House style: no em-dashes, no hashtags; the CTA is exactly

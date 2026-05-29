@@ -18,15 +18,15 @@ import { parseS3Url, s3Client } from "./feed";
 import type { AgentProfile, AgentSnapshot } from "../data/agent-output";
 
 export type FreshAgent = {
-  agentId: string;
+  workflowId: string;
   profile: AgentProfile;
   snapshot: AgentSnapshot;
   /** S3 LastModified of the snapshot — used to advance the watermark. */
   snapshotLastModifiedISO: string;
 };
 
-/** Strip "agents/<id>/snapshot.json" to "<id>". Returns null if unmatched. */
-function agentIdFromSnapshotKey(key: string, prefix: string): string | null {
+/** Strip "<workflowId>/snapshot.json" to "<workflowId>". Returns null if unmatched. */
+function workflowIdFromSnapshotKey(key: string, prefix: string): string | null {
   const tail = key.startsWith(prefix) ? key.slice(prefix.length) : key;
   const m = tail.match(/^([^/]+)\/snapshot\.json$/);
   return m ? m[1] : null;
@@ -80,13 +80,13 @@ export async function pullAgentsFromR2(
   // 3. For each fresh snapshot, load snapshot + profile.
   const out: FreshAgent[] = [];
   for (const { key, lastModified } of fresh) {
-    const agentId = agentIdFromSnapshotKey(key, prefix);
-    if (!agentId) continue;
+    const workflowId = workflowIdFromSnapshotKey(key, prefix);
+    if (!workflowId) continue;
     const snapshot = await getJson<AgentSnapshot>(bucket, key);
     const profileKey = key.replace(/snapshot\.json$/, "profile.json");
     const profile = await getJson<AgentProfile>(bucket, profileKey);
     out.push({
-      agentId,
+      workflowId,
       profile,
       snapshot,
       snapshotLastModifiedISO: lastModified.toISOString(),

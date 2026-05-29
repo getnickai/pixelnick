@@ -19,7 +19,16 @@ const SLACK_API = "https://slack.com/api";
 
 export type SlackConfig = { token: string; channelId: string };
 
-/** Read Slack config from env; returns null if not configured (skip posting). */
+/**
+ * Resolve the Slack bot token from env. Channel id is passed per call (each
+ * source has its own channel) but the bot token is shared across all posts
+ * the script makes.
+ */
+export function slackTokenFromEnv(): string | null {
+  return process.env.SLACK_BOT_TOKEN ?? null;
+}
+
+/** Back-compat: a single-channel config from env (used only by callers that haven't moved to per-source channels). */
 export function slackConfigFromEnv(): SlackConfig | null {
   const token = process.env.SLACK_BOT_TOKEN;
   const channelId = process.env.SLACK_CHANNEL_ID;
@@ -104,17 +113,23 @@ export async function postCardToSlack(
   return { permalink: first?.permalink };
 }
 
-/** Caption for a card post. No em-dashes / hashtags per house style. */
-export function buildCaption(agent: AgentCardData): string {
+/**
+ * Caption for a card post. No em-dashes / hashtags per house style.
+ * `sourceLabel` is appended so a reader knows whether the card came from
+ * NickAI or Swarm Arena, even if both sources post to the same channel.
+ */
+export function buildCaption(agent: AgentCardData, sourceLabel?: string): string {
   const pnl = agent.pnl.toLocaleString("en-US", {
     style: "currency",
     currency: "USD",
   });
   const sign = agent.pnl >= 0 ? "+" : "";
-  return [
+  const lines = [
     `*${agent.agentName}*`,
     `${sign}${pnl} PNL  ·  ${agent.profitPercent}% profit  ·  ${agent.runs} runs, ${agent.trades} trades`,
     `Built by ${agent.builderName}  ·  ${agent.nodes} nodes`,
-    `Try it for free now: getnick.ai`,
-  ].join("\n");
+  ];
+  if (sourceLabel) lines.push(`via ${sourceLabel}`);
+  lines.push(`Try it for free now: getnick.ai`);
+  return lines.join("\n");
 }
