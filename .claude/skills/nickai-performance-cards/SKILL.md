@@ -107,6 +107,52 @@ Authoritative typed schemas: `data/agent-output.ts`. The curated single-file
 contract (for testing only) is in `data/agent-input.ts` with an example at
 `data/agents.template.json`.
 
+## Adding a new workflow to the pipeline (producer-side setup)
+
+The hard lessons from wiring up the first live workflow — read this before
+hooking a new one to the pipeline, otherwise you'll burn an afternoon
+chasing the same regressions we already chased.
+
+### NickAI's nodes can't read context dynamically
+Workflow nodes can't introspect the workflow's own name or the builder's
+identity at execution time. So those values must be **explicitly injected**
+into the producer node:
+
+- **`agentName`** — hard-code the workflow's title per workflow (e.g.
+  `"Disciplined BTC Paper Trader"`). If you skip this, the producer ends up
+  writing a synthetic fallback like `"NickAI Agent {workflowId}"` and the
+  card headline shows the id instead of the name.
+- **`builder.name`** and **`builder.avatarUrl`** — set as workflow variables
+  (or hard-coded). Without these the card shows a placeholder builder and
+  the bundled Franklin avatar as a fallback.
+- **`nodes`** — the workflow's node count. Without it the card silently
+  falls back to the Remotion composition's default value (currently 9),
+  which looks plausible but is wrong.
+
+### Where shared producer vars live
+R2 creds, Slack tokens, and the producer's standard variable set live in
+the **enterprise marketing NickAI account** as the team's single source of
+truth. Reuse those when adding a new workflow instead of re-creating
+credentials per workflow — same vars, same bucket, same Slack app.
+
+### Common producer mistakes to avoid
+- **Don't confuse `snapshot.json` with a run record.** `snapshot.json` is
+  *cumulative state* (totals across all runs: `pnlUsd`, `runsTotal`,
+  `tradesTotal`, etc.). The per-execution trading signal output lives in
+  `runs/{date}/{executionId}.json`. We hit this — the producer briefly
+  overwrote `snapshot.json` with what was essentially a single run's
+  output, dropping every metric the card needs.
+- **`nextRunISO` must be a real future timestamp**, not equal to `asOfISO`.
+  When they match, the relative formatter renders "Next run in **now**"
+  on the card.
+- **Overwrite `profile.json` on every execution**, not just at workflow
+  creation. Otherwise renaming the workflow / updating the builder doesn't
+  propagate to R2 (we wasted a couple iterations because the profile was
+  stuck on stale values until we re-triggered creation).
+- **Date-partition `runs/` correctly**: `runs/{YYYY-MM-DD}/{executionId}.json`.
+  Flat paths like `runs/{ISO_with_dashes}.json` will work today (we don't
+  read the runs layer yet) but will break trade-highlight cards later.
+
 ## The input data (curated mode — testing only)
 
 A JSON **array**, one object per card. The reference template is
