@@ -251,6 +251,30 @@ House style: no em-dashes, no hashtags; the CTA is exactly
 `Try it for free now: getnick.ai`. Caption logic lives in
 `scripts/slack.ts` (`buildCaption`) if you need to adjust it.
 
+## Scheduling (macOS, weekly)
+
+For the first phase the pipeline runs from a laptop on a weekly schedule via
+`launchd`. The wrapper at `scripts/run-weekly.sh` cd's into the repo, sets
+PATH, runs the generator in R2 mode, and logs to
+`~/Library/Logs/pixelnick-cards.log`. The plist at
+`.claude/launchd/com.nickai.pixelnick-cards.plist` triggers it Monday 09:00
+local; a sleeping Mac at trigger time just delays the run to next wake (it
+doesn't skip the week).
+
+Install (one time, only after R2 has been verified to work):
+```bash
+cp .claude/launchd/com.nickai.pixelnick-cards.plist ~/Library/LaunchAgents/
+launchctl load ~/Library/LaunchAgents/com.nickai.pixelnick-cards.plist
+launchctl start com.nickai.pixelnick-cards   # optional: trigger once now
+```
+Inspect:
+```bash
+tail -f ~/Library/Logs/pixelnick-cards.log
+```
+The hardcoded `/Users/badi/...` path in the plist needs editing for other
+machines. Long-term plan: move this to GitHub Actions so the schedule runs
+unattended regardless of whose laptop is open.
+
 ## Architecture notes (for editing the pipeline)
 - `scripts/generate-cards.ts` — orchestrator: load data → diff against ledger →
   bundle Remotion once → render PNG/MP4 per agent → post to Slack → update ledger.

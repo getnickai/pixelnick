@@ -1,0 +1,55 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+  Weekly card-generation schedule. Runs `scripts/run-weekly.sh` every Monday
+  at 09:00 local time. launchd will catch up on the next wake if the Mac was
+  asleep at the scheduled moment, so a sleeping laptop won't silently skip
+  the week (just delay it).
+
+  Note: launchd does NOT expand $HOME inside plists. If your home dir is
+  different from /Users/badi, edit the path below before installing, or set
+  the PIXELNICK_DIR env above in run-weekly.sh.
+
+  Install:
+    cp .claude/launchd/com.nickai.pixelnick-cards.plist ~/Library/LaunchAgents/
+    launchctl load ~/Library/LaunchAgents/com.nickai.pixelnick-cards.plist
+
+  Uninstall:
+    launchctl unload ~/Library/LaunchAgents/com.nickai.pixelnick-cards.plist
+    rm ~/Library/LaunchAgents/com.nickai.pixelnick-cards.plist
+
+  Trigger immediately (for testing):
+    launchctl start com.nickai.pixelnick-cards
+-->
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+    <key>Label</key>
+    <string>com.nickai.pixelnick-cards</string>
+
+    <key>ProgramArguments</key>
+    <array>
+        <string>/bin/bash</string>
+        <string>/Users/badi/claude/pixelnick/scripts/run-weekly.sh</string>
+    </array>
+
+    <!-- Every Monday at 09:00 local time. -->
+    <key>StartCalendarInterval</key>
+    <dict>
+        <key>Weekday</key>
+        <integer>1</integer>
+        <key>Hour</key>
+        <integer>9</integer>
+        <key>Minute</key>
+        <integer>0</integer>
+    </dict>
+
+    <key>RunAtLoad</key>
+    <false/>
+
+    <!-- run-weekly.sh handles logging itself; mute these. -->
+    <key>StandardOutPath</key>
+    <string>/dev/null</string>
+    <key>StandardErrorPath</key>
+    <string>/dev/null</string>
+</dict>
+</plist>
