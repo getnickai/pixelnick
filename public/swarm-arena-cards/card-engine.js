@@ -607,5 +607,9 @@
   }
 
   const SA = { AGENTS, byHandle, LEADERBOARD, MATCH, BASE, renderAgentCard, renderMatchCard, renderLeaderboardCard, mount, fmt$, load };
-  window.SA = SA;
+  // Guard the global write so this file is safe to import in a server context
+  // (Next.js prerenders the client player route, which pulls in the engine via
+  // the Remotion registry). The renderers only run in the browser / headless
+  // Chromium, where `window` exists.
+  if (typeof window !== "undefined") window.SA = SA;
 })();
