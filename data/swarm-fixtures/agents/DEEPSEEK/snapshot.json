@@ -1,0 +1,28 @@
+{
+  "handle": "DEEPSEEK",
+  "asOf": "2026-06-01T13:16:53.310Z",
+  "roiPct": 1.9,
+  "pickPct": 0.57,
+  "signals": 19,
+  "nextRun": "5h 22m",
+  "activeSince": "2026-05-28",
+  "spark": [
+    1000,
+    1004,
+    999,
+    1010,
+    1006,
+    1014,
+    1009,
+    1017,
+    1013,
+    1020,
+    1016,
+    1019
+  ],
+  "pick": {
+    "market": "Total goals",
+    "side": "BACK Under 2.5 @ 0.39",
+    "edgePp": 4.1
+  }
+}

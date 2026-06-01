@@ -1,0 +1,335 @@
+/* ──────────────────────────────────────────────────────────────────────────
+   Swarm Arena — Share Card styles  (Ember theme, ported from globals.css)
+   Tokens are scoped to .sa-card[data-theme] so dark + light coexist on one
+   canvas. Every dimension is in `em`; the card root font-size = 16px * --sa-u,
+   so a whole card scales by changing one variable (portrait → story).
+   ──────────────────────────────────────────────────────────────────────── */
+
+@import url('https://fonts.googleapis.com/css2?family=Geist:wght@400;500;600;700;800&family=Fira+Code:wght@400;500;600;700&display=swap');
+
+/* ── Theme tokens ───────────────────────────────────────────────────────── */
+.sa-card[data-theme="dark"]{
+  --bg:#15140F; --bg-panel:#1C1B16; --bg-panel-2:#26241D;
+  --border:#2E2C26; --border-solid:#3C3A34;
+  --text:#d8d0c0; --text-dim:#908878; --text-faint:#7e7568;
+  --brand:#e08060; --positive:#8a9868; --negative:#b07878;
+  --warning:#c8b468; --info:#c2945a; --accent:#c09058;
+  --glow:rgba(224,128,96,0.55);
+  --grid-line:rgba(216,208,192,0.05);
+  --dot:rgba(216,208,192,0.16);
+  --inset:rgba(0,0,0,0.25);
+  --shield-stroke:#544e42; --shield-fill:transparent;
+}
+.sa-card[data-theme="light"]{
+  --bg:#e6dac4; --bg-panel:#efe5d2; --bg-panel-2:#d8ccb6;
+  --border:#c8bda7; --border-solid:#b0a594;
+  --text:#282418; --text-dim:#4f4836; --text-faint:#6f6450;
+  --brand:#b84c30; --positive:#4a6830; --negative:#905050;
+  --warning:#7a6820; --info:#936e3a; --accent:#946030;
+  --glow:rgba(184,76,48,0.34);
+  --grid-line:rgba(40,36,24,0.05);
+  --dot:rgba(40,36,24,0.14);
+  --inset:rgba(120,100,60,0.10);
+  --shield-stroke:#a89c86; --shield-fill:transparent;
+}
+
+/* ── Card root ──────────────────────────────────────────────────────────── */
+.sa-card{
+  --sa-u:1;
+  position:relative;
+  overflow:hidden;
+  isolation:isolate;
+  font-family:"Geist","Rethink Sans",system-ui,sans-serif;
+  font-size:calc(16px * var(--sa-u));
+  background:var(--bg);
+  color:var(--text);
+  -webkit-font-smoothing:antialiased;
+  text-rendering:optimizeLegibility;
+}
+.sa-card *{ box-sizing:border-box; }
+.sa-mono{ font-family:"Fira Code","JetBrains Mono",monospace; }
+.sa-num{ font-variant-numeric:tabular-nums; font-feature-settings:"tnum"; }
+
+/* ── Decorative layers ──────────────────────────────────────────────────── */
+.sa-layer{ position:absolute; inset:0; pointer-events:none; z-index:0; }
+.sa-glow{
+  position:absolute; pointer-events:none; z-index:0;
+  width:120%; aspect-ratio:1; border-radius:50%;
+  background:radial-gradient(circle at center, var(--glow) 0%, transparent 62%);
+  filter:blur(2px);
+}
+.sa-grid{
+  position:absolute; inset:0; pointer-events:none; z-index:0;
+  background-image:linear-gradient(var(--grid-line) 1px, transparent 1px),
+                   linear-gradient(90deg, var(--grid-line) 1px, transparent 1px);
+  background-size:2.25em 2.25em;
+  -webkit-mask-image:linear-gradient(180deg, transparent, #000 18%, #000 70%, transparent);
+          mask-image:linear-gradient(180deg, transparent, #000 18%, #000 70%, transparent);
+}
+.sa-ridge{ position:absolute; left:0; right:0; bottom:0; z-index:0; pointer-events:none; }
+.sa-ridge svg{ display:block; width:100%; height:auto; }
+.sa-dots{ position:absolute; z-index:0; pointer-events:none; }
+.sa-dots svg{ display:block; width:100%; height:100%; }
+
+/* fade scrim so footer text stays legible over the ridge */
+.sa-scrim-b{
+  position:absolute; left:0; right:0; bottom:0; height:24%; z-index:1; pointer-events:none;
+  background:linear-gradient(180deg, transparent, var(--bg) 94%);
+}
+
+.sa-content{ position:relative; z-index:2; display:flex; flex-direction:column; height:100%; }
+
+/* ── Wordmark ───────────────────────────────────────────────────────────── */
+.sa-wordmark{ display:flex; align-items:center; gap:0.6em; }
+.sa-wordmark-mark{ width:2.2em; height:2.2em; flex:none; }
+.sa-wordmark-mark svg{ display:block; width:100%; height:100%; }
+.sa-wordmark-text{
+  font-family:"Fira Code",monospace; font-weight:700;
+  font-size:1.42em; letter-spacing:0.13em; text-transform:uppercase; color:var(--text);
+}
+.sa-wordmark-text b{ color:var(--brand); font-weight:700; }
+
+/* ── Eyebrow / pills ────────────────────────────────────────────────────── */
+.sa-eyebrow{
+  font-family:"Fira Code",monospace; font-weight:600;
+  font-size:0.72em; letter-spacing:0.22em; text-transform:uppercase; color:var(--brand);
+}
+.sa-pill{
+  display:inline-flex; align-items:center; gap:0.55em; align-self:flex-start;
+  font-family:"Fira Code",monospace; font-weight:700;
+  font-size:0.78em; letter-spacing:0.16em; text-transform:uppercase;
+  padding:0.7em 0.95em; border-radius:999px;
+  white-space:nowrap;
+  background:color-mix(in srgb, var(--brand) 16%, transparent);
+  border:1px solid color-mix(in srgb, var(--brand) 38%, transparent);
+  color:var(--brand);
+}
+.sa-pill .sa-live-dot{
+  width:0.55em; height:0.55em; border-radius:50%; background:var(--brand);
+  box-shadow:0 0 0 0 color-mix(in srgb, var(--brand) 60%, transparent);
+  animation:sa-pulse 2.2s ease-in-out infinite;
+}
+@keyframes sa-pulse{ 0%,100%{opacity:1} 50%{opacity:.35} }
+.sa-rank-badge{
+  display:inline-flex; align-items:baseline; gap:0.5em;
+  font-family:"Fira Code",monospace;
+  padding:0.55em 1em; border-radius:0.6em;
+  border:1px solid var(--border-solid); background:var(--bg-panel);
+}
+.sa-rank-badge .k{ font-size:0.74em; letter-spacing:0.16em; text-transform:uppercase; color:var(--text-faint); }
+.sa-rank-badge .v{ font-size:2.2em; font-weight:700; color:var(--text); }
+
+/* ── Avatar (tinted monogram badge) ─────────────────────────────────────── */
+.sa-avatar{
+  display:flex; align-items:center; justify-content:center; flex:none;
+  border-radius:50%; font-family:"Fira Code",monospace; font-weight:700;
+  letter-spacing:0.02em; line-height:1;
+}
+.sa-avatar.sq{ border-radius:26%; }
+
+/* ── Agent head ─────────────────────────────────────────────────────────── */
+.sa-agent-head{ display:flex; align-items:center; gap:0.95em; }
+.sa-agent-name{ font-size:3.4em; font-weight:700; line-height:1.0; letter-spacing:-0.02em; color:var(--text); }
+.sa-agent-sub{ font-family:"Fira Code",monospace; font-size:0.92em; color:var(--text-dim); margin-top:0.75em; letter-spacing:0.01em; white-space:nowrap; }
+.sa-agent-sub .flag{ margin-right:0.3em; }
+.sa-ens-tag{
+  font-family:"Fira Code",monospace; font-size:0.62em; font-weight:700; letter-spacing:0.16em;
+  text-transform:uppercase; color:var(--brand);
+  border:1px solid color-mix(in srgb, var(--brand) 40%, transparent);
+  border-radius:0.4em; padding:0.2em 0.5em; vertical-align:middle; margin-left:0.5em;
+}
+
+/* ── Metric block ───────────────────────────────────────────────────────── */
+.sa-mlabel{
+  font-family:"Fira Code",monospace; font-size:0.72em; font-weight:600;
+  letter-spacing:0.2em; text-transform:uppercase; color:var(--text-dim);
+}
+.sa-roi{
+  display:flex; align-items:center; gap:0.28em;
+  font-family:"Fira Code",monospace; font-weight:700; line-height:1.05;
+  font-size:5.4em; letter-spacing:-0.03em;
+}
+.sa-roi.pos{ color:var(--positive); }
+.sa-roi.neg{ color:var(--negative); }
+.sa-roi .arrow{ font-size:0.62em; }
+.sa-equity-sub{ display:flex; align-items:baseline; gap:0.55em; margin-top:0.55em; font-family:"Fira Code",monospace; }
+.sa-equity-sub .big{ font-size:1.55em; font-weight:600; color:var(--text); letter-spacing:-0.01em; }
+.sa-equity-sub .base{ font-size:0.85em; color:var(--text-faint); white-space:nowrap; }
+
+/* accent rail next to hero metric */
+.sa-rail{ position:absolute; left:0; top:0; bottom:0; width:0.28em; border-radius:0 0.2em 0.2em 0; }
+
+/* ── Stat triplet ───────────────────────────────────────────────────────── */
+.sa-stats{ display:grid; grid-template-columns:repeat(3,1fr); gap:1.3em; }
+.sa-stat .k{ font-family:"Fira Code",monospace; font-size:0.64em; letter-spacing:0.14em; text-transform:uppercase; color:var(--text-faint); white-space:nowrap; }
+.sa-stat .v{ font-family:"Fira Code",monospace; font-size:1.4em; font-weight:700; color:var(--text); margin-top:0.85em; white-space:nowrap; }
+.sa-stat .v.dim{ color:var(--text-dim); }
+
+/* ── Top pick block ─────────────────────────────────────────────────────── */
+.sa-pick{
+  border:1px solid var(--border); border-radius:0.7em; background:var(--inset);
+  padding:0.95em 1.05em;
+}
+.sa-pick .row{ display:flex; align-items:center; justify-content:space-between; gap:0.8em; }
+.sa-pick .market{ font-family:"Fira Code",monospace; font-size:0.85em; color:var(--text-dim); }
+.sa-pick .edge{ font-family:"Fira Code",monospace; font-size:0.82em; font-weight:700; color:var(--positive); }
+.sa-pick .side{ font-family:"Fira Code",monospace; font-size:1.18em; font-weight:700; margin-top:0.35em; }
+
+/* ── Footer (credit + CTA) ──────────────────────────────────────────────── */
+.sa-footer{ display:flex; align-items:flex-end; justify-content:space-between; gap:1em; }
+.sa-credit{ display:flex; flex-direction:column; gap:0.6em; }
+.sa-credit .k{ font-family:"Fira Code",monospace; font-size:0.72em; letter-spacing:0.18em; text-transform:uppercase; color:var(--text-faint); }
+.sa-credit .v{ display:flex; align-items:center; gap:0.45em; font-size:1.05em; font-weight:600; color:var(--text); }
+.sa-credit .v .n{ width:1.15em; height:1.15em; }
+.sa-nick{ height:1.75em; width:auto; display:block; }
+.sa-card[data-theme="dark"] .sa-nick-l{ display:none; }
+.sa-card[data-theme="light"] .sa-nick-d{ display:none; }
+.sa-cta{
+  display:inline-flex; align-items:center; gap:0.6em;
+  font-family:"Fira Code",monospace; font-weight:700; font-size:1.12em; letter-spacing:0.01em;
+  padding:1.05em 1.55em; border-radius:0.7em;
+  background:var(--brand); color:#15140F; white-space:nowrap;
+}
+[data-theme="light"] .sa-cta{ color:#f3ead6; }
+.sa-cta .ar{ font-size:1.1em; }
+
+/* ── Divider ────────────────────────────────────────────────────────────── */
+.sa-hr{ height:1px; background:var(--border); border:0; margin:0; }
+
+/* ════════════════════════════════════════════════════════════════════════
+   V2 — TERMINAL variant (agent card)
+   ════════════════════════════════════════════════════════════════════════ */
+.sa-term-bar{
+  display:flex; align-items:center; justify-content:space-between;
+  border:1px solid var(--border); border-radius:0.5em; background:var(--bg-panel);
+  padding:0.55em 0.85em; font-family:"Fira Code",monospace;
+}
+.sa-term-bar .dots{ display:flex; gap:0.45em; }
+.sa-term-bar .dots i{ width:0.55em; height:0.55em; border-radius:50%; background:var(--border-solid); display:block; }
+.sa-term-bar .dots i.live{ background:var(--brand); }
+.sa-term-bar .path{ font-size:0.74em; letter-spacing:0.1em; color:var(--text-dim); }
+.sa-term-bar .clock{ font-size:0.72em; color:var(--text-faint); }
+
+.sa-panel{
+  border:1px solid var(--border); border-radius:0.6em; background:var(--bg-panel); overflow:hidden;
+}
+.sa-panel-title{
+  font-family:"Fira Code",monospace; font-size:0.66em; letter-spacing:0.14em; text-transform:uppercase;
+  color:var(--text-dim); padding:0.7em 0.95em; border-bottom:1px solid var(--border);
+  background:var(--inset); display:flex; align-items:center; justify-content:space-between;
+  gap:1em; white-space:nowrap;
+}
+.sa-panel-title > span{ white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
+.sa-panel-title > span:last-child{ flex:none; }
+.sa-panel-body{ padding:1.05em; }
+
+/* ════════════════════════════════════════════════════════════════════════
+   MATCH card
+   ════════════════════════════════════════════════════════════════════════ */
+.sa-vs{ display:grid; grid-template-columns:1fr auto 1fr; align-items:center; gap:0.6em; }
+.sa-team{ display:flex; flex-direction:column; align-items:center; gap:0.7em; text-align:center; }
+.sa-shield{
+  width:5.6em; flex:none; line-height:0;
+}
+.sa-shield svg{ display:block; width:100%; height:auto; filter:drop-shadow(0 0.14em 0.22em rgba(0,0,0,0.35)); }
+.sa-team .tname{ font-size:1.15em; font-weight:700; color:var(--text); line-height:1.1; }
+.sa-team .tmeta{ font-family:"Fira Code",monospace; font-size:1.25em; color:var(--text-dim); margin-top:0.4em; line-height:1; }
+.sa-vs-mid{ display:flex; flex-direction:column; align-items:center; gap:0.35em; }
+.sa-vs-mid .v{ font-family:"Fira Code",monospace; font-size:0.95em; font-weight:700; color:var(--text-faint); letter-spacing:0.1em; }
+.sa-vs-mid .ko{ font-family:"Fira Code",monospace; font-size:0.7em; color:var(--brand); letter-spacing:0.08em; }
+
+/* 3-way odds bar */
+.sa-oddsbar{ display:flex; width:100%; height:1.5em; border-radius:0.4em; overflow:hidden; border:1px solid var(--border); }
+.sa-oddsbar > div{ display:flex; align-items:center; justify-content:center; font-family:"Fira Code",monospace; font-size:0.7em; font-weight:700; color:#15140F; min-width:0; }
+.sa-odds-legend{ display:flex; justify-content:space-between; margin-top:0.9em; font-family:"Fira Code",monospace; font-size:0.74em; color:var(--text-dim); }
+.sa-odds-legend b{ color:var(--text); }
+
+/* swarm consensus row */
+.sa-consensus{ display:flex; gap:0.5em; }
+.sa-cons-cell{ flex:1; border:1px solid var(--border); border-radius:0.5em; background:var(--inset); padding:1em 0.6em; text-align:center; }
+.sa-cons-cell .v{ font-family:"Fira Code",monospace; font-size:1.55em; font-weight:700; line-height:1; }
+.sa-cons-cell .k{ font-family:"Fira Code",monospace; font-size:0.6em; letter-spacing:0.12em; text-transform:uppercase; color:var(--text-faint); margin-top:0.65em; }
+
+/* sharpest-calls list */
+.sa-calls{ display:flex; flex-direction:column; }
+.sa-call{ display:flex; align-items:center; gap:0.7em; padding:0.7em 0; border-top:1px solid var(--border); }
+.sa-call:first-child{ border-top:0; }
+.sa-call .who{ display:flex; align-items:center; gap:0.55em; min-width:0; flex:none; width:38%; }
+.sa-call .who .nm{ font-family:"Fira Code",monospace; font-size:0.86em; font-weight:700; color:var(--text); white-space:nowrap; }
+.sa-call .pickside{ font-family:"Fira Code",monospace; font-size:0.8em; flex:1; min-width:0; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
+.sa-call .edge{ font-family:"Fira Code",monospace; font-size:0.82em; font-weight:700; color:var(--positive); flex:none; }
+
+/* ════════════════════════════════════════════════════════════════════════
+   LEADERBOARD card
+   ════════════════════════════════════════════════════════════════════════ */
+.sa-lb{ display:flex; flex-direction:column; }
+.sa-lb-row{ display:grid; grid-template-columns:1.7em 2.6em 1fr auto; align-items:center; gap:0.7em; padding:0.62em 0; border-top:1px solid var(--border); }
+.sa-lb-row:first-child{ border-top:0; }
+.sa-lb-row.lead{
+  background:color-mix(in srgb, var(--brand) 9%, transparent);
+  border-radius:0.5em; padding-left:0.55em; padding-right:0.55em; border-top:0; margin:0.12em 0;
+}
+.sa-lb .rk{ font-family:"Fira Code",monospace; font-size:0.92em; font-weight:700; color:var(--text-faint); text-align:right; }
+.sa-lb-row.lead .rk{ color:var(--brand); }
+.sa-lb .who{ min-width:0; }
+.sa-lb .who .nm{ font-family:"Fira Code",monospace; font-size:0.95em; font-weight:700; color:var(--text); white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
+.sa-lb .who .pv{ font-family:"Fira Code",monospace; font-size:0.66em; color:var(--text-faint); white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
+.sa-lb .bar-wrap{ display:flex; align-items:center; gap:0.6em; }
+.sa-lb .bar{ height:0.5em; border-radius:999px; flex:none; }
+.sa-lb .roi{ font-family:"Fira Code",monospace; font-size:1.05em; font-weight:700; text-align:right; min-width:3.4em; }
+.sa-lb .roi.pos{ color:var(--positive); } .sa-lb .roi.neg{ color:var(--negative); } .sa-lb .roi.zero{ color:var(--text-dim); }
+
+/* generic helpers */
+.sa-row{ display:flex; align-items:center; }
+.sa-between{ justify-content:space-between; }
+.sa-grow{ flex:1 1 auto; }
+.sa-h1{ font-size:2.55em; font-weight:700; line-height:1.06; letter-spacing:-0.02em; color:var(--text); text-wrap:balance; }
+.sa-sub{ font-size:0.98em; color:var(--text-dim); line-height:1.4; }
+
+/* ── Card A iteration helpers ───────────────────────────────────────────── */
+.sa-roi.huge{ font-size:6.6em; }
+
+/* content-rich stat grid (Scoreboard) */
+.sa-statgrid{
+  display:grid; grid-template-columns:1fr 1fr;
+  border:1px solid var(--border); border-radius:0.75em; overflow:hidden; background:var(--inset);
+}
+.sa-statgrid .cell{ padding:1.15em 1.25em; border-top:1px solid var(--border); border-left:1px solid var(--border); }
+.sa-statgrid .cell:nth-child(-n+2){ border-top:0; }
+.sa-statgrid .cell:nth-child(odd){ border-left:0; }
+.sa-statgrid .cell .k{ font-family:"Fira Code",monospace; font-size:0.64em; letter-spacing:0.13em; text-transform:uppercase; color:var(--text-faint); }
+.sa-statgrid .cell .v{ font-family:"Fira Code",monospace; font-size:1.35em; font-weight:700; color:var(--text); margin-top:0.4em; white-space:nowrap; }
+.sa-statgrid .cell .v.dim{ color:var(--text-dim); }
+
+/* horizontal meta strip (Hero) */
+.sa-metastrip{ display:flex; align-items:stretch; gap:1.2em; font-family:"Fira Code",monospace; }
+.sa-metastrip .item{ display:flex; flex-direction:column; gap:0.4em; }
+.sa-metastrip .item .k{ font-size:0.6em; letter-spacing:0.14em; text-transform:uppercase; color:var(--text-faint); white-space:nowrap; }
+.sa-metastrip .item .v{ font-size:1.1em; font-weight:700; color:var(--text); white-space:nowrap; }
+.sa-metastrip .sep{ width:1px; background:var(--border); }
+
+/* top-pick one-liner (all variations) */
+.sa-pickline{ display:flex; align-items:baseline; gap:0.65em; flex-wrap:wrap; font-family:"Fira Code",monospace; }
+.sa-pickline .lab{ font-size:0.66em; letter-spacing:0.16em; text-transform:uppercase; color:var(--text-faint); }
+.sa-pickline .mk{ font-size:0.92em; color:var(--text-dim); }
+.sa-pickline .sd{ font-size:1.08em; font-weight:700; }
+.sa-pickline .ed{ font-size:0.86em; font-weight:700; color:var(--positive); }
+
+/* unified picks ledger (editorial) — top pick + latest picks in ONE grid so
+   the market / side / trailing columns align across every row */
+.sa-picks{
+  display:grid; grid-template-columns:auto minmax(0,1fr) auto auto;
+  column-gap:1em; row-gap:1.05em; align-items:baseline;
+  font-family:"Fira Code",monospace;
+}
+.sa-picks .lab{
+  font-size:0.66em; font-weight:600; letter-spacing:0.16em;
+  text-transform:uppercase; color:var(--text-faint); white-space:nowrap;
+}
+.sa-picks .rule{ grid-column:1/-1; height:1px; background:var(--border); margin:0.45em 0; }
+.sa-picks .mk{ font-size:0.9em; color:var(--text-dim); min-width:0; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; }
+.sa-picks .sd{ font-size:0.98em; font-weight:700; white-space:nowrap; }
+.sa-picks .tr{ font-size:0.9em; font-weight:700; white-space:nowrap; justify-self:end; }
+.sa-picks .tr.edge,.sa-picks .tr.pos{ color:var(--positive); }
+.sa-picks .tr.neg{ color:var(--negative); }
+.sa-picks .tr.zero{ color:var(--text-dim); }

@@ -14,6 +14,7 @@ import {
   ListObjectsV2Command,
   GetObjectCommand,
 } from "@aws-sdk/client-s3";
+import type { ListObjectsV2CommandOutput } from "@aws-sdk/client-s3";
 import { parseS3Url, s3Client } from "./feed";
 import type { AgentProfile, AgentSnapshot } from "../data/agent-output";
 
@@ -58,7 +59,7 @@ export async function pullAgentsFromR2(
   const snapshotKeys: { key: string; lastModified: Date }[] = [];
   let ContinuationToken: string | undefined = undefined;
   do {
-    const page = await client.send(
+    const page: ListObjectsV2CommandOutput = await client.send(
       new ListObjectsV2Command({
         Bucket: bucket,
         Prefix: prefix,

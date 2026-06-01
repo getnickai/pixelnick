@@ -1,0 +1,28 @@
+{
+  "handle": "KIMI",
+  "asOf": "2026-06-01T13:16:53.310Z",
+  "roiPct": -2.6,
+  "pickPct": 0.52,
+  "signals": 15,
+  "nextRun": "8h 41m",
+  "activeSince": "2026-05-28",
+  "spark": [
+    1000,
+    1007,
+    1001,
+    994,
+    1003,
+    996,
+    988,
+    994,
+    985,
+    990,
+    982,
+    974
+  ],
+  "pick": {
+    "market": "Method · penalties",
+    "side": "BACK PSG pens @ 0.14",
+    "edgePp": 6.7
+  }
+}

@@ -1,0 +1,118 @@
+/**
+ * Swarm Arena card generator.
+ *
+ * Loads the deck (R2 or fixtures, see swarm-feed.ts), then renders a PNG per
+ * card to out/swarm-arena/:
+ *   - one agent card per agent (default layout: editorial)
+ *   - one match card
+ *   - one leaderboard card
+ *
+ * The card engine is data-driven, so the deck is passed straight through as
+ * Remotion inputProps. Size is set per-render via the composition's
+ * calculateMetadata.
+ *
+ * Flags:
+ *   --theme=dark|light     (default dark)
+ *   --size=portrait|story|square|og   (default portrait)
+ *   --layout=editorial|hero|scoreboard|terminal   (agent cards; default editorial)
+ *   --slug=<name>          render only the card with this output slug
+ *   --out=<dir>            output dir (default out/swarm-arena)
+ *
+ * MP4 / Slack posting are intentionally out of scope for this pass.
+ */
+import path from "node:path";
+import fs from "node:fs";
+import { bundle } from "@remotion/bundler";
+import { renderStill, selectComposition } from "@remotion/renderer";
+import { enableTailwind } from "@remotion/tailwind-v4";
+import { loadSwarmDeck } from "./swarm-feed";
+import type { SwarmCardProps } from "../remotion/compositions/swarm-card/props";
+
+const COMPOSITION_ID = "swarm-card";
+const PUBLIC_DIR = path.join(process.cwd(), "public");
+
+type Flags = {
+  theme: "dark" | "light";
+  size: SwarmCardProps["size"];
+  layout: NonNullable<SwarmCardProps["layout"]>;
+  slug?: string;
+  out: string;
+};
+
+function parseFlags(argv: string[]): Flags {
+  const f: Flags = {
+    theme: "dark",
+    size: "portrait",
+    layout: "editorial",
+    out: path.join(process.cwd(), "out", "swarm-arena"),
+  };
+  for (const arg of argv) {
+    if (arg.startsWith("--theme=")) f.theme = arg.slice(8) as Flags["theme"];
+    else if (arg.startsWith("--size=")) f.size = arg.slice(7) as Flags["size"];
+    else if (arg.startsWith("--layout=")) f.layout = arg.slice(9) as Flags["layout"];
+    else if (arg.startsWith("--slug=")) f.slug = arg.slice(7);
+    else if (arg.startsWith("--out=")) f.out = path.resolve(arg.slice(6));
+  }
+  return f;
+}
+
+/** Build the list of cards to render, with an output slug for each. */
+function plan(flags: Flags, deck: Awaited<ReturnType<typeof loadSwarmDeck>>["deck"]) {
+  const jobs: { slug: string; props: SwarmCardProps }[] = [];
+  const base = { theme: flags.theme, size: flags.size, deck } as const;
+  for (const a of deck.agents) {
+    jobs.push({
+      slug: `agent-${a.handle.toLowerCase()}`,
+      props: { ...base, card: "agent", handle: a.handle, layout: flags.layout },
+    });
+  }
+  jobs.push({ slug: "match", props: { ...base, card: "match" } });
+  jobs.push({ slug: "leaderboard", props: { ...base, card: "leaderboard" } });
+  return flags.slug ? jobs.filter((j) => j.slug === flags.slug) : jobs;
+}
+
+async function main() {
+  const flags = parseFlags(process.argv.slice(2));
+  const { deck, source } = await loadSwarmDeck();
+  console.log(`Loaded deck from ${source}: ${deck.agents.length} agents + match.`);
+
+  const jobs = plan(flags, deck);
+  if (jobs.length === 0) {
+    console.error(`No cards to render${flags.slug ? ` (slug="${flags.slug}")` : ""}.`);
+    process.exit(1);
+  }
+  fs.mkdirSync(flags.out, { recursive: true });
+
+  console.log("Bundling Remotion project…");
+  const serveUrl = await bundle({
+    entryPoint: path.join(process.cwd(), "remotion", "index.ts"),
+    webpackOverride: (config) => enableTailwind(config),
+  });
+  // Mirror public/ into the bundle so staticFile() asset paths resolve headlessly.
+  fs.cpSync(PUBLIC_DIR, serveUrl, { recursive: true });
+  console.log(`Bundle ready. Rendering ${jobs.length} card(s) → ${path.relative(process.cwd(), flags.out)}/\n`);
+
+  for (const job of jobs) {
+    const composition = await selectComposition({
+      serveUrl,
+      id: COMPOSITION_ID,
+      inputProps: job.props,
+    });
+    const output = path.join(flags.out, `${job.slug}.png`);
+    await renderStill({
+      composition,
+      serveUrl,
+      output,
+      inputProps: job.props,
+      imageFormat: "png",
+    });
+    console.log(`  ✓ ${job.slug}.png  (${composition.width}×${composition.height})`);
+  }
+
+  console.log(`\nDone. ${jobs.length} card(s) → ${path.relative(process.cwd(), flags.out)}/`);
+}
+
+main().catch((err) => {
+  console.error(err);
+  process.exit(1);
+});

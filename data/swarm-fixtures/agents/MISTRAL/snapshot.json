@@ -1,0 +1,28 @@
+{
+  "handle": "MISTRAL",
+  "asOf": "2026-06-01T13:16:53.310Z",
+  "roiPct": 9.7,
+  "pickPct": 0.64,
+  "signals": 18,
+  "nextRun": "6h 03m",
+  "activeSince": "2026-05-28",
+  "spark": [
+    1000,
+    1006,
+    1021,
+    1014,
+    1033,
+    1027,
+    1048,
+    1041,
+    1062,
+    1071,
+    1085,
+    1097
+  ],
+  "pick": {
+    "market": "Correct score · 2-1 PSG",
+    "side": "BACK @ 0.11",
+    "edgePp": 4.8
+  }
+}

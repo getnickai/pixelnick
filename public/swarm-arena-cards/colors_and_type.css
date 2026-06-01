@@ -1,0 +1,193 @@
+/* ════════════════════════════════════════════════════════════════════════
+   SWARM ARENA — Design Tokens
+   "Ember" theme. Warm copper on warm black; parchment light mode.
+   Ported & formalized from the Share-Card engine (card-styles.css).
+
+   Two themes coexist via [data-theme="dark"|"light"]. Defaults below are dark.
+   Fonts: Geist (display/body/UI) + Fira Code (mono — labels, numbers, code).
+   ════════════════════════════════════════════════════════════════════════ */
+
+@import url('https://fonts.googleapis.com/css2?family=Geist:wght@400;500;600;700;800&family=Fira+Code:wght@400;500;600;700&display=swap');
+
+:root {
+  /* ── Font families ─────────────────────────────────────────────────── */
+  --font-display: "Geist", "Rethink Sans", system-ui, sans-serif;
+  --font-body:    "Geist", "Rethink Sans", system-ui, sans-serif;
+  --font-mono:    "Fira Code", "JetBrains Mono", ui-monospace, Menlo, monospace;
+
+  /* ── EMBER copper — brand scale (anchor: brand-500 #e08060) ─────────── */
+  --ember-50:  #fbeee7;
+  --ember-100: #f6d8c8;
+  --ember-200: #eeb89e;
+  --ember-300: #e89c7c;
+  --ember-400: #e48c6e;
+  --ember-500: #e08060;   /* brand — dark-mode action / accent           */
+  --ember-600: #c96a4b;
+  --ember-700: #b84c30;   /* brand — light-mode action (more saturated)  */
+  --ember-800: #913a25;
+  --ember-900: #6e2c1d;
+
+  /* ── SAND neutral — warm greige scale ──────────────────────────────── */
+  --sand-50:  #f3ead6;
+  --sand-100: #e6dac4;
+  --sand-200: #d8ccb6;
+  --sand-300: #c8bda7;
+  --sand-400: #b0a594;
+  --sand-500: #908878;
+  --sand-600: #7e7568;
+  --sand-700: #4f4836;
+  --sand-800: #282418;
+  --sand-900: #15140f;
+
+  /* ── Raw semantic hues (theme-neutral reference values) ────────────── */
+  --positive-ref: #8a9868;  /* olive — gains / BACK / win                 */
+  --negative-ref: #b07878;  /* rose  — losses / SELL / abstain-down       */
+  --warning-ref:  #c8b468;  /* wheat — caution                            */
+  --info-ref:     #c2945a;  /* amber — info / neutral notice              */
+}
+
+/* ════════════════════════════════════════════════════════════════════════
+   THEME: DARK  (Ember) — the default product surface
+   ════════════════════════════════════════════════════════════════════════ */
+:root,
+[data-theme="dark"] {
+  /* surfaces */
+  --bg:          #15140F;   /* page / card base — warm near-black         */
+  --bg-panel:    #1C1B16;   /* raised panel                               */
+  --bg-panel-2:  #26241D;   /* second-level raise                         */
+  --inset:       rgba(0,0,0,0.25);   /* sunken wells inside panels        */
+
+  /* borders */
+  --border:        #2E2C26;
+  --border-solid:  #3C3A34;
+  --border-focus:  #e08060;
+
+  /* text */
+  --text:        #d8d0c0;   /* primary                                    */
+  --text-dim:    #908878;   /* secondary / labels                         */
+  --text-faint:  #7e7568;   /* tertiary / captions                        */
+  --text-invert: #15140F;   /* on brand fills                             */
+
+  /* brand + semantic (resolved for dark) */
+  --brand:    #e08060;
+  --positive: #8a9868;
+  --negative: #b07878;
+  --warning:  #c8b468;
+  --info:     #c2945a;
+  --accent:   #c09058;
+
+  /* aliases used by trading UI */
+  --buy:  var(--positive);
+  --sell: var(--negative);
+
+  /* decorative */
+  --glow:      rgba(224,128,96,0.55);
+  --grid-line: rgba(216,208,192,0.05);
+  --dot:       rgba(216,208,192,0.16);
+
+  /* crest */
+  --shield-stroke: #544e42;
+  --shield-fill:   transparent;
+}
+
+/* ════════════════════════════════════════════════════════════════════════
+   THEME: LIGHT  (Ember Light / parchment) — sharable graphics, print
+   ════════════════════════════════════════════════════════════════════════ */
+[data-theme="light"] {
+  --bg:          #e6dac4;
+  --bg-panel:    #efe5d2;
+  --bg-panel-2:  #d8ccb6;
+  --inset:       rgba(120,100,60,0.10);
+
+  --border:        #c8bda7;
+  --border-solid:  #b0a594;
+  --border-focus:  #b84c30;
+
+  --text:        #282418;
+  --text-dim:    #4f4836;
+  --text-faint:  #6f6450;
+  --text-invert: #f3ead6;
+
+  --brand:    #b84c30;   /* more saturated so it holds on parchment       */
+  --positive: #4a6830;
+  --negative: #905050;
+  --warning:  #7a6820;
+  --info:     #936e3a;
+  --accent:   #946030;
+
+  --buy:  var(--positive);
+  --sell: var(--negative);
+
+  --glow:      rgba(184,76,48,0.34);
+  --grid-line: rgba(40,36,24,0.05);
+  --dot:       rgba(40,36,24,0.14);
+
+  --shield-stroke: #a89c86;
+  --shield-fill:   transparent;
+}
+
+/* ════════════════════════════════════════════════════════════════════════
+   SPACING — 4px base grid
+   ════════════════════════════════════════════════════════════════════════ */
+:root {
+  --space-1:  4px;
+  --space-2:  8px;
+  --space-3:  12px;
+  --space-4:  16px;
+  --space-5:  20px;
+  --space-6:  24px;
+  --space-8:  32px;
+  --space-10: 40px;
+  --space-12: 48px;
+  --space-16: 64px;
+  --space-24: 96px;
+  --space-32: 128px;
+
+  /* ── Corner radii ──────────────────────────────────────────────────── */
+  --radius-xs:   4px;    /* chips, tiny wells                             */
+  --radius-sm:   8px;    /* inputs, buttons, list rows                    */
+  --radius-md:   12px;   /* panels, picks                                 */
+  --radius-lg:   16px;   /* feature cards                                 */
+  --radius-pill: 999px;  /* badges, status dots, bars                     */
+
+  /* ── Elevation (used sparingly — surface-lift > shadow) ────────────── */
+  --shadow-1: 0 1px 2px rgba(0,0,0,0.25);
+  --shadow-2: 0 4px 12px rgba(0,0,0,0.30);
+  --shadow-crest: 0 2px 4px rgba(0,0,0,0.35);
+}
+
+/* ════════════════════════════════════════════════════════════════════════
+   TYPE SCALE  (px-based; the card engine scales these with one --sa-u var)
+   ════════════════════════════════════════════════════════════════════════ */
+:root {
+  /* display — Geist, tight tracking */
+  --text-display:  56px;   /* hero ROI / big numbers (700)   tracking -0.03em */
+  --text-h1:       38px;   /* card headline (700)            tracking -0.02em */
+  --text-h2:       28px;   /* agent name (700)               tracking -0.02em */
+  --text-h3:       22px;   /* section head (600)                              */
+
+  /* body — Geist */
+  --text-body-lg:  18px;
+  --text-body:     16px;
+  --text-body-sm:  14px;
+
+  /* mono — Fira Code (labels, metrics, code, tickers) */
+  --text-metric:    24px;  /* tabular stat values (700)                      */
+  --text-code:      15px;
+  --text-code-sm:   13px;
+  --text-label:     12px;  /* UPPERCASE mono label, tracking 0.18em          */
+  --text-label-sm:  11px;  /* eyebrow / column head, tracking 0.20em         */
+  --text-caption:   11px;
+}
+
+/* ── Semantic type helpers ─────────────────────────────────────────────── */
+.sa-display { font-family: var(--font-display); font-weight: 700; font-size: var(--text-display); letter-spacing: -0.03em; line-height: 1.04; color: var(--text); }
+.sa-h1      { font-family: var(--font-display); font-weight: 700; font-size: var(--text-h1); letter-spacing: -0.02em; line-height: 1.06; color: var(--text); text-wrap: balance; }
+.sa-h2      { font-family: var(--font-display); font-weight: 700; font-size: var(--text-h2); letter-spacing: -0.02em; line-height: 1.1;  color: var(--text); }
+.sa-h3      { font-family: var(--font-display); font-weight: 600; font-size: var(--text-h3); line-height: 1.2; color: var(--text); }
+.sa-body    { font-family: var(--font-body); font-weight: 400; font-size: var(--text-body); line-height: 1.5; color: var(--text); }
+.sa-body-dim{ font-family: var(--font-body); font-weight: 400; font-size: var(--text-body-sm); line-height: 1.45; color: var(--text-dim); }
+.sa-mono    { font-family: var(--font-mono); font-variant-numeric: tabular-nums; font-feature-settings: "tnum"; }
+.sa-metric  { font-family: var(--font-mono); font-weight: 700; font-size: var(--text-metric); font-variant-numeric: tabular-nums; color: var(--text); }
+.sa-label   { font-family: var(--font-mono); font-weight: 600; font-size: var(--text-label); letter-spacing: 0.18em; text-transform: uppercase; color: var(--text-dim); }
+.sa-eyebrow { font-family: var(--font-mono); font-weight: 600; font-size: var(--text-label-sm); letter-spacing: 0.22em; text-transform: uppercase; color: var(--brand); }

@@ -9,7 +9,9 @@
     "lint": "eslint",
     "studio": "remotion studio",
     "cards": "bun scripts/generate-cards.ts",
-    "cards:png": "bun scripts/generate-cards.ts --png"
+    "cards:png": "bun scripts/generate-cards.ts --png",
+    "swarm:fixtures": "bun scripts/swarm-fixtures.ts",
+    "cards:swarm": "bun scripts/generate-swarm-cards.ts"
   },
   "dependencies": {
     "@aws-sdk/client-s3": "^3.1054.0",

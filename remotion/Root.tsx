@@ -13,9 +13,15 @@ import "./style.css";
 import { Composition } from "remotion";
 import { PerformanceCardCard } from "./compositions/performance-card/card-with-font";
 import { performanceCardDefaultProps } from "./compositions/performance-card/props";
+import { SwarmCardComposition } from "./compositions/swarm-card/composition";
+import {
+  swarmCardDefaultProps,
+  calcSwarmMetadata,
+} from "./compositions/swarm-card/props";
 import { getMotionEntryMeta } from "./manifest";
 
 const perf = getMotionEntryMeta("performance-card")!;
+const swarm = getMotionEntryMeta("swarm-card")!;
 
 export const RemotionRoot: React.FC = () => {
   return (
@@ -28,6 +34,16 @@ export const RemotionRoot: React.FC = () => {
         width={perf.width}
         height={perf.height}
         defaultProps={performanceCardDefaultProps}
+      />
+      <Composition
+        id="swarm-card"
+        component={SwarmCardComposition}
+        durationInFrames={swarm.durationInFrames}
+        fps={swarm.fps}
+        width={swarm.width}
+        height={swarm.height}
+        defaultProps={swarmCardDefaultProps}
+        calculateMetadata={calcSwarmMetadata}
       />
     </>
   );

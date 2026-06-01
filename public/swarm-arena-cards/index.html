@@ -1,0 +1,161 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Swarm Arena — Share Card Kit</title>
+<meta name="ext-resource-dependency" content="assets/NickAI-wordmark-white.svg" data-resource-id="nickWhite" />
+<meta name="ext-resource-dependency" content="assets/NickAI-wordmark-dark.svg" data-resource-id="nickDark" />
+<link rel="stylesheet" href="colors_and_type.css" />
+<link rel="stylesheet" href="card-styles.css" />
+<style>
+  *{box-sizing:border-box}
+  html,body{margin:0;height:100%}
+  body{background:var(--bg);color:var(--text);font-family:var(--font-body);-webkit-font-smoothing:antialiased;display:flex;flex-direction:column}
+  /* decorative atmosphere on the shell itself */
+  .shell-glow{position:fixed;top:-30%;right:-18%;width:60vw;aspect-ratio:1;border-radius:50%;background:radial-gradient(circle,var(--glow) 0%,transparent 62%);filter:blur(3px);pointer-events:none;z-index:0;opacity:0.5}
+  header{position:relative;z-index:2;display:flex;align-items:center;justify-content:space-between;gap:20px;padding:18px 28px;border-bottom:1px solid var(--border)}
+  .brand{display:flex;align-items:center;gap:11px}
+  .brand .mk{width:30px;height:30px;color:var(--brand)}
+  .brand .mk svg{width:100%;height:100%;display:block}
+  .brand .wm{font-family:var(--font-mono);font-weight:700;font-size:18px;letter-spacing:0.13em;text-transform:uppercase}
+  .brand .wm b{color:var(--brand)}
+  .brand .tag{font-family:var(--font-mono);font-size:10px;letter-spacing:0.2em;text-transform:uppercase;color:var(--text-faint);margin-left:6px;padding-left:12px;border-left:1px solid var(--border)}
+  .layout{position:relative;z-index:2;flex:1;display:grid;grid-template-columns:286px 1fr;min-height:0}
+  /* controls rail */
+  .rail{border-right:1px solid var(--border);padding:22px;overflow-y:auto;display:flex;flex-direction:column;gap:22px}
+  .grp{display:flex;flex-direction:column;gap:9px}
+  .grp>.lbl{font-family:var(--font-mono);font-size:10px;letter-spacing:0.18em;text-transform:uppercase;color:var(--text-faint)}
+  .seg{display:flex;flex-wrap:wrap;gap:6px}
+  .seg button{font-family:var(--font-mono);font-size:11.5px;font-weight:600;letter-spacing:0.04em;padding:8px 11px;border-radius:7px;border:1px solid var(--border-solid);background:var(--bg-panel);color:var(--text-dim);cursor:pointer;transition:all .15s ease}
+  .seg button:hover{background:var(--bg-panel-2);color:var(--text)}
+  .seg button[aria-pressed="true"]{background:color-mix(in srgb,var(--brand) 18%,transparent);border-color:color-mix(in srgb,var(--brand) 55%,transparent);color:var(--brand)}
+  .agentsel{display:grid;grid-template-columns:repeat(2,1fr);gap:6px}
+  .agentsel button{display:flex;align-items:center;gap:8px;font-family:var(--font-mono);font-size:11px;font-weight:600;padding:7px 9px;border-radius:7px;border:1px solid var(--border);background:var(--bg-panel);color:var(--text-dim);cursor:pointer;transition:all .15s ease;text-align:left}
+  .agentsel button:hover{background:var(--bg-panel-2);color:var(--text)}
+  .agentsel button[aria-pressed="true"]{border-color:color-mix(in srgb,var(--brand) 55%,transparent);color:var(--text);background:color-mix(in srgb,var(--brand) 10%,transparent)}
+  .agentsel .av{width:20px;height:20px;border-radius:50%;flex:none;display:flex;align-items:center;justify-content:center;font-size:8px;font-weight:700}
+  .hint{font-family:var(--font-body);font-size:12px;line-height:1.5;color:var(--text-faint)}
+  /* stage */
+  .stage{position:relative;overflow:auto;display:flex;align-items:center;justify-content:center;padding:40px}
+  .stage-inner{transform-origin:center center;line-height:0;box-shadow:0 24px 80px rgba(0,0,0,0.5)}
+  .stage-inner .sa-card{border:1px solid var(--border)}
+  @media (max-width:820px){.layout{grid-template-columns:1fr}.rail{border-right:0;border-bottom:1px solid var(--border)}}
+</style>
+</head>
+<body>
+<div class="shell-glow"></div>
+<header>
+  <div class="brand">
+    <span class="mk" id="hmk"></span>
+    <span class="wm">SWARM<b>ARENA</b></span>
+    <span class="tag">Share Card Kit</span>
+  </div>
+  <span class="tag" style="border:0;font-family:var(--font-mono);font-size:10px;letter-spacing:0.2em;text-transform:uppercase;color:var(--text-faint)">window.SA · data → HTML</span>
+</header>
+
+<div class="layout">
+  <aside class="rail">
+    <div class="grp">
+      <span class="lbl">Card type</span>
+      <div class="seg" id="seg-type">
+        <button data-v="agent" aria-pressed="true">Agent</button>
+        <button data-v="match">Match</button>
+        <button data-v="leaderboard">Leaderboard</button>
+      </div>
+    </div>
+    <div class="grp" id="grp-agent">
+      <span class="lbl">Agent</span>
+      <div class="agentsel" id="agent-list"></div>
+    </div>
+    <div class="grp" id="grp-layout">
+      <span class="lbl">Layout</span>
+      <div class="seg" id="seg-layout">
+        <button data-v="editorial" aria-pressed="true">Editorial</button>
+        <button data-v="hero">Hero</button>
+        <button data-v="scoreboard">Scoreboard</button>
+        <button data-v="terminal">Terminal</button>
+      </div>
+    </div>
+    <div class="grp">
+      <span class="lbl">Theme</span>
+      <div class="seg" id="seg-theme">
+        <button data-v="dark" aria-pressed="true">Ember Dark</button>
+        <button data-v="light">Ember Light</button>
+      </div>
+    </div>
+    <div class="grp">
+      <span class="lbl">Size</span>
+      <div class="seg" id="seg-size">
+        <button data-v="portrait" aria-pressed="true">Portrait</button>
+        <button data-v="story">Story</button>
+        <button data-v="square">Square</button>
+      </div>
+    </div>
+    <p class="hint">Every renderer takes a plain data object and returns an HTML string. Swap the data, get a new card — this is the templating layer for plugging real swarm data in.</p>
+  </aside>
+
+  <main class="stage">
+    <div class="stage-inner" id="stage"><div class="cardwrap" id="cardwrap"></div></div>
+  </main>
+</div>
+
+<script src="card-engine.js"></script>
+<script>
+  const SA = window.SA;
+  const state = { type:"agent", agent:"GROK", layout:"editorial", theme:"dark", size:"portrait" };
+
+  // real swarm-arena mark in header (adopts currentColor = --brand)
+  fetch("assets/logos/swarm-arena-mono.svg").then(r=>r.text()).then(t=>{
+    document.getElementById("hmk").innerHTML = t;
+  });
+
+  // build agent picker
+  const list = document.getElementById("agent-list");
+  list.innerHTML = SA.AGENTS.map(a=>{
+    const inner = a.kind==="ensemble" ? a.flag : a.code;
+    return `<button data-v="${a.handle}" aria-pressed="${a.handle===state.agent}">
+      <span class="av" style="background:${a.color}22;border:1px solid ${a.color}66;color:${a.color}">${inner}</span>
+      <span>${a.short}</span></button>`;
+  }).join("");
+
+  function press(segId, val){
+    document.querySelectorAll(`#${segId} button`).forEach(b=>b.setAttribute("aria-pressed", b.dataset.v===val));
+  }
+  function render(){
+    const o = { theme:state.theme, size:state.size };
+    let html;
+    if (state.type==="agent"){
+      html = SA.renderAgentCard(state.agent, { ...o, variant: state.layout==="terminal"?"terminal":"ridge", layout: state.layout });
+    } else if (state.type==="match"){
+      html = SA.renderMatchCard(null, o);
+    } else {
+      html = SA.renderLeaderboardCard(o);
+    }
+    document.getElementById("cardwrap").innerHTML = html;
+    // toggle agent/layout controls
+    document.getElementById("grp-agent").style.display = state.type==="agent" ? "" : "none";
+    document.getElementById("grp-layout").style.display = state.type==="agent" ? "" : "none";
+    fit();
+  }
+  function fit(){
+    const card = document.querySelector("#cardwrap .sa-card");
+    if(!card) return;
+    const stage = document.querySelector(".stage");
+    const cw = card.offsetWidth, ch = card.offsetHeight;
+    const avail_w = stage.clientWidth - 80, avail_h = stage.clientHeight - 80;
+    const s = Math.min(avail_w/cw, avail_h/ch, 1);
+    document.getElementById("stage").style.transform = `scale(${s})`;
+  }
+  window.addEventListener("resize", fit);
+
+  document.getElementById("seg-type").addEventListener("click",e=>{const b=e.target.closest("button");if(!b)return;state.type=b.dataset.v;press("seg-type",state.type);render();});
+  document.getElementById("seg-layout").addEventListener("click",e=>{const b=e.target.closest("button");if(!b)return;state.layout=b.dataset.v;press("seg-layout",state.layout);render();});
+  document.getElementById("seg-theme").addEventListener("click",e=>{const b=e.target.closest("button");if(!b)return;state.theme=b.dataset.v;press("seg-theme",state.theme);document.documentElement.setAttribute("data-theme",state.theme);render();});
+  document.getElementById("seg-size").addEventListener("click",e=>{const b=e.target.closest("button");if(!b)return;state.size=b.dataset.v;press("seg-size",state.size);render();});
+  list.addEventListener("click",e=>{const b=e.target.closest("button");if(!b)return;state.agent=b.dataset.v;list.querySelectorAll("button").forEach(x=>x.setAttribute("aria-pressed",x.dataset.v===state.agent));render();});
+
+  render();
+</script>
+</body>
+</html>

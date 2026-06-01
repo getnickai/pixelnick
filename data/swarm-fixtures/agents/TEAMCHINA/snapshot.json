@@ -1,0 +1,28 @@
+{
+  "handle": "TEAMCHINA",
+  "asOf": "2026-06-01T13:16:53.310Z",
+  "roiPct": 0.4,
+  "pickPct": 0.55,
+  "signals": 29,
+  "nextRun": "1h 09m",
+  "activeSince": "2026-05-28",
+  "spark": [
+    1000,
+    1006,
+    1001,
+    1009,
+    1003,
+    1011,
+    1005,
+    1010,
+    1004,
+    1009,
+    1006,
+    1004
+  ],
+  "pick": {
+    "market": "Total goals",
+    "side": "BACK Under 2.5 @ 0.39",
+    "edgePp": 3.5
+  }
+}

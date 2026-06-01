@@ -6,6 +6,11 @@ import {
   performanceCardDefaultProps,
   type PerformanceCardProps,
 } from "./compositions/performance-card/props";
+import { SwarmCardComposition } from "./compositions/swarm-card/composition";
+import {
+  swarmCardDefaultProps,
+  type SwarmCardProps,
+} from "./compositions/swarm-card/props";
 import {
   motionManifest,
   type MotionEntryMeta,
@@ -43,6 +48,10 @@ const componentBindings: Record<string, ComponentBinding> = {
     component: PerformanceCardComposition,
     defaultProps: performanceCardDefaultProps,
   } as ComponentBinding<PerformanceCardProps> as ComponentBinding,
+  "swarm-card": {
+    component: SwarmCardComposition,
+    defaultProps: swarmCardDefaultProps,
+  } as ComponentBinding<SwarmCardProps> as ComponentBinding,
 };
 
 export const motionRegistry: MotionEntry[] = motionManifest
