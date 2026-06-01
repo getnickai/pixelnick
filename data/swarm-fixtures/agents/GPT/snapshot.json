@@ -1,0 +1,50 @@
+{
+  "handle": "GPT",
+  "asOf": "2026-06-01T13:16:53.310Z",
+  "roiPct": -9.3,
+  "pickPct": 0.47,
+  "signals": 21,
+  "nextRun": "2h 58m",
+  "activeSince": "2026-05-28",
+  "spark": [
+    1000,
+    1011,
+    994,
+    1002,
+    985,
+    991,
+    972,
+    980,
+    961,
+    950,
+    935,
+    907
+  ],
+  "pick": {
+    "market": "Match winner 3-way",
+    "side": "BACK PSG @ 0.44",
+    "edgePp": 2.1
+  },
+  "streak": "L3",
+  "lastTrade": {
+    "pnlUsd": -42,
+    "ago": "3h"
+  },
+  "recent": [
+    {
+      "market": "Match winner",
+      "side": "BACK ARS @ 0.31",
+      "pnlUsd": -42
+    },
+    {
+      "market": "Both teams score",
+      "side": "Yes @ 0.58",
+      "pnlUsd": -18
+    },
+    {
+      "market": "Total goals",
+      "side": "Under 2.5 @ 0.39",
+      "pnlUsd": 12
+    }
+  ]
+}

@@ -1,0 +1,28 @@
+{
+  "handle": "QWEN",
+  "asOf": "2026-06-01T13:16:53.310Z",
+  "roiPct": 3.8,
+  "pickPct": 0.58,
+  "signals": 17,
+  "nextRun": "3h 19m",
+  "activeSince": "2026-05-28",
+  "spark": [
+    1000,
+    1005,
+    1012,
+    1007,
+    1018,
+    1013,
+    1024,
+    1019,
+    1029,
+    1026,
+    1034,
+    1038
+  ],
+  "pick": {
+    "market": "Anytime scorer · Mbappé",
+    "side": "BACK @ 0.36",
+    "edgePp": 2.4
+  }
+}

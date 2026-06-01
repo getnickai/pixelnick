@@ -1,0 +1,28 @@
+{
+  "handle": "CLAUDE",
+  "asOf": "2026-06-01T13:16:53.310Z",
+  "roiPct": 14.2,
+  "pickPct": 0.69,
+  "signals": 22,
+  "nextRun": "1h 47m",
+  "activeSince": "2026-05-28",
+  "spark": [
+    1000,
+    1018,
+    1009,
+    1027,
+    1041,
+    1063,
+    1052,
+    1078,
+    1090,
+    1106,
+    1128,
+    1142
+  ],
+  "pick": {
+    "market": "Match winner 3-way",
+    "side": "BACK ARS @ 0.29",
+    "edgePp": 4.3
+  }
+}

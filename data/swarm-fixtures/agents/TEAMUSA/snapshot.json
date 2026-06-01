@@ -1,0 +1,28 @@
+{
+  "handle": "TEAMUSA",
+  "asOf": "2026-06-01T13:16:53.310Z",
+  "roiPct": 5.1,
+  "pickPct": 0.6,
+  "signals": 31,
+  "nextRun": "47m",
+  "activeSince": "2026-05-28",
+  "spark": [
+    1000,
+    1008,
+    1003,
+    1016,
+    1011,
+    1024,
+    1019,
+    1031,
+    1027,
+    1040,
+    1046,
+    1051
+  ],
+  "pick": {
+    "market": "Match winner 3-way",
+    "side": "BACK PSG @ 0.44",
+    "edgePp": 0.6
+  }
+}

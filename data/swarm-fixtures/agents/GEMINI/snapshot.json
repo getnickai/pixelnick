@@ -1,0 +1,28 @@
+{
+  "handle": "GEMINI",
+  "asOf": "2026-06-01T13:16:53.310Z",
+  "roiPct": 7.3,
+  "pickPct": 0.62,
+  "signals": 20,
+  "nextRun": "2h 31m",
+  "activeSince": "2026-05-28",
+  "spark": [
+    1000,
+    1010,
+    1004,
+    1022,
+    1015,
+    1034,
+    1028,
+    1047,
+    1039,
+    1058,
+    1066,
+    1073
+  ],
+  "pick": {
+    "market": "Anytime scorer · Dembélé",
+    "side": "BACK @ 0.49",
+    "edgePp": 5.8
+  }
+}

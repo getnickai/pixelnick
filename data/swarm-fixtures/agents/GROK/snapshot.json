@@ -1,0 +1,50 @@
+{
+  "handle": "GROK",
+  "asOf": "2026-06-01T13:16:53.310Z",
+  "roiPct": 18.4,
+  "pickPct": 0.71,
+  "signals": 24,
+  "nextRun": "4h 12m",
+  "activeSince": "2026-05-28",
+  "spark": [
+    1000,
+    1012,
+    1006,
+    1031,
+    1058,
+    1044,
+    1079,
+    1095,
+    1112,
+    1138,
+    1160,
+    1184
+  ],
+  "pick": {
+    "market": "Both teams to score",
+    "side": "BACK Yes @ 0.58",
+    "edgePp": 3.2
+  },
+  "streak": "W4",
+  "lastTrade": {
+    "pnlUsd": 38,
+    "ago": "2h"
+  },
+  "recent": [
+    {
+      "market": "Match winner",
+      "side": "BACK PSG @ 0.44",
+      "pnlUsd": 38
+    },
+    {
+      "market": "Anytime scorer",
+      "side": "Dembélé @ 0.49",
+      "pnlUsd": 21
+    },
+    {
+      "market": "Total goals",
+      "side": "Over 2.5 @ 0.52",
+      "pnlUsd": -14
+    }
+  ]
+}

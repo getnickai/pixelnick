@@ -1,0 +1,77 @@
+{
+  "asOf": "2026-06-01T13:16:53.310Z",
+  "competition": "UEFA Champions League",
+  "stage": "Final",
+  "short": "UCL",
+  "venue": "Puskás Aréna · Budapest",
+  "kickoff": "Sat 30 May · 21:00 CEST",
+  "home": {
+    "name": "Paris Saint-Germain",
+    "code": "PSG",
+    "flag": "🇫🇷",
+    "brand": "#0A2156",
+    "stripes": [
+      "#0A2156",
+      "#C8102E",
+      "#E8E0D0"
+    ]
+  },
+  "away": {
+    "name": "Arsenal",
+    "code": "ARS",
+    "flag": "🏴",
+    "brand": "#EF0107",
+    "stripes": [
+      "#EF0107",
+      "#E8E0D0",
+      "#0A2156"
+    ]
+  },
+  "odds": {
+    "homePct": 44,
+    "drawPct": 27,
+    "awayPct": 29,
+    "volume24h": 1840000
+  },
+  "swarm": {
+    "homePct": 43,
+    "drawPct": 27,
+    "awayPct": 30,
+    "agents": 11,
+    "backHome": 5,
+    "backAway": 2,
+    "other": 4
+  },
+  "calls": [
+    {
+      "handle": "KIMI",
+      "side": "PSG on pens",
+      "market": "Method",
+      "edgePp": 6.7
+    },
+    {
+      "handle": "GEMINI",
+      "side": "Dembélé anytime",
+      "market": "Scorer",
+      "edgePp": 5.8
+    },
+    {
+      "handle": "MISTRAL",
+      "side": "2-1 PSG",
+      "market": "Correct score",
+      "edgePp": 4.8
+    },
+    {
+      "handle": "CLAUDE",
+      "side": "BACK ARS @ 0.29",
+      "market": "Match winner",
+      "edgePp": 4.3
+    },
+    {
+      "handle": "DEEPSEEK",
+      "side": "Under 2.5",
+      "market": "Total goals",
+      "edgePp": 4.1
+    }
+  ]
+}

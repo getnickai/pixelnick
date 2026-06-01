@@ -33,6 +33,17 @@ export const motionManifest: MotionEntryMeta[] = [
     fps: 30,
     durationInFrames: 150,
   },
+  {
+    // Swarm Arena share card. Intrinsic size is the portrait default; the
+    // actual frame size is overridden per-render from the `size` prop via
+    // calculateMetadata. A still, so durationInFrames = 1.
+    id: "swarm-card",
+    label: "Swarm Arena Card",
+    width: 650,
+    height: 1136,
+    fps: 30,
+    durationInFrames: 1,
+  },
 ];
 
 /** Server-safe lookup by id. */
