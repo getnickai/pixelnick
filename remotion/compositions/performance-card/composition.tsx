@@ -199,7 +199,7 @@ export const PerformanceCardComposition: React.FC<PerformanceCardProps> = ({
   });
 
   return (
-    <AbsoluteFill className="bg-grey-950 overflow-clip">
+    <AbsoluteFill className="bg-zinc-950 overflow-clip">
       {/* Background glow */}
       <div
         className="pointer-events-none absolute left-[-314.95px] top-[195.5px] flex h-[1206px] w-[1191.312px] items-center justify-center"
@@ -410,7 +410,7 @@ export const PerformanceCardComposition: React.FC<PerformanceCardProps> = ({
                   />
                 </div>
               </div>
-              <p className="whitespace-nowrap text-xl leading-4 text-grey-400">
+              <p className="whitespace-nowrap text-xl leading-4 text-zinc-400">
                 Active since {activeSince}
               </p>
             </div>
@@ -428,7 +428,7 @@ export const PerformanceCardComposition: React.FC<PerformanceCardProps> = ({
                     />
                   </div>
                 </div>
-                <p className="whitespace-nowrap text-xl leading-4 text-grey-400">
+                <p className="whitespace-nowrap text-xl leading-4 text-zinc-400">
                   {nodes} nodes
                 </p>
               </div>
@@ -440,7 +440,7 @@ export const PerformanceCardComposition: React.FC<PerformanceCardProps> = ({
                     className="absolute inset-0 block size-full max-w-none"
                   />
                 </div>
-                <p className="whitespace-nowrap text-xl leading-4 text-grey-400">
+                <p className="whitespace-nowrap text-xl leading-4 text-zinc-400">
                   Next run in {nextRun}
                 </p>
               </div>
@@ -458,7 +458,7 @@ export const PerformanceCardComposition: React.FC<PerformanceCardProps> = ({
         }}
       >
         <p
-          className="pl-[68px] text-xl leading-4 text-grey-400"
+          className="pl-[68px] text-xl leading-4 text-zinc-400"
           style={{ opacity: builtByOpacity }}
         >
           Built By:
@@ -504,7 +504,7 @@ export const PerformanceCardComposition: React.FC<PerformanceCardProps> = ({
 
         {/* Button body with gradient.
            NOTE: removed `backdrop-blur-[16px]` (vs. the static version). The
-           body's base gradient layer is fully opaque cyan (`rgb(48, 197, 255)`
+           body's base gradient layer is fully opaque primary (`rgb(1, 120, 255)`
            at 100%), so backdrop-blur is invisible anyway — but it created a
            compositing layer whose left edge produced a visible vertical seam
            against the rotated tab when the Player scales the composition for
@@ -514,10 +514,13 @@ export const PerformanceCardComposition: React.FC<PerformanceCardProps> = ({
           className="relative flex shrink-0 items-center gap-[9px] rounded-r-[12px] py-4 pr-5"
           style={{
             backgroundImage:
-              "linear-gradient(162.836deg, rgba(74, 222, 128, 0.5) 17.138%, rgba(48, 197, 255, 0.5) 89.208%), linear-gradient(90deg, rgb(48, 197, 255) 0%, rgb(48, 197, 255) 100%)",
+              "linear-gradient(180deg, #8FC3FF 0%, #0178FF 100%)",
           }}
         >
-          <p className="whitespace-nowrap text-xl font-semibold leading-[1.2] text-grey-950">
+          <p
+            className="whitespace-nowrap text-xl font-semibold leading-[1.2] text-zinc-950"
+            style={{ textShadow: "0 1px 0 rgba(255, 255, 255, 0.5)" }}
+          >
             Try in NickAI
           </p>
           <div className="relative size-6 shrink-0">

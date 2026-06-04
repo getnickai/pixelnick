@@ -5,7 +5,7 @@ const ASSET = "/figma";
 export default function AiReadyCard() {
   return (
     <article
-      className="relative w-[650px] h-[1136px] overflow-clip rounded-2xl bg-grey-950"
+      className="relative w-[650px] h-[1136px] overflow-clip rounded-2xl bg-zinc-950"
       data-node-id="187:3"
     >
       {/* Background glow */}
@@ -152,7 +152,7 @@ export default function AiReadyCard() {
                   />
                 </div>
               </div>
-              <p className="whitespace-nowrap text-xl leading-4 text-grey-400">
+              <p className="whitespace-nowrap text-xl leading-4 text-zinc-400">
                 Active since 16 Mar 17,2026
               </p>
             </div>
@@ -167,7 +167,7 @@ export default function AiReadyCard() {
                     />
                   </div>
                 </div>
-                <p className="whitespace-nowrap text-xl leading-4 text-grey-400">
+                <p className="whitespace-nowrap text-xl leading-4 text-zinc-400">
                   9 nodes
                 </p>
               </div>
@@ -179,7 +179,7 @@ export default function AiReadyCard() {
                     className="absolute inset-0 block size-full max-w-none"
                   />
                 </div>
-                <p className="whitespace-nowrap text-xl leading-4 text-grey-400">
+                <p className="whitespace-nowrap text-xl leading-4 text-zinc-400">
                   Next run in 6h 2m
                 </p>
               </div>
@@ -191,7 +191,7 @@ export default function AiReadyCard() {
       {/* Author block: "Built By:" label snaps to author-name column */}
       <div className="absolute bottom-[45px] left-16 flex flex-col gap-[26px]">
         <p
-          className="pl-[68px] text-xl leading-4 text-grey-400"
+          className="pl-[68px] text-xl leading-4 text-zinc-400"
           data-node-id="196:258"
         >
           Built By:
@@ -231,10 +231,13 @@ export default function AiReadyCard() {
           className="relative flex shrink-0 items-center gap-[9px] rounded-r-[12px] py-4 pr-5 backdrop-blur-[16px]"
           style={{
             backgroundImage:
-              "linear-gradient(162.836deg, rgba(74, 222, 128, 0.5) 17.138%, rgba(48, 197, 255, 0.5) 89.208%), linear-gradient(90deg, rgb(48, 197, 255) 0%, rgb(48, 197, 255) 100%)",
+              "linear-gradient(180deg, #8FC3FF 0%, #0178FF 100%)",
           }}
         >
-          <p className="whitespace-nowrap text-xl font-semibold leading-[1.2] text-grey-950">
+          <p
+            className="whitespace-nowrap text-xl font-semibold leading-[1.2] text-zinc-950"
+            style={{ textShadow: "0 1px 0 rgba(255, 255, 255, 0.5)" }}
+          >
             Try in NickAI
           </p>
           <div className="relative size-6 shrink-0">

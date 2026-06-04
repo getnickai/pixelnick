@@ -35,7 +35,7 @@ export function AppSidebar() {
     <Sidebar collapsible="icon">
       <SidebarHeader className="px-4 py-5">
         <div className="flex items-center gap-2">
-          <div className="grid size-8 place-items-center rounded-md bg-brand-500 text-grey-950 font-bold">
+          <div className="grid size-8 place-items-center rounded-md bg-primary-500 text-zinc-950 font-bold">
             N
           </div>
           <span className="text-base font-semibold tracking-tight text-sidebar-foreground group-data-[collapsible=icon]:hidden">

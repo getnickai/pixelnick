@@ -10,33 +10,31 @@
     BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial,
     "Noto Sans", sans-serif;
 
-  /* Custom `grey` ramp (replaces TW's built-in `gray`).
-     400 / 950 are confirmed from the Figma frame;
-     the rest are interpolated and can be updated when the DS file exposes them. */
-  --color-grey-50: #f4f5f6;
-  --color-grey-100: #e8eaec;
-  --color-grey-200: #cdd0d4;
-  --color-grey-300: #a8acb3;
-  --color-grey-400: #858a93;
-  --color-grey-500: #686d76;
-  --color-grey-600: #50545c;
-  --color-grey-700: #3c3f45;
-  --color-grey-800: #292c30;
-  --color-grey-900: #14171a;
-  --color-grey-950: #080b0c;
+  /* Neutral ramp — Tailwind zinc (app + Remotion share this scale). */
+  --color-zinc-50: #fafafa;
+  --color-zinc-100: #f4f4f5;
+  --color-zinc-200: #e4e4e7;
+  --color-zinc-300: #d4d4d8;
+  --color-zinc-400: #a1a1aa;
+  --color-zinc-500: #71717a;
+  --color-zinc-600: #52525b;
+  --color-zinc-700: #3f3f46;
+  --color-zinc-800: #27272a;
+  --color-zinc-900: #18181b;
+  --color-zinc-950: #09090b;
 
-  /* Custom `brand` ramp built around NickAI's logo blue (#4EAEF9 at 500). */
-  --color-brand-50: #eff8ff;
-  --color-brand-100: #dcefff;
-  --color-brand-200: #b9e0ff;
-  --color-brand-300: #8acbff;
-  --color-brand-400: #5cb5f5;
-  --color-brand-500: #4eaef9;
-  --color-brand-600: #2a8edd;
-  --color-brand-700: #1f6ec0;
-  --color-brand-800: #1a589c;
-  --color-brand-900: #134276;
-  --color-brand-950: #0a2747;
+  /* Primary ramp (Figma newprimary → `primary` in this repo). Anchor: 500 #0178FF. */
+  --color-primary-50: #f0f6ff;
+  --color-primary-100: #e0eeff;
+  --color-primary-200: #c2ddff;
+  --color-primary-300: #8fc3ff;
+  --color-primary-400: #4da0ff;
+  --color-primary-500: #0178ff;
+  --color-primary-600: #0063d4;
+  --color-primary-700: #0052a8;
+  --color-primary-800: #003d7a;
+  --color-primary-900: #012c53;
+  --color-primary-950: #011e37;
 }
 
 @theme inline {
@@ -72,38 +70,39 @@
   --radius-xl: calc(var(--radius) * 1.4);
 }
 
-/* Dark-by-default semantic tokens — every value resolves to a DS ramp variable. */
-:root {
-  --radius: 0.625rem;
-  --background: var(--color-grey-950);
-  --foreground: var(--color-grey-50);
-  --card: var(--color-grey-950);
-  --card-foreground: var(--color-grey-50);
-  --popover: var(--color-grey-900);
-  --popover-foreground: var(--color-grey-50);
-  --primary: var(--color-brand-500);
-  --primary-foreground: var(--color-grey-950);
-  --secondary: var(--color-grey-800);
-  --secondary-foreground: var(--color-grey-50);
-  --muted: var(--color-grey-900);
-  --muted-foreground: var(--color-grey-400);
-  --accent: var(--color-grey-800);
-  --accent-foreground: var(--color-grey-50);
-  --destructive: var(--color-red-500);
-  --border: var(--color-grey-800);
-  --input: var(--color-grey-700);
-  --ring: var(--color-brand-500);
-  --sidebar: var(--color-grey-950);
-  --sidebar-foreground: var(--color-grey-300);
-  --sidebar-primary: var(--color-brand-500);
-  --sidebar-primary-foreground: var(--color-grey-950);
-  --sidebar-accent: var(--color-grey-800);
-  --sidebar-accent-foreground: var(--color-grey-50);
-  --sidebar-border: var(--color-grey-800);
-  --sidebar-ring: var(--color-brand-500);
-}
-
 @layer base {
+  /* Dark-by-default shadcn tokens on zinc. Must live in @layer base so Turbopack
+     dev emits them (a bare :root block after @theme can be dropped in HMR). */
+  :root {
+    --radius: 0.625rem;
+    --background: var(--color-zinc-950);
+    --foreground: var(--color-zinc-50);
+    --card: var(--color-zinc-950);
+    --card-foreground: var(--color-zinc-50);
+    --popover: var(--color-zinc-900);
+    --popover-foreground: var(--color-zinc-50);
+    --primary: var(--color-primary-500);
+    --primary-foreground: var(--color-zinc-950);
+    --secondary: var(--color-zinc-800);
+    --secondary-foreground: var(--color-zinc-50);
+    --muted: var(--color-zinc-900);
+    --muted-foreground: var(--color-zinc-400);
+    --accent: var(--color-zinc-800);
+    --accent-foreground: var(--color-zinc-50);
+    --destructive: var(--color-red-500);
+    --border: var(--color-zinc-800);
+    --input: var(--color-zinc-700);
+    --ring: var(--color-primary-500);
+    --sidebar: var(--color-zinc-950);
+    --sidebar-foreground: var(--color-zinc-300);
+    --sidebar-primary: var(--color-primary-500);
+    --sidebar-primary-foreground: var(--color-zinc-950);
+    --sidebar-accent: var(--color-zinc-800);
+    --sidebar-accent-foreground: var(--color-zinc-50);
+    --sidebar-border: var(--color-zinc-800);
+    --sidebar-ring: var(--color-primary-500);
+  }
+
   * {
     @apply border-border outline-ring/50;
   }

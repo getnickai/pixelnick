@@ -4,7 +4,7 @@
  * The Next.js app loads `app/globals.css`, but that file pulls in shadcn +
  * sidebar tokens the card doesn't need. This trimmed entry gives the Remotion
  * renderer exactly the Tailwind theme the Performance Card uses: the custom
- * `grey` ramp and the `--font-rethink-sans` variable (the actual font face is
+ * `zinc` ramp and the `--font-rethink-sans` variable (the actual font face is
  * injected at runtime by `@remotion/google-fonts` in PerformanceCardCard.tsx).
  */
 @import "tailwindcss";
@@ -15,16 +15,29 @@
     BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial,
     "Noto Sans", sans-serif;
 
-  /* Custom `grey` ramp (mirrors app/globals.css). */
-  --color-grey-50: #f4f5f6;
-  --color-grey-100: #e8eaec;
-  --color-grey-200: #cdd0d4;
-  --color-grey-300: #a8acb3;
-  --color-grey-400: #858a93;
-  --color-grey-500: #686d76;
-  --color-grey-600: #50545c;
-  --color-grey-700: #3c3f45;
-  --color-grey-800: #292c30;
-  --color-grey-900: #14171a;
-  --color-grey-950: #080b0c;
+  /* Neutral ramp — Tailwind zinc (mirrors app/globals.css). */
+  --color-zinc-50: #fafafa;
+  --color-zinc-100: #f4f4f5;
+  --color-zinc-200: #e4e4e7;
+  --color-zinc-300: #d4d4d8;
+  --color-zinc-400: #a1a1aa;
+  --color-zinc-500: #71717a;
+  --color-zinc-600: #52525b;
+  --color-zinc-700: #3f3f46;
+  --color-zinc-800: #27272a;
+  --color-zinc-900: #18181b;
+  --color-zinc-950: #09090b;
+
+  /* Primary ramp (mirrors app/globals.css). */
+  --color-primary-50: #f0f6ff;
+  --color-primary-100: #e0eeff;
+  --color-primary-200: #c2ddff;
+  --color-primary-300: #8fc3ff;
+  --color-primary-400: #4da0ff;
+  --color-primary-500: #0178ff;
+  --color-primary-600: #0063d4;
+  --color-primary-700: #0052a8;
+  --color-primary-800: #003d7a;
+  --color-primary-900: #012c53;
+  --color-primary-950: #011e37;
 }

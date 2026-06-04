@@ -7,7 +7,7 @@ export default function MotionLayout({ children }: { children: ReactNode }) {
     <div className="relative flex min-h-dvh flex-col bg-background">
       <header className="sticky top-0 z-20 flex h-12 shrink-0 items-center gap-2 px-4">
         <SidebarTrigger className="text-sidebar-foreground" />
-        <h1 className="text-sm font-medium text-grey-300">Motion</h1>
+        <h1 className="text-sm font-medium text-sidebar-foreground">Motion</h1>
       </header>
       <div className="flex min-h-0 flex-1">
         <MotionSidebar />

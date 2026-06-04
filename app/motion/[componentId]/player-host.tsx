@@ -72,7 +72,7 @@ export function PlayerHost({ entry }: { entry: MotionEntry }) {
         aspectRatio: `${entry.width} / ${entry.height}`,
       }}
     >
-      <div className="group absolute inset-0 overflow-hidden rounded-2xl shadow-2xl shadow-black/50 ring-1 ring-grey-800">
+      <div className="group absolute inset-0 overflow-hidden rounded-2xl shadow-2xl shadow-black/50 ring-1 ring-zinc-800">
         <Player
           ref={playerRef}
           component={entry.component}
@@ -136,7 +136,7 @@ function ModeToggle({
     <div
       role="group"
       aria-label="Count-up display mode"
-      className="flex flex-col overflow-hidden rounded-md bg-grey-900/60 ring-1 ring-grey-800 backdrop-blur-sm"
+      className="flex flex-col overflow-hidden rounded-md bg-zinc-900/60 ring-1 ring-zinc-800 backdrop-blur-sm"
     >
       <ModeToggleButton
         active={slide}
@@ -146,7 +146,7 @@ function ModeToggle({
       >
         <ChevronsUpDown className="size-4" />
       </ModeToggleButton>
-      <div aria-hidden className="h-px bg-grey-800" />
+      <div aria-hidden className="h-px bg-zinc-800" />
       <ModeToggleButton
         active={!slide}
         onClick={() => onSlideChange(false)}
@@ -182,8 +182,8 @@ function ModeToggleButton({
       className={cn(
         "flex size-10 items-center justify-center transition-colors",
         active
-          ? "bg-brand-500 text-grey-950"
-          : "text-grey-400 hover:bg-grey-800 hover:text-white",
+          ? "bg-primary-500 text-zinc-950"
+          : "text-zinc-400 hover:bg-zinc-800 hover:text-white",
       )}
     >
       {children}

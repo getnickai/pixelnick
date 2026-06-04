@@ -20,7 +20,7 @@ export function MotionSidebar() {
   return (
     <aside className="flex h-full w-60 shrink-0 flex-col gap-4 border-r border-sidebar-border bg-sidebar/60 px-3 py-5">
       <div className="px-2">
-        <p className="text-xs font-semibold uppercase tracking-wider text-grey-500">
+        <p className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">
           Compositions
         </p>
       </div>
@@ -43,11 +43,11 @@ export function MotionSidebar() {
               <Film
                 className={cn(
                   "size-4 shrink-0 transition-colors",
-                  isActive ? "text-brand-500" : "text-grey-500"
+                  isActive ? "text-primary-500" : "text-muted-foreground"
                 )}
               />
               <span className="flex-1 truncate">{entry.label}</span>
-              <span className="text-[10px] font-mono text-grey-500">
+              <span className="text-[10px] font-mono text-muted-foreground">
                 {entry.width}×{entry.height}
               </span>
             </Link>
