@@ -1,16 +1,12 @@
 /**
  * Font-wrapped Performance Card for headless rendering.
  *
- * In the Next.js app, `Rethink_Sans` is injected via `next/font/google` and the
- * `--font-rethink-sans` CSS variable is set on <html>. The headless Remotion
- * bundle has no Next font pipeline, so we load the same face through
- * `@remotion/google-fonts` and set the variable on a wrapping <AbsoluteFill>.
- * The card's `font-sans` Tailwind class then resolves to Rethink Sans exactly
- * as it does in the browser.
+ * Body copy uses Manrope via `@remotion/google-fonts`. Headings use Duplet
+ * (local woff in `public/fonts/`, declared in `remotion/style.css`).
  */
 import { AbsoluteFill, delayRender, continueRender } from "remotion";
 import { useEffect, useState } from "react";
-import { loadFont } from "@remotion/google-fonts/RethinkSans";
+import { loadFont } from "@remotion/google-fonts/Manrope";
 import { PerformanceCardComposition } from "./composition";
 import type { PerformanceCardProps } from "./props";
 
@@ -20,10 +16,10 @@ const { fontFamily, waitUntilDone } = loadFont("normal", {
 });
 
 export const PerformanceCardCard: React.FC<PerformanceCardProps> = (props) => {
-  const [handle] = useState(() => delayRender("Loading Rethink Sans"));
+  const [handle] = useState(() => delayRender("Loading card fonts"));
 
   useEffect(() => {
-    waitUntilDone()
+    Promise.all([waitUntilDone(), document.fonts.ready])
       .then(() => continueRender(handle))
       .catch(() => continueRender(handle));
   }, [handle]);
@@ -31,7 +27,10 @@ export const PerformanceCardCard: React.FC<PerformanceCardProps> = (props) => {
   return (
     <AbsoluteFill
       style={
-        { "--font-rethink-sans": fontFamily } as React.CSSProperties
+        {
+          "--font-manrope": fontFamily,
+          "--font-duplet": '"Duplet", ui-sans-serif, system-ui, sans-serif',
+        } as React.CSSProperties
       }
     >
       <PerformanceCardComposition {...props} />

@@ -11,7 +11,7 @@ const SHOW_DECORATIVE_AGENT_ILLUSTRATION = true;
 export default function AiReadyCard() {
   return (
     <article
-      className="relative w-[650px] h-[1136px] overflow-clip rounded-2xl bg-zinc-950"
+      className="relative w-[650px] h-[1136px] overflow-clip rounded-2xl bg-zinc-950 font-sans"
       data-node-id="187:3"
     >
       {/* Background glow */}
@@ -63,7 +63,7 @@ export default function AiReadyCard() {
         {/* Top: Type indicator + headline */}
         <div className="flex w-full flex-col gap-4">
           {/* Type indicator pill */}
-          <div className="relative inline-flex shrink-0 items-center gap-[9px] self-start rounded-full bg-green-600 px-3 py-0.5 text-white">
+          <div className="relative inline-flex shrink-0 items-center gap-[9px] self-start rounded-full bg-green-600 px-3 py-0.5 font-sans text-white">
             <svg
               className="size-6 shrink-0"
               viewBox="0 0 24 24"
@@ -111,7 +111,7 @@ export default function AiReadyCard() {
           </div>
 
           {/* Headline */}
-          <h1 className="w-full text-[54px] font-semibold leading-[1.2] text-white">
+          <h1 className="w-full font-heading text-[54px] font-semibold leading-[1.2] text-white">
             Mag 7 Rotator V2 — Rotation 25% Cap
           </h1>
         </div>
@@ -122,13 +122,13 @@ export default function AiReadyCard() {
           <div className="flex w-full flex-col items-start justify-center gap-14">
             {/* Total PNL */}
             <div className="relative flex w-full flex-col items-start gap-4">
-              <p className="w-full text-2xl font-semibold leading-[1.2] text-white">
+              <p className="w-full font-heading text-2xl font-semibold leading-[1.2] text-white">
                 Total PNL
               </p>
               <div className="relative flex items-center justify-center gap-6">
                 {/* Decorative left-edge green bar aligned with PNL amount */}
                 <div className="absolute -left-[87px] top-1/2 size-10 -translate-y-1/2 rounded-lg bg-green-600" />
-                <p className="whitespace-nowrap text-5xl font-medium leading-[1.4] text-green-600">
+                <p className="whitespace-nowrap font-heading text-5xl font-medium leading-[1.4] text-green-600">
                   +$4,012.95
                 </p>
                 <div className="flex flex-col items-start gap-1">
@@ -140,7 +140,7 @@ export default function AiReadyCard() {
                         className="absolute inset-0 block size-full max-w-none"
                       />
                     </div>
-                    <p className="whitespace-nowrap text-base font-medium leading-[1.4] text-green-600">
+                    <p className="whitespace-nowrap font-sans text-base font-medium leading-[1.4] text-green-600">
                       12 Runs
                     </p>
                   </div>
@@ -152,7 +152,7 @@ export default function AiReadyCard() {
                         className="absolute inset-0 block size-full max-w-none"
                       />
                     </div>
-                    <p className="whitespace-nowrap text-base font-medium leading-[1.4] text-green-600">
+                    <p className="whitespace-nowrap font-sans text-base font-medium leading-[1.4] text-green-600">
                       26 Trades
                     </p>
                   </div>
@@ -162,7 +162,7 @@ export default function AiReadyCard() {
 
             {/* Profit % */}
             <div className="flex w-[219px] flex-col items-start gap-3">
-              <p className="w-full text-2xl font-semibold leading-[1.2] text-white">
+              <p className="w-full font-heading text-2xl font-semibold leading-[1.2] text-white">
                 Profit %
               </p>
               <div className="flex items-center gap-4">
@@ -175,7 +175,7 @@ export default function AiReadyCard() {
                     />
                   </div>
                 </div>
-                <p className="whitespace-nowrap text-5xl font-medium leading-[1.4] text-white">
+                <p className="whitespace-nowrap font-heading text-5xl font-medium leading-[1.4] text-white">
                   27.97%
                 </p>
               </div>
@@ -183,7 +183,7 @@ export default function AiReadyCard() {
           </div>
 
           {/* Meta Info */}
-          <div className="flex flex-col items-start gap-6">
+          <div className="flex flex-col items-start gap-6 font-sans">
             <div className="flex items-center gap-3">
               <div className="relative h-5 w-[18px] shrink-0">
                 <div className="absolute inset-[-3.75%_-4.17%]">
@@ -235,7 +235,9 @@ export default function AiReadyCard() {
         className="absolute bottom-[45px] left-16 right-16 flex flex-col gap-[26px]"
         data-node-id="196:258"
       >
-        <p className="pl-[68px] text-xl leading-4 text-zinc-400">Built By:</p>
+        <p className="pl-[68px] font-sans text-xl leading-4 text-zinc-400">
+          Built By:
+        </p>
         <div className="flex items-center gap-8">
           <div className="flex min-w-0 items-center gap-5">
             <div className="relative size-12 shrink-0 overflow-hidden rounded-full">
@@ -247,13 +249,13 @@ export default function AiReadyCard() {
                 className="absolute inset-0 block size-full max-w-none"
               />
             </div>
-            <p className="w-[219px] shrink-0 text-2xl font-semibold leading-[1.2] text-white">
+            <p className="w-[219px] shrink-0 font-heading text-2xl font-semibold leading-[1.2] text-white">
               Franklin
             </p>
           </div>
           <div className="shrink-0" data-node-id="204:278">
             <div
-              className="inline-flex items-center gap-[9px] rounded-full bg-primary-500 px-8 py-4 text-white"
+              className="inline-flex items-center gap-[9px] rounded-full bg-primary-500 px-8 py-4 font-sans text-white"
               style={{
                 boxShadow:
                   "inset 0 1px 0 rgba(255, 255, 255, 0.5), inset 0 -1px 0 rgba(0, 0, 0, 0.12)",

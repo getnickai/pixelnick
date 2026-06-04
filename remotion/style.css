@@ -4,14 +4,50 @@
  * The Next.js app loads `app/globals.css`, but that file pulls in shadcn +
  * sidebar tokens the card doesn't need. This trimmed entry gives the Remotion
  * renderer exactly the Tailwind theme the Performance Card uses: the custom
- * `zinc` ramp and the `--font-rethink-sans` variable (the actual font face is
+ * `zinc` ramp and the `--font-manrope` variable (the actual font face is
  * injected at runtime by `@remotion/google-fonts` in PerformanceCardCard.tsx).
  */
 @import "tailwindcss";
 
+@font-face {
+  font-family: "Duplet";
+  src: url("/fonts/Duplet-Regular.woff") format("woff");
+  font-weight: 400;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: "Duplet";
+  src: url("/fonts/Duplet-Semibold.woff") format("woff");
+  font-weight: 500;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: "Duplet";
+  src: url("/fonts/Duplet-Semibold.woff") format("woff");
+  font-weight: 600;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: "Duplet";
+  src: url("/fonts/Duplet-Bold.woff") format("woff");
+  font-weight: 700;
+  font-style: normal;
+  font-display: swap;
+}
+
 @theme {
   --font-sans:
-    var(--font-rethink-sans), ui-sans-serif, system-ui, -apple-system,
+    var(--font-manrope, "Manrope"), "Manrope Fallback", ui-sans-serif, system-ui,
+    -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial,
+    "Noto Sans", sans-serif;
+  --font-heading:
+    var(--font-duplet), ui-sans-serif, system-ui, -apple-system,
     BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial,
     "Noto Sans", sans-serif;
 

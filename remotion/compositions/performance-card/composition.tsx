@@ -205,7 +205,7 @@ export const PerformanceCardComposition: React.FC<PerformanceCardProps> = ({
   });
 
   return (
-    <AbsoluteFill className="bg-zinc-950 overflow-clip">
+    <AbsoluteFill className="bg-zinc-950 font-sans overflow-clip">
       {/* Background glow */}
       <div
         className="pointer-events-none absolute left-[-314.95px] top-[195.5px] flex h-[1206px] w-[1191.312px] items-center justify-center"
@@ -265,7 +265,7 @@ export const PerformanceCardComposition: React.FC<PerformanceCardProps> = ({
         <div className="flex w-full flex-col gap-4">
           {/* Type indicator pill */}
           <div
-            className="relative inline-flex shrink-0 items-center gap-[9px] self-start rounded-full bg-green-600 px-3 py-0.5 text-white"
+            className="relative inline-flex shrink-0 items-center gap-[9px] self-start rounded-full bg-green-600 px-3 py-0.5 font-sans text-white"
             style={{
               opacity: pillOpacity,
               transform: `scale(${pillScale})`,
@@ -320,7 +320,7 @@ export const PerformanceCardComposition: React.FC<PerformanceCardProps> = ({
 
           {/* Headline */}
           <h1
-            className="w-full text-[54px] font-semibold leading-[1.2] text-white"
+            className="w-full font-heading text-[54px] font-semibold leading-[1.2] text-white"
             style={{
               opacity: headlineOpacity,
               transform: `translateY(${headlineY}px)`,
@@ -337,7 +337,7 @@ export const PerformanceCardComposition: React.FC<PerformanceCardProps> = ({
             {/* Total PNL */}
             <div className="relative flex w-full flex-col items-start gap-4">
               <p
-                className="w-full text-2xl font-semibold leading-[1.2] text-white"
+                className="w-full font-heading text-2xl font-semibold leading-[1.2] text-white"
                 style={{ opacity: pnlLabelOpacity }}
               >
                 Total PNL
@@ -356,7 +356,7 @@ export const PerformanceCardComposition: React.FC<PerformanceCardProps> = ({
                   }}
                 />
                 <p
-                  className="whitespace-nowrap text-5xl font-medium leading-[1.4] text-green-600"
+                  className="whitespace-nowrap font-heading text-5xl font-medium leading-[1.4] text-green-600"
                   style={{ opacity: pnlLabelOpacity }}
                 >
                   <SlidingDigitCount
@@ -380,7 +380,7 @@ export const PerformanceCardComposition: React.FC<PerformanceCardProps> = ({
                         className="absolute inset-0 block size-full max-w-none"
                       />
                     </div>
-                    <p className="whitespace-nowrap text-base font-medium leading-[1.4] text-green-600">
+                    <p className="whitespace-nowrap font-sans text-base font-medium leading-[1.4] text-green-600">
                       {runs} Runs
                     </p>
                   </div>
@@ -395,7 +395,7 @@ export const PerformanceCardComposition: React.FC<PerformanceCardProps> = ({
                         className="absolute inset-0 block size-full max-w-none"
                       />
                     </div>
-                    <p className="whitespace-nowrap text-base font-medium leading-[1.4] text-green-600">
+                    <p className="whitespace-nowrap font-sans text-base font-medium leading-[1.4] text-green-600">
                       {trades} Trades
                     </p>
                   </div>
@@ -409,7 +409,7 @@ export const PerformanceCardComposition: React.FC<PerformanceCardProps> = ({
               style={{ opacity: profitOpacity }}
             >
               <p
-                className="w-full text-2xl font-semibold leading-[1.2] text-white"
+                className="w-full font-heading text-2xl font-semibold leading-[1.2] text-white"
                 style={{ opacity: profitLabelOpacity }}
               >
                 Profit %
@@ -424,7 +424,7 @@ export const PerformanceCardComposition: React.FC<PerformanceCardProps> = ({
                     />
                   </div>
                 </div>
-                <p className="whitespace-nowrap text-5xl font-medium leading-[1.4] text-white">
+                <p className="whitespace-nowrap font-heading text-5xl font-medium leading-[1.4] text-white">
                   <SlidingDigitCount
                     targetValue={profitPercent}
                     countWindow={ANIM.profitCount}
@@ -438,7 +438,7 @@ export const PerformanceCardComposition: React.FC<PerformanceCardProps> = ({
           </div>
 
           {/* Meta Info */}
-          <div className="flex flex-col items-start gap-6">
+          <div className="flex flex-col items-start gap-6 font-sans">
             <div
               className="flex items-center gap-3"
               style={{ opacity: metaRow1Opacity }}
@@ -500,7 +500,7 @@ export const PerformanceCardComposition: React.FC<PerformanceCardProps> = ({
         }}
       >
         <p
-          className="pl-[68px] text-xl leading-4 text-zinc-400"
+          className="pl-[68px] font-sans text-xl leading-4 text-zinc-400"
           style={{ opacity: builtByOpacity }}
         >
           Built By:
@@ -516,13 +516,13 @@ export const PerformanceCardComposition: React.FC<PerformanceCardProps> = ({
                 className="absolute inset-0 block size-full max-w-none"
               />
             </div>
-            <p className="w-[219px] shrink-0 text-2xl font-semibold leading-[1.2] text-white">
+            <p className="w-[219px] shrink-0 font-heading text-2xl font-semibold leading-[1.2] text-white">
               {builderName}
             </p>
           </div>
           <div className="shrink-0" style={{ opacity: ctaOpacity }}>
             <div
-              className="inline-flex items-center gap-[9px] rounded-full bg-primary-500 px-8 py-4 text-white"
+              className="inline-flex items-center gap-[9px] rounded-full bg-primary-500 px-8 py-4 font-sans text-white"
               style={{
                 boxShadow:
                   "inset 0 1px 0 rgba(255, 255, 255, 0.5), inset 0 -1px 0 rgba(0, 0, 0, 0.12)",

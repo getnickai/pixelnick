@@ -6,7 +6,11 @@
 
 @theme {
   --font-sans:
-    var(--font-rethink-sans), ui-sans-serif, system-ui, -apple-system,
+    var(--font-manrope, "Manrope"), "Manrope Fallback", ui-sans-serif, system-ui,
+    -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial,
+    "Noto Sans", sans-serif;
+  --font-heading:
+    var(--font-duplet), ui-sans-serif, system-ui, -apple-system,
     BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial,
     "Noto Sans", sans-serif;
 
@@ -106,10 +110,17 @@
   * {
     @apply border-border outline-ring/50;
   }
-  html {
-    @apply font-sans;
-  }
   body {
-    @apply bg-background text-foreground;
+    @apply bg-background font-sans text-foreground;
+    font-family: var(--font-sans);
+  }
+
+  h1,
+  h2,
+  h3,
+  h4,
+  h5,
+  h6 {
+    font-family: var(--font-heading);
   }
 }
