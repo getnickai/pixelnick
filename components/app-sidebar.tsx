@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { Film, LineChart } from "lucide-react";
+import { Film, Image } from "lucide-react";
 import {
   Sidebar,
   SidebarContent,
@@ -17,9 +17,9 @@ import {
 
 const NAV_ITEMS = [
   {
-    title: "Performance Card",
-    href: "/performance-card",
-    icon: LineChart,
+    title: "Static",
+    href: "/static",
+    icon: Image,
   },
   {
     title: "Motion",

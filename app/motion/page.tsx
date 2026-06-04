@@ -12,7 +12,7 @@ export default function MotionIndex() {
   const first = motionManifest[0];
   if (!first) {
     // Manifest is empty — nothing to preview. Bail to the main dashboard.
-    redirect("/performance-card");
+    redirect("/static");
   }
   redirect(`/motion/${first.id}`);
 }
