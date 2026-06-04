@@ -2,6 +2,12 @@
 
 const ASSET = "/figma";
 
+/** Decorative bottom chart stroke (`line-graph.svg`). Flip to `true` to restore. */
+const SHOW_DECORATIVE_LINE_GRAPH = false;
+
+/** Organic wave backdrop (`agent-illustration.svg`). Flip to `true` to restore. */
+const SHOW_DECORATIVE_AGENT_ILLUSTRATION = true;
+
 export default function AiReadyCard() {
   return (
     <article
@@ -23,21 +29,23 @@ export default function AiReadyCard() {
         </div>
       </div>
 
-      {/* Agent illustration (decorative, sits above the glow) */}
-      <div
-        className="pointer-events-none opacity-25 absolute left-[-326px] top-[-222px] flex h-[865px] w-[1347px] items-center justify-center"
-        data-node-id="196:260"
-      >
-        <div className="-rotate-90 -scale-y-100">
-          <div className="relative h-[1347px] w-[865px]">
-            <img
-              alt=""
-              src={`${ASSET}/agent-illustration.svg`}
-              className="absolute inset-0 block size-full max-w-none"
-            />
+      {SHOW_DECORATIVE_AGENT_ILLUSTRATION ? (
+        /* Agent illustration (decorative, sits above the glow) */
+        <div
+          className="pointer-events-none absolute left-[-326px] top-[-222px] flex h-[865px] w-[1347px] items-center justify-center opacity-25"
+          data-node-id="196:260"
+        >
+          <div className="-rotate-90 -scale-y-100">
+            <div className="relative h-[1347px] w-[865px]">
+              <img
+                alt=""
+                src={`${ASSET}/agent-illustration.svg`}
+                className="absolute inset-0 block size-full max-w-none"
+              />
+            </div>
           </div>
         </div>
-      </div>
+      ) : null}
 
       {/* Logo */}
       <div className="absolute left-16 top-[63px] h-[30px] w-[140.211px]">
@@ -55,15 +63,49 @@ export default function AiReadyCard() {
         {/* Top: Type indicator + headline */}
         <div className="flex w-full flex-col gap-4">
           {/* Type indicator pill */}
-          <div className="relative inline-flex shrink-0 items-center gap-[9px] self-start rounded-full bg-green-400 px-3 py-0.5">
-            <div className="relative size-6 shrink-0">
-              <img
-                alt=""
-                src={`${ASSET}/icon-wave.svg`}
-                className="absolute inset-0 block size-full max-w-none"
+          <div className="relative inline-flex shrink-0 items-center gap-[9px] self-start rounded-full bg-green-600 px-3 py-0.5 text-white">
+            <svg
+              className="size-6 shrink-0"
+              viewBox="0 0 24 24"
+              fill="none"
+              xmlns="http://www.w3.org/2000/svg"
+              aria-hidden
+            >
+              <path
+                d="M12 14C13.1046 14 14 13.1046 14 12C14 10.8954 13.1046 10 12 10C10.8954 10 10 10.8954 10 12C10 13.1046 10.8954 14 12 14Z"
+                stroke="currentColor"
+                strokeWidth="1.5"
               />
-            </div>
-            <p className="whitespace-nowrap text-base font-semibold uppercase leading-6 text-[#010406]">
+              <path
+                d="M7.5 8C6.5 9 6 10.5 6 12C6 13.5 6.5 15 7.5 16"
+                stroke="currentColor"
+                strokeWidth="1.5"
+                strokeLinecap="round"
+                strokeLinejoin="round"
+              />
+              <path
+                d="M4.5 6C3 7.5 2 9.5 2 12C2 14.5 3 16.5 4.5 18"
+                stroke="currentColor"
+                strokeWidth="1.5"
+                strokeLinecap="round"
+                strokeLinejoin="round"
+              />
+              <path
+                d="M16.5 16C17.5 15 18 13.5 18 12C18 10.5 17.5 9 16.5 8"
+                stroke="currentColor"
+                strokeWidth="1.5"
+                strokeLinecap="round"
+                strokeLinejoin="round"
+              />
+              <path
+                d="M19.5 18C21 16.5 22 14.5 22 12C22 9.5 21 7.5 19.5 6"
+                stroke="currentColor"
+                strokeWidth="1.5"
+                strokeLinecap="round"
+                strokeLinejoin="round"
+              />
+            </svg>
+            <p className="whitespace-nowrap text-base font-semibold uppercase leading-6">
               Live Trading Agent
             </p>
           </div>
@@ -85,8 +127,8 @@ export default function AiReadyCard() {
               </p>
               <div className="relative flex items-center justify-center gap-6">
                 {/* Decorative left-edge green bar aligned with PNL amount */}
-                <div className="absolute -left-[87px] top-1/2 size-10 -translate-y-1/2 rounded-lg bg-green-400" />
-                <p className="whitespace-nowrap text-5xl font-medium leading-[1.4] text-green-400">
+                <div className="absolute -left-[87px] top-1/2 size-10 -translate-y-1/2 rounded-lg bg-green-600" />
+                <p className="whitespace-nowrap text-5xl font-medium leading-[1.4] text-green-600">
                   +$4,012.95
                 </p>
                 <div className="flex flex-col items-start gap-1">
@@ -98,7 +140,7 @@ export default function AiReadyCard() {
                         className="absolute inset-0 block size-full max-w-none"
                       />
                     </div>
-                    <p className="whitespace-nowrap text-base font-medium leading-[1.4] text-green-400">
+                    <p className="whitespace-nowrap text-base font-medium leading-[1.4] text-green-600">
                       12 Runs
                     </p>
                   </div>
@@ -110,7 +152,7 @@ export default function AiReadyCard() {
                         className="absolute inset-0 block size-full max-w-none"
                       />
                     </div>
-                    <p className="whitespace-nowrap text-base font-medium leading-[1.4] text-green-400">
+                    <p className="whitespace-nowrap text-base font-medium leading-[1.4] text-green-600">
                       26 Trades
                     </p>
                   </div>
@@ -188,93 +230,72 @@ export default function AiReadyCard() {
         </div>
       </div>
 
-      {/* Author block: "Built By:" label snaps to author-name column */}
-      <div className="absolute bottom-[45px] left-16 flex flex-col gap-[26px]">
-        <p
-          className="pl-[68px] text-xl leading-4 text-zinc-400"
-          data-node-id="196:258"
-        >
-          Built By:
-        </p>
-        <div className="flex items-center gap-5">
-          <div className="relative size-12 shrink-0 overflow-hidden rounded-full">
-            <img
-              alt="Franklin"
-              src={`${ASSET}/avatar-franklin.png`}
-              width={48}
-              height={48}
-              className="absolute inset-0 block size-full max-w-none"
-            />
+      {/* Footer: author + CTA share one row so the pill stays beside Franklin */}
+      <div
+        className="absolute bottom-[45px] left-16 right-16 flex flex-col gap-[26px]"
+        data-node-id="196:258"
+      >
+        <p className="pl-[68px] text-xl leading-4 text-zinc-400">Built By:</p>
+        <div className="flex items-center gap-8">
+          <div className="flex min-w-0 items-center gap-5">
+            <div className="relative size-12 shrink-0 overflow-hidden rounded-full">
+              <img
+                alt="Franklin"
+                src={`${ASSET}/avatar-franklin.png`}
+                width={48}
+                height={48}
+                className="absolute inset-0 block size-full max-w-none"
+              />
+            </div>
+            <p className="w-[219px] shrink-0 text-2xl font-semibold leading-[1.2] text-white">
+              Franklin
+            </p>
           </div>
-          <p className="w-[219px] text-2xl font-semibold leading-[1.2] text-white">
-            Franklin
-          </p>
+          <div className="shrink-0" data-node-id="204:278">
+            <div
+              className="inline-flex items-center gap-[9px] rounded-full bg-primary-500 px-8 py-4 text-white"
+              style={{
+                boxShadow:
+                  "inset 0 1px 0 rgba(255, 255, 255, 0.5), inset 0 -1px 0 rgba(0, 0, 0, 0.12)",
+              }}
+            >
+              <p className="whitespace-nowrap text-xl font-semibold leading-[1.2]">
+                Try in NickAI
+              </p>
+              <svg
+                className="size-6 shrink-0"
+                viewBox="0 0 24 24"
+                fill="none"
+                xmlns="http://www.w3.org/2000/svg"
+                aria-hidden
+              >
+                <path
+                  d="M13 18L19 12L13 6M18.5 12H5"
+                  stroke="currentColor"
+                  strokeWidth="2"
+                  strokeLinecap="square"
+                />
+              </svg>
+            </div>
+          </div>
         </div>
       </div>
 
-      {/* Remix CTA — "Try in NickAI" */}
-      <div
-        className="absolute bottom-8 left-[404px] flex items-start"
-        data-node-id="204:278"
-      >
-        {/* Left decorative tab (rotated 180°) */}
-        <div className="relative h-[56px] w-[46px] shrink-0 rotate-180">
-          <img
-            alt=""
-            src={`${ASSET}/cta-tab.svg`}
-            className="absolute inset-0 block size-full max-w-none"
-          />
-        </div>
-
-        {/* Button body with gradient + backdrop blur */}
+      {SHOW_DECORATIVE_LINE_GRAPH ? (
+        /* LineGraph (top-most decorative layer) */
         <div
-          className="relative flex shrink-0 items-center gap-[9px] rounded-r-[12px] py-4 pr-5 backdrop-blur-[16px]"
-          style={{
-            backgroundImage:
-              "linear-gradient(180deg, #8FC3FF 0%, #0178FF 100%)",
-          }}
+          className="pointer-events-none absolute -bottom-10 left-[-270px] h-[329.506px] w-[1389.202px]"
+          data-node-id="199:271"
         >
-          <p
-            className="whitespace-nowrap text-xl font-semibold leading-[1.2] text-zinc-950"
-            style={{ textShadow: "0 1px 0 rgba(255, 255, 255, 0.5)" }}
-          >
-            Try in NickAI
-          </p>
-          <div className="relative size-6 shrink-0">
+          <div className="absolute inset-[-0.15%_0]">
             <img
               alt=""
-              src={`${ASSET}/arrow-right.svg`}
-              className="absolute inset-0 block size-full max-w-none"
+              src={`${ASSET}/line-graph.svg`}
+              className="block size-full max-w-none"
             />
           </div>
         </div>
-
-        {/* Color-dodge overlay across the full CTA */}
-        <div
-          className="pointer-events-none absolute left-0 top-0 h-[56px] w-[211px] rotate-180"
-          style={{ mixBlendMode: "color-dodge" }}
-        >
-          <img
-            alt=""
-            src={`${ASSET}/cta-overlay.svg`}
-            className="absolute inset-0 block size-full max-w-none"
-          />
-        </div>
-      </div>
-
-      {/* LineGraph (top-most decorative layer) */}
-      <div
-        className="pointer-events-none absolute -bottom-10 left-[-270px] h-[329.506px] w-[1389.202px]"
-        data-node-id="199:271"
-      >
-        <div className="absolute inset-[-0.15%_0]">
-          <img
-            alt=""
-            src={`${ASSET}/line-graph.svg`}
-            className="block size-full max-w-none"
-          />
-        </div>
-      </div>
+      ) : null}
     </article>
   );
 }

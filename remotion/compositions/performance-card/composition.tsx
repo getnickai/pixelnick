@@ -12,6 +12,12 @@ import type { PerformanceCardProps } from "./props";
 
 const ASSET = "/figma";
 
+/** Decorative bottom chart stroke (`line-graph.svg`). Flip to `true` to restore. */
+const SHOW_DECORATIVE_LINE_GRAPH = false;
+
+/** Organic wave backdrop (`agent-illustration.svg`). Flip to `true` to restore. */
+const SHOW_DECORATIVE_AGENT_ILLUSTRATION = true;
+
 /**
  * Master timeline for the Performance Card animation. Tweak entrance timings
  * by editing this block only — every animation below references these values.
@@ -218,21 +224,23 @@ export const PerformanceCardComposition: React.FC<PerformanceCardProps> = ({
         </div>
       </div>
 
-      {/* Agent illustration */}
-      <div
-        className="pointer-events-none absolute left-[-326px] top-[-222px] flex h-[865px] w-[1347px] items-center justify-center"
-        style={{ opacity: agentIllustrationOpacity }}
-      >
-        <div className="-rotate-90 -scale-y-100">
-          <div className="relative h-[1347px] w-[865px]">
-            <img
-              alt=""
-              src={`${ASSET}/agent-illustration.svg`}
-              className="absolute inset-0 block size-full max-w-none"
-            />
+      {SHOW_DECORATIVE_AGENT_ILLUSTRATION ? (
+        /* Agent illustration */
+        <div
+          className="pointer-events-none absolute left-[-326px] top-[-222px] flex h-[865px] w-[1347px] items-center justify-center"
+          style={{ opacity: agentIllustrationOpacity }}
+        >
+          <div className="-rotate-90 -scale-y-100">
+            <div className="relative h-[1347px] w-[865px]">
+              <img
+                alt=""
+                src={`${ASSET}/agent-illustration.svg`}
+                className="absolute inset-0 block size-full max-w-none"
+              />
+            </div>
           </div>
         </div>
-      </div>
+      ) : null}
 
       {/* Logo */}
       <div
@@ -257,21 +265,55 @@ export const PerformanceCardComposition: React.FC<PerformanceCardProps> = ({
         <div className="flex w-full flex-col gap-4">
           {/* Type indicator pill */}
           <div
-            className="relative inline-flex shrink-0 items-center gap-[9px] self-start rounded-full bg-green-400 px-3 py-0.5"
+            className="relative inline-flex shrink-0 items-center gap-[9px] self-start rounded-full bg-green-600 px-3 py-0.5 text-white"
             style={{
               opacity: pillOpacity,
               transform: `scale(${pillScale})`,
               transformOrigin: "left center",
             }}
           >
-            <div className="relative size-6 shrink-0">
-              <img
-                alt=""
-                src={`${ASSET}/icon-wave.svg`}
-                className="absolute inset-0 block size-full max-w-none"
+            <svg
+              className="size-6 shrink-0"
+              viewBox="0 0 24 24"
+              fill="none"
+              xmlns="http://www.w3.org/2000/svg"
+              aria-hidden
+            >
+              <path
+                d="M12 14C13.1046 14 14 13.1046 14 12C14 10.8954 13.1046 10 12 10C10.8954 10 10 10.8954 10 12C10 13.1046 10.8954 14 12 14Z"
+                stroke="currentColor"
+                strokeWidth="1.5"
               />
-            </div>
-            <p className="whitespace-nowrap text-base font-semibold uppercase leading-6 text-[#010406]">
+              <path
+                d="M7.5 8C6.5 9 6 10.5 6 12C6 13.5 6.5 15 7.5 16"
+                stroke="currentColor"
+                strokeWidth="1.5"
+                strokeLinecap="round"
+                strokeLinejoin="round"
+              />
+              <path
+                d="M4.5 6C3 7.5 2 9.5 2 12C2 14.5 3 16.5 4.5 18"
+                stroke="currentColor"
+                strokeWidth="1.5"
+                strokeLinecap="round"
+                strokeLinejoin="round"
+              />
+              <path
+                d="M16.5 16C17.5 15 18 13.5 18 12C18 10.5 17.5 9 16.5 8"
+                stroke="currentColor"
+                strokeWidth="1.5"
+                strokeLinecap="round"
+                strokeLinejoin="round"
+              />
+              <path
+                d="M19.5 18C21 16.5 22 14.5 22 12C22 9.5 21 7.5 19.5 6"
+                stroke="currentColor"
+                strokeWidth="1.5"
+                strokeLinecap="round"
+                strokeLinejoin="round"
+              />
+            </svg>
+            <p className="whitespace-nowrap text-base font-semibold uppercase leading-6">
               Live Trading Agent
             </p>
           </div>
@@ -308,13 +350,13 @@ export const PerformanceCardComposition: React.FC<PerformanceCardProps> = ({
                    inline would double-translate by 20px (half the bar's
                    height). */}
                 <div
-                  className="absolute -left-[87px] top-1/2 size-10 -translate-y-1/2 rounded-lg bg-green-400"
+                  className="absolute -left-[87px] top-1/2 size-10 -translate-y-1/2 rounded-lg bg-green-600"
                   style={{
                     transform: `scaleY(${barScaleY})`,
                   }}
                 />
                 <p
-                  className="whitespace-nowrap text-5xl font-medium leading-[1.4] text-green-400"
+                  className="whitespace-nowrap text-5xl font-medium leading-[1.4] text-green-600"
                   style={{ opacity: pnlLabelOpacity }}
                 >
                   <SlidingDigitCount
@@ -338,7 +380,7 @@ export const PerformanceCardComposition: React.FC<PerformanceCardProps> = ({
                         className="absolute inset-0 block size-full max-w-none"
                       />
                     </div>
-                    <p className="whitespace-nowrap text-base font-medium leading-[1.4] text-green-400">
+                    <p className="whitespace-nowrap text-base font-medium leading-[1.4] text-green-600">
                       {runs} Runs
                     </p>
                   </div>
@@ -353,7 +395,7 @@ export const PerformanceCardComposition: React.FC<PerformanceCardProps> = ({
                         className="absolute inset-0 block size-full max-w-none"
                       />
                     </div>
-                    <p className="whitespace-nowrap text-base font-medium leading-[1.4] text-green-400">
+                    <p className="whitespace-nowrap text-base font-medium leading-[1.4] text-green-600">
                       {trades} Trades
                     </p>
                   </div>
@@ -449,9 +491,9 @@ export const PerformanceCardComposition: React.FC<PerformanceCardProps> = ({
         </div>
       </div>
 
-      {/* Author block */}
+      {/* Footer: author + CTA share one row so the pill stays beside Franklin */}
       <div
-        className="absolute bottom-[45px] left-16 flex flex-col gap-[26px]"
+        className="absolute bottom-[45px] left-16 right-16 flex flex-col gap-[26px]"
         style={{
           opacity: authorOpacity,
           transform: `translateY(${authorY}px)`,
@@ -463,104 +505,69 @@ export const PerformanceCardComposition: React.FC<PerformanceCardProps> = ({
         >
           Built By:
         </p>
-        <div className="flex items-center gap-5">
-          <div className="relative size-12 shrink-0 overflow-hidden rounded-full">
-            <img
-              alt={builderName}
-              src={builderAvatar}
-              width={48}
-              height={48}
-              className="absolute inset-0 block size-full max-w-none"
-            />
+        <div className="flex items-center gap-8">
+          <div className="flex min-w-0 items-center gap-5">
+            <div className="relative size-12 shrink-0 overflow-hidden rounded-full">
+              <img
+                alt={builderName}
+                src={builderAvatar}
+                width={48}
+                height={48}
+                className="absolute inset-0 block size-full max-w-none"
+              />
+            </div>
+            <p className="w-[219px] shrink-0 text-2xl font-semibold leading-[1.2] text-white">
+              {builderName}
+            </p>
           </div>
-          <p className="w-[219px] text-2xl font-semibold leading-[1.2] text-white">
-            {builderName}
-          </p>
+          <div className="shrink-0" style={{ opacity: ctaOpacity }}>
+            <div
+              className="inline-flex items-center gap-[9px] rounded-full bg-primary-500 px-8 py-4 text-white"
+              style={{
+                boxShadow:
+                  "inset 0 1px 0 rgba(255, 255, 255, 0.5), inset 0 -1px 0 rgba(0, 0, 0, 0.12)",
+              }}
+            >
+              <p className="whitespace-nowrap text-xl font-semibold leading-[1.2]">
+                Try in NickAI
+              </p>
+              <svg
+                className="size-6 shrink-0"
+                viewBox="0 0 24 24"
+                fill="none"
+                xmlns="http://www.w3.org/2000/svg"
+                aria-hidden
+              >
+                <path
+                  d="M13 18L19 12L13 6M18.5 12H5"
+                  stroke="currentColor"
+                  strokeWidth="2"
+                  strokeLinecap="square"
+                />
+              </svg>
+            </div>
+          </div>
         </div>
       </div>
 
-      {/* Remix CTA — "Try in NickAI" */}
-      <div
-        className="absolute bottom-8 left-[404px] flex items-start"
-        style={{ opacity: ctaOpacity }}
-      >
-        {/* Left decorative tab (rotated 180°).
-           `marginRight: -4` overlaps the tab onto the body by 4px. The tab
-           uses `rotate: 180deg` which creates its own stacking context;
-           combined with the Player's display scaling, anti-aliasing along
-           the rotated tab's right edge can show a hairline gap against the
-           body's left edge. A 4px overlap hides any anti-aliased fringe.
-           Both touching edges are flat solid color so no detail is lost. */}
+      {SHOW_DECORATIVE_LINE_GRAPH ? (
+        /* Line graph — wipes in left → right */
         <div
-          className="relative h-[56px] w-[46px] shrink-0 rotate-180"
-          style={{ marginRight: -4 }}
-        >
-          <img
-            alt=""
-            src={`${ASSET}/cta-tab.svg`}
-            className="absolute inset-0 block size-full max-w-none"
-          />
-        </div>
-
-        {/* Button body with gradient.
-           NOTE: removed `backdrop-blur-[16px]` (vs. the static version). The
-           body's base gradient layer is fully opaque primary (`rgb(1, 120, 255)`
-           at 100%), so backdrop-blur is invisible anyway — but it created a
-           compositing layer whose left edge produced a visible vertical seam
-           against the rotated tab when the Player scales the composition for
-           display. Dropping it gives identical visual output and removes the
-           seam entirely. */}
-        <div
-          className="relative flex shrink-0 items-center gap-[9px] rounded-r-[12px] py-4 pr-5"
+          className="pointer-events-none absolute -bottom-10 left-[-270px] h-[329.506px] w-[1389.202px]"
           style={{
-            backgroundImage:
-              "linear-gradient(180deg, #8FC3FF 0%, #0178FF 100%)",
+            clipPath: `inset(0 ${graphInsetRight}% 0 0)`,
+            WebkitClipPath: `inset(0 ${graphInsetRight}% 0 0)`,
           }}
         >
-          <p
-            className="whitespace-nowrap text-xl font-semibold leading-[1.2] text-zinc-950"
-            style={{ textShadow: "0 1px 0 rgba(255, 255, 255, 0.5)" }}
-          >
-            Try in NickAI
-          </p>
-          <div className="relative size-6 shrink-0">
+          <div className="absolute inset-[-0.15%_0]">
             <img
               alt=""
-              src={`${ASSET}/arrow-right.svg`}
-              className="absolute inset-0 block size-full max-w-none"
+              src={`${ASSET}/line-graph.svg`}
+              className="block size-full max-w-none"
             />
           </div>
         </div>
-
-        {/* Color-dodge overlay across the full CTA */}
-        <div
-          className="pointer-events-none absolute left-0 top-0 h-[56px] w-[211px] rotate-180"
-          style={{ mixBlendMode: "color-dodge" }}
-        >
-          <img
-            alt=""
-            src={`${ASSET}/cta-overlay.svg`}
-            className="absolute inset-0 block size-full max-w-none"
-          />
-        </div>
-      </div>
-
-      {/* Line graph — wipes in left → right */}
-      <div
-        className="pointer-events-none absolute -bottom-10 left-[-270px] h-[329.506px] w-[1389.202px]"
-        style={{
-          clipPath: `inset(0 ${graphInsetRight}% 0 0)`,
-          WebkitClipPath: `inset(0 ${graphInsetRight}% 0 0)`,
-        }}
-      >
-        <div className="absolute inset-[-0.15%_0]">
-          <img
-            alt=""
-            src={`${ASSET}/line-graph.svg`}
-            className="block size-full max-w-none"
-          />
-        </div>
-      </div>
+      ) : null}
     </AbsoluteFill>
   );
 };
