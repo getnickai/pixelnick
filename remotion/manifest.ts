@@ -20,9 +20,12 @@ export type MotionEntryMeta = {
   /** Intrinsic frame height in pixels (e.g. 1136). */
   height: number;
   fps: number;
-  /** Total frames; with fps gives the runtime (150 / 30 = 5s). */
+  /** Total frames; with fps gives the runtime (270 / 30 = 9s). */
   durationInFrames: number;
 };
+
+/** Extra tail after entrances finish — bar pulse / glow hold (30fps). */
+export const PERFORMANCE_CARD_HOLD_FRAMES = 120;
 
 export const motionManifest: MotionEntryMeta[] = [
   {
@@ -31,7 +34,7 @@ export const motionManifest: MotionEntryMeta[] = [
     width: 650,
     height: 1136,
     fps: 30,
-    durationInFrames: 150,
+    durationInFrames: 150 + PERFORMANCE_CARD_HOLD_FRAMES,
   },
   {
     // Swarm Arena share card. Intrinsic size is the portrait default; the

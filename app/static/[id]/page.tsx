@@ -1,5 +1,6 @@
 import { notFound } from "next/navigation";
 import AiReadyCard from "@/components/ai-ready-card";
+import { StaticVisualHost } from "@/components/static-visual-host";
 import { getStaticEntryMeta } from "@/static/manifest";
 
 export default async function StaticVisualPage({
@@ -12,7 +13,11 @@ export default async function StaticVisualPage({
   if (!entry) notFound();
 
   if (id === "performance-card") {
-    return <AiReadyCard />;
+    return (
+      <StaticVisualHost entry={entry}>
+        <AiReadyCard />
+      </StaticVisualHost>
+    );
   }
 
   notFound();

@@ -15,9 +15,6 @@ const ASSET = "/figma";
 /** Decorative bottom chart stroke (`line-graph.svg`). Flip to `true` to restore. */
 const SHOW_DECORATIVE_LINE_GRAPH = false;
 
-/** Organic wave backdrop (`agent-illustration.svg`). Flip to `true` to restore. */
-const SHOW_DECORATIVE_AGENT_ILLUSTRATION = true;
-
 /**
  * Master timeline for the Performance Card animation. Tweak entrance timings
  * by editing this block only — every animation below references these values.
@@ -26,17 +23,24 @@ const SHOW_DECORATIVE_AGENT_ILLUSTRATION = true;
  * `start` to "on" at `end`. Spring entrances use a single `*SpringStart` frame
  * (the spring physics define the curve; this is just when it kicks off).
  *
- * Composition runs 150 frames @ 30fps = 5s. Frame 0 is the first visible frame.
+ * Composition runs 270 frames @ 30fps = 9s (~5s entrances + 4s hold for pulse).
+ * Frame 0 is the first visible frame.
  *
  * Stagger guide: the difference between two consecutive `start` frames is the
  * delay between those elements. e.g. `pill[0] - logo[0]` = 6 frames ≈ 200ms.
  */
 const ANIM = {
-  // Background — loops continuously, no entrance window.
   glowPulsePeriod: 90,
+  /** Decorative PNL bar breathe cycle (frames @ 30fps). */
+  barPulsePeriod: 22,
+  /** Frames after bar spring starts before pulse fades in. */
+  barPulseStart: 50,
+  /** Frames to ease pulse in (avoids blink when pulse engages). */
+  barPulseFadeIn: 12,
+
+  agentIllustration: [0, 30],
 
   // Entrance windows [startFrame, endFrame]
-  agentIllustration: [0, 30],
   logoOpacity:       [0, 12],
   pillOpacity:       [6, 22],
   headline:          [16, 42],   // shared by opacity + Y translate
@@ -87,6 +91,7 @@ export const PerformanceCardComposition: React.FC<PerformanceCardProps> = ({
   const frame = useCurrentFrame();
   const { fps } = useVideoConfig();
 
+<<<<<<< Updated upstream
   // --- Performance polarity ---
   // PNL / Profit % render in green by default. When they're negative we swap
   // the PNL value + side bar to red and rotate the Profit % arrow 180° so a
@@ -98,15 +103,26 @@ export const PerformanceCardComposition: React.FC<PerformanceCardProps> = ({
   // --- Background ---
   // Slow continuous glow pulse — loops every `glowPulsePeriod` frames.
   const glowOpacity = interpolate(
+=======
+  const glowOverlayOpacity = interpolate(
+    frame % ANIM.glowPulsePeriod,
+    [0, ANIM.glowPulsePeriod / 2, ANIM.glowPulsePeriod],
+    [0.1, 0.16, 0.1],
+  );
+
+  const glowSvgOpacity = interpolate(
+>>>>>>> Stashed changes
     frame % ANIM.glowPulsePeriod,
     [0, ANIM.glowPulsePeriod / 2, ANIM.glowPulsePeriod],
     [0.7, 1, 0.7],
   );
 
-  // Agent illustration fades in early.
-  const agentIllustrationOpacity = interpolate(frame, ANIM.agentIllustration, [0, 0.25], {
-    extrapolateRight: "clamp",
-  });
+  const agentIllustrationOpacity = interpolate(
+    frame,
+    ANIM.agentIllustration,
+    [0, 0.1],
+    { extrapolateRight: "clamp" },
+  );
 
   // --- Header ---
   // Logo: drops in from above with spring + fades in.
@@ -154,7 +170,25 @@ export const PerformanceCardComposition: React.FC<PerformanceCardProps> = ({
     fps,
     config: { damping: 12, stiffness: 140 },
   });
-  const barScaleY = interpolate(barSpring, [0, 1], [0, 1]);
+  const barScaleY = Math.min(interpolate(barSpring, [0, 1], [0, 1]), 1);
+
+  const pulseElapsed = Math.max(0, frame - ANIM.barPulseStart);
+  const barPulseMix = interpolate(
+    frame,
+    [ANIM.barPulseStart, ANIM.barPulseStart + ANIM.barPulseFadeIn],
+    [0, 1],
+    { extrapolateLeft: "clamp", extrapolateRight: "clamp" },
+  );
+  const barPulseWave = Math.sin(
+    (pulseElapsed / ANIM.barPulsePeriod) * Math.PI * 2,
+  );
+  const barPulseOpacity = 0.92 + 0.08 * barPulseWave;
+  /** Uniform breathe — anchored on the flat left edge via `center left`. */
+  const barPulseScale = 1 + 0.05 * barPulseWave;
+  const barPulseAmount = 1 + (barPulseScale - 1) * barPulseMix;
+  const barOpacity = 1 + (barPulseOpacity - 1) * barPulseMix;
+  const barFinalScaleX = barPulseAmount;
+  const barFinalScaleY = barScaleY * barPulseAmount;
 
   // Runs & trades dot rows fade in after PNL count.
   const runsOpacity = interpolate(frame, ANIM.runsDot, [0, 1], {
@@ -213,11 +247,17 @@ export const PerformanceCardComposition: React.FC<PerformanceCardProps> = ({
   });
 
   return (
-    <AbsoluteFill className="bg-zinc-950 font-sans overflow-clip">
-      {/* Background glow */}
+    <AbsoluteFill className="bg-primary-1000 font-sans overflow-clip">
+      <div
+        className="pointer-events-none absolute inset-0 bg-[radial-gradient(ellipse_90%_65%_at_70%_38%,var(--color-primary-500)_0%,transparent_62%)]"
+        style={{ opacity: glowOverlayOpacity }}
+        aria-hidden
+      />
+
+      {/* Background glow (blob SVG) */}
       <div
         className="pointer-events-none absolute left-[-314.95px] top-[195.5px] flex h-[1206px] w-[1191.312px] items-center justify-center"
-        style={{ opacity: glowOpacity }}
+        style={{ opacity: glowSvgOpacity }}
       >
         <div className="-scale-y-100">
           <div className="relative h-[1206px] w-[1191.312px]">
@@ -232,23 +272,21 @@ export const PerformanceCardComposition: React.FC<PerformanceCardProps> = ({
         </div>
       </div>
 
-      {SHOW_DECORATIVE_AGENT_ILLUSTRATION ? (
-        /* Agent illustration */
-        <div
-          className="pointer-events-none absolute left-[-326px] top-[-222px] flex h-[865px] w-[1347px] items-center justify-center"
-          style={{ opacity: agentIllustrationOpacity }}
-        >
-          <div className="-rotate-90 -scale-y-100">
-            <div className="relative h-[1347px] w-[865px]">
-              <img
-                alt=""
-                src={`${ASSET}/agent-illustration.svg`}
-                className="absolute inset-0 block size-full max-w-none"
-              />
-            </div>
+      {/* Agent illustration (organic wave blob) */}
+      <div
+        className="pointer-events-none absolute left-[-326px] top-[-222px] flex h-[865px] w-[1347px] items-center justify-center"
+        style={{ opacity: agentIllustrationOpacity }}
+      >
+        <div className="-rotate-90 -scale-y-100">
+          <div className="relative h-[1347px] w-[865px]">
+            <img
+              alt=""
+              src={`${ASSET}/agent-illustration.svg`}
+              className="absolute inset-0 block size-full max-w-none"
+            />
           </div>
         </div>
-      ) : null}
+      </div>
 
       {/* Logo */}
       <div
@@ -352,34 +390,78 @@ export const PerformanceCardComposition: React.FC<PerformanceCardProps> = ({
               </p>
               <div className="relative flex items-center justify-center gap-6">
                 {/* Decorative left-edge green bar */}
-                {/* NOTE: Tailwind v4 emits the `-translate-y-1/2` class as the
-                   standalone `translate` CSS property, NOT as `transform`. So
-                   we only need `scaleY` here — applying `translateY(-50%)`
-                   inline would double-translate by 20px (half the bar's
-                   height). */}
                 <div
+<<<<<<< Updated upstream
                   className={`absolute -left-[87px] top-1/2 size-10 -translate-y-1/2 rounded-lg ${
                     isLoss ? "bg-red-500" : "bg-green-600"
                   }`}
+=======
+                  className="absolute -left-[87px] top-0 bottom-0 w-10 rounded-none rounded-r-3xl bg-green-600"
+>>>>>>> Stashed changes
                   style={{
-                    transform: `scaleY(${barScaleY})`,
+                    opacity: barOpacity,
+                    transform: `scale(${barFinalScaleX}, ${barFinalScaleY})`,
+                    transformOrigin: "center left",
+                    backfaceVisibility: "hidden",
                   }}
                 />
+<<<<<<< Updated upstream
                 <p
                   className={`whitespace-nowrap font-heading text-5xl font-medium leading-[1.4] ${
                     isLoss ? "text-red-500" : "text-green-600"
                   }`}
+=======
+                <div
+                  className="inline-flex items-center gap-1"
+>>>>>>> Stashed changes
                   style={{ opacity: pnlLabelOpacity }}
                 >
-                  <SlidingDigitCount
-                    targetValue={pnl}
-                    countWindow={ANIM.pnlCount}
-                    decimals={2}
-                    prefix="$"
-                    showSign
-                    slide={slide}
-                  />
-                </p>
+                  <span
+                    className="grid size-[3.75rem] shrink-0 place-items-center rounded-4xl rounded-r-lg bg-green-600 text-white"
+                    aria-hidden
+                  >
+                    {pnl < 0 ? (
+                      <svg
+                        className="size-7 shrink-0"
+                        viewBox="0 0 24 24"
+                        fill="none"
+                        xmlns="http://www.w3.org/2000/svg"
+                        aria-hidden
+                      >
+                        <path
+                          d="M4 12H20"
+                          stroke="currentColor"
+                          strokeWidth="2.5"
+                          strokeLinecap="round"
+                        />
+                      </svg>
+                    ) : (
+                      <svg
+                        className="size-7 shrink-0"
+                        viewBox="0 0 24 24"
+                        fill="none"
+                        xmlns="http://www.w3.org/2000/svg"
+                        aria-hidden
+                      >
+                        <path
+                          fillRule="evenodd"
+                          clipRule="evenodd"
+                          d="M12 2.75C12.6904 2.75 13.25 3.30964 13.25 4V10.75H20C20.6904 10.75 21.25 11.3096 21.25 12C21.25 12.6904 20.6904 13.25 20 13.25H13.25V20C13.25 20.6904 12.6904 21.25 12 21.25C11.3096 21.25 10.75 20.6904 10.75 20V13.25H4C3.30964 13.25 2.75 12.6904 2.75 12C2.75 11.3096 3.30964 10.75 4 10.75H10.75V4C10.75 3.30964 11.3096 2.75 12 2.75Z"
+                          fill="currentColor"
+                        />
+                      </svg>
+                    )}
+                  </span>
+                  <span className="inline-flex h-[3.75rem] items-center whitespace-nowrap rounded-4xl rounded-l-lg bg-green-600 px-6 font-heading text-5xl font-medium leading-none text-white">
+                    <SlidingDigitCount
+                      targetValue={pnl}
+                      countWindow={ANIM.pnlCount}
+                      decimals={2}
+                      prefix="$"
+                      slide={slide}
+                    />
+                  </span>
+                </div>
                 <div className="flex flex-col items-start gap-1">
                   <div
                     className="flex items-center gap-2"
@@ -515,7 +597,7 @@ export const PerformanceCardComposition: React.FC<PerformanceCardProps> = ({
 
       {/* Footer: author + CTA share one row so the pill stays beside Franklin */}
       <div
-        className="absolute bottom-[45px] left-16 right-16 flex flex-col gap-[26px]"
+        className="absolute bottom-[45px] left-16 right-10 flex flex-col gap-[26px]"
         style={{
           opacity: authorOpacity,
           transform: `translateY(${authorY}px)`,
@@ -527,7 +609,7 @@ export const PerformanceCardComposition: React.FC<PerformanceCardProps> = ({
         >
           Built By:
         </p>
-        <div className="flex items-center gap-8">
+        <div className="flex w-full items-center">
           <div className="flex min-w-0 items-center gap-5">
             <div className="relative size-12 shrink-0 overflow-hidden rounded-full">
               <img
@@ -542,7 +624,7 @@ export const PerformanceCardComposition: React.FC<PerformanceCardProps> = ({
               {builderName}
             </p>
           </div>
-          <div className="shrink-0" style={{ opacity: ctaOpacity }}>
+          <div className="ml-auto shrink-0" style={{ opacity: ctaOpacity }}>
             <div
               className="inline-flex items-center gap-[9px] rounded-full bg-primary-500 px-8 py-4 font-sans text-white"
               style={{

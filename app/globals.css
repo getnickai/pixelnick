@@ -39,6 +39,7 @@
   --color-primary-800: #003d7a;
   --color-primary-900: #012c53;
   --color-primary-950: #011e37;
+  --color-primary-1000: #000510;
 }
 
 @theme inline {
