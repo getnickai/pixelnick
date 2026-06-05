@@ -461,14 +461,11 @@ export const PerformanceCardComposition: React.FC<PerformanceCardProps> = ({
                     className="flex items-center gap-2"
                     style={{ opacity: runsOpacity }}
                   >
-                    <div className="relative size-2 shrink-0">
-                      <img
-                        alt=""
-                        src={`${ASSET}/dot-success.svg`}
-                        className="absolute inset-0 block size-full max-w-none"
-                      />
-                    </div>
-                    <p className="whitespace-nowrap font-sans text-base font-medium leading-[1.4] text-green-600">
+                    <span
+                      className="size-2 shrink-0 rounded-full bg-white"
+                      aria-hidden
+                    />
+                    <p className="whitespace-nowrap font-sans text-base font-medium leading-[1.4] text-white">
                       {runs} Runs
                     </p>
                   </div>
@@ -476,14 +473,11 @@ export const PerformanceCardComposition: React.FC<PerformanceCardProps> = ({
                     className="flex items-center gap-2"
                     style={{ opacity: tradesOpacity }}
                   >
-                    <div className="relative size-2 shrink-0">
-                      <img
-                        alt=""
-                        src={`${ASSET}/dot-success.svg`}
-                        className="absolute inset-0 block size-full max-w-none"
-                      />
-                    </div>
-                    <p className="whitespace-nowrap font-sans text-base font-medium leading-[1.4] text-green-600">
+                    <span
+                      className="size-2 shrink-0 rounded-full bg-white"
+                      aria-hidden
+                    />
+                    <p className="whitespace-nowrap font-sans text-base font-medium leading-[1.4] text-white">
                       {trades} Trades
                     </p>
                   </div>

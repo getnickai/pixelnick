@@ -161,26 +161,20 @@ export default function AiReadyCard() {
                 </div>
                 <div className="flex flex-col items-start gap-1">
                   <div className="flex items-center gap-2">
-                    <div className="relative size-2 shrink-0">
-                      <img
-                        alt=""
-                        src={`${ASSET}/dot-success.svg`}
-                        className="absolute inset-0 block size-full max-w-none"
-                      />
-                    </div>
-                    <p className="whitespace-nowrap font-sans text-base font-medium leading-[1.4] text-green-600">
+                    <span
+                      className="size-2 shrink-0 rounded-full bg-white"
+                      aria-hidden
+                    />
+                    <p className="whitespace-nowrap font-sans text-base font-medium leading-[1.4] text-white">
                       12 Runs
                     </p>
                   </div>
                   <div className="flex items-center gap-2">
-                    <div className="relative size-2 shrink-0">
-                      <img
-                        alt=""
-                        src={`${ASSET}/dot-success.svg`}
-                        className="absolute inset-0 block size-full max-w-none"
-                      />
-                    </div>
-                    <p className="whitespace-nowrap font-sans text-base font-medium leading-[1.4] text-green-600">
+                    <span
+                      className="size-2 shrink-0 rounded-full bg-white"
+                      aria-hidden
+                    />
+                    <p className="whitespace-nowrap font-sans text-base font-medium leading-[1.4] text-white">
                       26 Trades
                     </p>
                   </div>
