@@ -1,6 +1,11 @@
 /* eslint-disable @next/next/no-img-element */
 
 import { PerformanceCardCta } from "@/components/performance-card-cta";
+import {
+  MetaIconCalendar,
+  MetaIconClock,
+  MetaIconNodes,
+} from "@/components/performance-card-meta-icons";
 
 const ASSET = "/figma";
 
@@ -207,44 +212,22 @@ export default function AiReadyCard() {
 
           {/* Meta Info */}
           <div className="flex flex-col items-start gap-6 font-sans">
-            <div className="flex items-center gap-3">
-              <div className="relative h-5 w-[18px] shrink-0">
-                <div className="absolute inset-[-3.75%_-4.17%]">
-                  <img
-                    alt=""
-                    src={`${ASSET}/icon-calendar.svg`}
-                    className="block size-full max-w-none"
-                  />
-                </div>
-              </div>
-              <p className="whitespace-nowrap text-xl leading-4 text-zinc-400">
+            <div className="flex items-center gap-3 text-zinc-400">
+              <MetaIconCalendar className="h-5 w-[18px] shrink-0" />
+              <p className="whitespace-nowrap text-xl leading-4">
                 Active since 16 Mar 17,2026
               </p>
             </div>
-            <div className="flex items-center gap-6">
+            <div className="flex items-center gap-6 text-zinc-400">
               <div className="flex items-center gap-3">
-                <div className="relative h-[16.67px] w-[20.837px] shrink-0">
-                  <div className="absolute inset-[-4.5%_-3.6%]">
-                    <img
-                      alt=""
-                      src={`${ASSET}/icon-nodes.svg`}
-                      className="block size-full max-w-none"
-                    />
-                  </div>
-                </div>
-                <p className="whitespace-nowrap text-xl leading-4 text-zinc-400">
+                <MetaIconNodes className="h-[16.67px] w-[20.837px] shrink-0" />
+                <p className="whitespace-nowrap text-xl leading-4">
                   9 nodes
                 </p>
               </div>
               <div className="flex items-center gap-3">
-                <div className="relative size-5 shrink-0">
-                  <img
-                    alt=""
-                    src={`${ASSET}/icon-clock.svg`}
-                    className="absolute inset-0 block size-full max-w-none"
-                  />
-                </div>
-                <p className="whitespace-nowrap text-xl leading-4 text-zinc-400">
+                <MetaIconClock className="size-5 shrink-0" />
+                <p className="whitespace-nowrap text-xl leading-4">
                   Next run in 6h 2m
                 </p>
               </div>
