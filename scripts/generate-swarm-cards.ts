@@ -37,6 +37,8 @@ type Flags = {
   layout: NonNullable<SwarmCardProps["layout"]>;
   slug?: string;
   out: string;
+  /** Pre-built deck JSON (EngineAgent[] + match). Bypasses loadSwarmDeck. */
+  deck?: string;
 };
 
 function parseFlags(argv: string[]): Flags {
@@ -52,6 +54,7 @@ function parseFlags(argv: string[]): Flags {
     else if (arg.startsWith("--layout=")) f.layout = arg.slice(9) as Flags["layout"];
     else if (arg.startsWith("--slug=")) f.slug = arg.slice(7);
     else if (arg.startsWith("--out=")) f.out = path.resolve(arg.slice(6));
+    else if (arg.startsWith("--deck=")) f.deck = path.resolve(arg.slice(7));
   }
   return f;
 }
@@ -73,7 +76,9 @@ function plan(flags: Flags, deck: Awaited<ReturnType<typeof loadSwarmDeck>>["dec
 
 async function main() {
   const flags = parseFlags(process.argv.slice(2));
-  const { deck, source } = await loadSwarmDeck();
+  const { deck, source } = flags.deck
+    ? { deck: JSON.parse(fs.readFileSync(flags.deck, "utf8")), source: `deck file ${path.relative(process.cwd(), flags.deck)}` }
+    : await loadSwarmDeck();
   console.log(`Loaded deck from ${source}: ${deck.agents.length} agents + match.`);
 
   const jobs = plan(flags, deck);

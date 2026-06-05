@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>S1 editorial card</title>
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Fira+Code:wght@400;500;600;700&family=Geist:wght@400;500;600;700;800&display=swap" />
+<link rel="stylesheet" href="colors_and_type.css" />
+<link rel="stylesheet" href="card-styles.css" />
+<style>
+  html, body { margin: 0; background: #0b0b0e; }
+  #host { display: inline-block; }
+</style>
+</head>
+<body>
+<div id="host"></div>
+<script src="card-engine.js"></script>
+<script>
+(async function () {
+  const deck = await (await fetch("live-deck.json?ts=" + Date.now())).json();
+  SA.load(deck);
+  const a = SA.AGENTS[0];
+  document.getElementById("host").innerHTML =
+    SA.renderAgentCard(a.handle, { layout: "editorial", theme: "dark", size: "portrait" });
+})();
+</script>
+</body>
+</html>

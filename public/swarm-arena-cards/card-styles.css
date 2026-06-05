@@ -318,7 +318,7 @@
 /* unified picks ledger (editorial) — top pick + latest picks in ONE grid so
    the market / side / trailing columns align across every row */
 .sa-picks{
-  display:grid; grid-template-columns:auto minmax(0,1fr) auto auto;
+  display:grid; width:100%; grid-template-columns:auto minmax(0,1fr) auto auto;
   column-gap:1em; row-gap:1.05em; align-items:baseline;
   font-family:"Fira Code",monospace;
 }
@@ -327,7 +327,7 @@
   text-transform:uppercase; color:var(--text-faint); white-space:nowrap;
 }
 .sa-picks .rule{ grid-column:1/-1; height:1px; background:var(--border); margin:0.45em 0; }
-.sa-picks .mk{ font-size:0.9em; color:var(--text-dim); min-width:0; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; }
+.sa-picks .mk{ font-size:0.9em; color:var(--text-dim); min-width:0; line-height:1.3; overflow:visible; white-space:nowrap; }
 .sa-picks .sd{ font-size:0.98em; font-weight:700; white-space:nowrap; }
 .sa-picks .tr{ font-size:0.9em; font-weight:700; white-space:nowrap; justify-self:end; }
 .sa-picks .tr.edge,.sa-picks .tr.pos{ color:var(--positive); }
