@@ -43,8 +43,13 @@ export const swarmCardDefaultProps: SwarmCardProps = {
   size: "portrait",
 };
 
+/** Composition length for the animated card: 5s at 30fps. The card holds
+ *  after its entrance cascade; the PNG still is rendered at the final frame. */
+export const SWARM_FPS = 30;
+export const SWARM_DURATION_FRAMES = 150;
+
 /** Remotion `calculateMetadata` — set the frame size from the `size` prop. */
 export function calcSwarmMetadata({ props }: { props: SwarmCardProps }) {
   const [width, height] = SWARM_SIZES[props.size] ?? SWARM_SIZES.portrait;
-  return { width, height, durationInFrames: 1, fps: 30 };
+  return { width, height, durationInFrames: SWARM_DURATION_FRAMES, fps: SWARM_FPS };
 }

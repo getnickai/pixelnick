@@ -23,7 +23,7 @@
 import path from "node:path";
 import fs from "node:fs";
 import { bundle } from "@remotion/bundler";
-import { renderStill, selectComposition } from "@remotion/renderer";
+import { renderStill, renderMedia, selectComposition } from "@remotion/renderer";
 import { enableTailwind } from "@remotion/tailwind-v4";
 import { loadSwarmDeck } from "./swarm-feed";
 import type { SwarmCardProps } from "../remotion/compositions/swarm-card/props";
@@ -37,6 +37,12 @@ type Flags = {
   layout: NonNullable<SwarmCardProps["layout"]>;
   slug?: string;
   out: string;
+  /** Pre-built deck JSON (EngineAgent[] + match). Bypasses loadSwarmDeck. */
+  deck?: string;
+  /** Also render an MP4 (h264) per card. */
+  mp4: boolean;
+  /** MP4 duration in seconds (default 5). */
+  seconds: number;
 };
 
 function parseFlags(argv: string[]): Flags {
@@ -45,6 +51,8 @@ function parseFlags(argv: string[]): Flags {
     size: "portrait",
     layout: "editorial",
     out: path.join(process.cwd(), "out", "swarm-arena"),
+    mp4: false,
+    seconds: 5,
   };
   for (const arg of argv) {
     if (arg.startsWith("--theme=")) f.theme = arg.slice(8) as Flags["theme"];
@@ -52,6 +60,9 @@ function parseFlags(argv: string[]): Flags {
     else if (arg.startsWith("--layout=")) f.layout = arg.slice(9) as Flags["layout"];
     else if (arg.startsWith("--slug=")) f.slug = arg.slice(7);
     else if (arg.startsWith("--out=")) f.out = path.resolve(arg.slice(6));
+    else if (arg.startsWith("--deck=")) f.deck = path.resolve(arg.slice(7));
+    else if (arg === "--mp4") f.mp4 = true;
+    else if (arg.startsWith("--seconds=")) f.seconds = Number(arg.slice(10)) || 5;
   }
   return f;
 }
@@ -73,7 +84,9 @@ function plan(flags: Flags, deck: Awaited<ReturnType<typeof loadSwarmDeck>>["dec
 
 async function main() {
   const flags = parseFlags(process.argv.slice(2));
-  const { deck, source } = await loadSwarmDeck();
+  const { deck, source } = flags.deck
+    ? { deck: JSON.parse(fs.readFileSync(flags.deck, "utf8")), source: `deck file ${path.relative(process.cwd(), flags.deck)}` }
+    : await loadSwarmDeck();
   console.log(`Loaded deck from ${source}: ${deck.agents.length} agents + match.`);
 
   const jobs = plan(flags, deck);
@@ -104,9 +117,27 @@ async function main() {
       serveUrl,
       output,
       inputProps: job.props,
+      // Settled frame: the card holds after its entrance cascade.
+      frame: composition.durationInFrames - 1,
       imageFormat: "png",
     });
     console.log(`  ✓ ${job.slug}.png  (${composition.width}×${composition.height})`);
+
+    if (flags.mp4) {
+      // The card is a broadcast still (only the live-dot pulses, via CSS, which
+      // Remotion plays across frames). Hold it for `seconds` at the comp's fps.
+      const durationInFrames = Math.max(1, Math.round(composition.fps * flags.seconds));
+      const mp4Out = path.join(flags.out, `${job.slug}.mp4`);
+      await renderMedia({
+        composition: { ...composition, durationInFrames },
+        serveUrl,
+        codec: "h264",
+        muted: true,
+        outputLocation: mp4Out,
+        inputProps: job.props,
+      });
+      console.log(`  ✓ ${job.slug}.mp4  (${flags.seconds}s, ${composition.width}×${composition.height})`);
+    }
   }
 
   console.log(`\nDone. ${jobs.length} card(s) → ${path.relative(process.cwd(), flags.out)}/`);

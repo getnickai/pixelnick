@@ -7,11 +7,16 @@
  * keeps one source of truth shared with the interactive kit, so the PNG render
  * and the live preview can never drift.
  *
- * The render is a still (durationInFrames = 1): cards are broadcast stills, so
- * there is nothing to animate for the PNG export.
+ * Animation: the card content sections (`.sa-content > *`) reveal one after
+ * another (fade + slide up) as a frame-driven cascade — mirroring the
+ * performance-card entrance, adapted to the injected-HTML model. The reveal is
+ * computed from `useCurrentFrame()` (not the CSS-animation clock) so it renders
+ * deterministically headless. The decor layers (glow/ridge/dots) sit outside
+ * `.sa-content`, so the backdrop is present from frame 0 and only the content
+ * cascades in. The PNG still is rendered at the final (settled) frame.
  */
 import { useMemo } from "react";
-import { AbsoluteFill, staticFile } from "remotion";
+import { AbsoluteFill, staticFile, useCurrentFrame } from "remotion";
 import { loadFont as loadGeist } from "@remotion/google-fonts/Geist";
 import { loadFont as loadFira } from "@remotion/google-fonts/FiraCode";
 
@@ -87,8 +92,26 @@ export const SwarmCardComposition: React.FC<SwarmCardProps> = ({
     return SA.renderLeaderboardCard({ theme, size });
   }, [card, handle, layout, theme, size, deck]);
 
+  // Frame-driven staggered entrance. Each top-level `.sa-content` child (incl.
+  // spacer divs, which animate invisibly) ramps fade + slide-up on its own
+  // delay. Emitted as a per-frame <style> so the cascade is fully derived from
+  // useCurrentFrame() and renders identically headless.
+  const frame = useCurrentFrame();
+  const STAGGER = 5; // frames between consecutive sections (~167ms)
+  const DUR = 14; // ramp length per section (~0.47s)
+  const N = 10; // cover up to 10 top-level children
+  const easeOutCubic = (t: number) => 1 - Math.pow(1 - t, 3);
+  const revealCss = Array.from({ length: N }, (_, i) => {
+    const t = Math.min(1, Math.max(0, (frame - i * STAGGER) / DUR));
+    const e = easeOutCubic(t);
+    const opacity = e.toFixed(3);
+    const ty = ((1 - e) * 18).toFixed(2);
+    return `.sa-card .sa-content > *:nth-child(${i + 1}){opacity:${opacity};transform:translateY(${ty}px)}`;
+  }).join("\n");
+
   return (
     <AbsoluteFill>
+      <style dangerouslySetInnerHTML={{ __html: revealCss }} />
       <div
         style={{ width: "100%", height: "100%", lineHeight: 0 }}
         dangerouslySetInnerHTML={{ __html: html }}
