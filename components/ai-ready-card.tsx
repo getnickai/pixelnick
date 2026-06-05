@@ -276,7 +276,7 @@ export default function AiReadyCard() {
               Franklin
             </p>
           </div>
-          <div className="ml-auto shrink-0" data-node-id="204:278">
+          <div className="ml-auto shrink-0 translate-x-2" data-node-id="204:278">
             <PerformanceCardCta />
           </div>
         </div>

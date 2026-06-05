@@ -36,7 +36,7 @@ export function PerformanceCardCta({
       </div>
 
       <div
-        className="relative flex shrink-0 items-center gap-[9px] rounded-r-[12px] py-4 pr-5"
+        className="relative flex shrink-0 items-center gap-[9px] rounded-none rounded-r-full py-4 pr-5"
         style={{ backgroundImage: CTA_GRADIENT }}
       >
         <p

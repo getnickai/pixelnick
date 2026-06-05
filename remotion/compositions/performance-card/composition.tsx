@@ -92,19 +92,12 @@ export const PerformanceCardComposition: React.FC<PerformanceCardProps> = ({
   const frame = useCurrentFrame();
   const { fps } = useVideoConfig();
 
-<<<<<<< Updated upstream
   // --- Performance polarity ---
-  // PNL / Profit % render in green by default. When they're negative we swap
-  // the PNL value + side bar to red and rotate the Profit % arrow 180° so a
-  // loss reads at a glance instead of looking like a gain. The signed value
-  // itself (with leading "-") is rendered by SlidingDigitCount via `showSign`.
+  // PNL / Profit % render in green by default. When negative, swap to red and
+  // rotate the Profit % arrow 180°. Signed values use SlidingDigitCount `showSign`.
   const isLoss = pnl < 0;
   const isLossPercent = profitPercent < 0;
 
-  // --- Background ---
-  // Slow continuous glow pulse — loops every `glowPulsePeriod` frames.
-  const glowOpacity = interpolate(
-=======
   const glowOverlayOpacity = interpolate(
     frame % ANIM.glowPulsePeriod,
     [0, ANIM.glowPulsePeriod / 2, ANIM.glowPulsePeriod],
@@ -112,7 +105,6 @@ export const PerformanceCardComposition: React.FC<PerformanceCardProps> = ({
   );
 
   const glowSvgOpacity = interpolate(
->>>>>>> Stashed changes
     frame % ANIM.glowPulsePeriod,
     [0, ANIM.glowPulsePeriod / 2, ANIM.glowPulsePeriod],
     [0.7, 1, 0.7],
@@ -392,13 +384,9 @@ export const PerformanceCardComposition: React.FC<PerformanceCardProps> = ({
               <div className="relative flex items-center justify-center gap-6">
                 {/* Decorative left-edge green bar */}
                 <div
-<<<<<<< Updated upstream
-                  className={`absolute -left-[87px] top-1/2 size-10 -translate-y-1/2 rounded-lg ${
+                  className={`absolute -left-[87px] top-0 bottom-0 w-10 rounded-none rounded-r-3xl ${
                     isLoss ? "bg-red-500" : "bg-green-600"
                   }`}
-=======
-                  className="absolute -left-[87px] top-0 bottom-0 w-10 rounded-none rounded-r-3xl bg-green-600"
->>>>>>> Stashed changes
                   style={{
                     opacity: barOpacity,
                     transform: `scale(${barFinalScaleX}, ${barFinalScaleY})`,
@@ -406,19 +394,14 @@ export const PerformanceCardComposition: React.FC<PerformanceCardProps> = ({
                     backfaceVisibility: "hidden",
                   }}
                 />
-<<<<<<< Updated upstream
-                <p
-                  className={`whitespace-nowrap font-heading text-5xl font-medium leading-[1.4] ${
-                    isLoss ? "text-red-500" : "text-green-600"
-                  }`}
-=======
                 <div
                   className="inline-flex items-center gap-1"
->>>>>>> Stashed changes
                   style={{ opacity: pnlLabelOpacity }}
                 >
                   <span
-                    className="grid size-[3.75rem] shrink-0 place-items-center rounded-4xl rounded-r-lg bg-green-600 text-white"
+                    className={`grid size-[3.75rem] shrink-0 place-items-center rounded-4xl rounded-r-lg text-white ${
+                      isLoss ? "bg-red-500" : "bg-green-600"
+                    }`}
                     aria-hidden
                   >
                     {pnl < 0 ? (
@@ -453,12 +436,17 @@ export const PerformanceCardComposition: React.FC<PerformanceCardProps> = ({
                       </svg>
                     )}
                   </span>
-                  <span className="inline-flex h-[3.75rem] items-center whitespace-nowrap rounded-4xl rounded-l-lg bg-green-600 px-6 font-heading text-5xl font-medium leading-none text-white">
+                  <span
+                    className={`inline-flex h-[3.75rem] items-center whitespace-nowrap rounded-4xl rounded-l-lg px-6 font-heading text-5xl font-medium leading-none text-white ${
+                      isLoss ? "bg-red-500" : "bg-green-600"
+                    }`}
+                  >
                     <SlidingDigitCount
                       targetValue={pnl}
                       countWindow={ANIM.pnlCount}
                       decimals={2}
                       prefix="$"
+                      showSign
                       slide={slide}
                     />
                   </span>
@@ -625,7 +613,7 @@ export const PerformanceCardComposition: React.FC<PerformanceCardProps> = ({
               {builderName}
             </p>
           </div>
-          <div className="ml-auto shrink-0">
+          <div className="ml-auto shrink-0 translate-x-2">
             <PerformanceCardCta
               variant="motion"
               style={{ opacity: ctaOpacity }}
