@@ -1,0 +1,50 @@
+{
+  "_generatedFrom": "nickai/agents/wfl_vlbkalq5rn9b/",
+  "_asOf": "2026-06-05T11:00:27.265Z",
+  "_note": "real competitor (shadow mode). ROI/pnl/picks/nextRun are real. pickPct = sharp-agreement proxy until bets settle (closedPositions=0).",
+  "agents": [
+    {
+      "handle": "S1GPT",
+      "code": "GPT",
+      "short": "S1 Match Reader",
+      "label": "S1 Match Reader (Chat GPT)",
+      "provider": "Chat GPT · Paul le poulpe",
+      "flag": "⚽",
+      "color": "#10a37f",
+      "kind": "llm",
+      "roiPct": 0,
+      "pickPct": 0.33,
+      "signals": 3,
+      "nextRun": "2h 45m",
+      "activeSince": "Jun 05, 2026",
+      "spark": [
+        1000,
+        1000.08,
+        1000
+      ],
+      "pick": {
+        "market": "Mexico v South Africa",
+        "side": "Away",
+        "edgePp": 10
+      },
+      "recent": [
+        {
+          "market": "Mexico v South Africa",
+          "side": "Away",
+          "pnl": 0
+        },
+        {
+          "market": "Australia v Türkiye",
+          "side": "No",
+          "pnl": 0
+        },
+        {
+          "market": "Australia v Türkiye",
+          "side": "Under 2.5",
+          "pnl": 0
+        }
+      ]
+    }
+  ],
+  "match": null
+}
