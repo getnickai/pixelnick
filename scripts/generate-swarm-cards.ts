@@ -117,6 +117,8 @@ async function main() {
       serveUrl,
       output,
       inputProps: job.props,
+      // Settled frame: the card holds after its entrance cascade.
+      frame: composition.durationInFrames - 1,
       imageFormat: "png",
     });
     console.log(`  ✓ ${job.slug}.png  (${composition.width}×${composition.height})`);
