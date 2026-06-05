@@ -12,7 +12,7 @@ if (!channelId || !png) { console.error("usage: post-card.ts <channelId> <png> [
 
 const caption = [
   "*S1 Match Reader (Chat GPT)* · Swarm Arena agent card (editorial)",
-  "PNG + 5s MP4, rendered via the Remotion pipeline from live R2 data (wfl_vlbkalq5rn9b).",
+  "PNG + 5s MP4 with the new staggered entrance animation (elements reveal one after another), rendered via Remotion from live R2 data (wfl_vlbkalq5rn9b).",
   "Top pick: Mexico v South Africa, Away, +10.0pp edge.",
   "ROI +0.0% on a $1,000 shadow bankroll. 5 picks placed, none settled yet.",
   "Note: ROI and equity are near flat (agent just started); pick accuracy shown is a sharp-agreement proxy until bets settle.",
