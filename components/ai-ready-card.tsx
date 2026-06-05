@@ -1,9 +1,11 @@
 /* eslint-disable @next/next/no-img-element */
 
+import { PerformanceCardCta } from "@/components/performance-card-cta";
+
 const ASSET = "/figma";
 
-/** Decorative bottom chart stroke (`line-graph.svg`). Flip to `true` to restore. */
-const SHOW_DECORATIVE_LINE_GRAPH = false;
+/** Decorative bottom chart stroke (`line-graph.svg`). */
+const SHOW_DECORATIVE_LINE_GRAPH = true;
 
 export default function AiReadyCard() {
   return (
@@ -33,7 +35,7 @@ export default function AiReadyCard() {
 
       {/* Agent illustration (organic wave blob) */}
       <div
-        className="pointer-events-none absolute left-[-326px] top-[-222px] flex h-[865px] w-[1347px] items-center justify-center opacity-10"
+        className="pointer-events-none absolute left-[-326px] top-[-222px] flex h-[865px] w-[1347px] items-center justify-center opacity-25"
         data-node-id="196:260"
       >
         <div className="-rotate-90 -scale-y-100">
@@ -275,31 +277,7 @@ export default function AiReadyCard() {
             </p>
           </div>
           <div className="ml-auto shrink-0" data-node-id="204:278">
-            <div
-              className="inline-flex items-center gap-[9px] rounded-full bg-primary-500 px-8 py-4 font-sans text-white"
-              style={{
-                boxShadow:
-                  "inset 0 1px 0 rgba(255, 255, 255, 0.5), inset 0 -1px 0 rgba(0, 0, 0, 0.12)",
-              }}
-            >
-              <p className="whitespace-nowrap text-xl font-semibold leading-[1.2]">
-                Try in NickAI
-              </p>
-              <svg
-                className="size-6 shrink-0"
-                viewBox="0 0 24 24"
-                fill="none"
-                xmlns="http://www.w3.org/2000/svg"
-                aria-hidden
-              >
-                <path
-                  d="M13 18L19 12L13 6M18.5 12H5"
-                  stroke="currentColor"
-                  strokeWidth="2"
-                  strokeLinecap="square"
-                />
-              </svg>
-            </div>
+            <PerformanceCardCta />
           </div>
         </div>
       </div>

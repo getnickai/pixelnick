@@ -8,12 +8,13 @@ import {
   useVideoConfig,
 } from "remotion";
 import { SlidingDigitCount } from "../_shared/sliding-digit-count";
+import { PerformanceCardCta } from "../../../components/performance-card-cta";
 import type { PerformanceCardProps } from "./props";
 
 const ASSET = "/figma";
 
-/** Decorative bottom chart stroke (`line-graph.svg`). Flip to `true` to restore. */
-const SHOW_DECORATIVE_LINE_GRAPH = false;
+/** Decorative bottom chart stroke (`line-graph.svg`). */
+const SHOW_DECORATIVE_LINE_GRAPH = true;
 
 /**
  * Master timeline for the Performance Card animation. Tweak entrance timings
@@ -120,7 +121,7 @@ export const PerformanceCardComposition: React.FC<PerformanceCardProps> = ({
   const agentIllustrationOpacity = interpolate(
     frame,
     ANIM.agentIllustration,
-    [0, 0.1],
+    [0, 0.25],
     { extrapolateRight: "clamp" },
   );
 
@@ -624,32 +625,11 @@ export const PerformanceCardComposition: React.FC<PerformanceCardProps> = ({
               {builderName}
             </p>
           </div>
-          <div className="ml-auto shrink-0" style={{ opacity: ctaOpacity }}>
-            <div
-              className="inline-flex items-center gap-[9px] rounded-full bg-primary-500 px-8 py-4 font-sans text-white"
-              style={{
-                boxShadow:
-                  "inset 0 1px 0 rgba(255, 255, 255, 0.5), inset 0 -1px 0 rgba(0, 0, 0, 0.12)",
-              }}
-            >
-              <p className="whitespace-nowrap text-xl font-semibold leading-[1.2]">
-                Try in NickAI
-              </p>
-              <svg
-                className="size-6 shrink-0"
-                viewBox="0 0 24 24"
-                fill="none"
-                xmlns="http://www.w3.org/2000/svg"
-                aria-hidden
-              >
-                <path
-                  d="M13 18L19 12L13 6M18.5 12H5"
-                  stroke="currentColor"
-                  strokeWidth="2"
-                  strokeLinecap="square"
-                />
-              </svg>
-            </div>
+          <div className="ml-auto shrink-0">
+            <PerformanceCardCta
+              variant="motion"
+              style={{ opacity: ctaOpacity }}
+            />
           </div>
         </div>
       </div>
