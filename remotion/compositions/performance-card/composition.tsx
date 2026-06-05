@@ -87,6 +87,14 @@ export const PerformanceCardComposition: React.FC<PerformanceCardProps> = ({
   const frame = useCurrentFrame();
   const { fps } = useVideoConfig();
 
+  // --- Performance polarity ---
+  // PNL / Profit % render in green by default. When they're negative we swap
+  // the PNL value + side bar to red and rotate the Profit % arrow 180° so a
+  // loss reads at a glance instead of looking like a gain. The signed value
+  // itself (with leading "-") is rendered by SlidingDigitCount via `showSign`.
+  const isLoss = pnl < 0;
+  const isLossPercent = profitPercent < 0;
+
   // --- Background ---
   // Slow continuous glow pulse — loops every `glowPulsePeriod` frames.
   const glowOpacity = interpolate(
@@ -350,13 +358,17 @@ export const PerformanceCardComposition: React.FC<PerformanceCardProps> = ({
                    inline would double-translate by 20px (half the bar's
                    height). */}
                 <div
-                  className="absolute -left-[87px] top-1/2 size-10 -translate-y-1/2 rounded-lg bg-green-600"
+                  className={`absolute -left-[87px] top-1/2 size-10 -translate-y-1/2 rounded-lg ${
+                    isLoss ? "bg-red-500" : "bg-green-600"
+                  }`}
                   style={{
                     transform: `scaleY(${barScaleY})`,
                   }}
                 />
                 <p
-                  className="whitespace-nowrap font-heading text-5xl font-medium leading-[1.4] text-green-600"
+                  className={`whitespace-nowrap font-heading text-5xl font-medium leading-[1.4] ${
+                    isLoss ? "text-red-500" : "text-green-600"
+                  }`}
                   style={{ opacity: pnlLabelOpacity }}
                 >
                   <SlidingDigitCount
@@ -415,7 +427,12 @@ export const PerformanceCardComposition: React.FC<PerformanceCardProps> = ({
                 Profit %
               </p>
               <div className="flex items-center gap-4">
-                <div className="relative h-8 w-[27.429px] shrink-0">
+                <div
+                  className="relative h-8 w-[27.429px] shrink-0"
+                  style={{
+                    transform: isLossPercent ? "rotate(180deg)" : undefined,
+                  }}
+                >
                   <div className="absolute inset-[-6.63%_-7.73%_-4.69%_-7.73%]">
                     <img
                       alt=""
@@ -424,12 +441,17 @@ export const PerformanceCardComposition: React.FC<PerformanceCardProps> = ({
                     />
                   </div>
                 </div>
-                <p className="whitespace-nowrap font-heading text-5xl font-medium leading-[1.4] text-white">
+                <p
+                  className={`whitespace-nowrap font-heading text-5xl font-medium leading-[1.4] ${
+                    isLossPercent ? "text-red-500" : "text-white"
+                  }`}
+                >
                   <SlidingDigitCount
                     targetValue={profitPercent}
                     countWindow={ANIM.profitCount}
                     decimals={2}
                     suffix="%"
+                    showSign
                     slide={slide}
                   />
                 </p>
