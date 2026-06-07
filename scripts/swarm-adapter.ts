@@ -73,6 +73,43 @@ function sideOf(p: any): string {
   return p.market_type === "totals" && p.line != null ? `${cap(sel)} ${p.line}` : cap(String(sel));
 }
 
+/** Gather settled trades (STA-388 closed_trades) across run history + snapshot,
+ *  deduped by market/selection/close-time, sorted oldest → newest. */
+function collectClosedTrades(runs: any[], snap: any): any[] {
+  const all = [...runs.flatMap((r) => r.closed_trades ?? []), ...(snap.closed_trades ?? [])];
+  const seen = new Set<string>();
+  const dedup: any[] = [];
+  for (const t of all) {
+    const key = `${t.market ?? ""}|${t.selection ?? ""}|${t.closed_iso ?? ""}`;
+    if (seen.has(key)) continue;
+    seen.add(key);
+    dedup.push(t);
+  }
+  return dedup.sort(
+    (a, b) => new Date(a.closed_iso ?? 0).getTime() - new Date(b.closed_iso ?? 0).getTime(),
+  );
+}
+
+/** "2h ago" / "3d ago" from an ISO timestamp. */
+function relTime(iso?: string): string {
+  if (!iso) return "";
+  const diffMin = Math.round((Date.now() - new Date(iso).getTime()) / 60000);
+  if (diffMin < 1) return "just now";
+  if (diffMin < 60) return `${diffMin}m ago`;
+  const h = Math.floor(diffMin / 60);
+  return h < 24 ? `${h}h ago` : `${Math.floor(h / 24)}d ago`;
+}
+
+/** Trailing same-result streak token, e.g. "W4" / "L3". Voids are ignored. */
+function streakOf(closed: any[]): string | undefined {
+  const wl = closed.map((t) => t.result).filter((r) => r === "win" || r === "loss");
+  if (!wl.length) return undefined;
+  const last = wl[wl.length - 1];
+  let n = 0;
+  for (let i = wl.length - 1; i >= 0 && wl[i] === last; i--) n++;
+  return `${last === "win" ? "W" : "L"}${n}`;
+}
+
 /** Map one agent (profile + snapshot + run history) to a card EngineAgent. */
 function toEngineAgent(profile: any, snap: any, runs: any[]): any {
   const perf = snap.performance ?? {};
@@ -91,9 +128,15 @@ function toEngineAgent(profile: any, snap: any, runs: any[]): any {
   );
   const top = positions[0];
 
-  // Accuracy: real win rate once bets settle; else sharp-agreement proxy.
-  const wins = perf.wins ?? null;
-  const losses = perf.losses ?? null;
+  // Settled-trade history (STA-388 closed_trades), oldest → newest.
+  const closed = collectClosedTrades(runs, snap);
+
+  // Accuracy / record: prefer perf.wins/losses; else derive from closed_trades;
+  // else fall back to a sharp-agreement proxy on open positions.
+  const cWins = closed.filter((t) => t.result === "win").length;
+  const cLosses = closed.filter((t) => t.result === "loss").length;
+  const wins = perf.wins ?? (closed.length ? cWins : null);
+  const losses = perf.losses ?? (closed.length ? cLosses : null);
   const pickPct =
     wins != null && losses != null && wins + losses > 0
       ? wins / (wins + losses)
@@ -101,6 +144,13 @@ function toEngineAgent(profile: any, snap: any, runs: any[]): any {
         ? positions.filter((p) => p.sharp_agreement === "sharp_supports_edge").length / positions.length
         : 0;
   const record = wins != null && losses != null ? `${wins}-${losses}` : undefined;
+
+  // Last settled trade + current streak (drive the card's lastTrade + streak).
+  const lastClosed = closed.at(-1);
+  const lastTrade = lastClosed
+    ? { pnl: Number((lastClosed.pnl_usd ?? 0).toFixed(2)), ago: relTime(lastClosed.closed_iso) }
+    : undefined;
+  const streak = streakOf(closed);
 
   const nextIso = perf.next_run_iso ?? snap.nextRunISO;
   const nextRun = (() => {
@@ -142,6 +192,8 @@ function toEngineAgent(profile: any, snap: any, runs: any[]): any {
       side: sideOf(p),
       pnl: Number((p.mtm_pnl_usd ?? p.pnl_usd ?? 0).toFixed(2)),
     })),
+    ...(lastTrade ? { lastTrade } : {}),
+    ...(streak ? { streak } : {}),
   };
 }
 
@@ -176,10 +228,18 @@ console.log(`Base: s3://${BUCKET}/${BASE}`);
 console.log(`Agents discovered: ${agentIds.length}${agentIds.length ? ` (${agentIds.join(", ")})` : ""}`);
 
 if (agentIds.length === 0) {
-  console.warn(
-    `\nNo agents under ${BASE} yet — leaving ${path.relative(process.cwd(), OUT)} untouched.\n` +
-      `(STA-388 not shipped? set SWARM_AGENTS_PREFIX=nickai/agents/ to read interim data.)`,
-  );
+  if (process.env.SWARM_ADAPTER_ALLOW_EMPTY) {
+    // Automation path: reflect reality so the daily run no-ops cleanly instead
+    // of acting on a stale deck.
+    fs.writeFileSync(OUT, JSON.stringify({ _generatedFrom: `s3://${BUCKET}/${BASE}`, agents: [], match: null }, null, 2));
+    console.warn(`No agents under ${BASE} — wrote empty deck.`);
+  } else {
+    // Dev path: leave the existing deck untouched (handy for local rendering).
+    console.warn(
+      `\nNo agents under ${BASE} yet — leaving ${path.relative(process.cwd(), OUT)} untouched.\n` +
+        `(set SWARM_ADAPTER_ALLOW_EMPTY=1 to write an empty deck, or SWARM_AGENTS_PREFIX=nickai/agents/ for interim data.)`,
+    );
+  }
   process.exit(0);
 }
 
