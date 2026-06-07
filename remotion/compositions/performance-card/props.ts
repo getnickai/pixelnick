@@ -41,7 +41,7 @@ export const performanceCardDefaultProps: PerformanceCardProps = {
   trades: 26,
   builderName: "Franklin",
   builderAvatar: "/figma/avatar-franklin.png",
-  activeSince: "16 Mar 17,2026",
+  activeSince: "Mar 17, 2026",
   nodes: 9,
   nextRun: "6h 2m",
   slide: true,
