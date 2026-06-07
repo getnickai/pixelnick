@@ -8,17 +8,11 @@ import {
   useVideoConfig,
 } from "remotion";
 import { SlidingDigitCount } from "../_shared/sliding-digit-count";
-import { PerformanceCardCta } from "../../../components/performance-card-cta";
-import {
-  MetaIconCalendar,
-  MetaIconClock,
-  MetaIconNodes,
-} from "../../../components/performance-card-meta-icons";
 import type { PerformanceCardProps } from "./props";
 
 const ASSET = "/figma";
 
-/** Decorative bottom chart stroke (`line-graph.svg`). */
+/** Decorative bottom chart stroke (`line-graph.svg`). Flip to `true` to restore. */
 const SHOW_DECORATIVE_LINE_GRAPH = true;
 
 /**
@@ -98,11 +92,15 @@ export const PerformanceCardComposition: React.FC<PerformanceCardProps> = ({
   const { fps } = useVideoConfig();
 
   // --- Performance polarity ---
-  // PNL / Profit % render in green by default. When negative, swap to red and
-  // rotate the Profit % arrow 180°. Signed values use SlidingDigitCount `showSign`.
-  const isLoss = pnl < 0;
+  // Profit % renders white by default; on a loss we rotate its arrow 180° and
+  // turn the number red so a loss reads at a glance. (PNL itself signals loss
+  // via the down-arrow icon next to its value.) The signed value with leading
+  // "-" is rendered by SlidingDigitCount via `showSign`.
   const isLossPercent = profitPercent < 0;
 
+  // --- Background ---
+  // Slow continuous glow pulse — loops every `glowPulsePeriod` frames.
+  // Two layers: a soft overlay tint and a brighter SVG glow.
   const glowOverlayOpacity = interpolate(
     frame % ANIM.glowPulsePeriod,
     [0, ANIM.glowPulsePeriod / 2, ANIM.glowPulsePeriod],
@@ -118,7 +116,7 @@ export const PerformanceCardComposition: React.FC<PerformanceCardProps> = ({
   const agentIllustrationOpacity = interpolate(
     frame,
     ANIM.agentIllustration,
-    [0, 0.25],
+    [0, 0.1],
     { extrapolateRight: "clamp" },
   );
 
@@ -389,9 +387,7 @@ export const PerformanceCardComposition: React.FC<PerformanceCardProps> = ({
               <div className="relative flex items-center justify-center gap-6">
                 {/* Decorative left-edge green bar */}
                 <div
-                  className={`absolute -left-[87px] top-0 bottom-0 w-10 rounded-none rounded-r-3xl ${
-                    isLoss ? "bg-red-500" : "bg-green-600"
-                  }`}
+                  className="absolute -left-[87px] top-0 bottom-0 w-10 rounded-none rounded-r-3xl bg-green-600"
                   style={{
                     opacity: barOpacity,
                     transform: `scale(${barFinalScaleX}, ${barFinalScaleY})`,
@@ -404,9 +400,7 @@ export const PerformanceCardComposition: React.FC<PerformanceCardProps> = ({
                   style={{ opacity: pnlLabelOpacity }}
                 >
                   <span
-                    className={`grid size-[3.75rem] shrink-0 place-items-center rounded-4xl rounded-r-lg text-white ${
-                      isLoss ? "bg-red-500" : "bg-green-600"
-                    }`}
+                    className="grid size-[3.75rem] shrink-0 place-items-center rounded-4xl rounded-r-lg bg-green-600 text-white"
                     aria-hidden
                   >
                     {pnl < 0 ? (
@@ -441,17 +435,12 @@ export const PerformanceCardComposition: React.FC<PerformanceCardProps> = ({
                       </svg>
                     )}
                   </span>
-                  <span
-                    className={`inline-flex h-[3.75rem] items-center whitespace-nowrap rounded-4xl rounded-l-lg px-6 font-heading text-5xl font-medium leading-none text-white ${
-                      isLoss ? "bg-red-500" : "bg-green-600"
-                    }`}
-                  >
+                  <span className="inline-flex h-[3.75rem] items-center whitespace-nowrap rounded-4xl rounded-l-lg bg-green-600 px-6 font-heading text-5xl font-medium leading-none text-white">
                     <SlidingDigitCount
                       targetValue={pnl}
                       countWindow={ANIM.pnlCount}
                       decimals={2}
                       prefix="$"
-                      showSign
                       slide={slide}
                     />
                   </span>
@@ -461,10 +450,7 @@ export const PerformanceCardComposition: React.FC<PerformanceCardProps> = ({
                     className="flex items-center gap-2"
                     style={{ opacity: runsOpacity }}
                   >
-                    <span
-                      className="size-2 shrink-0 rounded-full bg-white"
-                      aria-hidden
-                    />
+                    <div className="size-2 shrink-0 rounded-full bg-white" />
                     <p className="whitespace-nowrap font-sans text-base font-medium leading-[1.4] text-white">
                       {runs} Runs
                     </p>
@@ -473,10 +459,7 @@ export const PerformanceCardComposition: React.FC<PerformanceCardProps> = ({
                     className="flex items-center gap-2"
                     style={{ opacity: tradesOpacity }}
                   >
-                    <span
-                      className="size-2 shrink-0 rounded-full bg-white"
-                      aria-hidden
-                    />
+                    <div className="size-2 shrink-0 rounded-full bg-white" />
                     <p className="whitespace-nowrap font-sans text-base font-medium leading-[1.4] text-white">
                       {trades} Trades
                     </p>
@@ -532,27 +515,49 @@ export const PerformanceCardComposition: React.FC<PerformanceCardProps> = ({
           {/* Meta Info */}
           <div className="flex flex-col items-start gap-6 font-sans">
             <div
-              className="flex items-center gap-3 text-zinc-400"
+              className="flex items-center gap-3"
               style={{ opacity: metaRow1Opacity }}
             >
-              <MetaIconCalendar className="h-5 w-[18px] shrink-0" />
-              <p className="whitespace-nowrap text-xl leading-4">
+              <div className="relative h-5 w-[18px] shrink-0">
+                <div className="absolute inset-[-3.75%_-4.17%]">
+                  <img
+                    alt=""
+                    src={`${ASSET}/icon-calendar.svg`}
+                    className="block size-full max-w-none"
+                  />
+                </div>
+              </div>
+              <p className="whitespace-nowrap text-xl leading-4 text-zinc-400">
                 Active since {activeSince}
               </p>
             </div>
             <div
-              className="flex items-center gap-6 text-zinc-400"
+              className="flex items-center gap-6"
               style={{ opacity: metaRow2Opacity }}
             >
               <div className="flex items-center gap-3">
-                <MetaIconNodes className="h-[16.67px] w-[20.837px] shrink-0" />
-                <p className="whitespace-nowrap text-xl leading-4">
+                <div className="relative h-[16.67px] w-[20.837px] shrink-0">
+                  <div className="absolute inset-[-4.5%_-3.6%]">
+                    <img
+                      alt=""
+                      src={`${ASSET}/icon-nodes.svg`}
+                      className="block size-full max-w-none"
+                    />
+                  </div>
+                </div>
+                <p className="whitespace-nowrap text-xl leading-4 text-zinc-400">
                   {nodes} nodes
                 </p>
               </div>
               <div className="flex items-center gap-3">
-                <MetaIconClock className="size-5 shrink-0" />
-                <p className="whitespace-nowrap text-xl leading-4">
+                <div className="relative size-5 shrink-0">
+                  <img
+                    alt=""
+                    src={`${ASSET}/icon-clock.svg`}
+                    className="absolute inset-0 block size-full max-w-none"
+                  />
+                </div>
+                <p className="whitespace-nowrap text-xl leading-4 text-zinc-400">
                   Next run in {nextRun}
                 </p>
               </div>
@@ -590,11 +595,42 @@ export const PerformanceCardComposition: React.FC<PerformanceCardProps> = ({
               {builderName}
             </p>
           </div>
-          <div className="ml-auto shrink-0 translate-x-2">
-            <PerformanceCardCta
-              variant="motion"
-              style={{ opacity: ctaOpacity }}
-            />
+          <div className="ml-auto shrink-0" style={{ opacity: ctaOpacity }}>
+            <div className="relative flex items-start">
+              {/* Left decorative tab (rotated 180°) */}
+              <div className="relative h-[56px] w-[46px] shrink-0 rotate-180">
+                <img
+                  alt=""
+                  src={`${ASSET}/cta-tab.svg`}
+                  className="absolute inset-0 block size-full max-w-none"
+                />
+              </div>
+
+              {/* Button body — solid brand blue, matching the tab.
+                  -ml-[2px] overlaps the tab so no background seam shows between them. */}
+              <div
+                className="relative -ml-[2px] flex shrink-0 items-center gap-[9px] rounded-r-[12px] py-4 pr-5 text-white"
+                style={{ backgroundColor: "#0178FF" }}
+              >
+                <p className="whitespace-nowrap text-xl font-semibold leading-[1.2]">
+                  Try in NickAI
+                </p>
+                <svg
+                  className="size-6 shrink-0"
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  xmlns="http://www.w3.org/2000/svg"
+                  aria-hidden
+                >
+                  <path
+                    d="M13 18L19 12L13 6M18.5 12H5"
+                    stroke="currentColor"
+                    strokeWidth="2"
+                    strokeLinecap="square"
+                  />
+                </svg>
+              </div>
+            </div>
           </div>
         </div>
       </div>

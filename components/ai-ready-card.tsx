@@ -1,15 +1,8 @@
 /* eslint-disable @next/next/no-img-element */
 
-import { PerformanceCardCta } from "@/components/performance-card-cta";
-import {
-  MetaIconCalendar,
-  MetaIconClock,
-  MetaIconNodes,
-} from "@/components/performance-card-meta-icons";
-
 const ASSET = "/figma";
 
-/** Decorative bottom chart stroke (`line-graph.svg`). */
+/** Decorative bottom chart stroke (`line-graph.svg`). Flip to `true` to restore. */
 const SHOW_DECORATIVE_LINE_GRAPH = true;
 
 export default function AiReadyCard() {
@@ -40,7 +33,7 @@ export default function AiReadyCard() {
 
       {/* Agent illustration (organic wave blob) */}
       <div
-        className="pointer-events-none absolute left-[-326px] top-[-222px] flex h-[865px] w-[1347px] items-center justify-center opacity-25"
+        className="pointer-events-none absolute left-[-326px] top-[-222px] flex h-[865px] w-[1347px] items-center justify-center opacity-10"
         data-node-id="196:260"
       >
         <div className="-rotate-90 -scale-y-100">
@@ -161,19 +154,13 @@ export default function AiReadyCard() {
                 </div>
                 <div className="flex flex-col items-start gap-1">
                   <div className="flex items-center gap-2">
-                    <span
-                      className="size-2 shrink-0 rounded-full bg-white"
-                      aria-hidden
-                    />
+                    <div className="size-2 shrink-0 rounded-full bg-white" />
                     <p className="whitespace-nowrap font-sans text-base font-medium leading-[1.4] text-white">
                       12 Runs
                     </p>
                   </div>
                   <div className="flex items-center gap-2">
-                    <span
-                      className="size-2 shrink-0 rounded-full bg-white"
-                      aria-hidden
-                    />
+                    <div className="size-2 shrink-0 rounded-full bg-white" />
                     <p className="whitespace-nowrap font-sans text-base font-medium leading-[1.4] text-white">
                       26 Trades
                     </p>
@@ -206,22 +193,44 @@ export default function AiReadyCard() {
 
           {/* Meta Info */}
           <div className="flex flex-col items-start gap-6 font-sans">
-            <div className="flex items-center gap-3 text-zinc-400">
-              <MetaIconCalendar className="h-5 w-[18px] shrink-0" />
-              <p className="whitespace-nowrap text-xl leading-4">
-                Active since 16 Mar 17,2026
+            <div className="flex items-center gap-3">
+              <div className="relative h-5 w-[18px] shrink-0">
+                <div className="absolute inset-[-3.75%_-4.17%]">
+                  <img
+                    alt=""
+                    src={`${ASSET}/icon-calendar.svg`}
+                    className="block size-full max-w-none"
+                  />
+                </div>
+              </div>
+              <p className="whitespace-nowrap text-xl leading-4 text-zinc-400">
+                Active since Mar 17, 2026
               </p>
             </div>
-            <div className="flex items-center gap-6 text-zinc-400">
+            <div className="flex items-center gap-6">
               <div className="flex items-center gap-3">
-                <MetaIconNodes className="h-[16.67px] w-[20.837px] shrink-0" />
-                <p className="whitespace-nowrap text-xl leading-4">
+                <div className="relative h-[16.67px] w-[20.837px] shrink-0">
+                  <div className="absolute inset-[-4.5%_-3.6%]">
+                    <img
+                      alt=""
+                      src={`${ASSET}/icon-nodes.svg`}
+                      className="block size-full max-w-none"
+                    />
+                  </div>
+                </div>
+                <p className="whitespace-nowrap text-xl leading-4 text-zinc-400">
                   9 nodes
                 </p>
               </div>
               <div className="flex items-center gap-3">
-                <MetaIconClock className="size-5 shrink-0" />
-                <p className="whitespace-nowrap text-xl leading-4">
+                <div className="relative size-5 shrink-0">
+                  <img
+                    alt=""
+                    src={`${ASSET}/icon-clock.svg`}
+                    className="absolute inset-0 block size-full max-w-none"
+                  />
+                </div>
+                <p className="whitespace-nowrap text-xl leading-4 text-zinc-400">
                   Next run in 6h 2m
                 </p>
               </div>
@@ -253,8 +262,42 @@ export default function AiReadyCard() {
               Franklin
             </p>
           </div>
-          <div className="ml-auto shrink-0 translate-x-2" data-node-id="204:278">
-            <PerformanceCardCta />
+          <div className="ml-auto shrink-0" data-node-id="204:278">
+            <div className="relative flex items-start">
+              {/* Left decorative tab (rotated 180°) */}
+              <div className="relative h-[56px] w-[46px] shrink-0 rotate-180">
+                <img
+                  alt=""
+                  src={`${ASSET}/cta-tab.svg`}
+                  className="absolute inset-0 block size-full max-w-none"
+                />
+              </div>
+
+              {/* Button body — solid brand blue, matching the tab.
+                  -ml-[2px] overlaps the tab so no background seam shows between them. */}
+              <div
+                className="relative -ml-[2px] flex shrink-0 items-center gap-[9px] rounded-r-[12px] py-4 pr-5 text-white"
+                style={{ backgroundColor: "#0178FF" }}
+              >
+                <p className="whitespace-nowrap text-xl font-semibold leading-[1.2]">
+                  Try in NickAI
+                </p>
+                <svg
+                  className="size-6 shrink-0"
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  xmlns="http://www.w3.org/2000/svg"
+                  aria-hidden
+                >
+                  <path
+                    d="M13 18L19 12L13 6M18.5 12H5"
+                    stroke="currentColor"
+                    strokeWidth="2"
+                    strokeLinecap="square"
+                  />
+                </svg>
+              </div>
+            </div>
           </div>
         </div>
       </div>
