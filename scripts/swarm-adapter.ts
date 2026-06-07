@@ -100,10 +100,14 @@ function relTime(iso?: string): string {
   return h < 24 ? `${h}h ago` : `${Math.floor(h / 24)}d ago`;
 }
 
-/** Trailing same-result streak token, e.g. "W4" / "L3". Voids are ignored. */
-function streakOf(closed: any[]): string | undefined {
-  const wl = closed.map((t) => t.result).filter((r) => r === "win" || r === "loss");
-  if (!wl.length) return undefined;
+/** Trailing same-result streak token, e.g. "W4" / "L3". Voids are ignored.
+ *  Returns "—" when there is no settled win/loss, so the card shows an honest
+ *  blank instead of the engine's ROI-derived fallback streak. */
+function streakOf(closed: any[]): string {
+  const wl = closed
+    .map((t) => String(t.result ?? "").toLowerCase())
+    .filter((r) => r === "win" || r === "loss");
+  if (!wl.length) return "—";
   const last = wl[wl.length - 1];
   let n = 0;
   for (let i = wl.length - 1; i >= 0 && wl[i] === last; i--) n++;
@@ -133,8 +137,8 @@ function toEngineAgent(profile: any, snap: any, runs: any[]): any {
 
   // Accuracy / record: prefer perf.wins/losses; else derive from closed_trades;
   // else fall back to a sharp-agreement proxy on open positions.
-  const cWins = closed.filter((t) => t.result === "win").length;
-  const cLosses = closed.filter((t) => t.result === "loss").length;
+  const cWins = closed.filter((t) => String(t.result).toLowerCase() === "win").length;
+  const cLosses = closed.filter((t) => String(t.result).toLowerCase() === "loss").length;
   const wins = perf.wins ?? (closed.length ? cWins : null);
   const losses = perf.losses ?? (closed.length ? cLosses : null);
   const pickPct =
@@ -193,7 +197,7 @@ function toEngineAgent(profile: any, snap: any, runs: any[]): any {
       pnl: Number((p.mtm_pnl_usd ?? p.pnl_usd ?? 0).toFixed(2)),
     })),
     ...(lastTrade ? { lastTrade } : {}),
-    ...(streak ? { streak } : {}),
+    streak,
   };
 }
 
