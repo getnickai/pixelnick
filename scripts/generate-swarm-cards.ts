@@ -77,7 +77,14 @@ function plan(flags: Flags, deck: Awaited<ReturnType<typeof loadSwarmDeck>>["dec
       props: { ...base, card: "agent", handle: a.handle, layout: flags.layout },
     });
   }
-  jobs.push({ slug: "match", props: { ...base, card: "match" } });
+  // The match card needs a head-to-head fixture in the deck. Skip it (don't
+  // crash) when there's none yet, e.g. a single-agent live deck before the
+  // World Cup bracket is populated.
+  if (deck.match) {
+    jobs.push({ slug: "match", props: { ...base, card: "match" } });
+  } else {
+    console.warn("Skipping match card: deck has no match data (deck.match is null).");
+  }
   jobs.push({ slug: "leaderboard", props: { ...base, card: "leaderboard" } });
   return flags.slug ? jobs.filter((j) => j.slug === flags.slug) : jobs;
 }
