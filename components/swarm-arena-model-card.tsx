@@ -35,6 +35,25 @@ export default function SwarmArenaModelCard() {
       className="relative h-[1050px] w-[650px] overflow-clip rounded-2xl bg-gradient-to-b from-[#110d0b] to-[#2f231e] font-sans"
       data-node-id="350:124"
     >
+      {/* Decorative logo-shape watermark — bottom left (behind content, so the
+          glass panel's backdrop-blur and the bottom progressive blur both bite on it) */}
+      <div className="pointer-events-none absolute left-[-127.46px] top-[766.37px] h-[471.227px] w-[412.465px] mix-blend-overlay">
+        <img
+          alt=""
+          src={`${ASSET}/logoshp-bottom.svg`}
+          className="block size-full max-w-none -scale-y-100 rotate-180"
+        />
+      </div>
+
+      {/* Decorative logo-shape watermark — top right (behind content) */}
+      <div className="pointer-events-none absolute left-[318px] top-[-284.61px] h-[471.227px] w-[412.465px] mix-blend-overlay">
+        <img
+          alt=""
+          src={`${ASSET}/logoshp-top.svg`}
+          className="block size-full max-w-none -scale-y-100 rotate-180"
+        />
+      </div>
+
       {/* Header — Swarm Arena lockup */}
       <div className="absolute left-16 top-[57px] flex items-center gap-5">
         <img
@@ -53,7 +72,7 @@ export default function SwarmArenaModelCard() {
         <div className="flex w-full flex-col gap-7">
           <div className="flex items-center gap-4">
             <div className="flex items-center gap-2.5">
-              <div className="size-[19px] shrink-0 rounded-full bg-[#8bce6c]" />
+              <div className="size-[27px] shrink-0 rounded-full bg-[#8bce6c]" />
               <div className="flex items-center justify-center rounded-full bg-[#8bce6c] px-3 py-1">
                 <p className="text-base font-semibold uppercase leading-[1.2] text-[#161210]">
                   Live Agent
@@ -81,19 +100,21 @@ export default function SwarmArenaModelCard() {
           <div className="flex w-full flex-col justify-center gap-6">
             <div className="flex w-full items-start gap-8">
               {/* Season PNL */}
-              <div className="relative flex flex-1 flex-col gap-8">
+              <div className="flex flex-1 flex-col gap-4">
                 <p className="font-sans text-2xl font-semibold leading-[1.2] text-[#fff8ea]/90">
                   Season PNL
                 </p>
-                <p className="font-heading text-[54px] font-semibold leading-[1.4] tracking-[1px] text-[#8bce6c]">
-                  +$184
-                </p>
-                {/* Accent bar bleeding off the left edge */}
-                <div className="absolute bottom-[-3px] -left-[86px] h-[41px] w-[39px] rounded-lg bg-[#8bce6c]" />
+                <div className="relative">
+                  <p className="font-heading text-[54px] font-semibold leading-none tracking-[1px] text-[#8bce6c]">
+                    +$184
+                  </p>
+                  {/* Accent bar, centered on the value, bleeding off the left edge */}
+                  <div className="absolute top-1/2 -left-[86px] h-[41px] w-[39px] -translate-y-1/2 rounded-lg bg-[#8bce6c]" />
+                </div>
               </div>
 
               {/* Profit % */}
-              <div className="flex flex-1 flex-col gap-8">
+              <div className="flex flex-1 flex-col gap-4">
                 <p className="font-sans text-2xl font-semibold leading-[1.2] text-[#fff8ea]/90">
                   Profit %
                 </p>
@@ -103,7 +124,7 @@ export default function SwarmArenaModelCard() {
                     src="/figma/arrow-up.svg"
                     className="h-8 w-[27.429px] shrink-0"
                   />
-                  <p className="whitespace-nowrap font-heading text-[54px] font-semibold leading-[1.4] tracking-[1px] text-[#fff8ea]">
+                  <p className="whitespace-nowrap font-heading text-[54px] font-semibold leading-none tracking-[1px] text-[#fff8ea]">
                     27.97%
                   </p>
                 </div>
@@ -119,7 +140,7 @@ export default function SwarmArenaModelCard() {
                 <p className="text-[28px] font-semibold leading-none text-[#fff8ea]">
                   $1,184
                 </p>
-                <p className="pb-3 text-xl font-normal leading-4 text-[#8a8174]">
+                <p className="pb-1 text-xl font-normal leading-4 text-[#8a8174]">
                   Equity
                 </p>
               </div>
@@ -174,6 +195,40 @@ export default function SwarmArenaModelCard() {
             </div>
           </div>
         </div>
+      </div>
+
+      {/* Progressive blur — bottom band (Figma: progressiveblur 354:44, ~169px).
+          Layered backdrop-blur passes, each masked to fade out toward the top so
+          blur ramps up to the bottom edge. Sits above the backdrop/watermark but
+          below the footer so BUILT ON / NickAI / CTA stay crisp. */}
+      <div className="pointer-events-none absolute inset-x-0 bottom-0 h-[169px] overflow-hidden">
+        <div
+          className="absolute inset-x-0 bottom-0 h-[76%] backdrop-blur-[4px]"
+          style={{
+            maskImage:
+              "linear-gradient(to top, rgba(0,0,0,1) 62%, rgba(0,0,0,0) 100%)",
+            WebkitMaskImage:
+              "linear-gradient(to top, rgba(0,0,0,1) 62%, rgba(0,0,0,0) 100%)",
+          }}
+        />
+        <div
+          className="absolute inset-x-0 bottom-0 h-[56%] backdrop-blur-[8px]"
+          style={{
+            maskImage:
+              "linear-gradient(to top, rgba(0,0,0,1) 58%, rgba(0,0,0,0) 100%)",
+            WebkitMaskImage:
+              "linear-gradient(to top, rgba(0,0,0,1) 58%, rgba(0,0,0,0) 100%)",
+          }}
+        />
+        <div
+          className="absolute inset-x-0 bottom-0 h-[36%] backdrop-blur-[16px]"
+          style={{
+            maskImage:
+              "linear-gradient(to top, rgba(0,0,0,1) 54%, rgba(0,0,0,0) 100%)",
+            WebkitMaskImage:
+              "linear-gradient(to top, rgba(0,0,0,1) 54%, rgba(0,0,0,0) 100%)",
+          }}
+        />
       </div>
 
       {/* Footer — built-on credit */}
