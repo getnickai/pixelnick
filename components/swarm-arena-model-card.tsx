@@ -121,8 +121,8 @@ export default function SwarmArenaModelCard() {
                 <div className="flex items-center gap-4">
                   <img
                     alt=""
-                    src="/figma/arrow-up.svg"
-                    className="h-8 w-[27.429px] shrink-0"
+                    src={`${ASSET}/arrow-up.svg`}
+                    className="h-10 w-[34.29px] shrink-0"
                   />
                   <p className="whitespace-nowrap font-heading text-[54px] font-semibold leading-none tracking-[1px] text-[#fff8ea]">
                     27.97%

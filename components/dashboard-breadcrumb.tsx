@@ -2,23 +2,31 @@
 
 import { usePathname } from "next/navigation";
 import { ChevronRight } from "lucide-react";
-import { staticManifest } from "@/static/manifest";
+
+type Crumb = { id: string; label: string };
 
 /**
- * Header breadcrumb for `/static` — shows "Static › {current card}".
- * Resolves the current card from the pathname against `staticManifest`.
+ * Header breadcrumb shared by the `/static` and `/motion` dashboards —
+ * renders "{root} › {current entry}". The current entry is resolved from the
+ * pathname (`/{section}/{id}`) against the passed `items` (a manifest).
  */
-export function StaticBreadcrumb() {
+export function DashboardBreadcrumb({
+  root,
+  items,
+}: {
+  root: string;
+  items: readonly Crumb[];
+}) {
   const pathname = usePathname();
   const id = pathname.split("/")[2];
-  const current = staticManifest.find((entry) => entry.id === id);
+  const current = items.find((entry) => entry.id === id);
 
   return (
     <nav
       aria-label="Breadcrumb"
       className="flex min-w-0 items-center gap-1.5 text-sm font-medium text-sidebar-foreground"
     >
-      <span className="shrink-0">Static</span>
+      <span className="shrink-0">{root}</span>
       {current ? (
         <>
           <ChevronRight
