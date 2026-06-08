@@ -11,6 +11,11 @@ import {
   swarmCardDefaultProps,
   type SwarmCardProps,
 } from "./compositions/swarm-card/props";
+import { SwarmArenaModelCardComposition } from "./compositions/swarm-arena-model-card/composition";
+import {
+  swarmArenaModelCardDefaultProps,
+  type SwarmArenaModelCardProps,
+} from "./compositions/swarm-arena-model-card/props";
 import {
   motionManifest,
   type MotionEntryMeta,
@@ -52,6 +57,10 @@ const componentBindings: Record<string, ComponentBinding> = {
     component: SwarmCardComposition,
     defaultProps: swarmCardDefaultProps,
   } as ComponentBinding<SwarmCardProps> as ComponentBinding,
+  "swarm-arena-model-card": {
+    component: SwarmArenaModelCardComposition,
+    defaultProps: swarmArenaModelCardDefaultProps,
+  } as ComponentBinding<SwarmArenaModelCardProps> as ComponentBinding,
 };
 
 export const motionRegistry: MotionEntry[] = motionManifest

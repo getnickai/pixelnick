@@ -146,9 +146,12 @@ export const PerformanceCardComposition: React.FC<PerformanceCardProps> = ({
 
   // Headline: fade up.
   const headlineOpacity = interpolate(frame, ANIM.headline, [0, 1], {
+    easing: Easing.out(Easing.cubic),
     extrapolateRight: "clamp",
   });
   const headlineY = interpolate(frame, ANIM.headline, [16, 0], {
+    easing: Easing.out(Easing.exp),
+    extrapolateLeft: "clamp",
     extrapolateRight: "clamp",
   });
 
@@ -200,14 +203,27 @@ export const PerformanceCardComposition: React.FC<PerformanceCardProps> = ({
   });
   // Profit % count-up rendered by <SlidingDigitCount>; value computed internally.
   const profitOpacity = interpolate(frame, ANIM.profitOpacity, [0, 1], {
+    easing: Easing.out(Easing.cubic),
     extrapolateRight: "clamp",
   });
 
   // --- Meta info rows ---
   const metaRow1Opacity = interpolate(frame, ANIM.metaRow1, [0, 1], {
+    easing: Easing.out(Easing.cubic),
+    extrapolateRight: "clamp",
+  });
+  const metaRow1Y = interpolate(frame, ANIM.metaRow1, [12, 0], {
+    easing: Easing.out(Easing.exp),
+    extrapolateLeft: "clamp",
     extrapolateRight: "clamp",
   });
   const metaRow2Opacity = interpolate(frame, ANIM.metaRow2, [0, 1], {
+    easing: Easing.out(Easing.cubic),
+    extrapolateRight: "clamp",
+  });
+  const metaRow2Y = interpolate(frame, ANIM.metaRow2, [12, 0], {
+    easing: Easing.out(Easing.exp),
+    extrapolateLeft: "clamp",
     extrapolateRight: "clamp",
   });
 
@@ -216,9 +232,12 @@ export const PerformanceCardComposition: React.FC<PerformanceCardProps> = ({
     extrapolateRight: "clamp",
   });
   const authorOpacity = interpolate(frame, ANIM.author, [0, 1], {
+    easing: Easing.out(Easing.cubic),
     extrapolateRight: "clamp",
   });
   const authorY = interpolate(frame, ANIM.author, [8, 0], {
+    easing: Easing.out(Easing.exp),
+    extrapolateLeft: "clamp",
     extrapolateRight: "clamp",
   });
 
@@ -229,6 +248,7 @@ export const PerformanceCardComposition: React.FC<PerformanceCardProps> = ({
   // both children onto a single compositing layer and subpixel rendering
   // exposes the seam between them. Plain opacity has no layer side effects.
   const ctaOpacity = interpolate(frame, ANIM.cta, [0, 1], {
+    easing: Easing.out(Easing.cubic),
     extrapolateRight: "clamp",
   });
 
@@ -516,7 +536,10 @@ export const PerformanceCardComposition: React.FC<PerformanceCardProps> = ({
           <div className="flex flex-col items-start gap-6 font-sans">
             <div
               className="flex items-center gap-3"
-              style={{ opacity: metaRow1Opacity }}
+              style={{
+                opacity: metaRow1Opacity,
+                transform: `translateY(${metaRow1Y}px)`,
+              }}
             >
               <div className="relative h-5 w-[18px] shrink-0">
                 <div className="absolute inset-[-3.75%_-4.17%]">
@@ -533,7 +556,10 @@ export const PerformanceCardComposition: React.FC<PerformanceCardProps> = ({
             </div>
             <div
               className="flex items-center gap-6"
-              style={{ opacity: metaRow2Opacity }}
+              style={{
+                opacity: metaRow2Opacity,
+                transform: `translateY(${metaRow2Y}px)`,
+              }}
             >
               <div className="flex items-center gap-3">
                 <div className="relative h-[16.67px] w-[20.837px] shrink-0">

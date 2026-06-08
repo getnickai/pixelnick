@@ -270,6 +270,26 @@ export default function SwarmArenaModelCard() {
           />
         </svg>
       </div>
+
+      {/* Rank badge — glossy hexagon, top-right */}
+      <div className="absolute left-[472px] top-[61.5px] size-[106.408px]">
+        <div className="absolute inset-[2.33%_6.7%]">
+          <img
+            alt=""
+            src={`${ASSET}/rank-hex.svg`}
+            className="block size-full max-w-none"
+          />
+        </div>
+        <div className="absolute left-[4.85px] top-[4.85px] size-[96.706px] mix-blend-screen">
+          <div className="absolute inset-[1.92%_6.7%]">
+            <img
+              alt=""
+              src={`${ASSET}/rank-hex-overlay.svg`}
+              className="block size-full max-w-none"
+            />
+          </div>
+        </div>
+      </div>
     </article>
   );
 }
