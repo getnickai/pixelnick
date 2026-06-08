@@ -2,12 +2,13 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { LineChart } from "lucide-react";
+import { Hexagon, LineChart } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { staticManifest } from "@/static/manifest";
 
 const ICONS: Record<string, typeof LineChart> = {
   "performance-card": LineChart,
+  "swarm-arena-model-card": Hexagon,
 };
 
 /**
