@@ -30,6 +30,9 @@ const LATEST_PICKS = [
   { label: "Over 2.5 at:", value: "0.44" },
 ];
 
+/** Rank shown inside the hexagon badge (matches the "Rank" stat: #1 / 11). */
+const RANK = "1";
+
 /**
  * Master timeline (30fps). Each window is [startFrame, endFrame]; the element
  * ramps "off" → "on". Spring entrances use a single *SpringStart frame. The
@@ -44,7 +47,9 @@ const ANIM = {
 
   // Entrance windows [start, end]
   header: [0, 14],
-  rank: [8, 22],
+  rank: [8, 22], // hexagon
+  rankNum: [15, 29], // "1" stamps in after the hexagon
+  rankRibbon: [21, 37], // ribbon banner sweeps on last
   tagDot: [10, 22],
   tagPill: [15, 27],
   tagWorld: [20, 32],
@@ -71,6 +76,8 @@ const ANIM = {
   // Spring entrance starts
   headerSpringStart: 0,
   rankSpringStart: 8,
+  rankNumSpringStart: 15,
+  rankRibbonSpringStart: 21,
   tagDotSpringStart: 10,
   tagPillSpringStart: 15,
   avatarSpringStart: 18,
@@ -153,13 +160,27 @@ export const SwarmArenaModelCardComposition: React.FC<
   });
   const avatarScale = interpolate(avatarSpring, [0, 1], [0.5, 1]);
 
-  // Rank badge — spring pop.
+  // Rank badge — staggered pop: hexagon, then the "1", then the ribbon.
   const rankSpring = spring({
     frame: frame - ANIM.rankSpringStart,
     fps,
     config: { damping: 11, stiffness: 150 },
   });
   const rankScale = interpolate(rankSpring, [0, 1], [0.3, 1]);
+  // Rank number — slightly bouncier "stamp" once the hexagon has landed.
+  const rankNumSpring = spring({
+    frame: frame - ANIM.rankNumSpringStart,
+    fps,
+    config: { damping: 10, stiffness: 180 },
+  });
+  const rankNumScale = interpolate(rankNumSpring, [0, 1], [0.4, 1]);
+  // Ribbon — pops on last to finish the badge.
+  const rankRibbonSpring = spring({
+    frame: frame - ANIM.rankRibbonSpringStart,
+    fps,
+    config: { damping: 13, stiffness: 160 },
+  });
+  const rankRibbonScale = interpolate(rankRibbonSpring, [0, 1], [0.6, 1]);
 
   // Accent bar — vertical scale-in spring + looping breathe (scale pulse).
   const barSpring = spring({
@@ -519,30 +540,63 @@ export const SwarmArenaModelCardComposition: React.FC<
         </svg>
       </div>
 
-      {/* Rank badge — glossy hexagon, top-right (spring pop) */}
-      <div
-        className="absolute left-[472px] top-[61.5px] size-[106.408px]"
-        style={{
-          opacity: fade(ANIM.rank),
-          transform: `scale(${rankScale})`,
-          transformOrigin: "center",
-        }}
-      >
-        <div className="absolute inset-[2.33%_6.7%]">
-          <img
-            alt=""
-            src={`${ASSET}/rank-hex.svg`}
-            className="block size-full max-w-none"
-          />
-        </div>
-        <div className="absolute left-[4.85px] top-[4.85px] size-[96.706px] mix-blend-screen">
-          <div className="absolute inset-[1.92%_6.7%]">
+      {/* Rank badge — hexagon, then "1", then ribbon stagger in (top-right) */}
+      <div className="absolute left-[472px] top-[61.5px] size-[106.408px]">
+        {/* Hexagon + overlay — spring pop (lands first) */}
+        <div
+          className="absolute inset-0"
+          style={{
+            opacity: fade(ANIM.rank),
+            transform: `scale(${rankScale})`,
+            transformOrigin: "center",
+          }}
+        >
+          <div className="absolute inset-[2.33%_6.7%]">
             <img
               alt=""
-              src={`${ASSET}/rank-hex-overlay.svg`}
+              src={`${ASSET}/rank-hex.svg`}
               className="block size-full max-w-none"
             />
           </div>
+          <div className="absolute left-[4.85px] top-[4.85px] size-[96.706px] mix-blend-screen">
+            <div className="absolute inset-[1.92%_6.7%]">
+              <img
+                alt=""
+                src={`${ASSET}/rank-hex-overlay.svg`}
+                className="block size-full max-w-none"
+              />
+            </div>
+          </div>
+        </div>
+
+        {/* RANK ribbon — banner sweeps on last, across the hexagon's lower third */}
+        <div
+          className="absolute left-[-16.3px] top-[52px] h-[50px] w-[139px]"
+          style={{
+            opacity: fade(ANIM.rankRibbon),
+            transform: `scale(${rankRibbonScale})`,
+            transformOrigin: "center",
+          }}
+        >
+          <img alt="" src={`${ASSET}/rank-ribbon.svg`} className="block size-full" />
+          <div className="absolute inset-x-0 top-0 flex h-[31px] items-center justify-center">
+            <span className="font-heading text-[18px] font-bold uppercase leading-none text-[#0d0907]">
+              Rank
+            </span>
+          </div>
+        </div>
+
+        {/* Rank number — stamps in after the hexagon, above the ribbon */}
+        <div
+          className="absolute inset-x-0 top-0 flex h-[76px] items-center justify-center"
+          style={{
+            opacity: fade(ANIM.rankNum),
+            transform: `scale(${rankNumScale})`,
+          }}
+        >
+          <span className="font-heading text-[48px] font-bold leading-none tracking-[1px] text-[#fff8ea]">
+            {RANK}
+          </span>
         </div>
       </div>
     </AbsoluteFill>

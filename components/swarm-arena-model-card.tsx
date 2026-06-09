@@ -27,6 +27,9 @@ const LATEST_PICKS = [
   { label: "Over 2.5 at:", value: "0.44" },
 ];
 
+/** Rank shown inside the hexagon badge (matches the "Rank" stat: #1 / 11). */
+const RANK = "1";
+
 export default function SwarmArenaModelCard() {
   const model = MODELS[MODEL];
 
@@ -271,7 +274,7 @@ export default function SwarmArenaModelCard() {
         </svg>
       </div>
 
-      {/* Rank badge — glossy hexagon, top-right */}
+      {/* Rank badge — glossy hexagon + rank number + RANK ribbon, top-right */}
       <div className="absolute left-[472px] top-[61.5px] size-[106.408px]">
         <div className="absolute inset-[2.33%_6.7%]">
           <img
@@ -288,6 +291,23 @@ export default function SwarmArenaModelCard() {
               className="block size-full max-w-none"
             />
           </div>
+        </div>
+
+        {/* RANK ribbon — banner across the hexagon's lower third */}
+        <div className="absolute left-[-16.3px] top-[52px] h-[50px] w-[139px]">
+          <img alt="" src={`${ASSET}/rank-ribbon.svg`} className="block size-full" />
+          <div className="absolute inset-x-0 top-0 flex h-[31px] items-center justify-center">
+            <span className="font-heading text-[18px] font-bold uppercase leading-none text-[#0d0907]">
+              Rank
+            </span>
+          </div>
+        </div>
+
+        {/* Rank number — centered in the upper hexagon, above the ribbon */}
+        <div className="absolute inset-x-0 top-0 flex h-[76px] items-center justify-center">
+          <span className="font-heading text-[48px] font-bold leading-none tracking-[1px] text-[#fff8ea]">
+            {RANK}
+          </span>
         </div>
       </div>
     </article>

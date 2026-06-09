@@ -1,0 +1,16 @@
+<svg width="139" height="50" viewBox="0 0 139 50" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <linearGradient id="rankRibbonTail" x1="0" y1="6" x2="0" y2="36" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#EAE2D4"/>
+      <stop offset="1" stop-color="#C0BBB4"/>
+    </linearGradient>
+    <filter id="rankRibbonShadow" x="0" y="0" width="139" height="50" filterUnits="userSpaceOnUse" color-interpolation-filters="sRGB">
+      <feDropShadow dx="0" dy="3" stdDeviation="3.5" flood-color="#000000" flood-opacity="0.12"/>
+    </filter>
+  </defs>
+  <!-- Folded ribbon tails (behind the band), swallowtail notch at the hanging end -->
+  <path d="M1 6 H27.8 V36 L14.4 30 L1 36 Z" fill="url(#rankRibbonTail)"/>
+  <path d="M111.2 6 H137.8 V36 L124.5 30 L111.2 36 Z" fill="url(#rankRibbonTail)"/>
+  <!-- Main banner -->
+  <rect x="20.85" y="2" width="97.3" height="27.2" rx="2" fill="#FFF8EB" filter="url(#rankRibbonShadow)"/>
+</svg>
