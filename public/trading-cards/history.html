@@ -1,0 +1,198 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Trading Cards — Card History</title>
+<style>
+  :root{
+    --bg:#000510; --bg-panel:#0a1020; --bg-panel-2:#111a30; --text:#f4f6fb; --text-dim:#aeb6c8;
+    --text-faint:#6b7589; --brand:#0178ff; --border:rgba(255,255,255,0.08); --border-solid:#1b2540;
+    --glow:rgba(1,120,255,0.22);
+    --font-body:"Manrope",ui-sans-serif,system-ui,-apple-system,sans-serif;
+    --font-mono:ui-monospace,"SF Mono","Geist Mono","Fira Code",Menlo,monospace;
+  }
+  *{box-sizing:border-box}
+  html,body{margin:0;min-height:100%}
+  body{background:var(--bg);color:var(--text);font-family:var(--font-body);-webkit-font-smoothing:antialiased}
+  .shell-glow{position:fixed;top:-30%;right:-18%;width:60vw;aspect-ratio:1;border-radius:50%;background:radial-gradient(circle,var(--glow) 0%,transparent 62%);filter:blur(3px);pointer-events:none;z-index:0;opacity:0.6}
+  /* ---- header + shared nav (identical markup across all kit pages) ---- */
+  header{position:relative;z-index:2;display:flex;align-items:center;justify-content:space-between;gap:20px;padding:18px 28px;border-bottom:1px solid var(--border);flex-wrap:wrap}
+  .brand{display:flex;align-items:center;gap:11px}
+  .brand .mk{width:30px;height:30px;display:grid;place-items:center;border-radius:8px;background:color-mix(in srgb,var(--brand) 18%,transparent);color:var(--brand);font-family:var(--font-mono);font-weight:800;font-size:15px}
+  .brand .wm{font-family:var(--font-mono);font-weight:700;font-size:18px;letter-spacing:0.13em;text-transform:uppercase}
+  .brand .wm b{color:var(--brand)}
+  .brand .tag{font-family:var(--font-mono);font-size:10px;letter-spacing:0.2em;text-transform:uppercase;color:var(--text-faint);margin-left:6px;padding-left:12px;border-left:1px solid var(--border)}
+  .topnav{display:flex;align-items:center;gap:22px;flex-wrap:wrap}
+  .navgrp{display:flex;align-items:center;gap:8px}
+  .navgrp .navlbl{font-family:var(--font-mono);font-size:9.5px;letter-spacing:0.18em;text-transform:uppercase;color:var(--text-faint)}
+  .navgrp a{font-family:var(--font-mono);font-size:11.5px;font-weight:600;letter-spacing:0.04em;text-decoration:none;color:var(--text-dim);padding:5px 9px;border-radius:6px;border:1px solid transparent;transition:all .15s ease}
+  .navgrp a:hover{color:var(--text);background:var(--bg-panel)}
+  .navgrp a.active{color:var(--brand);border-color:color-mix(in srgb,var(--brand) 45%,transparent);background:color-mix(in srgb,var(--brand) 14%,transparent)}
+  .topnav .sep{width:1px;height:14px;background:var(--border)}
+  /* ---- gallery ---- */
+  main{position:relative;z-index:2;max-width:1200px;margin:0 auto;padding:32px 28px 80px}
+  .page-head{display:flex;align-items:baseline;justify-content:space-between;gap:16px;margin-bottom:8px;flex-wrap:wrap}
+  .page-head h1{font-family:var(--font-mono);font-size:15px;font-weight:700;letter-spacing:0.14em;text-transform:uppercase;margin:0}
+  .page-head .count{font-family:var(--font-mono);font-size:11px;color:var(--text-faint);letter-spacing:0.08em}
+  .intro{font-family:var(--font-body);font-size:13px;line-height:1.6;color:var(--text-faint);margin:0 0 28px;max-width:680px}
+  .daygroup{margin-top:34px}
+  .daygroup>.dlbl{font-family:var(--font-mono);font-size:11px;letter-spacing:0.16em;text-transform:uppercase;color:var(--text-dim);padding-bottom:11px;margin-bottom:18px;border-bottom:1px solid var(--border)}
+  .grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(208px,1fr));gap:22px}
+  .tile{display:flex;flex-direction:column;gap:11px;background:var(--bg-panel);border:1px solid var(--border-solid);border-radius:12px;padding:13px;transition:border-color .15s ease,transform .15s ease}
+  .tile:hover{border-color:color-mix(in srgb,var(--brand) 40%,transparent);transform:translateY(-2px)}
+  .thumb{position:relative;border-radius:8px;overflow:hidden;border:1px solid var(--border);background:#000;aspect-ratio:650/1136}
+  .thumb img{width:100%;height:100%;object-fit:cover;display:block}
+  .thumb .badge{position:absolute;top:8px;left:8px;font-family:var(--font-mono);font-size:8.5px;font-weight:700;letter-spacing:0.1em;text-transform:uppercase;padding:3px 7px;border-radius:5px;background:color-mix(in srgb,var(--brand) 22%,#000 60%);color:var(--brand);border:1px solid color-mix(in srgb,var(--brand) 45%,transparent);backdrop-filter:blur(4px)}
+  .thumb .mp4tag{position:absolute;top:8px;right:8px;font-family:var(--font-mono);font-size:8px;font-weight:700;letter-spacing:0.08em;padding:3px 6px;border-radius:5px;background:rgba(0,0,0,0.6);color:var(--text-dim);border:1px solid var(--border)}
+  .tmeta{display:flex;flex-direction:column;gap:3px;min-height:34px}
+  .tmeta .tlabel{font-family:var(--font-body);font-size:13px;font-weight:600;color:var(--text);line-height:1.25}
+  .tmeta .tsub{font-family:var(--font-mono);font-size:10px;color:var(--text-faint);letter-spacing:0.05em}
+  .actions{display:flex;flex-wrap:wrap;gap:6px;margin-top:2px}
+  .actions a,.actions button{font-family:var(--font-mono);font-size:10.5px;font-weight:600;letter-spacing:0.03em;padding:6px 9px;border-radius:6px;border:1px solid var(--border-solid);background:var(--bg-panel-2);color:var(--text-dim);cursor:pointer;text-decoration:none;transition:all .14s ease}
+  .actions a:hover,.actions button:hover{color:var(--text);border-color:color-mix(in srgb,var(--brand) 45%,transparent)}
+  .actions .primary{color:var(--brand);border-color:color-mix(in srgb,var(--brand) 40%,transparent);background:color-mix(in srgb,var(--brand) 12%,transparent)}
+  .empty{font-family:var(--font-mono);font-size:13px;color:var(--text-faint);padding:60px 0;text-align:center}
+  .toast{position:fixed;bottom:26px;left:50%;transform:translateX(-50%) translateY(20px);z-index:20;background:var(--brand);color:#fff;font-family:var(--font-mono);font-size:12px;font-weight:700;letter-spacing:0.04em;padding:10px 18px;border-radius:8px;opacity:0;pointer-events:none;transition:all .2s ease}
+  .toast.show{opacity:1;transform:translateX(-50%) translateY(0)}
+  @media (max-width:560px){.grid{grid-template-columns:repeat(auto-fill,minmax(150px,1fr))}}
+</style>
+</head>
+<body>
+<div class="shell-glow"></div>
+<header>
+  <div class="brand">
+    <span class="mk">N</span>
+    <span class="wm">NICK<b>AI</b></span>
+    <span class="tag">Card History</span>
+  </div>
+  <nav class="topnav" id="topnav">
+    <div class="navgrp">
+      <span class="navlbl">Swarm Arena</span>
+      <a href="/swarm-arena-cards/index.html" data-key="swarm-kit">Kit</a>
+      <a href="/swarm-arena-cards/history.html" data-key="swarm-history">History</a>
+    </div>
+    <span class="sep"></span>
+    <div class="navgrp">
+      <span class="navlbl">Trading Cards</span>
+      <a href="/trading-cards/index.html" data-key="trading-kit">Kit</a>
+      <a href="/trading-cards/history.html" data-key="trading-history">History</a>
+    </div>
+  </nav>
+</header>
+
+<main>
+  <div class="page-head">
+    <h1>Generated Cards</h1>
+    <span class="count" id="count"></span>
+  </div>
+  <p class="intro">Every trading performance card the pipeline has rendered, newest first. Download the PNG or MP4 to share, or copy a ready-to-post caption in house style.</p>
+  <div id="gallery"><div class="empty">Loading…</div></div>
+</main>
+<div class="toast" id="toast">Copied</div>
+
+<script>
+  // Shared nav active-state. Each page sets ACTIVE_KEY.
+  const ACTIVE_KEY = "trading-history";
+  document.querySelectorAll("#topnav a").forEach((a) => {
+    if (a.dataset.key === ACTIVE_KEY) a.classList.add("active");
+  });
+
+  const toastEl = document.getElementById("toast");
+  let toastTimer;
+  function toast(msg) {
+    toastEl.textContent = msg;
+    toastEl.classList.add("show");
+    clearTimeout(toastTimer);
+    toastTimer = setTimeout(() => toastEl.classList.remove("show"), 1600);
+  }
+
+  function pct(n) { return `${n >= 0 ? "+" : ""}${n}%`; }
+  function money(n) { return `$${Number(n).toLocaleString(undefined, { maximumFractionDigits: 2 })}`; }
+
+  // House-style caption, built from the entry meta. No em-dashes, no hashtags.
+  function captionFor(e) {
+    const m = e.meta || {};
+    const cta = "Try it for free now: getnick.ai";
+    const lines = [`*${e.label}* · NickAI`];
+    if (typeof m.profitPercent === "number") {
+      const parts = [`${pct(m.profitPercent)} return`];
+      if (typeof m.pnl === "number") parts.push(`${money(m.pnl)} PNL`);
+      if (typeof m.runs === "number" && typeof m.trades === "number") parts.push(`${m.runs} runs / ${m.trades} trades`);
+      lines.push(parts.join("  ·  "));
+    }
+    if (m.builderName) lines.push(`Built by ${m.builderName}`);
+    lines.push(cta);
+    return lines.join("\n");
+  }
+
+  function fmtDay(iso) {
+    try {
+      return new Date(iso + "T00:00:00").toLocaleDateString(undefined, { weekday: "short", month: "long", day: "numeric", year: "numeric" });
+    } catch { return iso; }
+  }
+
+  function tile(e) {
+    const m = e.meta || {};
+    const sub = typeof m.profitPercent === "number" ? `${e.type} · ${pct(m.profitPercent)}` : e.type;
+    const el = document.createElement("div");
+    el.className = "tile";
+    el.innerHTML = `
+      <div class="thumb">
+        <span class="badge">${e.type}</span>
+        ${e.mp4 ? '<span class="mp4tag">MP4</span>' : ""}
+        <img loading="lazy" src="${e.png}" alt="${e.label}" />
+      </div>
+      <div class="tmeta">
+        <span class="tlabel">${e.label}</span>
+        <span class="tsub">${sub}</span>
+      </div>
+      <div class="actions">
+        <a class="primary" href="${e.png}" download>PNG</a>
+        ${e.mp4 ? `<a href="${e.mp4}" download>MP4</a>` : ""}
+        <button data-caption>Copy caption</button>
+      </div>`;
+    el.querySelector("[data-caption]").addEventListener("click", async () => {
+      try { await navigator.clipboard.writeText(captionFor(e)); toast("Caption copied"); }
+      catch { toast("Copy failed"); }
+    });
+    return el;
+  }
+
+  fetch("history.json", { cache: "no-store" })
+    .then((r) => r.ok ? r.json() : Promise.reject(r.status))
+    .then((manifest) => {
+      const entries = manifest.entries || [];
+      document.getElementById("count").textContent = `${entries.length} card${entries.length === 1 ? "" : "s"}`;
+      const gallery = document.getElementById("gallery");
+      gallery.innerHTML = "";
+      if (entries.length === 0) {
+        gallery.innerHTML = '<div class="empty">No cards generated yet. Run the pipeline and they will appear here.</div>';
+        return;
+      }
+      const byDay = new Map();
+      for (const e of entries) {
+        const day = (e.builtAt || "").slice(0, 10);
+        if (!byDay.has(day)) byDay.set(day, []);
+        byDay.get(day).push(e);
+      }
+      for (const [day, items] of byDay) {
+        const group = document.createElement("section");
+        group.className = "daygroup";
+        const lbl = document.createElement("div");
+        lbl.className = "dlbl";
+        lbl.textContent = fmtDay(day);
+        group.appendChild(lbl);
+        const grid = document.createElement("div");
+        grid.className = "grid";
+        items.forEach((e) => grid.appendChild(tile(e)));
+        group.appendChild(grid);
+        gallery.appendChild(group);
+      }
+    })
+    .catch((err) => {
+      document.getElementById("gallery").innerHTML = `<div class="empty">Could not load history.json (${err}).</div>`;
+    });
+</script>
+</body>
+</html>
