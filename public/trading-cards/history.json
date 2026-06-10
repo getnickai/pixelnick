@@ -1,0 +1,162 @@
+{
+  "kit": "trading-cards",
+  "updatedAt": "2026-06-07T16:06:26.123Z",
+  "entries": [
+    {
+      "id": "40f307d2d6fe8a12",
+      "slug": "mag-7-rotator",
+      "type": "performance",
+      "label": "Mag 7 Rotator",
+      "png": "history/2026-06-05/mag-7-rotator-40f307d2.png",
+      "mp4": "history/2026-06-05/mag-7-rotator-40f307d2.mp4",
+      "meta": {
+        "source": "nickai",
+        "backfilled": true
+      },
+      "builtAt": "2026-06-05T13:37:56.856Z"
+    },
+    {
+      "id": "7e95f19924a256f9",
+      "slug": "s1-match-reader-chat-gpt",
+      "type": "performance",
+      "label": "S1 Match Reader Chat GPT",
+      "png": "history/2026-06-05/s1-match-reader-chat-gpt-7e95f199.png",
+      "mp4": "history/2026-06-05/s1-match-reader-chat-gpt-7e95f199.mp4",
+      "meta": {
+        "source": "nickai",
+        "backfilled": true
+      },
+      "builtAt": "2026-06-05T11:09:09.336Z"
+    },
+    {
+      "id": "92b2b3deda70fff0",
+      "slug": "btc-eth-pairs-trader",
+      "type": "performance",
+      "label": "BTC ETH Pairs Trader",
+      "png": "history/2026-06-05/btc-eth-pairs-trader-92b2b3de.png",
+      "mp4": "history/2026-06-05/btc-eth-pairs-trader-92b2b3de.mp4",
+      "meta": {
+        "source": "nickai",
+        "backfilled": true
+      },
+      "builtAt": "2026-06-05T11:08:53.153Z"
+    },
+    {
+      "id": "9ec8b728c1cb6386",
+      "slug": "disciplined-btc-paper-trader",
+      "type": "performance",
+      "label": "Disciplined BTC Paper Trader",
+      "png": "history/2026-06-05/disciplined-btc-paper-trader-9ec8b728.png",
+      "mp4": "history/2026-06-05/disciplined-btc-paper-trader-9ec8b728.mp4",
+      "meta": {
+        "source": "nickai",
+        "backfilled": true
+      },
+      "builtAt": "2026-06-05T11:08:35.546Z"
+    },
+    {
+      "id": "5f14b25870bb632c",
+      "slug": "mean-reversion-btc-sol",
+      "type": "performance",
+      "label": "Mean Reversion BTC SOL",
+      "png": "history/2026-06-05/mean-reversion-btc-sol-5f14b258.png",
+      "mp4": "history/2026-06-05/mean-reversion-btc-sol-5f14b258.mp4",
+      "meta": {
+        "source": "nickai",
+        "backfilled": true
+      },
+      "builtAt": "2026-06-05T11:08:14.571Z"
+    },
+    {
+      "id": "0ca722013851b310",
+      "slug": "nickai-agent-wfl-91ltt7uq4rm0",
+      "type": "performance",
+      "label": "Nickai Agent Wfl 91ltt7uq4rm0",
+      "png": "history/2026-05-29/nickai-agent-wfl-91ltt7uq4rm0-0ca72201.png",
+      "mp4": "history/2026-05-29/nickai-agent-wfl-91ltt7uq4rm0-0ca72201.mp4",
+      "meta": {
+        "source": "nickai",
+        "backfilled": true
+      },
+      "builtAt": "2026-05-29T13:46:44.574Z"
+    },
+    {
+      "id": "6e5710b6db3b3979",
+      "slug": "solana-breakout-hunter",
+      "type": "performance",
+      "label": "Solana Breakout Hunter",
+      "png": "history/2026-05-27/solana-breakout-hunter-6e5710b6.png",
+      "mp4": "history/2026-05-27/solana-breakout-hunter-6e5710b6.mp4",
+      "meta": {
+        "source": "legacy",
+        "backfilled": true
+      },
+      "builtAt": "2026-05-27T13:50:59.959Z"
+    },
+    {
+      "id": "aff4ae39be55dafa",
+      "slug": "mean-reversion-spy",
+      "type": "performance",
+      "label": "Mean Reversion SPY",
+      "png": "history/2026-05-27/mean-reversion-spy-aff4ae39.png",
+      "mp4": "history/2026-05-27/mean-reversion-spy-aff4ae39.mp4",
+      "meta": {
+        "source": "legacy",
+        "backfilled": true
+      },
+      "builtAt": "2026-05-27T10:55:23.036Z"
+    },
+    {
+      "id": "f8674bcb4e981f54",
+      "slug": "ai-sector-breakout",
+      "type": "performance",
+      "label": "AI Sector Breakout",
+      "png": "history/2026-05-27/ai-sector-breakout-f8674bcb.png",
+      "mp4": "history/2026-05-27/ai-sector-breakout-f8674bcb.mp4",
+      "meta": {
+        "source": "legacy",
+        "backfilled": true
+      },
+      "builtAt": "2026-05-27T10:55:07.615Z"
+    },
+    {
+      "id": "eb1b36bff0f36932",
+      "slug": "dividend-harvester",
+      "type": "performance",
+      "label": "Dividend Harvester",
+      "png": "history/2026-05-27/dividend-harvester-eb1b36bf.png",
+      "mp4": "history/2026-05-27/dividend-harvester-eb1b36bf.mp4",
+      "meta": {
+        "source": "legacy",
+        "backfilled": true
+      },
+      "builtAt": "2026-05-27T10:54:52.965Z"
+    },
+    {
+      "id": "d00c2e2474cebe1e",
+      "slug": "btc-momentum-scalper",
+      "type": "performance",
+      "label": "BTC Momentum Scalper",
+      "png": "history/2026-05-27/btc-momentum-scalper-d00c2e24.png",
+      "mp4": "history/2026-05-27/btc-momentum-scalper-d00c2e24.mp4",
+      "meta": {
+        "source": "legacy",
+        "backfilled": true
+      },
+      "builtAt": "2026-05-27T10:54:35.766Z"
+    },
+    {
+      "id": "d18f682584c5ff0d",
+      "slug": "mag-7-rotator-v2",
+      "type": "performance",
+      "label": "Mag 7 Rotator V2",
+      "png": "history/2026-05-27/mag-7-rotator-v2-d18f6825.png",
+      "mp4": "history/2026-05-27/mag-7-rotator-v2-d18f6825.mp4",
+      "meta": {
+        "source": "legacy",
+        "backfilled": true
+      },
+      "builtAt": "2026-05-27T10:54:18.168Z"
+    }
+  ]
+}
