@@ -30,8 +30,9 @@ export type PerformanceCardProps = {
 };
 
 /**
- * Sample data used as `defaultProps` in the registry. Mirrors the values
- * currently hard-coded in the static `components/ai-ready-card.tsx`.
+ * Sample data used as `defaultProps` in the registry, and as the fallback
+ * props for the settled-still wrapper (`components/ai-ready-card.tsx`) when no
+ * live R2 agent data is supplied.
  */
 export const performanceCardDefaultProps: PerformanceCardProps = {
   agentName: "Mag 7 Rotator V2 — Rotation 25% Cap",
