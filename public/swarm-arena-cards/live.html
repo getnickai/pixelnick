@@ -22,9 +22,13 @@
       border:1px solid var(--line); border-radius:8px; padding:7px 14px; cursor:pointer; }
     button:hover { background:#1d1e25; }
     .status { color:var(--dim); font-size:13px; }
+    select { font:inherit; font-size:13px; color:var(--fg); background:#15161b;
+      border:1px solid var(--line); border-radius:6px; padding:4px 8px; }
+    .sectionhead { display:flex; align-items:baseline; gap:12px; padding:26px 32px 0; }
+    .sectionhead h2 { margin:0; font-size:15px; letter-spacing:.08em; text-transform:uppercase; }
     /* Each card renders at its native 650x1136; scale it down for the gallery. */
     .grid { display:grid; grid-template-columns:repeat(auto-fill, minmax(290px, 1fr));
-      gap:28px; padding:28px 32px 64px; }
+      gap:28px; padding:18px 32px 40px; }
     .cell { display:flex; flex-direction:column; gap:10px; }
     .thumb { width:286px; height:500px; overflow:hidden; border-radius:18px;
       border:1px solid var(--line); }
@@ -47,19 +51,35 @@
       <label class="status">Timeline:
         <select id="when"><option value="">Live (now)</option></select>
       </label>
+      <label class="status">Theme:
+        <select id="theme"><option value="dark">Dark</option><option value="light">Light</option></select>
+      </label>
       <span class="status" id="status">Loading…</span>
     </div>
   </header>
-  <div class="grid" id="grid"></div>
+
+  <section>
+    <div class="sectionhead"><h2>Upcoming games</h2><span class="status" id="up-status"></span></div>
+    <div class="grid" id="upcoming-grid"></div>
+  </section>
+
+  <section>
+    <div class="sectionhead"><h2>Agent cards</h2></div>
+    <div class="grid" id="grid"></div>
+  </section>
 
   <script src="card-engine.js"></script>
   <script src="html-to-image.js"></script>
   <script>
     const grid = document.getElementById("grid");
+    const upcomingGrid = document.getElementById("upcoming-grid");
     const statusEl = document.getElementById("status");
+    const upStatusEl = document.getElementById("up-status");
     const whenEl = document.getElementById("when");
+    const themeEl = document.getElementById("theme");
     let timer = null;
     let datesLoaded = false;
+    let theme = "dark";
 
     // Rasterize a live card to a full-resolution PNG and download it. The card
     // is shown scaled in the gallery; we override the transform so the export
@@ -89,7 +109,7 @@
       }
     }
 
-    function addCard(html, caption, filename) {
+    function addCard(html, caption, filename, target = grid) {
       const cell = document.createElement("div");
       cell.className = "cell";
       const thumb = document.createElement("div");
@@ -108,7 +128,40 @@
       cap.appendChild(dl);
       cell.appendChild(thumb);
       cell.appendChild(cap);
-      grid.appendChild(cell);
+      target.appendChild(cell);
+    }
+
+    // Upcoming-game preview cards. Independent of the agent deck/timeline:
+    // rendered live from /api/swarm-upcoming (mirror: fixtures + Elo). Honest
+    // Elo-only preview — no per-fixture agent council exists yet (STA-405).
+    let upcomingGames = null;
+    function paintUpcoming() {
+      if (!upcomingGames) return;
+      upcomingGrid.innerHTML = "";
+      if (!upcomingGames.length) {
+        upcomingGrid.innerHTML = '<div class="empty">No upcoming fixtures right now.</div>';
+        return;
+      }
+      const opts = { theme, size: "portrait" };
+      for (const g of upcomingGames) {
+        const slug = `${(g.home.code || "").toLowerCase()}-${(g.away.code || "").toLowerCase()}`;
+        addCard(window.SA.renderMatchCard(g, opts), `${g.home.name} vs ${g.away.name}`, `preview-${slug}`, upcomingGrid);
+      }
+    }
+    async function renderUpcoming() {
+      upStatusEl.textContent = "Loading…";
+      try {
+        const res = await fetch("/api/swarm-upcoming", { cache: "no-store" });
+        if (!res.ok) throw new Error("upcoming " + res.status);
+        const feed = await res.json();
+        upcomingGames = (feed.games || []).slice().sort((a, b) =>
+          (a.kickoffISO < b.kickoffISO ? -1 : a.kickoffISO > b.kickoffISO ? 1 : 0));
+        paintUpcoming();
+        upStatusEl.textContent = `${upcomingGames.length} fixture(s)`;
+      } catch (err) {
+        upcomingGrid.innerHTML = `<div class="empty">Could not load upcoming fixtures (${err}).</div>`;
+        upStatusEl.textContent = "Error";
+      }
     }
 
     // The selector value is a date (YYYY-MM-DD) or "" for live. A date maps to
@@ -137,7 +190,7 @@
 
         window.SA.load(deck);
         grid.innerHTML = "";
-        const opts = { theme: "dark", size: "portrait" };
+        const opts = { theme, size: "portrait" };
         const period = deck.at ? deck.at.slice(0, 10) : "live";
         addCard(window.SA.renderLeaderboardCard(opts), "Leaderboard", `leaderboard-${period}`);
         for (const a of deck.agents) {
@@ -161,9 +214,17 @@
       if (!whenEl.value) timer = setInterval(render, 60000);
     }
 
-    document.getElementById("refresh").addEventListener("click", render);
+    document.getElementById("refresh").addEventListener("click", () => { render(); renderUpcoming(); });
     whenEl.addEventListener("change", () => { syncTimer(); render(); });
+    themeEl.addEventListener("change", () => {
+      theme = themeEl.value === "light" ? "light" : "dark";
+      document.documentElement.setAttribute("data-theme", theme);
+      // Re-render both grids from already-loaded data (no refetch).
+      if (window.SA) render();
+      paintUpcoming();
+    });
     render();
+    renderUpcoming();
     syncTimer();
   </script>
 </body>
