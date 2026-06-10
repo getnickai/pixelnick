@@ -479,9 +479,97 @@
     </div>`;
   }
 
+  /* ════════════════ MATCH PREVIEW CARD ════════════════
+     Upcoming-fixture preview. No per-match agent council exists yet for WC
+     games (the only live council is the UCL-final showcase), so this card
+     shows the data that IS real and fresh: Elo-model win probability + the
+     teams' Elo ratings. It deliberately omits the swarm-consensus and
+     sharpest-calls panels rather than print stale/placeholder picks. */
+  function renderMatchPreviewCard(m, opts = {}) {
+    const o = m.odds || {};
+    const hasProb = (o.homePct || 0) + (o.awayPct || 0) > 0;
+    const teamHTML = (t) => {
+      const mk = teamMark(t.code);
+      return `
+      <div class="sa-team">
+        <div class="sa-shield">${shieldCrestSVG(mk)}</div>
+        <div><div class="tname">${esc(t.name)}</div><div class="tmeta">${t.flag || ""}</div></div>
+      </div>`;
+    };
+    const eloCell = (t, elo, lead) => `
+      <div class="sa-cons-cell">
+        <div class="v sa-num" style="color:${lead ? "var(--brand)" : "var(--text-dim)"}">${elo != null ? Math.round(elo) : "—"}</div>
+        <div class="k">${esc(teamMark(t.code).code)} Elo</div>
+      </div>`;
+    const probRow = (label, pctv, color) => `
+      <div style="display:flex;align-items:center;gap:0.9em">
+        <span style="width:4.2em;font-family:'Fira Code',monospace;font-size:0.74em;font-weight:700;letter-spacing:0.04em;color:var(--text-dim)">${esc(label)}</span>
+        <span style="flex:1;height:0.95em;background:var(--inset);border-radius:0.3em;overflow:hidden;display:block"><span style="display:block;height:100%;width:${pctv}%;background:${color}"></span></span>
+        <span style="width:2.8em;text-align:right;font-family:'Fira Code',monospace;font-size:0.92em;font-weight:700;color:var(--text)">${pctv}%</span>
+      </div>`;
+    const probBar = hasProb
+      ? `<div style="display:flex;flex-direction:column;gap:0.85em">
+          ${probRow(`${teamMark(m.home.code).code} win`, o.homePct, "var(--positive)")}
+          ${probRow("Draw", o.drawPct, "var(--border-solid)")}
+          ${probRow(`${teamMark(m.away.code).code} win`, o.awayPct, "var(--negative)")}
+        </div>`
+      : `<div class="sa-sub" style="padding:0.6em 0;color:var(--text-faint)">Win probability available closer to kickoff.</div>`;
+    const eloHome = m.elo && m.elo.home, eloAway = m.elo && m.elo.away;
+    // Honest one-line read derived straight from the Elo probabilities.
+    const modelRead = (() => {
+      if (!hasProb) return "Win probability lands closer to kickoff once ratings settle.";
+      const fav = o.homePct >= o.awayPct ? { name: m.home.name, pct: o.homePct } : { name: m.away.name, pct: o.awayPct };
+      const margin = Math.abs(o.homePct - o.awayPct);
+      if (margin <= 8) return `Lineball: the model splits it, ${fav.name} edging ahead at ${fav.pct}% with the draw live at ${o.drawPct}%.`;
+      if (fav.pct >= 70) return `${fav.name} are heavy favourites — the Elo model gives them ${fav.pct}% to win.`;
+      return `${fav.name} are favoured at ${fav.pct}%, but ${o.drawPct}% says the draw is in play.`;
+    })();
+    const inner = `
+      <div class="sa-grid"></div>
+      <div class="sa-glow" style="top:-30%;left:-26%;width:90%"></div>
+      <div class="sa-dots" style="bottom:2%;right:-10%;width:48%;height:26%;opacity:0.45">${swarmDotsSVG()}</div>
+      <div class="sa-content" style="padding:3em;gap:1.5em">
+        <div class="sa-row sa-between">
+          <div class="sa-wordmark"><span class="sa-wordmark-mark">${markSVG()}</span><span class="sa-wordmark-text">SWARM<b>ARENA</b></span></div>
+          <div class="sa-pill">Match Preview</div>
+        </div>
+        <div>
+          <div class="sa-eyebrow">${esc(m.competition)}${m.stage ? ` · ${esc(m.stage)}` : ""}</div>
+          <div class="sa-sub sa-mono" style="margin-top:0.4em">${esc(m.venue)} · ${esc(m.kickoff)}</div>
+        </div>
+        <div class="sa-vs" style="margin:1.4em 0 1em;font-size:1.22em">
+          ${teamHTML(m.home)}
+          <div class="sa-vs-mid"><span class="v">VS</span></div>
+          ${teamHTML(m.away)}
+        </div>
+        <div class="sa-panel">
+          <div class="sa-panel-title"><span>Win probability · Elo model</span><span>Neutral venue</span></div>
+          <div class="sa-panel-body" style="padding:1.2em 1.1em">${probBar}</div>
+        </div>
+        <div>
+          <div class="sa-eyebrow" style="margin-bottom:0.7em">Team strength · Elo rating</div>
+          <div class="sa-consensus" style="grid-template-columns:1fr 1fr">
+            ${eloCell(m.home, eloHome, eloHome != null && eloAway != null && eloHome >= eloAway)}
+            ${eloCell(m.away, eloAway, eloHome != null && eloAway != null && eloAway > eloHome)}
+          </div>
+        </div>
+        <div class="sa-panel">
+          <div class="sa-panel-title"><span>Model read</span><span style="color:var(--brand)">Elo</span></div>
+          <div class="sa-panel-body" style="padding:1em 1.05em">
+            <div class="sa-sub" style="line-height:1.5">${esc(modelRead)}</div>
+          </div>
+        </div>
+        <div class="sa-grow"></div>
+        <div class="sa-sub sa-mono" style="color:var(--text-faint);font-size:0.82em">Agent picks land closer to kickoff · swarmarena.ai</div>
+        ${footerHTML()}
+      </div>`;
+    return frame(opts, inner);
+  }
+
   /* ════════════════ MATCH CARD ════════════════ */
   function renderMatchCard(m, opts = {}) {
     m = m || MATCH;
+    if (m.preview) return renderMatchPreviewCard(m, opts);
     const o = m.odds, sw = m.swarm;
     const teamHTML = (t) => `
       <div class="sa-team">
