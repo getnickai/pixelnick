@@ -510,7 +510,7 @@
     const inner = `
       <div style="position:absolute;inset:0;background:linear-gradient(to bottom,#110d0b 0%,#2f231e 100%)"></div>
       <div class="sa-dots" style="top:-12%;right:-14%;width:60%;height:34%;opacity:0.18">${swarmDotsSVG()}</div>
-      <div style="position:relative;z-index:1;height:100%;display:flex;flex-direction:column;padding:3.55em 4em 3.4em;box-sizing:border-box;color:${CREAM};font-family:var(--font-body)">
+      <div style="position:relative;z-index:1;height:100%;display:flex;flex-direction:column;padding:3.55em 4em 3.4em;box-sizing:border-box;color:${CREAM};font-family:var(--font-body);line-height:1.2">
         <div style="display:flex;align-items:center;gap:1.25em">
           <span style="width:2.2em;height:2.5em;color:${ORANGE};flex:none">${markSVG()}</span>
           <span style="font-size:1.5em;font-weight:700;letter-spacing:0.04em;text-transform:uppercase;color:${CREAM}">Swarm Arena</span>
