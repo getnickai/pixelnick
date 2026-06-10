@@ -530,7 +530,7 @@
           </div>
           <div style="flex:1">
             <div style="font-size:1.25em;font-weight:600;color:${CREAM};opacity:0.9">Profit %</div>
-            <div style="display:flex;align-items:center;gap:0.5em;margin-top:0.55em"><span style="font-size:2.2em;line-height:1;color:${accent}">${pos ? "↑" : "↓"}</span><span style="font-size:3.1em;font-weight:600;line-height:1;color:${CREAM}">${Math.abs(a.roiPct).toFixed(2)}%</span></div>
+            <div style="display:flex;align-items:center;gap:0.5em;margin-top:0.55em"><span style="font-size:2.2em;line-height:1;color:${accent}">${pos ? "↑" : "↓"}</span><span style="font-size:3.1em;font-weight:600;line-height:1;color:${accent}">${Math.abs(a.roiPct).toFixed(2)}%</span></div>
           </div>
         </div>
         <div style="height:1px;background:${CREAM};opacity:0.12;margin:1.5em 0"></div>
