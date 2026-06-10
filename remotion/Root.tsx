@@ -18,10 +18,13 @@ import {
   swarmCardDefaultProps,
   calcSwarmMetadata,
 } from "./compositions/swarm-card/props";
+import { SwarmIntroComposition } from "./compositions/swarm-intro/composition";
+import { swarmIntroDefaultProps } from "./compositions/swarm-intro/props";
 import { getMotionEntryMeta } from "./manifest";
 
 const perf = getMotionEntryMeta("performance-card")!;
 const swarm = getMotionEntryMeta("swarm-card")!;
+const intro = getMotionEntryMeta("swarm-intro")!;
 
 export const RemotionRoot: React.FC = () => {
   return (
@@ -44,6 +47,15 @@ export const RemotionRoot: React.FC = () => {
         height={swarm.height}
         defaultProps={swarmCardDefaultProps}
         calculateMetadata={calcSwarmMetadata}
+      />
+      <Composition
+        id="swarm-intro"
+        component={SwarmIntroComposition}
+        durationInFrames={intro.durationInFrames}
+        fps={intro.fps}
+        width={intro.width}
+        height={intro.height}
+        defaultProps={swarmIntroDefaultProps}
       />
     </>
   );

@@ -58,6 +58,20 @@ export const motionManifest: MotionEntryMeta[] = [
     fps: 30,
     durationInFrames: 240,
   },
+  {
+    // SwarmArena intro sting, three acts (Figma 373:1485 → 376:1644 →
+    // 376:1656): the mark fade-zooms in and docks into the "Swarm Arena"
+    // lockup; the lockup exits left while "AI Agents / Compete" letters in;
+    // then the statement swaps to "For Predicting / World Cup 2026" as seven
+    // AI-model logos assemble into a rotating orbit. Ease-in-out throughout
+    // (cubic opening zoom, expo elsewhere). 8.4s @ 30fps.
+    id: "swarm-intro",
+    label: "Swarm Intro",
+    width: 650,
+    height: 600,
+    fps: 30,
+    durationInFrames: 252,
+  },
 ];
 
 /** Server-safe lookup by id. */
