@@ -479,6 +479,88 @@
     </div>`;
   }
 
+  /* ════════════════ MODEL CARD (Onur's design, data-driven) ════════════════
+     Port of components/swarm-arena-model-card.tsx into the framework-free
+     engine so the kit + live gallery can render it from the live deck. Onur's
+     React/Tailwind component is the design source of truth; this mirrors it in
+     HTML/CSS and is fed by EngineAgent fields. Dark, branded palette (Onur's
+     exact hexes), theme-independent. See docs/model-card-engine-guide.md. */
+  const MODEL_NAMES = { GPT: "GPT 5.5", CLAUDE: "Claude 4.5", GEMINI: "Gemini 2.5", KIMI: "Kimi K2", GLM: "GLM-4.6", GROK: "Grok 3", DEEPSEEK: "DeepSeek V3", QWEN: "Qwen 3", MINIMAX: "MiniMax" };
+  const MODEL_LOGOS = { GPT: "chatgpt", CLAUDE: "claude", GEMINI: "google", KIMI: "kimi", GLM: "glm" };
+  function renderModelCard(agent, opts = {}) {
+    const a = typeof agent === "string" ? byHandle[agent] : agent;
+    const ASSET = "assets";
+    const G = "#8bce6c", CREAM = "#fff8ea", DIM = "#8a8174", ORANGE = "#f98051";
+    const rank = Math.max(1, LEADERBOARD.findIndex((x) => x.handle === a.handle) + 1);
+    const equity = BASE * (1 + a.roiPct / 100);
+    const pnl = equity - BASE;
+    const pos = a.roiPct >= 0;
+    const accent = pos ? G : "#ff6b6b";
+    const wins = Math.round(a.signals * a.pickPct);
+    const record = a.record || `${wins}-${a.signals - wins}`;
+    const name = MODEL_NAMES[a.handle] || a.short || a.label;
+    const logoFile = MODEL_LOGOS[a.handle];
+    const logoMark = logoFile
+      ? `<div style="display:grid;place-items:center;width:4.06em;height:4.06em;flex:none;border-radius:50%;background:#fff;overflow:hidden"><img src="${ASSET}/models/${logoFile}.svg" alt="${esc(name)}" style="width:2.44em;height:2.44em"/></div>`
+      : `<div style="display:grid;place-items:center;width:4.06em;height:4.06em;flex:none;border-radius:50%;background:${a.color}22;border:1px solid ${a.color}66;color:${a.color};font-family:var(--font-mono);font-weight:700;font-size:1.1em">${esc(a.code)}</div>`;
+    const pickRow = (label, val, col) => `<div style="display:flex;justify-content:space-between;gap:1em;font-size:1.06em;font-weight:700"><span style="color:${col};white-space:nowrap">${esc(label)}</span><span style="color:${col};text-align:right">${esc(val)}</span></div>`;
+    const latest = (a.recent || []).slice(0, 3);
+    const dollar = (n) => `${n >= 0 ? "+" : "−"}$${Math.abs(Math.round(n))}`;
+
+    const inner = `
+      <div style="position:absolute;inset:0;background:linear-gradient(to bottom,#110d0b 0%,#2f231e 100%)"></div>
+      <div class="sa-dots" style="top:-12%;right:-14%;width:60%;height:34%;opacity:0.18">${swarmDotsSVG()}</div>
+      <div style="position:relative;z-index:1;height:100%;display:flex;flex-direction:column;padding:3.55em 4em 3.4em;box-sizing:border-box;color:${CREAM};font-family:var(--font-body)">
+        <div style="display:flex;align-items:center;gap:1.25em">
+          <span style="width:2.2em;height:2.5em;color:${ORANGE};flex:none">${markSVG()}</span>
+          <span style="font-size:1.5em;font-weight:700;letter-spacing:0.04em;text-transform:uppercase;color:${CREAM}">Swarm Arena</span>
+        </div>
+        <div style="display:flex;align-items:center;gap:1em;margin-top:2.3em">
+          <span style="display:inline-flex;align-items:center;gap:0.6em"><span style="width:1.7em;height:1.7em;border-radius:50%;background:${G}"></span><span style="background:${G};color:#161210;font-size:1em;font-weight:600;text-transform:uppercase;padding:0.25em 0.75em;border-radius:999px;line-height:1.2">Live Agent</span></span>
+          <span style="color:${ORANGE};font-size:1em;font-weight:600;text-transform:uppercase">World Cup</span>
+        </div>
+        <div style="display:flex;align-items:center;gap:1.25em;margin-top:1.75em">
+          ${logoMark}
+          <span style="font-size:3.1em;font-weight:600;line-height:1.1;color:${CREAM}">${esc(name)}</span>
+        </div>
+        <div style="display:flex;gap:2em;margin-top:2.6em">
+          <div style="flex:1">
+            <div style="font-size:1.25em;font-weight:600;color:${CREAM};opacity:0.9">Season PNL</div>
+            <div style="position:relative;margin-top:0.55em"><span style="position:absolute;left:-1.55em;top:50%;transform:translateY(-50%);width:0.62em;height:1.6em;border-radius:0.25em;background:${accent}"></span><span style="font-size:3.1em;font-weight:600;line-height:1;color:${accent}">${dollar(pnl)}</span></div>
+          </div>
+          <div style="flex:1">
+            <div style="font-size:1.25em;font-weight:600;color:${CREAM};opacity:0.9">Profit %</div>
+            <div style="display:flex;align-items:center;gap:0.5em;margin-top:0.55em"><span style="font-size:2.2em;line-height:1;color:${accent}">${pos ? "↑" : "↓"}</span><span style="font-size:3.1em;font-weight:600;line-height:1;color:${CREAM}">${Math.abs(a.roiPct).toFixed(2)}%</span></div>
+          </div>
+        </div>
+        <div style="height:1px;background:${CREAM};opacity:0.12;margin:1.5em 0"></div>
+        <div style="display:flex;align-items:flex-end;justify-content:space-between">
+          <div style="display:flex;align-items:flex-end;gap:0.6em"><span style="font-size:1.75em;font-weight:600;color:${CREAM}">${fmt$(equity)}</span><span style="font-size:1.25em;color:${DIM};padding-bottom:0.15em">Equity</span></div>
+          <span style="font-size:1.25em;color:${DIM}"><b style="color:${CREAM}">${fmt$(BASE)}</b> base</span>
+        </div>
+        <div style="margin-top:2.4em;background:rgba(10,10,6,0.5);border:1px solid rgba(255,248,234,0.06);border-radius:1em;padding:1.9em;display:flex;flex-direction:column;gap:1.7em">
+          <div style="display:flex;gap:2em">
+            <div style="flex:1"><div style="font-size:0.85em;text-transform:uppercase;letter-spacing:0.09em;color:${DIM}">Pick Accuracy</div><div style="font-size:1.75em;font-weight:700;color:${CREAM};margin-top:0.35em">${Math.round(a.pickPct * 100)}%</div></div>
+            <div style="flex:1"><div style="font-size:0.85em;text-transform:uppercase;letter-spacing:0.09em;color:${DIM}">Record</div><div style="font-size:1.75em;font-weight:700;color:${CREAM};margin-top:0.35em">${esc(record)}</div></div>
+            <div style="flex:1"><div style="font-size:0.85em;text-transform:uppercase;letter-spacing:0.09em;color:${DIM}">Rank</div><div style="font-size:1.75em;font-weight:700;color:${CREAM};margin-top:0.35em">#${rank} / ${AGENTS.length}</div></div>
+          </div>
+          <div style="display:flex;flex-direction:column;gap:0.7em">
+            <div style="display:flex;justify-content:space-between;gap:1em;align-items:center"><span style="font-size:0.8em;font-weight:600;text-transform:uppercase;color:${DIM}">Top Pick</span><span style="min-width:13em;">${pickRow(a.pick.side, a.pick.edgePp ? `+${a.pick.edgePp}pp` : "", G)}</span></div>
+            <div style="height:1px;background:#2e2c26;margin:0.4em 0"></div>
+            <div style="display:flex;justify-content:space-between;gap:1em;align-items:flex-start"><span style="font-size:0.8em;font-weight:600;text-transform:uppercase;color:${DIM};padding-top:0.15em">Latest Picks</span><span style="min-width:13em;display:flex;flex-direction:column;gap:0.55em">${latest.length ? latest.map((p) => pickRow(p.side || p.market, dollar(p.pnl || 0), CREAM)).join("") : `<span style="color:${DIM};font-size:1.06em">No settled picks yet</span>`}</span></div>
+          </div>
+        </div>
+        <div class="sa-grow" style="flex:1"></div>
+        ${footerHTML()}
+      </div>
+      <div style="position:absolute;top:3.85em;right:3.4em;width:6.65em;height:6.65em;z-index:2">
+        <img src="${ASSET}/rank-hex.svg" alt="" style="position:absolute;inset:0;width:100%;height:100%"/>
+        <div style="position:absolute;inset:0;top:-0.4em;display:flex;align-items:center;justify-content:center"><span style="font-size:3em;font-weight:700;color:${CREAM};line-height:1">${rank}</span></div>
+        <div style="position:absolute;left:-0.9em;right:-0.9em;bottom:0.55em;height:1.95em"><img src="${ASSET}/rank-ribbon.svg" alt="" style="width:100%;height:100%"/><div style="position:absolute;inset:0;display:flex;align-items:center;justify-content:center;padding-bottom:0.6em"><span style="font-size:0.85em;font-weight:700;text-transform:uppercase;color:#0d0907">Rank</span></div></div>
+      </div>`;
+    return frame(opts, inner);
+  }
+
   /* ════════════════ MATCH PREVIEW CARD ════════════════
      Upcoming-fixture preview. No per-match agent council exists yet for WC
      games (the only live council is the UCL-final showcase), so this card
@@ -694,7 +776,7 @@
     return SA;
   }
 
-  const SA = { AGENTS, byHandle, LEADERBOARD, MATCH, BASE, renderAgentCard, renderMatchCard, renderLeaderboardCard, mount, fmt$, load };
+  const SA = { AGENTS, byHandle, LEADERBOARD, MATCH, BASE, renderAgentCard, renderModelCard, renderMatchCard, renderLeaderboardCard, mount, fmt$, load };
   // Guard the global write so this file is safe to import in a server context
   // (Next.js prerenders the client player route, which pulls in the engine via
   // the Remotion registry). The renderers only run in the browser / headless

@@ -91,6 +91,9 @@
     <label class="status">Theme:
       <select id="theme"><option value="dark">Dark</option><option value="light">Light</option></select>
     </label>
+    <label class="status">Agent card:
+      <select id="agentstyle"><option value="model">Model</option><option value="editorial">Editorial</option></select>
+    </label>
     <span class="status" id="status">Loading…</span>
   </div>
 
@@ -113,9 +116,11 @@
     const upStatusEl = document.getElementById("up-status");
     const whenEl = document.getElementById("when");
     const themeEl = document.getElementById("theme");
+    const agentStyleEl = document.getElementById("agentstyle");
     let timer = null;
     let datesLoaded = false;
     let theme = "dark";
+    let agentStyle = "model"; // "model" (Onur's design) | "editorial" (classic)
 
     // Shared cross-kit nav: active-state + brand mark (matches the other kit pages).
     const ACTIVE_KEY = "swarm-history";
@@ -235,11 +240,10 @@
         const period = deck.at ? deck.at.slice(0, 10) : "live";
         addCard(window.SA.renderLeaderboardCard(opts), "Leaderboard", `leaderboard-${period}`);
         for (const a of deck.agents) {
-          addCard(
-            window.SA.renderAgentCard(a.handle, { ...opts, variant: "ridge", layout: "editorial" }),
-            a.label,
-            `agent-${a.handle.toLowerCase()}-${period}`,
-          );
+          const cardHtml = agentStyle === "model"
+            ? window.SA.renderModelCard(a.handle, opts)
+            : window.SA.renderAgentCard(a.handle, { ...opts, variant: "ridge", layout: "editorial" });
+          addCard(cardHtml, a.label, `agent-${a.handle.toLowerCase()}-${period}`);
         }
         const when = deck.at ? `as of ${deck.at.slice(0, 10)}` : `live · updated ${new Date().toLocaleTimeString()}`;
         statusEl.textContent = `${deck.agents.length} agent(s) · ${when}`;
@@ -263,6 +267,10 @@
       // Re-render both grids from already-loaded data (no refetch).
       if (window.SA) render();
       paintUpcoming();
+    });
+    agentStyleEl.addEventListener("change", () => {
+      agentStyle = agentStyleEl.value === "editorial" ? "editorial" : "model";
+      render();
     });
     render();
     renderUpcoming();
