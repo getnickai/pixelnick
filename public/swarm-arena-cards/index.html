@@ -95,6 +95,7 @@
         <button data-v="hero">Hero</button>
         <button data-v="scoreboard">Scoreboard</button>
         <button data-v="terminal">Terminal</button>
+        <button data-v="model">Model</button>
       </div>
     </div>
     <div class="grp">
@@ -150,7 +151,9 @@
     const o = { theme:state.theme, size:state.size };
     let html;
     if (state.type==="agent"){
-      html = SA.renderAgentCard(state.agent, { ...o, variant: state.layout==="terminal"?"terminal":"ridge", layout: state.layout });
+      html = state.layout==="model"
+        ? SA.renderModelCard(state.agent, o)
+        : SA.renderAgentCard(state.agent, { ...o, variant: state.layout==="terminal"?"terminal":"ridge", layout: state.layout });
     } else if (state.type==="match"){
       html = SA.renderMatchCard(null, o);
     } else {
