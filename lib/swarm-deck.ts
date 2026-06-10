@@ -56,9 +56,18 @@ const MARKET_LABEL: Record<string, string> = {
 function marketOf(p: any): string {
   return String(p.market ?? p.match ?? MARKET_LABEL[p.market_type] ?? "").replace(" vs ", " v ");
 }
+// Rich, self-contained side string matching the card design's expectation,
+// e.g. "BACK Yes @ 0.58". Prefixes BACK when the selection has no explicit
+// direction, and appends the entry price when present, so the live deck reads
+// the same as the kit's sample data (no detail dropped in the gallery).
 function sideOf(p: any): string {
-  const sel = p.selection ?? p.direction ?? "";
-  return p.market_type === "totals" && p.line != null ? `${cap(sel)} ${p.line}` : cap(String(sel));
+  const raw = String(p.selection ?? p.direction ?? "").trim();
+  if (!raw) return "";
+  const hasDir = /^(back|lay)\b/i.test(raw);
+  let sel = p.market_type === "totals" && p.line != null ? `${cap(raw)} ${p.line}` : cap(raw);
+  if (!hasDir) sel = `BACK ${sel}`;
+  if (p.price != null && Number.isFinite(Number(p.price))) sel += ` @ ${Number(p.price).toFixed(2)}`;
+  return sel;
 }
 function collectClosedTrades(runs: any[], snap: any): any[] {
   const all = [...runs.flatMap((r) => r.closed_trades ?? []), ...(snap.closed_trades ?? [])];
