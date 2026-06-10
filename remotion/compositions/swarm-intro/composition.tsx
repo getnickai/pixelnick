@@ -2,11 +2,16 @@
 import {
   AbsoluteFill,
   Easing,
+  OffthreadVideo,
+  Sequence,
   continueRender,
   delayRender,
   interpolate,
   interpolateColors,
+  spring,
+  staticFile,
   useCurrentFrame,
+  useVideoConfig,
 } from "remotion";
 import { useEffect, useState } from "react";
 import type { SwarmIntroProps } from "./props";
@@ -34,6 +39,17 @@ const LOCKUP_W = 398.183;
 const TEXT_LEFT = (FRAME_W - LOCKUP_W) / 2 + MARK_W + 41.876;
 /** How far the mark slides left from frame-center to its lockup slot. */
 const DOCK_X = (FRAME_W - LOCKUP_W) / 2 + MARK_W / 2 - FRAME_W / 2;
+
+/**
+ * When the lockup breaks apart, the mark does NOT leave with the wordmark — it
+ * flies to the top-left corner and stays there as a persistent brand mark
+ * through Acts 2–3. Resting center + scale, expressed as an offset from frame
+ * center (the mark div is centered, then translated).
+ */
+const CORNER_SCALE = 0.6375; // 25% smaller than the prior 0.85
+const CORNER_PAD = 40;
+const CORNER_OFFSET_X = CORNER_PAD + (MARK_W * CORNER_SCALE) / 2 - FRAME_W / 2;
+const CORNER_OFFSET_Y = CORNER_PAD + (MARK_H * CORNER_SCALE) / 2 - FRAME_H / 2;
 
 /**
  * Circular orbit of AI-model logos (Figma frames 376:1644 / 376:1656). The
@@ -67,9 +83,11 @@ const ORBIT_LOGO_SIZE = 82.5;
  * with the wordmark riding the same curve just behind it — wide tracking and
  * right-offset tightening as it travels, letters fading on left to right.
  *
- * Act 2 (Figma 376:1644): the lockup slides further left and fades out while
- * the centered "AI Agents / Compete" statement letters in. Act 3 (Figma
- * 376:1656): the statement swaps to "For Predicting / World Cup 2026" while
+ * Act 2 (Figma 376:1644): the lockup breaks apart — the wordmark slides left
+ * and fades out while the mark flies to the top-left corner and stays as a
+ * persistent brand mark — and the centered "AI Agents / Compete" statement
+ * letters in. Act 3 (Figma
+ * 376:1656): the statement swaps to "For Predicting / World Cup '26" while
  * the seven model logos pop in clockwise from 12 o'clock and the whole ring
  * eases into a steady orbit.
  * Runs 252 frames = 8.4s (~6.5s motion + rotating hold).
@@ -95,17 +113,19 @@ const ANIM = {
   letterStart: 28,
   letterStagger: 2,
   letterRamp: 10,
+  letterEnterX: 22, // px each wordmark letter slides in from the right
   trackEm: 0.22, // starting letter-spacing (em); tightens with the dock
   blockShift: 130, // px the wordmark starts right of its slot; rides the dock
 
   // Act 2 — the settled lockup exits left; "AI Agents / Compete" letters in.
   lockupExit: [74, 92],
   exitSlide: 90, // extra px the lockup travels left while fading out
+  markFlyStart: 74, // mark begins its spring-flight to the corner here
   aiLine1Start: 94,
   aiLine2Start: 102,
   aiTrack: [94, 124],
 
-  // Act 3 — statement swaps to "For Predicting / World Cup 2026"; the seven
+  // Act 3 — statement swaps to "For Predicting / World Cup '26"; the seven
   // model logos pop in clockwise from 12 o'clock; the ring eases into a
   // steady orbit.
   aiTextOut: [140, 152],
@@ -116,14 +136,22 @@ const ANIM = {
   orbitLogoStagger: 4,
   orbitLogoRamp: 12,
   rotStart: 140,
+
+  // Getty atmospheric footage, screen-blended full-frame overlay, fading in
+  // with the orbit (Figma 376:1656 video dummy). Video starts playing at
+  // `videoStart`; 6.7s source comfortably covers the act to the end.
+  videoStart: 138,
+  videoFade: [138, 166],
+  videoOpacityMax: 0.75,
   rotAccel: 30, // frames to ramp from standstill to full orbit speed
   rotSpeed: 0.75, // deg/frame once at speed (≈22.5°/s)
 } as const;
 
 /**
- * Centered two-line statement (Figma 376:1649 / 376:1661): letters fade on
- * left to right per line while the tracking tightens from wide to normal.
- * The optional `out` window fades the block while tracking back out.
+ * Centered two-line statement (Figma 376:1649 / 376:1661): per line the
+ * letters fade in from the two outer edges inward, converging on the center
+ * letter last, while the tracking tightens from wide to normal. The optional
+ * `out` window fades the block while tracking back out.
  */
 const CenteredLetterText: React.FC<{
   lines: readonly [string, string];
@@ -167,7 +195,11 @@ const CenteredLetterText: React.FC<{
           }}
         >
           {line.split("").map((ch, i) => {
-            const start = lineStarts[li] + i * ANIM.letterStagger;
+            // Edge-to-center reveal: the two outermost letters appear first,
+            // converging on the center letter last.
+            const start =
+              lineStarts[li] +
+              Math.min(i, line.length - 1 - i) * ANIM.letterStagger;
             const letterOpacity = interpolate(
               frame,
               [start, start + ANIM.letterRamp],
@@ -207,6 +239,7 @@ export const SwarmIntroComposition: React.FC<SwarmIntroProps> = ({
   wordmark = "Swarm Arena",
 }) => {
   const frame = useCurrentFrame();
+  const { fps } = useVideoConfig();
 
   // Block the first captured frame until Duplet is ready. In the app the font
   // arrives via next/font; headless it comes from the @font-face in
@@ -256,13 +289,44 @@ export const SwarmIntroComposition: React.FC<SwarmIntroProps> = ({
   });
   const dockX = DOCK_X * dockT;
 
-  // --- Act 2: the settled lockup slides further left and fades out ---
+  // --- Act 2: the lockup breaks apart ---
+  // The wordmark slides further left and fades out; the mark instead flies to
+  // the top-left corner and stays. Both driven by the same exit progress.
   const exitT = interpolate(frame, ANIM.lockupExit, [0, 1], {
     easing: Easing.inOut(Easing.exp),
     extrapolateLeft: "clamp",
     extrapolateRight: "clamp",
   });
-  const exitX = -ANIM.exitSlide * exitT;
+  const exitX = -ANIM.exitSlide * exitT; // wordmark exit slide
+
+  // Mark → top-left corner: a weighted, cinematic spring flight (not a flat
+  // lerp). Two springs arc the path — the vertical leads with a touch of
+  // overshoot-settle, the horizontal trails on a slower, smoother curve — so
+  // the mark lifts and *tucks* into the corner rather than sliding straight.
+  const flyFrame = frame - ANIM.markFlyStart;
+  const flyY = spring({
+    frame: flyFrame,
+    fps,
+    // ζ≈0.66 → a visible ~6% overshoot that settles: the cinematic "land".
+    // Stiff + damping scaled together for a snappy settle (~0.55s).
+    config: { damping: 16, stiffness: 135, mass: 1.1 },
+  });
+  const flyX = spring({
+    frame: flyFrame,
+    fps,
+    config: { damping: 29, stiffness: 98, mass: 1.1, overshootClamping: true },
+  });
+  const markCornerX = dockX + (CORNER_OFFSET_X - dockX) * flyX;
+  const markCornerY = CORNER_OFFSET_Y * flyY;
+  const markCornerScale = markScale + (CORNER_SCALE - markScale) * flyX;
+
+  // --- Act 3: Getty screen-blend overlay opacity (outer frame) ---
+  const videoOpacity =
+    interpolate(frame, ANIM.videoFade, [0, 1], {
+      easing: Easing.inOut(Easing.exp),
+      extrapolateLeft: "clamp",
+      extrapolateRight: "clamp",
+    }) * ANIM.videoOpacityMax;
 
   // --- Orbit rotation ---
   // Quadratic velocity ramp from standstill to `rotSpeed`, then linear — the
@@ -280,7 +344,12 @@ export const SwarmIntroComposition: React.FC<SwarmIntroProps> = ({
   return (
     <AbsoluteFill
       className="overflow-clip"
-      style={{ background: "linear-gradient(to bottom, #0b0a0f, #1d120e)" }}
+      style={{
+        background: "linear-gradient(to bottom, #0b0a0f, #1d120e)",
+        // Contain the screen-blend video overlay so it composites against the
+        // scene below it, not whatever is behind the player.
+        isolation: "isolate",
+      }}
     >
       {/* Hex watermarks — blend-overlay, mirrored, bleeding past the frame */}
       <div
@@ -332,14 +401,15 @@ export const SwarmIntroComposition: React.FC<SwarmIntroProps> = ({
         aria-hidden
       />
 
-      {/* Mark — starts frame-centered, condenses, docks left, then exits */}
+      {/* Mark — frame-centered → condenses → docks into the lockup → on exit
+          flies to the top-left corner and stays (does not fade out) */}
       <div
         className="absolute left-1/2 top-1/2"
         style={{
           width: MARK_W,
           height: MARK_H,
-          opacity: markOpacity * (1 - exitT),
-          transform: `translate(-50%, -50%) translateX(${dockX + exitX}px) scale(${markScale})`,
+          opacity: markOpacity,
+          transform: `translate(-50%, -50%) translate(${markCornerX}px, ${markCornerY}px) scale(${markCornerScale})`,
         }}
       >
         <svg
@@ -379,21 +449,26 @@ export const SwarmIntroComposition: React.FC<SwarmIntroProps> = ({
         >
           {letters.map((ch, i) => {
             const start = ANIM.letterStart + i * ANIM.letterStagger;
-            const letterOpacity = interpolate(
-              frame,
-              [start, start + ANIM.letterRamp],
-              [0, 1],
-              {
-                easing: Easing.inOut(Easing.exp),
-                extrapolateLeft: "clamp",
-                extrapolateRight: "clamp",
-              },
-            );
+            const ramp = [start, start + ANIM.letterRamp] as const;
+            const letterOpacity = interpolate(frame, ramp, [0, 1], {
+              easing: Easing.inOut(Easing.exp),
+              extrapolateLeft: "clamp",
+              extrapolateRight: "clamp",
+            });
+            // Small per-letter slide-in from the right, settling as it fades.
+            const letterX = interpolate(frame, ramp, [ANIM.letterEnterX, 0], {
+              easing: Easing.out(Easing.exp),
+              extrapolateLeft: "clamp",
+              extrapolateRight: "clamp",
+            });
             return (
               <span
                 key={i}
                 className="inline-block"
-                style={{ opacity: letterOpacity }}
+                style={{
+                  opacity: letterOpacity,
+                  transform: `translateX(${letterX}px)`,
+                }}
               >
                 {ch}
               </span>
@@ -453,12 +528,34 @@ export const SwarmIntroComposition: React.FC<SwarmIntroProps> = ({
         out={ANIM.aiTextOut}
       />
 
-      {/* Act 3 statement — "For Predicting / World Cup 2026" (376:1656) */}
+      {/* Act 3 statement — "For Predicting / World Cup '26" (376:1656) */}
       <CenteredLetterText
-        lines={["For Predicting", "World Cup 2026"]}
+        lines={["For Predicting", "World Cup '26"]}
         lineStarts={[ANIM.wcLine1Start, ANIM.wcLine2Start]}
         track={ANIM.wcTrack}
       />
+
+      {/* Getty atmospheric footage — full-frame screen-blend overlay, topmost
+          layer, fading in with the orbit. layout="none" keeps the video a
+          direct child of the isolated root so the blend composites the scene;
+          starts playing at videoStart (its frame 0). */}
+      {frame >= ANIM.videoStart ? (
+        <Sequence from={ANIM.videoStart} layout="none">
+          <OffthreadVideo
+            src={staticFile("swarm-intro/getty-bg.mp4")}
+            muted
+            style={{
+              position: "absolute",
+              inset: 0,
+              width: "100%",
+              height: "100%",
+              objectFit: "cover",
+              mixBlendMode: "screen",
+              opacity: videoOpacity,
+            }}
+          />
+        </Sequence>
+      ) : null}
     </AbsoluteFill>
   );
 };
