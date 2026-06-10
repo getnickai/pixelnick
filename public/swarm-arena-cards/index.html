@@ -14,13 +14,21 @@
   body{background:var(--bg);color:var(--text);font-family:var(--font-body);-webkit-font-smoothing:antialiased;display:flex;flex-direction:column}
   /* decorative atmosphere on the shell itself */
   .shell-glow{position:fixed;top:-30%;right:-18%;width:60vw;aspect-ratio:1;border-radius:50%;background:radial-gradient(circle,var(--glow) 0%,transparent 62%);filter:blur(3px);pointer-events:none;z-index:0;opacity:0.5}
-  header{position:relative;z-index:2;display:flex;align-items:center;justify-content:space-between;gap:20px;padding:18px 28px;border-bottom:1px solid var(--border)}
+  header{position:relative;z-index:2;display:flex;align-items:center;justify-content:space-between;gap:20px;padding:18px 28px;border-bottom:1px solid var(--border);flex-wrap:wrap}
   .brand{display:flex;align-items:center;gap:11px}
   .brand .mk{width:30px;height:30px;color:var(--brand)}
   .brand .mk svg{width:100%;height:100%;display:block}
   .brand .wm{font-family:var(--font-mono);font-weight:700;font-size:18px;letter-spacing:0.13em;text-transform:uppercase}
   .brand .wm b{color:var(--brand)}
   .brand .tag{font-family:var(--font-mono);font-size:10px;letter-spacing:0.2em;text-transform:uppercase;color:var(--text-faint);margin-left:6px;padding-left:12px;border-left:1px solid var(--border)}
+  /* shared nav (identical markup across all kit pages) */
+  .topnav{display:flex;align-items:center;gap:22px;flex-wrap:wrap}
+  .navgrp{display:flex;align-items:center;gap:8px}
+  .navgrp .navlbl{font-family:var(--font-mono);font-size:9.5px;letter-spacing:0.18em;text-transform:uppercase;color:var(--text-faint)}
+  .navgrp a{font-family:var(--font-mono);font-size:11.5px;font-weight:600;letter-spacing:0.04em;text-decoration:none;color:var(--text-dim);padding:5px 9px;border-radius:6px;border:1px solid transparent;transition:all .15s ease}
+  .navgrp a:hover{color:var(--text);background:var(--bg-panel)}
+  .navgrp a.active{color:var(--brand);border-color:color-mix(in srgb,var(--brand) 45%,transparent);background:color-mix(in srgb,var(--brand) 14%,transparent)}
+  .topnav .sep{width:1px;height:14px;background:var(--border)}
   .layout{position:relative;z-index:2;flex:1;display:grid;grid-template-columns:286px 1fr;min-height:0}
   /* controls rail */
   .rail{border-right:1px solid var(--border);padding:22px;overflow-y:auto;display:flex;flex-direction:column;gap:22px}
@@ -51,7 +59,19 @@
     <span class="wm">SWARM<b>ARENA</b></span>
     <span class="tag">Share Card Kit</span>
   </div>
-  <span class="tag" style="border:0;font-family:var(--font-mono);font-size:10px;letter-spacing:0.2em;text-transform:uppercase;color:var(--text-faint)">window.SA · data → HTML</span>
+  <nav class="topnav" id="topnav">
+    <div class="navgrp">
+      <span class="navlbl">Swarm Arena</span>
+      <a href="/swarm-arena-cards/index.html" data-key="swarm-kit">Kit</a>
+      <a href="/swarm-arena-cards/history.html" data-key="swarm-history">History</a>
+    </div>
+    <span class="sep"></span>
+    <div class="navgrp">
+      <span class="navlbl">Trading Cards</span>
+      <a href="/trading-cards/index.html" data-key="trading-kit">Kit</a>
+      <a href="/trading-cards/history.html" data-key="trading-history">History</a>
+    </div>
+  </nav>
 </header>
 
 <div class="layout">
@@ -104,6 +124,10 @@
 <script>
   const SA = window.SA;
   const state = { type:"agent", agent:"GROK", layout:"editorial", theme:"dark", size:"portrait" };
+
+  // Shared nav active-state.
+  const ACTIVE_KEY = "swarm-kit";
+  document.querySelectorAll("#topnav a").forEach((a)=>{ if(a.dataset.key===ACTIVE_KEY) a.classList.add("active"); });
 
   // real swarm-arena mark in header (adopts currentColor = --brand)
   fetch("assets/logos/swarm-arena-mono.svg").then(r=>r.text()).then(t=>{
