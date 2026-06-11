@@ -64,7 +64,7 @@ export const RemotionRoot: React.FC = () => {
       <Composition
         id="swarm-model-card"
         component={SwarmModelCardRender}
-        durationInFrames={1}
+        durationInFrames={90}
         fps={30}
         width={650}
         height={1110}

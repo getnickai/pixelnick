@@ -11,7 +11,15 @@
  * Imported by RELATIVE path (not `@/`): the Remotion webpack bundle can't
  * resolve the Next.js path alias.
  */
-import { AbsoluteFill, continueRender, delayRender, staticFile } from "remotion";
+import {
+  AbsoluteFill,
+  Easing,
+  continueRender,
+  delayRender,
+  interpolate,
+  staticFile,
+  useCurrentFrame,
+} from "remotion";
 import { useEffect, useState } from "react";
 import { loadFont } from "@remotion/google-fonts/Manrope";
 import SwarmArenaModelCard, {
@@ -50,11 +58,28 @@ export const SwarmModelCardRender: React.FC<SwarmModelCardRenderProps> = ({
 
   const resolved: SwarmArenaModelCardData = { ...data, logo: toStatic(data.logo) };
 
+  // Entrance: the whole card fades + rises + settles over the first ~0.8s, then
+  // holds. The card itself is static (single source = the React component), so
+  // the motion lives on this wrapper. The still is captured on the last frame
+  // (settled); MP4 plays the entrance then holds.
+  const frame = useCurrentFrame();
+  const ENTER = 24;
+  const e = interpolate(frame, [0, ENTER], [0, 1], {
+    extrapolateLeft: "clamp",
+    extrapolateRight: "clamp",
+    easing: Easing.out(Easing.cubic),
+  });
+  const opacity = e;
+  const translateY = (1 - e) * 28;
+  const scale = 0.985 + e * 0.015;
+
   return (
     <AbsoluteFill
       style={{ "--font-manrope": fontFamily } as React.CSSProperties}
     >
-      <SwarmArenaModelCard data={resolved} assetBase={ASSET_BASE} />
+      <div style={{ opacity, transform: `translateY(${translateY}px) scale(${scale})` }}>
+        <SwarmArenaModelCard data={resolved} assetBase={ASSET_BASE} />
+      </div>
     </AbsoluteFill>
   );
 };
