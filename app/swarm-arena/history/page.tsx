@@ -30,22 +30,22 @@ type Deck = {
 };
 
 const GALLERY_CSS = `
-  .sa-main{position:relative;z-index:2;flex:1;min-height:0;overflow-y:auto;padding:24px 28px 80px}
-  .sa-controls{display:flex;align-items:center;gap:14px;max-width:1320px;margin:0 auto 10px;flex-wrap:wrap}
-  .sa-controls .blurb{color:var(--text-dim);font-size:13px;margin-right:auto;max-width:560px;line-height:1.5}
-  .sa-controls button{font:inherit;font-size:12.5px;color:var(--text);background:var(--bg-panel);border:1px solid var(--border-solid);border-radius:8px;padding:7px 14px;cursor:pointer;transition:all .14s ease}
-  .sa-controls button:hover{border-color:color-mix(in srgb,var(--brand) 45%,transparent)}
-  .sa-controls select{font:inherit;font-size:12.5px;color:var(--text);background:var(--bg-panel);border:1px solid var(--border-solid);border-radius:6px;padding:5px 9px}
-  .sa-controls label{display:inline-flex;align-items:center;gap:7px;color:var(--text-dim);font-size:12.5px}
-  .sa-status{font-family:var(--font-mono);font-size:11px;color:var(--text-faint);letter-spacing:0.05em}
-  .sa-sechead{display:flex;align-items:baseline;gap:12px;max-width:1320px;margin:26px auto 4px}
-  .sa-sechead h2{margin:0;font-size:13px;letter-spacing:.12em;text-transform:uppercase;font-family:var(--font-mono);color:var(--text-dim)}
-  .sa-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(286px,1fr));gap:28px;max-width:1320px;margin:14px auto 0}
-  .sa-cell{display:flex;flex-direction:column;gap:10px}
-  .sa-thumb{width:286px;height:500px;overflow:hidden;border-radius:18px;border:1px solid var(--border-solid);background:#15140F;position:relative}
-  .sa-thumb-inner{position:absolute;top:0;left:0;transform:scale(.44);transform-origin:top left}
-  .sa-cap{display:flex;align-items:center;gap:8px;color:var(--text-dim);font-size:12.5px}
-  .sa-empty{font-family:var(--font-mono);font-size:13px;color:var(--text-faint);padding:50px 0;text-align:center}
+  .sah-main{position:relative;z-index:2;flex:1;min-height:0;overflow-y:auto;padding:24px 28px 80px}
+  .sah-controls{display:flex;align-items:center;gap:14px;max-width:1320px;margin:0 auto 10px;flex-wrap:wrap}
+  .sah-controls .blurb{color:var(--text-dim);font-size:13px;margin-right:auto;max-width:560px;line-height:1.5}
+  .sah-controls button{font:inherit;font-size:12.5px;color:var(--text);background:var(--bg-panel);border:1px solid var(--border-solid);border-radius:8px;padding:7px 14px;cursor:pointer;transition:all .14s ease}
+  .sah-controls button:hover{border-color:color-mix(in srgb,var(--brand) 45%,transparent)}
+  .sah-controls select{font:inherit;font-size:12.5px;color:var(--text);background:var(--bg-panel);border:1px solid var(--border-solid);border-radius:6px;padding:5px 9px}
+  .sah-controls label{display:inline-flex;align-items:center;gap:7px;color:var(--text-dim);font-size:12.5px}
+  .sah-status{font-family:var(--font-mono);font-size:11px;color:var(--text-faint);letter-spacing:0.05em}
+  .sah-sechead{display:flex;align-items:baseline;gap:12px;max-width:1320px;margin:26px auto 4px}
+  .sah-sechead h2{margin:0;font-size:13px;letter-spacing:.12em;text-transform:uppercase;font-family:var(--font-mono);color:var(--text-dim)}
+  .sah-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(286px,1fr));gap:28px;max-width:1320px;margin:14px auto 0}
+  .sah-cell{display:flex;flex-direction:column;gap:10px}
+  .sah-thumb{width:286px;height:500px;overflow:hidden;border-radius:18px;border:1px solid var(--border-solid);background:#15140F;position:relative}
+  .sah-thumb-inner{position:absolute;top:0;left:0;transform:scale(.44);transform-origin:top left}
+  .sah-cap{display:flex;align-items:center;gap:8px;color:var(--text-dim);font-size:12.5px}
+  .sah-empty{font-family:var(--font-mono);font-size:13px;color:var(--text-faint);padding:50px 0;text-align:center}
 `;
 
 export default function SwarmHistoryPage() {
@@ -155,8 +155,8 @@ export default function SwarmHistoryPage() {
         }}
       />
 
-      <main className="sa-main" data-theme="dark">
-        <div className="sa-controls">
+      <main className="sah-main" data-theme="dark">
+        <div className="sah-controls">
           <span className="blurb">
             Rendered live in your browser from the R2 agent output — no stored PNGs.
             Agent cards use the Swarm Arena model design; the leaderboard and
@@ -176,61 +176,61 @@ export default function SwarmHistoryPage() {
               ))}
             </select>
           </label>
-          <span className="sa-status">{status}</span>
+          <span className="sah-status">{status}</span>
         </div>
 
-        <div className="sa-sechead">
+        <div className="sah-sechead">
           <h2>Upcoming games</h2>
-          <span className="sa-status">{upStatus}</span>
+          <span className="sah-status">{upStatus}</span>
         </div>
         {upcomingHtml.length === 0 ? (
-          <div className="sa-empty">
+          <div className="sah-empty">
             {engineReady ? "No upcoming fixtures right now." : "Loading engine…"}
           </div>
         ) : (
-          <div className="sa-grid">
+          <div className="sah-grid">
             {upcomingHtml.map((c, i) => (
-              <div className="sa-cell" key={i}>
-                <div className="sa-thumb">
+              <div className="sah-cell" key={i}>
+                <div className="sah-thumb">
                   <div
-                    className="sa-thumb-inner"
+                    className="sah-thumb-inner"
                     dangerouslySetInnerHTML={{ __html: c.html }}
                   />
                 </div>
-                <div className="sa-cap">{c.label}</div>
+                <div className="sah-cap">{c.label}</div>
               </div>
             ))}
           </div>
         )}
 
-        <div className="sa-sechead">
+        <div className="sah-sechead">
           <h2>Agent cards</h2>
         </div>
         {!deck ? (
-          <div className="sa-empty">{status}</div>
+          <div className="sah-empty">{status}</div>
         ) : (
-          <div className="sa-grid">
+          <div className="sah-grid">
             {/* Leaderboard — vanilla engine (no React design yet) */}
             {leaderboardHtml ? (
-              <div className="sa-cell">
-                <div className="sa-thumb">
+              <div className="sah-cell">
+                <div className="sah-thumb">
                   <div
-                    className="sa-thumb-inner"
+                    className="sah-thumb-inner"
                     dangerouslySetInnerHTML={{ __html: leaderboardHtml }}
                   />
                 </div>
-                <div className="sa-cap">Leaderboard</div>
+                <div className="sah-cap">Leaderboard</div>
               </div>
             ) : null}
             {/* Agent cards — React design source of truth */}
             {deck.agents.map((a, i) => (
-              <div className="sa-cell" key={a.handle}>
-                <div className="sa-thumb">
-                  <div className="sa-thumb-inner">
+              <div className="sah-cell" key={a.handle}>
+                <div className="sah-thumb">
+                  <div className="sah-thumb-inner">
                     <SwarmArenaModelCard data={toCardData(a, i + 1, deck.agents.length)} />
                   </div>
                 </div>
-                <div className="sa-cap">{a.label ?? a.short ?? a.handle}</div>
+                <div className="sah-cap">{a.label ?? a.short ?? a.handle}</div>
               </div>
             ))}
           </div>
