@@ -81,7 +81,13 @@ function plan(flags: Flags, deck: Awaited<ReturnType<typeof loadSwarmDeck>>["dec
     // New React design (single source of truth). Agent cards only — the
     // leaderboard + match designs have no React equivalent yet, so they stay
     // on the classic engine. Rank from the ROI order, like the live gallery.
-    const ranked = [...deck.agents].sort((a, b) => b.roiPct - a.roiPct);
+    // Dedupe colliding handles (the upstream feed has produced two "GPT"s),
+    // same defense as the live gallery, so we don't render one slug twice.
+    const seen = new Set<string>();
+    const unique = deck.agents.filter((a) =>
+      seen.has(a.handle) ? false : (seen.add(a.handle), true),
+    );
+    const ranked = [...unique].sort((a, b) => b.roiPct - a.roiPct);
     ranked.forEach((a, i) => {
       jobs.push({
         slug: `model-${a.handle.toLowerCase()}`,
