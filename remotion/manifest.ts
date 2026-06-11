@@ -48,13 +48,14 @@ export const motionManifest: MotionEntryMeta[] = [
     durationInFrames: 1,
   },
   {
-    // Animated version of the new SwarmArena Model Card design (React-based,
-    // mirrors components/swarm-arena-model-card.tsx). 8s @ 30fps: ~5.3s
+    // Animated version of the SwarmArena Model Card — drives the Design
+    // component itself (components/swarm-arena-model-card.tsx) via its anim
+    // contract, so the canvas is the card's native size. 8s @ 30fps: ~5.3s
     // staggered entrance + hold for the accent-bar breathe loop.
     id: "swarm-arena-model-card",
     label: "SwarmArena Model Card",
     width: 650,
-    height: 1050,
+    height: 1110,
     fps: 30,
     durationInFrames: 240,
   },

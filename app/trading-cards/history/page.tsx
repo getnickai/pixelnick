@@ -2,6 +2,7 @@
 
 import { useCallback, useEffect, useRef, useState } from "react";
 import AiReadyCard from "@/components/ai-ready-card";
+import { captionFor, pct } from "@/lib/trading-card-data";
 import type { PerformanceCardProps } from "@/remotion/compositions/performance-card/props";
 import { TradingCardsShell } from "../shell";
 
@@ -33,27 +34,6 @@ const HISTORY_CSS = `
   .tc-toast{position:fixed;bottom:26px;left:50%;transform:translateX(-50%) translateY(20px);z-index:60;background:var(--brand);color:#fff;font-family:var(--font-mono);font-size:12px;font-weight:700;letter-spacing:0.04em;padding:10px 18px;border-radius:8px;opacity:0;pointer-events:none;transition:all .2s ease}
   .tc-toast.show{opacity:1;transform:translateX(-50%) translateY(0)}
 `;
-
-function pct(n: number) {
-  return `${n >= 0 ? "+" : ""}${n}%`;
-}
-function money(n: number) {
-  return `$${Number(n).toLocaleString(undefined, { maximumFractionDigits: 2 })}`;
-}
-
-/** House-style caption (no em-dashes, no hashtags). */
-function captionFor(a: DeckAgent): string {
-  const cta = "Try it for free now: getnick.ai";
-  const lines = [`*${a.agentName}* · NickAI`];
-  const parts = [`${pct(a.profitPercent)} return`];
-  if (typeof a.pnl === "number") parts.push(`${money(a.pnl)} PNL`);
-  if (typeof a.runs === "number" && typeof a.trades === "number")
-    parts.push(`${a.runs} runs / ${a.trades} trades`);
-  lines.push(parts.join("  ·  "));
-  if (a.builderName) lines.push(`Built by ${a.builderName}`);
-  lines.push(cta);
-  return lines.join("\n");
-}
 
 /**
  * Trading Cards — live History gallery.

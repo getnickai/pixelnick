@@ -32,6 +32,20 @@ export const engineManifest: EngineEntryMeta[] = [
     shortLabel: "History",
     meta: "live R2",
   },
+  {
+    id: "nickai-kit",
+    label: "NickAI Kit",
+    group: "NickAI",
+    shortLabel: "Kit",
+    meta: "live R2",
+  },
+  {
+    id: "nickai-history",
+    label: "NickAI History",
+    group: "NickAI",
+    shortLabel: "History",
+    meta: "live R2",
+  },
 ];
 
 export function getEngineEntryMeta(id: string): EngineEntryMeta | undefined {

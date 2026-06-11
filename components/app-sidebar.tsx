@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { Cpu, Film, Hexagon, Image, Palette } from "lucide-react";
+import { Bot, Cpu, Film, Hexagon, Image, Palette } from "lucide-react";
 import {
   Sidebar,
   SidebarContent,
@@ -15,7 +15,14 @@ import {
 } from "@/components/ui/sidebar";
 import { cn } from "@/lib/utils";
 
-type NavItem = { title: string; href: string; icon: typeof Image };
+type NavItem = {
+  title: string;
+  href: string;
+  icon: typeof Image;
+  /** Active-state route prefix when one item spans several routes (e.g. a
+   *  group's kit + history pages). Falls back to matching `href`. */
+  match?: string;
+};
 type Workspace = {
   id: "design" | "engine";
   label: string;
@@ -46,7 +53,20 @@ const WORKSPACES: Workspace[] = [
     label: "Engine",
     icon: Cpu,
     href: "/engine",
-    items: [{ title: "Swarm Arena", href: "/engine", icon: Hexagon }],
+    items: [
+      {
+        title: "Swarm Arena",
+        href: "/engine/swarm-arena-kit",
+        icon: Hexagon,
+        match: "/engine/swarm-arena",
+      },
+      {
+        title: "NickAI",
+        href: "/engine/nickai-kit",
+        icon: Bot,
+        match: "/engine/nickai",
+      },
+    ],
   },
 ];
 
@@ -127,8 +147,10 @@ export function AppSidebar() {
           <SidebarGroupContent>
             <SidebarMenu>
               {active.items.map((item) => {
-                const isActive =
-                  pathname === item.href || pathname.startsWith(`${item.href}/`);
+                const isActive = item.match
+                  ? pathname.startsWith(item.match)
+                  : pathname === item.href ||
+                    pathname.startsWith(`${item.href}/`);
                 return (
                   <SidebarMenuItem key={item.href}>
                     <SidebarMenuButton

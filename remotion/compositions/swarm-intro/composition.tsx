@@ -160,7 +160,7 @@ const ANIM = {
   // `videoStart`; 6.7s source comfortably covers the act to the end.
   videoStart: 138,
   videoFade: [138, 166],
-  videoOpacityMax: 0.75,
+  videoOpacityMax: 0.2,
   rotAccel: 30, // frames to ramp from standstill to full orbit speed
   rotSpeed: 0.75, // deg/frame once at speed (≈22.5°/s)
 
@@ -316,7 +316,7 @@ const LiveAgentScreen: React.FC<{ slide: boolean }> = ({ slide }) => {
 
   return (
     <AbsoluteFill
-      className="overflow-clip bg-gradient-to-b from-[#110d0b] to-[#2f231e] font-sans"
+      className="overflow-clip bg-gradient-to-b from-[#070609] to-[#211412] font-sans"
       style={{ opacity: screenOpacity }}
     >
       {/* Backdrop watermarks — match the model card */}
@@ -363,7 +363,7 @@ const LiveAgentScreen: React.FC<{ slide: boolean }> = ({ slide }) => {
                 </div>
               </div>
               <p
-                className="text-base font-semibold uppercase leading-[1.2] text-[#f98051]"
+                className="text-base font-semibold uppercase leading-[1.2] text-[#ED6A4C]"
                 style={upStyle(ANIM.act4TagWorld, 6)}
               >
                 World Cup
@@ -541,7 +541,7 @@ export const SwarmIntroComposition: React.FC<SwarmIntroProps> = ({
     extrapolateLeft: "clamp",
     extrapolateRight: "clamp",
   });
-  const markFill = interpolateColors(igniteT, [0, 1], ["#FFFFFF", "#F47544"]);
+  const markFill = interpolateColors(igniteT, [0, 1], ["#FFFFFF", "#ED6A4C"]);
 
   // --- Mark: dock from frame-center into the lockup slot ---
   const dockT = interpolate(frame, ANIM.dock, [0, 1], {
@@ -608,7 +608,7 @@ export const SwarmIntroComposition: React.FC<SwarmIntroProps> = ({
       className="overflow-clip"
       style={
         {
-          background: "linear-gradient(to bottom, #0b0a0f, #1d120e)",
+          background: "linear-gradient(to bottom, #070609, #211412)",
           // Contain the screen-blend video overlay so it composites against the
           // scene below it, not whatever is behind the player.
           isolation: "isolate",

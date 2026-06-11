@@ -1,4 +1,5 @@
 /* eslint-disable @next/next/no-img-element */
+import type { CSSProperties, ReactNode } from "react";
 
 const ASSET = "/swarm-arena-cards/assets";
 const MODELS_ASSET = `${ASSET}/models`;
@@ -7,6 +8,17 @@ const MODELS_ASSET = `${ASSET}/models`;
  * Swarm Arena model card — the design source of truth for this card (Pixelnick
  * Design). Renders the Figma sample by default (no props → /static preview is
  * unchanged); the Engine kit passes live `data` mapped from /api/swarm-deck.
+ *
+ * One design definition, two render modes (the performance-card pattern):
+ *   - The default export is the settled still — plain DOM, what /static, the
+ *     Engine surfaces and in-browser PNG export render.
+ *   - `SwarmArenaModelCardView` takes a `SwarmArenaModelCardAnim` so the
+ *     Remotion composition (remotion/compositions/swarm-arena-model-card) can
+ *     drive every entrance per-frame. Same component → the still and the
+ *     animation can never drift.
+ *
+ * Bundling constraint: this module is pulled into Remotion's webpack via the
+ * composition — keep it free of "@/" alias imports and Next-only APIs.
  */
 export type ModelCardPick = { label: string; value: string };
 
@@ -52,6 +64,110 @@ export const SAMPLE_MODEL_CARD: SwarmArenaModelCardData = {
   ],
   // Stepped equity curve (plateaus + ramps) for the background chart.
   spark: [1004, 1004, 1188, 1188, 1092, 1092, 1002, 1002, 1190, 1190, 1096, 1184],
+};
+
+/**
+ * Per-frame animation values. Every animatable element reads its opacity /
+ * transform from here. The Remotion composition computes these from
+ * `useCurrentFrame()`; the static still omits them and gets `SETTLED_MODEL_CARD_ANIM`
+ * (the final, fully-revealed state). When adding a new element to the card,
+ * decide whether it animates — if so, add its values here AND to the settled
+ * state; if not, it simply renders unanimated.
+ */
+export type SwarmArenaModelCardAnim = {
+  headerOpacity: number;
+  headerY: number;
+  rankHexOpacity: number;
+  rankHexScale: number;
+  rankNumOpacity: number;
+  rankNumScale: number;
+  rankRibbonOpacity: number;
+  rankRibbonScale: number;
+  tagDotOpacity: number;
+  tagDotScale: number;
+  tagPillOpacity: number;
+  tagPillScale: number;
+  tagWorldOpacity: number;
+  tagWorldY: number;
+  avatarOpacity: number;
+  avatarScale: number;
+  modelNameOpacity: number;
+  modelNameY: number;
+  pnlLabelOpacity: number;
+  pnlValueOpacity: number;
+  /** Accent bar next to the PNL value (the composition adds a breathe pulse). */
+  barScaleX: number;
+  barScaleY: number;
+  profitLabelOpacity: number;
+  profitRowOpacity: number;
+  /** 0..1 progress — the view multiplies by the divider's resting 0.12. */
+  dividerOpacity: number;
+  equityOpacity: number;
+  equityY: number;
+  glassOpacity: number;
+  glassY: number;
+  statOpacities: [number, number, number];
+  topPickOpacity: number;
+  picksLabelOpacity: number;
+  /** Per latest-pick row; a missing index renders fully visible. */
+  pickRowOpacities: number[];
+  builtOnOpacity: number;
+  builtOnY: number;
+  ctaOpacity: number;
+  ctaY: number;
+  /** Background spark chart: fade + left→right wipe (inset from the right, %). */
+  sparkOpacity: number;
+  sparkRevealRightPct: number;
+  /**
+   * Number render nodes. The composition passes animated <SlidingDigitCount>
+   * here; the static still leaves them undefined and the view renders the
+   * final formatted value.
+   */
+  pnlNode?: ReactNode;
+  profitNode?: ReactNode;
+};
+
+/** Final, fully-revealed state — used by the static still and as the baseline. */
+export const SETTLED_MODEL_CARD_ANIM: SwarmArenaModelCardAnim = {
+  headerOpacity: 1,
+  headerY: 0,
+  rankHexOpacity: 1,
+  rankHexScale: 1,
+  rankNumOpacity: 1,
+  rankNumScale: 1,
+  rankRibbonOpacity: 1,
+  rankRibbonScale: 1,
+  tagDotOpacity: 1,
+  tagDotScale: 1,
+  tagPillOpacity: 1,
+  tagPillScale: 1,
+  tagWorldOpacity: 1,
+  tagWorldY: 0,
+  avatarOpacity: 1,
+  avatarScale: 1,
+  modelNameOpacity: 1,
+  modelNameY: 0,
+  pnlLabelOpacity: 1,
+  pnlValueOpacity: 1,
+  barScaleX: 1,
+  barScaleY: 1,
+  profitLabelOpacity: 1,
+  profitRowOpacity: 1,
+  dividerOpacity: 1,
+  equityOpacity: 1,
+  equityY: 0,
+  glassOpacity: 1,
+  glassY: 0,
+  statOpacities: [1, 1, 1],
+  topPickOpacity: 1,
+  picksLabelOpacity: 1,
+  pickRowOpacities: [1, 1, 1],
+  builtOnOpacity: 1,
+  builtOnY: 0,
+  ctaOpacity: 1,
+  ctaY: 0,
+  sparkOpacity: 1,
+  sparkRevealRightPct: 0,
 };
 
 const GREEN = "#8bce6c";
@@ -102,17 +218,11 @@ function roundedSparkPath(pts: { x: number; y: number }[], r: number): string {
 
 const SPARK_W = 650;
 const SPARK_H = 410;
-/** Grid extends higher than the line for the background feel… */
-const GRID_TOP = 8;
-/** …but the line itself stays in the card's bottom region (band sits at
- *  y 700 — peaks at ~790 emerge from behind the glass panel's lower edge,
- *  and the curve fades out under the bottom progressive blur). */
+/** The line stays in the card's bottom region (band sits at y 700 — peaks at
+ *  ~790 emerge from behind the glass panel's lower edge, and the curve fades
+ *  out under the bottom progressive blur). */
 const SPARK_TOP = 90;
 const SPARK_BOT = SPARK_H - 60;
-
-const GRID_TICKS = 6;
-const tickXs = (n: number) =>
-  Array.from({ length: n }, (_, i) => ((i + 0.5) / n) * SPARK_W);
 
 function SparkChartPlot({ spark, accent }: { spark: number[]; accent: string }) {
   const min = Math.min(...spark);
@@ -138,46 +248,42 @@ function SparkChartPlot({ spark, accent }: { spark: number[]; accent: string }) 
           <stop offset="100%" stopColor={accent} stopOpacity="0" />
         </linearGradient>
       </defs>
-      {tickXs(GRID_TICKS).map((gx) => (
-        <line
-          key={gx}
-          x1={gx}
-          y1={GRID_TOP}
-          x2={gx}
-          y2={SPARK_BOT}
-          stroke="#fff8ea"
-          strokeOpacity="0.07"
-          strokeWidth="1"
-          strokeDasharray="2 3"
-        />
-      ))}
       <path d={`${d}L${SPARK_W},${SPARK_BOT}L0,${SPARK_BOT}Z`} fill={`url(#${fillId})`} />
       <path d={d} stroke={accent} strokeOpacity="0.9" strokeWidth="2.5" strokeLinecap="round" />
     </svg>
   );
 }
 
-export default function SwarmArenaModelCard({
-  data = SAMPLE_MODEL_CARD,
+/**
+ * The card's content — every absolutely-positioned layer inside the 650×1110
+ * box. The host provides the box: the static still wraps it in an <article>
+ * (below); the Remotion composition wraps it in an <AbsoluteFill> and drives
+ * `anim` per frame.
+ */
+export function SwarmArenaModelCardView({
+  data,
   assetBase = ASSET,
+  anim = SETTLED_MODEL_CARD_ANIM,
 }: {
-  data?: SwarmArenaModelCardData;
-  /**
-   * Base URL for the card's chrome assets (logo marks, rank hex, arrow,
-   * wordmark). Defaults to the public path, which resolves against the origin
-   * in the browser (app / Player). Headless Remotion renders pass a
-   * `staticFile()`-prefixed base so the bundler serves them. (STA-417)
-   */
+  data: SwarmArenaModelCardData;
   assetBase?: string;
+  anim?: SwarmArenaModelCardAnim;
 }) {
   const pos = data.pnlUsd >= 0;
   const accent = pos ? GREEN : ROSE;
+  const sparkClip: CSSProperties =
+    anim.sparkRevealRightPct > 0
+      ? { clipPath: `inset(0 ${anim.sparkRevealRightPct}% 0 0)` }
+      : {};
 
   return (
-    <article
-      className="relative h-[1110px] w-[650px] overflow-clip rounded-2xl bg-gradient-to-b from-[#110d0b] to-[#2f231e] font-sans"
-      data-node-id="350:124"
-    >
+    <>
+      {/* Card surface gradient — the single source of truth for the background,
+          shared by the static still and the Remotion composition. Sits behind
+          every layer (the watermarks blend over it; the panel/footer blurs
+          sample it). Hosts (article / AbsoluteFill) own only size + clipping. */}
+      <div className="absolute inset-0 bg-gradient-to-b from-[#070609] to-[#211412]" />
+
       {/* Decorative logo-shape watermark — bottom left (behind content, so the
           glass panel's backdrop-blur and the bottom progressive blur both bite on it) */}
       <div className="pointer-events-none absolute left-[-127.46px] top-[766.37px] h-[471.227px] w-[412.465px] mix-blend-overlay">
@@ -202,13 +308,22 @@ export default function SwarmArenaModelCard({
           the section it overlaps, like the watermarks); crisp in the open
           strips. Tick labels render separately after the blur band. */}
       {data.spark && data.spark.length > 1 ? (
-        <div className="pointer-events-none absolute inset-x-0 top-[700px]">
+        <div
+          className="pointer-events-none absolute inset-x-0 top-[700px]"
+          style={{ opacity: anim.sparkOpacity, ...sparkClip }}
+        >
           <SparkChartPlot spark={data.spark} accent={accent} />
         </div>
       ) : null}
 
       {/* Header — Swarm Arena lockup */}
-      <div className="absolute left-16 top-[57px] flex items-center gap-5">
+      <div
+        className="absolute left-16 top-[57px] flex items-center gap-5"
+        style={{
+          opacity: anim.headerOpacity,
+          transform: `translateY(${anim.headerY}px)`,
+        }}
+      >
         <img
           alt=""
           src={`${assetBase}/logos/swarm-arena.svg`}
@@ -225,21 +340,46 @@ export default function SwarmArenaModelCard({
         <div className="flex w-full flex-col gap-7">
           <div className="flex items-center gap-4">
             <div className="flex items-center gap-2.5">
-              <div className="size-[27px] shrink-0 rounded-full bg-[#8bce6c]" />
-              <div className="flex items-center justify-center rounded-full bg-[#8bce6c] px-3 py-1">
+              <div
+                className="size-[27px] shrink-0 rounded-full bg-[#8bce6c]"
+                style={{
+                  opacity: anim.tagDotOpacity,
+                  transform: `scale(${anim.tagDotScale})`,
+                }}
+              />
+              <div
+                className="flex items-center justify-center rounded-full bg-[#8bce6c] px-3 py-1"
+                style={{
+                  opacity: anim.tagPillOpacity,
+                  transform: `scale(${anim.tagPillScale})`,
+                  transformOrigin: "left center",
+                }}
+              >
                 <p className="text-base font-semibold uppercase leading-[1.2] text-[#161210]">
                   Live Agent
                 </p>
               </div>
             </div>
-            <p className="text-base font-semibold uppercase leading-[1.2] text-[#f98051]">
+            <p
+              className="text-base font-semibold uppercase leading-[1.2] text-[#ED6A4C]"
+              style={{
+                opacity: anim.tagWorldOpacity,
+                transform: `translateY(${anim.tagWorldY}px)`,
+              }}
+            >
               World Cup
             </p>
           </div>
 
           <div className="flex w-full items-center gap-5">
             {data.logo ? (
-              <div className="grid size-[65px] shrink-0 place-items-center overflow-clip rounded-full bg-white">
+              <div
+                className="grid size-[65px] shrink-0 place-items-center overflow-clip rounded-full bg-white"
+                style={{
+                  opacity: anim.avatarOpacity,
+                  transform: `scale(${anim.avatarScale})`,
+                }}
+              >
                 <img alt={data.name} src={data.logo} className="size-[39px]" />
               </div>
             ) : (
@@ -249,12 +389,20 @@ export default function SwarmArenaModelCard({
                   background: `${data.monogramColor ?? "#8a8174"}22`,
                   border: `1px solid ${data.monogramColor ?? "#8a8174"}66`,
                   color: data.monogramColor ?? "#fff8ea",
+                  opacity: anim.avatarOpacity,
+                  transform: `scale(${anim.avatarScale})`,
                 }}
               >
                 {data.monogram ?? data.name.slice(0, 2).toUpperCase()}
               </div>
             )}
-            <p className="min-w-0 flex-1 font-heading text-[54px] font-semibold leading-[1.2] text-[#fff8ea]">
+            <p
+              className="min-w-0 flex-1 font-heading text-[54px] font-semibold leading-[1.2] text-[#fff8ea]"
+              style={{
+                opacity: anim.modelNameOpacity,
+                transform: `translateY(${anim.modelNameY}px)`,
+              }}
+            >
               {data.name}
             </p>
           </div>
@@ -267,48 +415,74 @@ export default function SwarmArenaModelCard({
             <div className="flex w-full items-start gap-8">
               {/* Season PNL */}
               <div className="flex flex-1 flex-col gap-4">
-                <p className="font-sans text-2xl font-semibold leading-[1.2] text-[#fff8ea]/90">
+                <p
+                  className="font-sans text-2xl font-semibold leading-[1.2] text-[#fff8ea]/90"
+                  style={{ opacity: anim.pnlLabelOpacity }}
+                >
                   Season PNL
                 </p>
                 <div className="relative">
                   <p
                     className="font-heading text-[54px] font-semibold leading-none tracking-[1px]"
-                    style={{ color: accent }}
+                    style={{ opacity: anim.pnlValueOpacity, color: accent }}
                   >
-                    {pos ? "+" : "−"}
-                    {fmtMoney(data.pnlUsd)}
+                    {anim.pnlNode ?? (
+                      <>
+                        {pos ? "+" : "−"}
+                        {fmtMoney(data.pnlUsd)}
+                      </>
+                    )}
                   </p>
                   {/* Accent bar, centered on the value, bleeding off the left edge */}
                   <div
-                    className="absolute top-1/2 -left-[86px] h-[41px] w-[39px] -translate-y-1/2 rounded-lg"
-                    style={{ background: accent }}
+                    className="absolute top-1/2 -left-[86px] h-[41px] w-[39px] rounded-lg"
+                    style={{
+                      background: accent,
+                      transform: `translateY(-50%) scale(${anim.barScaleX}, ${anim.barScaleY})`,
+                      transformOrigin: "left center",
+                    }}
                   />
                 </div>
               </div>
 
               {/* Profit % */}
               <div className="flex flex-1 flex-col gap-4">
-                <p className="font-sans text-2xl font-semibold leading-[1.2] text-[#fff8ea]/90">
+                <p
+                  className="font-sans text-2xl font-semibold leading-[1.2] text-[#fff8ea]/90"
+                  style={{ opacity: anim.profitLabelOpacity }}
+                >
                   Profit %
                 </p>
-                <div className="flex items-center gap-4">
+                <div
+                  className="flex items-center gap-4"
+                  style={{ opacity: anim.profitRowOpacity }}
+                >
                   <img
                     alt=""
                     src={`${assetBase}/arrow-up.svg`}
                     className={`h-10 w-[34.29px] shrink-0${pos ? "" : " rotate-180"}`}
                   />
                   <p className="whitespace-nowrap font-heading text-[54px] font-semibold leading-none tracking-[1px] text-[#fff8ea]">
-                    {Math.abs(data.profitPct).toFixed(2)}%
+                    {anim.profitNode ?? `${Math.abs(data.profitPct).toFixed(2)}%`}
                   </p>
                 </div>
               </div>
             </div>
 
             {/* Divider */}
-            <div className="h-[0.97px] w-full bg-[#fff8ea] opacity-[0.12]" />
+            <div
+              className="h-[0.97px] w-full bg-[#fff8ea]"
+              style={{ opacity: anim.dividerOpacity * 0.12 }}
+            />
 
             {/* Equity */}
-            <div className="flex w-full items-center justify-between">
+            <div
+              className="flex w-full items-center justify-between"
+              style={{
+                opacity: anim.equityOpacity,
+                transform: `translateY(${anim.equityY}px)`,
+              }}
+            >
               <div className="flex items-end gap-3">
                 <p className="text-[28px] font-semibold leading-none text-[#fff8ea]">
                   {fmtMoney(data.equityUsd)}
@@ -324,16 +498,33 @@ export default function SwarmArenaModelCard({
           </div>
 
           {/* Glass stats panel */}
-          <div className="flex w-full flex-col gap-9 rounded-2xl bg-[rgba(10,10,6,0.5)] p-8 backdrop-blur-[24px]">
+          <div
+            className="flex w-full flex-col gap-9 rounded-2xl bg-[rgba(10,10,6,0.5)] p-8 backdrop-blur-[24px]"
+            style={{
+              opacity: anim.glassOpacity,
+              transform: `translateY(${anim.glassY}px)`,
+            }}
+          >
             <div className="flex w-full items-center gap-9">
-              <Stat label="Pick Accuracy" value={`${Math.round(data.pickAccuracyPct)}%`} />
-              <Stat label="Record" value={data.record} />
-              <Stat label="Rank" value={`#${data.rank} / ${data.rankOf}`} />
+              <Stat
+                label="Pick Accuracy"
+                value={`${Math.round(data.pickAccuracyPct)}%`}
+                opacity={anim.statOpacities[0]}
+              />
+              <Stat label="Record" value={data.record} opacity={anim.statOpacities[1]} />
+              <Stat
+                label="Rank"
+                value={`#${data.rank} / ${data.rankOf}`}
+                opacity={anim.statOpacities[2]}
+              />
             </div>
 
             <div className="flex w-full flex-col gap-[11px]">
               {/* Top pick */}
-              <div className="flex w-full items-center justify-between">
+              <div
+                className="flex w-full items-center justify-between"
+                style={{ opacity: anim.topPickOpacity }}
+              >
                 <p className="text-xs font-semibold uppercase leading-none text-[#8a8174]">
                   Top Pick
                 </p>
@@ -344,13 +535,16 @@ export default function SwarmArenaModelCard({
               </div>
 
               {/* Divider */}
-              <div className="w-full py-[7px]">
+              <div className="w-full py-[7px]" style={{ opacity: anim.topPickOpacity }}>
                 <div className="h-[0.97px] w-full bg-[#2e2c26]" />
               </div>
 
               {/* Latest picks */}
               <div className="flex w-full items-start justify-between">
-                <p className="text-xs font-semibold uppercase leading-none text-[#8a8174]">
+                <p
+                  className="text-xs font-semibold uppercase leading-none text-[#8a8174]"
+                  style={{ opacity: anim.picksLabelOpacity }}
+                >
                   Latest Picks
                 </p>
                 <div className="flex w-[206px] flex-col gap-2.5 text-[17px] font-bold text-[#fff8ea]">
@@ -359,13 +553,17 @@ export default function SwarmArenaModelCard({
                       <div
                         key={`${pick.label}-${i}`}
                         className="flex w-full items-start justify-between"
+                        style={{ opacity: anim.pickRowOpacities[i] ?? 1 }}
                       >
                         <span className="whitespace-nowrap">{pick.label}</span>
                         <span className="w-[75px] text-right">{pick.value}</span>
                       </div>
                     ))
                   ) : (
-                    <div className="flex w-full items-start justify-between">
+                    <div
+                      className="flex w-full items-start justify-between"
+                      style={{ opacity: anim.pickRowOpacities[0] ?? 1 }}
+                    >
                       <span className="whitespace-nowrap text-[#8a8174]">No picks yet</span>
                       <span className="w-[75px] text-right text-[#8a8174]">—</span>
                     </div>
@@ -412,7 +610,13 @@ export default function SwarmArenaModelCard({
       </div>
 
       {/* Footer — built-on credit */}
-      <div className="absolute left-[77px] top-[997px] flex w-[119.219px] flex-col gap-0.5">
+      <div
+        className="absolute left-[77px] top-[997px] flex w-[119.219px] flex-col gap-0.5"
+        style={{
+          opacity: anim.builtOnOpacity,
+          transform: `translateY(${anim.builtOnY}px)`,
+        }}
+      >
         <p className="font-mono text-[11.5px] font-normal uppercase leading-none tracking-[2px] text-[#7e7568]">
           Built On
         </p>
@@ -428,7 +632,9 @@ export default function SwarmArenaModelCard({
         className="absolute left-[314px] top-[993px] flex items-center gap-[9px] rounded-xl px-5 py-4 text-white shadow-[inset_0px_1px_1px_0px_rgba(255,255,255,0.6)]"
         style={{
           backgroundImage:
-            "linear-gradient(169.388deg, #f98051 17.138%, #e75218 89.208%)",
+            "linear-gradient(169.388deg, #ED6A4C 17.138%, #DC4416 89.208%)",
+          opacity: anim.ctaOpacity,
+          transform: `translateY(${anim.ctaY}px)`,
         }}
       >
         <p className="whitespace-nowrap text-xl font-semibold leading-[1.2]">
@@ -453,25 +659,41 @@ export default function SwarmArenaModelCard({
 
       {/* Rank badge — glossy hexagon + rank number + RANK ribbon, top-right */}
       <div className="absolute left-[472px] top-[61.5px] size-[106.408px]">
-        <div className="absolute inset-[2.33%_6.7%]">
-          <img
-            alt=""
-            src={`${assetBase}/rank-hex.svg`}
-            className="block size-full max-w-none"
-          />
-        </div>
-        <div className="absolute left-[4.85px] top-[4.85px] size-[96.706px] mix-blend-screen">
-          <div className="absolute inset-[1.92%_6.7%]">
+        <div
+          className="absolute inset-0"
+          style={{
+            opacity: anim.rankHexOpacity,
+            transform: `scale(${anim.rankHexScale})`,
+            transformOrigin: "center",
+          }}
+        >
+          <div className="absolute inset-[2.33%_6.7%]">
             <img
               alt=""
-              src={`${assetBase}/rank-hex-overlay.svg`}
+              src={`${assetBase}/rank-hex.svg`}
               className="block size-full max-w-none"
             />
+          </div>
+          <div className="absolute left-[4.85px] top-[4.85px] size-[96.706px] mix-blend-screen">
+            <div className="absolute inset-[1.92%_6.7%]">
+              <img
+                alt=""
+                src={`${assetBase}/rank-hex-overlay.svg`}
+                className="block size-full max-w-none"
+              />
+            </div>
           </div>
         </div>
 
         {/* RANK ribbon — banner across the hexagon's lower third */}
-        <div className="absolute left-[-16.3px] top-[52px] h-[50px] w-[139px]">
+        <div
+          className="absolute left-[-16.3px] top-[52px] h-[50px] w-[139px]"
+          style={{
+            opacity: anim.rankRibbonOpacity,
+            transform: `scale(${anim.rankRibbonScale})`,
+            transformOrigin: "center",
+          }}
+        >
           <img alt="" src={`${assetBase}/rank-ribbon.svg`} className="block size-full" />
           <div className="absolute inset-x-0 top-0 flex h-[31px] items-center justify-center">
             <span className="font-heading text-[18px] font-bold uppercase leading-none text-[#0d0907]">
@@ -481,19 +703,61 @@ export default function SwarmArenaModelCard({
         </div>
 
         {/* Rank number — centered in the upper hexagon, above the ribbon */}
-        <div className="absolute inset-x-0 top-0 flex h-[76px] items-center justify-center">
+        <div
+          className="absolute inset-x-0 top-0 flex h-[76px] items-center justify-center"
+          style={{
+            opacity: anim.rankNumOpacity,
+            transform: `scale(${anim.rankNumScale})`,
+          }}
+        >
           <span className="font-heading text-[48px] font-bold leading-none tracking-[1px] text-[#fff8ea]">
             {data.rank}
           </span>
         </div>
       </div>
+    </>
+  );
+}
+
+/**
+ * Static performance still — the settled state of the single design source,
+ * as plain DOM (html-to-image can rasterise it). The animated version is the
+ * same view driven per frame by the Remotion composition.
+ */
+export default function SwarmArenaModelCard({
+  data = SAMPLE_MODEL_CARD,
+  assetBase = ASSET,
+}: {
+  data?: SwarmArenaModelCardData;
+  /**
+   * Base URL for the card's chrome assets (logo marks, rank hex, arrow,
+   * wordmark). Defaults to the public path, which resolves against the origin
+   * in the browser (app / Player). Headless Remotion renders pass a
+   * `staticFile()`-prefixed base so the bundler serves them. (STA-417)
+   */
+  assetBase?: string;
+}) {
+  return (
+    <article
+      className="relative h-[1110px] w-[650px] overflow-clip rounded-2xl font-sans"
+      data-node-id="350:124"
+    >
+      <SwarmArenaModelCardView data={data} assetBase={assetBase} />
     </article>
   );
 }
 
-function Stat({ label, value }: { label: string; value: string }) {
+function Stat({
+  label,
+  value,
+  opacity = 1,
+}: {
+  label: string;
+  value: string;
+  opacity?: number;
+}) {
   return (
-    <div className="flex flex-1 flex-col gap-1">
+    <div className="flex flex-1 flex-col gap-1" style={{ opacity }}>
       <p className="text-xs font-normal uppercase leading-none tracking-[1.434px] text-[#8a8174]">
         {label}
       </p>

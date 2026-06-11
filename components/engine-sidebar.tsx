@@ -2,13 +2,15 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { Hexagon, History } from "lucide-react";
+import { Bot, Hexagon, History } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { engineManifest } from "@/engine/manifest";
 
 const ICONS: Record<string, typeof Hexagon> = {
   "swarm-arena-kit": Hexagon,
   "swarm-arena-history": History,
+  "nickai-kit": Bot,
+  "nickai-history": History,
 };
 
 /**
@@ -17,11 +19,21 @@ const ICONS: Record<string, typeof Hexagon> = {
 export function EngineSidebar() {
   const pathname = usePathname();
 
+  // The app sidebar owns group-level switching (Swarm Arena / NickAI…), so
+  // this rail shows only the active group's entries — listing every group
+  // here would just repeat the primary nav. Unknown routes fall back to all.
+  const activeGroup = engineManifest.find((e) =>
+    pathname.startsWith(`/engine/${e.id}`),
+  )?.group;
+  const visible = activeGroup
+    ? engineManifest.filter((e) => e.group === activeGroup)
+    : engineManifest;
+
   return (
     <aside className="flex h-full w-60 shrink-0 flex-col gap-4 border-r border-sidebar-border bg-sidebar/60 px-3 py-5">
       {/* Group entries by their `group` field; fall back to a generic heading. */}
       {Object.entries(
-        engineManifest.reduce<Record<string, typeof engineManifest>>((acc, e) => {
+        visible.reduce<Record<string, typeof engineManifest>>((acc, e) => {
           const g = e.group ?? "Engine";
           (acc[g] ??= []).push(e);
           return acc;
