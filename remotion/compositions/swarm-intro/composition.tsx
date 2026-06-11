@@ -18,10 +18,13 @@ import { useEffect, useState } from "react";
 import { SlidingDigitCount } from "../_shared/sliding-digit-count";
 import type { SwarmIntroProps } from "./props";
 
-const ASSET = "/swarm-intro";
+// Public-dir-relative (no leading slash) so they resolve via staticFile() in
+// BOTH the web Player and headless CLI renders. A bare "/foo.svg" only resolves
+// against the page origin (Player) and 404s in a headless render.
+const ASSET = "swarm-intro";
 const MODELS_ASSET = `${ASSET}/models`;
 /** Act 4 reuses the SwarmArena Model Card's bundled assets. */
-const CARD_ASSET = "/swarm-arena-cards/assets";
+const CARD_ASSET = "swarm-arena-cards/assets";
 
 // Manrope (body font) for the Act 4 live-agent card labels. Duplet (headings)
 // arrives via remotion/style.css @font-face / next/font; Manrope isn't declared
@@ -320,14 +323,14 @@ const LiveAgentScreen: React.FC<{ slide: boolean }> = ({ slide }) => {
       <div className="pointer-events-none absolute left-[-127.46px] top-[766.37px] h-[471.227px] w-[412.465px] mix-blend-overlay">
         <img
           alt=""
-          src={`${CARD_ASSET}/logoshp-bottom.svg`}
+          src={staticFile(`${CARD_ASSET}/logoshp-bottom.svg`)}
           className="block size-full max-w-none -scale-y-100 rotate-180"
         />
       </div>
       <div className="pointer-events-none absolute left-[318px] top-[-284.61px] h-[471.227px] w-[412.465px] mix-blend-overlay">
         <img
           alt=""
-          src={`${CARD_ASSET}/logoshp-top.svg`}
+          src={staticFile(`${CARD_ASSET}/logoshp-top.svg`)}
           className="block size-full max-w-none -scale-y-100 rotate-180"
         />
       </div>
@@ -377,7 +380,7 @@ const LiveAgentScreen: React.FC<{ slide: boolean }> = ({ slide }) => {
               >
                 <img
                   alt="GPT 5.5"
-                  src={`${CARD_ASSET}/models/chatgpt.svg`}
+                  src={staticFile(`${CARD_ASSET}/models/chatgpt.svg`)}
                   className="size-[39px]"
                 />
               </div>
@@ -438,7 +441,7 @@ const LiveAgentScreen: React.FC<{ slide: boolean }> = ({ slide }) => {
                 >
                   <img
                     alt=""
-                    src={`${CARD_ASSET}/arrow-up.svg`}
+                    src={staticFile(`${CARD_ASSET}/arrow-up.svg`)}
                     className="h-10 w-[34.29px] shrink-0"
                   />
                   <p className="whitespace-nowrap font-heading text-[54px] font-semibold leading-none tracking-[1px] text-[#fff8ea]">
@@ -632,7 +635,7 @@ export const SwarmIntroComposition: React.FC<SwarmIntroProps> = ({
       >
         <img
           alt=""
-          src={`${ASSET}/watermark-top.svg`}
+          src={staticFile(`${ASSET}/watermark-top.svg`)}
           className="block size-full max-w-none"
         />
       </div>
@@ -650,7 +653,7 @@ export const SwarmIntroComposition: React.FC<SwarmIntroProps> = ({
       >
         <img
           alt=""
-          src={`${ASSET}/watermark-bottom.svg`}
+          src={staticFile(`${ASSET}/watermark-bottom.svg`)}
           className="block size-full max-w-none"
         />
       </div>
@@ -756,7 +759,7 @@ export const SwarmIntroComposition: React.FC<SwarmIntroProps> = ({
             >
               <img
                 alt=""
-                src={`${MODELS_ASSET}/${name}.svg`}
+                src={staticFile(`${MODELS_ASSET}/${name}.svg`)}
                 className="block size-full max-w-none"
               />
             </div>
