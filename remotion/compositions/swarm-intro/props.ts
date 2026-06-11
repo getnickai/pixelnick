@@ -9,8 +9,15 @@
 export type SwarmIntroProps = {
   /** Wordmark revealed letter-by-letter after the mark docks. */
   wordmark?: string;
+  /**
+   * Count-up display style for the Act 4 live-agent card (PNL / profit).
+   * `true` (default) = slot-machine slide; `false` = per-frame digit snap.
+   * Shared with the other compositions via the `/motion` page toggle.
+   */
+  slide?: boolean;
 };
 
 export const swarmIntroDefaultProps: SwarmIntroProps = {
   wordmark: "Swarm Arena",
+  slide: true,
 };

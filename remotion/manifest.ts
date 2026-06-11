@@ -59,18 +59,21 @@ export const motionManifest: MotionEntryMeta[] = [
     durationInFrames: 240,
   },
   {
-    // SwarmArena intro sting, three acts (Figma 373:1485 → 376:1644 →
-    // 376:1656): the mark fade-zooms in and docks into the "Swarm Arena"
-    // lockup; the lockup exits left while "AI Agents / Compete" letters in;
-    // then the statement swaps to "For Predicting / World Cup '26" as seven
-    // AI-model logos assemble into a rotating orbit. Ease-in-out throughout
-    // (cubic opening zoom, expo elsewhere). 8.4s @ 30fps.
+    // SwarmArena intro sting, four acts (Figma 373:1485 → 376:1644 →
+    // 376:1656 → model card): the mark fade-zooms in and docks into the
+    // "Swarm Arena" lockup; the lockup exits left (the mark flying to the
+    // top-left corner) while "AI Agents / Compete" letters in; the statement
+    // swaps to "For Predicting / World Cup '26" as seven AI-model logos
+    // assemble into a rotating orbit; then it cuts to the live-agent card's
+    // top section (staggered cascade, PNL/Profit counting up). The orange
+    // mark stays pinned top-left across all acts. Ease-in-out throughout.
+    // 12.5s (Act 3 orbit holds an extra 1.5s before the Act 4 cut).
     id: "swarm-intro",
     label: "Swarm Intro",
     width: 650,
     height: 600,
     fps: 30,
-    durationInFrames: 252,
+    durationInFrames: 375,
   },
 ];
 

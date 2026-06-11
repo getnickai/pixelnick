@@ -13,11 +13,23 @@ import {
   useCurrentFrame,
   useVideoConfig,
 } from "remotion";
+import { loadFont as loadManrope } from "@remotion/google-fonts/Manrope";
 import { useEffect, useState } from "react";
+import { SlidingDigitCount } from "../_shared/sliding-digit-count";
 import type { SwarmIntroProps } from "./props";
 
 const ASSET = "/swarm-intro";
 const MODELS_ASSET = `${ASSET}/models`;
+/** Act 4 reuses the SwarmArena Model Card's bundled assets. */
+const CARD_ASSET = "/swarm-arena-cards/assets";
+
+// Manrope (body font) for the Act 4 live-agent card labels. Duplet (headings)
+// arrives via remotion/style.css @font-face / next/font; Manrope isn't declared
+// there, so load it here so font-sans resolves in both Player and headless.
+const { fontFamily: MANROPE, waitUntilDone: waitManrope } = loadManrope(
+  "normal",
+  { weights: ["400", "500", "600", "700"], subsets: ["latin"] },
+);
 
 /** Frame is 650×600 (Figma node 373:1485). */
 const FRAME_W = 650;
@@ -89,8 +101,11 @@ const ORBIT_LOGO_SIZE = 82.5;
  * letters in. Act 3 (Figma
  * 376:1656): the statement swaps to "For Predicting / World Cup '26" while
  * the seven model logos pop in clockwise from 12 o'clock and the whole ring
- * eases into a steady orbit.
- * Runs 252 frames = 8.4s (~6.5s motion + rotating hold).
+ * eases into a steady orbit. Act 4 (SwarmArena Model Card, top crop): after a
+ * bit more rotation, the live-agent card screen cross-dissolves in and its
+ * content cascades (staggered) with PNL/Profit counting up. The orange mark
+ * stays pinned top-left as a persistent brand mark across all four acts.
+ * Runs 375 frames = 12.5s.
  */
 const ANIM = {
   // Phase 1 — fade-zoom: one continuous inOutExpo zoom, huge → lockup size.
@@ -145,6 +160,27 @@ const ANIM = {
   videoOpacityMax: 0.75,
   rotAccel: 30, // frames to ramp from standstill to full orbit speed
   rotSpeed: 0.75, // deg/frame once at speed (≈22.5°/s)
+
+  // Act 4 — after a bit more orbit rotation, cut to the live-agent card's top
+  // section. The background screen cross-dissolves in over the orbit, then the
+  // content cascades with a staggered entrance mirroring swarm-arena-model-
+  // card: dot → LIVE AGENT pill → WORLD CUP → avatar → model name → metrics →
+  // equity. PNL/Profit count up; the accent bar scales in.
+  // (+45 frames / 1.5s of extra orbit rotation before this act cuts in.)
+  act4ScreenIn: [250, 272], // bg + watermarks cross-dissolve
+  act4TagDot: [261, 273], // spring start = window[0]
+  act4TagPill: [266, 278],
+  act4TagWorld: [271, 283],
+  act4Avatar: [269, 281],
+  act4ModelName: [273, 297],
+  act4PnlLabel: [285, 299],
+  act4PnlValue: [289, 301], // value fades in as its count starts
+  act4PnlCount: [289, 331],
+  act4BarStart: 295,
+  act4ProfitLabel: [297, 311],
+  act4ProfitValue: [301, 315],
+  act4ProfitCount: [301, 343],
+  act4Equity: [315, 333],
 } as const;
 
 /**
@@ -227,6 +263,228 @@ const CenteredLetterText: React.FC<{
 };
 
 /**
+ * Act 4 — the live-agent card's top section (the SwarmArena Model Card, top
+ * crop only: tags → model → PNL/Profit → equity). A full-frame screen that
+ * cross-dissolves in over the orbit and rises as one unit; the PNL and Profit
+ * count up (numbers fade in with their count, no "+$0" flash) and the accent
+ * bar scales in. Styling mirrors components/swarm-arena-model-card.tsx; the
+ * lower half of the card (glass stats panel, picks, footer, CTA) is omitted.
+ */
+const LiveAgentScreen: React.FC<{ slide: boolean }> = ({ slide }) => {
+  const frame = useCurrentFrame();
+  const { fps } = useVideoConfig();
+  if (frame < ANIM.act4ScreenIn[0]) return null;
+
+  // Background screen cross-dissolves in to cover the orbit.
+  const screenOpacity = interpolate(frame, ANIM.act4ScreenIn, [0, 1], {
+    easing: Easing.inOut(Easing.exp),
+    extrapolateLeft: "clamp",
+    extrapolateRight: "clamp",
+  });
+
+  // Cubic-out opacity fade over a window (matches the model card).
+  const fade = (w: readonly [number, number]) =>
+    interpolate(frame, w, [0, 1], {
+      easing: Easing.out(Easing.cubic),
+      extrapolateLeft: "clamp",
+      extrapolateRight: "clamp",
+    });
+  // Smooth rise + fade — the general content cascade.
+  const upStyle = (w: readonly [number, number], dy = 12) => ({
+    opacity: fade(w),
+    transform: `translateY(${interpolate(frame, w, [dy, 0], {
+      easing: Easing.out(Easing.exp),
+      extrapolateLeft: "clamp",
+      extrapolateRight: "clamp",
+    })}px)`,
+  });
+  // Spring scale-in (with overshoot) for the dot / pill / avatar pops.
+  const popScale = (
+    start: number,
+    from: number,
+    config: { damping: number; stiffness: number },
+  ) => interpolate(spring({ frame: frame - start, fps, config }), [0, 1], [from, 1]);
+
+  // Accent bar — vertical scale-in as the PNL lands.
+  const barScaleY = Math.min(
+    popScale(ANIM.act4BarStart, 0, { damping: 13, stiffness: 130 }),
+    1,
+  );
+
+  return (
+    <AbsoluteFill
+      className="overflow-clip bg-gradient-to-b from-[#110d0b] to-[#2f231e] font-sans"
+      style={{ opacity: screenOpacity }}
+    >
+      {/* Backdrop watermarks — match the model card */}
+      <div className="pointer-events-none absolute left-[-127.46px] top-[766.37px] h-[471.227px] w-[412.465px] mix-blend-overlay">
+        <img
+          alt=""
+          src={`${CARD_ASSET}/logoshp-bottom.svg`}
+          className="block size-full max-w-none -scale-y-100 rotate-180"
+        />
+      </div>
+      <div className="pointer-events-none absolute left-[318px] top-[-284.61px] h-[471.227px] w-[412.465px] mix-blend-overlay">
+        <img
+          alt=""
+          src={`${CARD_ASSET}/logoshp-top.svg`}
+          className="block size-full max-w-none -scale-y-100 rotate-180"
+        />
+      </div>
+
+      {/* Top section, vertically centered in the 600px frame */}
+      <div className="absolute inset-0 flex flex-col justify-center">
+        <div className="mx-16 flex w-[522px] flex-col gap-16">
+          {/* Tags + model */}
+          <div className="flex w-full flex-col gap-7">
+            <div className="flex items-center gap-4">
+              <div className="flex items-center gap-2.5">
+                <div
+                  className="size-[27px] shrink-0 rounded-full bg-[#8bce6c]"
+                  style={{
+                    opacity: fade(ANIM.act4TagDot),
+                    transform: `scale(${popScale(ANIM.act4TagDot[0], 0.4, { damping: 12, stiffness: 150 })})`,
+                  }}
+                />
+                <div
+                  className="flex items-center justify-center rounded-full bg-[#8bce6c] px-3 py-1"
+                  style={{
+                    opacity: fade(ANIM.act4TagPill),
+                    transform: `scale(${popScale(ANIM.act4TagPill[0], 0.6, { damping: 12, stiffness: 140 })})`,
+                    transformOrigin: "left center",
+                  }}
+                >
+                  <p className="text-base font-semibold uppercase leading-[1.2] text-[#161210]">
+                    Live Agent
+                  </p>
+                </div>
+              </div>
+              <p
+                className="text-base font-semibold uppercase leading-[1.2] text-[#f98051]"
+                style={upStyle(ANIM.act4TagWorld, 6)}
+              >
+                World Cup
+              </p>
+            </div>
+
+            <div className="flex w-full items-center gap-5">
+              <div
+                className="grid size-[65px] shrink-0 place-items-center overflow-clip rounded-full bg-white"
+                style={{
+                  opacity: fade(ANIM.act4Avatar),
+                  transform: `scale(${popScale(ANIM.act4Avatar[0], 0.5, { damping: 12, stiffness: 130 })})`,
+                }}
+              >
+                <img
+                  alt="GPT 5.5"
+                  src={`${CARD_ASSET}/models/chatgpt.svg`}
+                  className="size-[39px]"
+                />
+              </div>
+              <p
+                className="min-w-0 flex-1 font-heading text-[54px] font-semibold leading-[1.2] text-[#fff8ea]"
+                style={upStyle(ANIM.act4ModelName)}
+              >
+                GPT 5.5
+              </p>
+            </div>
+          </div>
+
+          {/* Metrics + equity */}
+          <div className="flex w-full flex-col justify-center gap-6">
+            <div className="flex w-full items-start gap-8">
+              {/* Season PNL */}
+              <div className="flex flex-1 flex-col gap-4">
+                <p
+                  className="font-sans text-2xl font-semibold leading-[1.2] text-[#fff8ea]/90"
+                  style={{ opacity: fade(ANIM.act4PnlLabel) }}
+                >
+                  Season PNL
+                </p>
+                <div className="relative">
+                  <p
+                    className="font-heading text-[54px] font-semibold leading-none tracking-[1px] text-[#8bce6c]"
+                    style={{ opacity: fade(ANIM.act4PnlValue) }}
+                  >
+                    <SlidingDigitCount
+                      targetValue={184}
+                      countWindow={ANIM.act4PnlCount}
+                      decimals={0}
+                      prefix="+$"
+                      slide={slide}
+                    />
+                  </p>
+                  <div
+                    className="absolute top-1/2 -left-[86px] h-[41px] w-[39px] rounded-lg bg-[#8bce6c]"
+                    style={{
+                      transform: `translateY(-50%) scaleY(${barScaleY})`,
+                      transformOrigin: "left center",
+                    }}
+                  />
+                </div>
+              </div>
+
+              {/* Profit % */}
+              <div className="flex flex-1 flex-col gap-4">
+                <p
+                  className="font-sans text-2xl font-semibold leading-[1.2] text-[#fff8ea]/90"
+                  style={{ opacity: fade(ANIM.act4ProfitLabel) }}
+                >
+                  Profit %
+                </p>
+                <div
+                  className="flex items-center gap-4"
+                  style={{ opacity: fade(ANIM.act4ProfitValue) }}
+                >
+                  <img
+                    alt=""
+                    src={`${CARD_ASSET}/arrow-up.svg`}
+                    className="h-10 w-[34.29px] shrink-0"
+                  />
+                  <p className="whitespace-nowrap font-heading text-[54px] font-semibold leading-none tracking-[1px] text-[#fff8ea]">
+                    <SlidingDigitCount
+                      targetValue={27.97}
+                      countWindow={ANIM.act4ProfitCount}
+                      decimals={2}
+                      suffix="%"
+                      slide={slide}
+                    />
+                  </p>
+                </div>
+              </div>
+            </div>
+
+            {/* Divider */}
+            <div
+              className="h-[0.97px] w-full bg-[#fff8ea]"
+              style={{ opacity: fade(ANIM.act4Equity) * 0.12 }}
+            />
+
+            {/* Equity */}
+            <div
+              className="flex w-full items-center justify-between"
+              style={upStyle(ANIM.act4Equity)}
+            >
+              <div className="flex items-end gap-3">
+                <p className="text-[28px] font-semibold leading-none text-[#fff8ea]">
+                  $1,184
+                </p>
+                <p className="pb-1 text-xl font-normal leading-4 text-[#8a8174]">
+                  Equity
+                </p>
+              </div>
+              <p className="text-xl font-normal leading-4 text-[#8a8174]">
+                <span className="font-semibold text-[#fff8ea]">$1,000</span> base
+              </p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </AbsoluteFill>
+  );
+};
+
+/**
  * Animated SwarmArena intro sting (Figma node 373:1485, 650×600).
  *
  * The backdrop — gradient, the two blend-overlay hex watermarks, and the
@@ -237,16 +495,17 @@ const CenteredLetterText: React.FC<{
  */
 export const SwarmIntroComposition: React.FC<SwarmIntroProps> = ({
   wordmark = "Swarm Arena",
+  slide = true,
 }) => {
   const frame = useCurrentFrame();
   const { fps } = useVideoConfig();
 
-  // Block the first captured frame until Duplet is ready. In the app the font
-  // arrives via next/font; headless it comes from the @font-face in
-  // remotion/style.css — either way letters must not flash a fallback face.
-  const [fontHandle] = useState(() => delayRender("Loading Duplet"));
+  // Block the first captured frame until fonts are ready. Duplet (headings)
+  // arrives via next/font in the app and the @font-face in remotion/style.css
+  // headless; Manrope (Act 4 body labels) is loaded above via google-fonts.
+  const [fontHandle] = useState(() => delayRender("Loading fonts"));
   useEffect(() => {
-    document.fonts.ready
+    Promise.all([waitManrope(), document.fonts.ready])
       .then(() => continueRender(fontHandle))
       .catch(() => continueRender(fontHandle));
   }, [fontHandle]);
@@ -344,12 +603,19 @@ export const SwarmIntroComposition: React.FC<SwarmIntroProps> = ({
   return (
     <AbsoluteFill
       className="overflow-clip"
-      style={{
-        background: "linear-gradient(to bottom, #0b0a0f, #1d120e)",
-        // Contain the screen-blend video overlay so it composites against the
-        // scene below it, not whatever is behind the player.
-        isolation: "isolate",
-      }}
+      style={
+        {
+          background: "linear-gradient(to bottom, #0b0a0f, #1d120e)",
+          // Contain the screen-blend video overlay so it composites against the
+          // scene below it, not whatever is behind the player.
+          isolation: "isolate",
+          // Provide Manrope so Tailwind font-sans (Act 4 labels) resolves in
+          // headless renders too. Duplet (font-heading) already resolves via
+          // next/font (app) and the @font-face in remotion/style.css (headless),
+          // so it must NOT be overridden here.
+          "--font-manrope": MANROPE,
+        } as React.CSSProperties
+      }
     >
       {/* Hex watermarks — blend-overlay, mirrored, bleeding past the frame */}
       <div
@@ -400,28 +666,6 @@ export const SwarmIntroComposition: React.FC<SwarmIntroProps> = ({
         }}
         aria-hidden
       />
-
-      {/* Mark — frame-centered → condenses → docks into the lockup → on exit
-          flies to the top-left corner and stays (does not fade out) */}
-      <div
-        className="absolute left-1/2 top-1/2"
-        style={{
-          width: MARK_W,
-          height: MARK_H,
-          opacity: markOpacity,
-          transform: `translate(-50%, -50%) translate(${markCornerX}px, ${markCornerY}px) scale(${markCornerScale})`,
-        }}
-      >
-        <svg
-          width="100%"
-          height="100%"
-          viewBox={`0 0 ${MARK_W} ${MARK_H}`}
-          fill="none"
-          xmlns="http://www.w3.org/2000/svg"
-        >
-          <path d={MARK_PATH} fill={markFill} />
-        </svg>
-      </div>
 
       {/* Wordmark — rides the dock curve (offset right, wide-tracked, both
           tightening with the glide) so logo and text travel left together;
@@ -556,6 +800,34 @@ export const SwarmIntroComposition: React.FC<SwarmIntroProps> = ({
           />
         </Sequence>
       ) : null}
+
+      {/* Act 4 — cut to the live-agent card's top section (a clean new screen
+          over the orbit). Rendered before the mark so the corner logo stays
+          on top of it. */}
+      <LiveAgentScreen slide={slide} />
+
+      {/* Mark — frame-centered → condenses → docks into the lockup → flies to
+          the top-left corner and stays. Rendered LAST so it persists on top
+          through every act (incl. over the Act 4 card). */}
+      <div
+        className="absolute left-1/2 top-1/2"
+        style={{
+          width: MARK_W,
+          height: MARK_H,
+          opacity: markOpacity,
+          transform: `translate(-50%, -50%) translate(${markCornerX}px, ${markCornerY}px) scale(${markCornerScale})`,
+        }}
+      >
+        <svg
+          width="100%"
+          height="100%"
+          viewBox={`0 0 ${MARK_W} ${MARK_H}`}
+          fill="none"
+          xmlns="http://www.w3.org/2000/svg"
+        >
+          <path d={MARK_PATH} fill={markFill} />
+        </svg>
+      </div>
     </AbsoluteFill>
   );
 };
