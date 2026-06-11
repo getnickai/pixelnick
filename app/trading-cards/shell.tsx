@@ -74,8 +74,8 @@ export function TradingCardsShell({
         <nav className="tc-topnav">
           <div className="tc-navgrp">
             <span className="navlbl">Swarm Arena</span>
-            <a href="/engine/swarm-arena-kit">Kit</a>
-            <a href="/swarm-arena-cards/history.html">History</a>
+            <a href="/swarm-arena-cards/index.html">Kit</a>
+            <a href="/engine/swarm-arena-history">History</a>
           </div>
           <span className="sep" />
           <div className="tc-navgrp">

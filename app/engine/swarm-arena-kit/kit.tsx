@@ -11,71 +11,26 @@
  */
 import { useEffect, useMemo, useRef, useState } from "react";
 import { RefreshCw } from "lucide-react";
-import SwarmArenaModelCard, {
-  type SwarmArenaModelCardData,
-} from "@/components/swarm-arena-model-card";
+import SwarmArenaModelCard from "@/components/swarm-arena-model-card";
 import type { EngineAgent } from "@/data/swarm-output";
-import { identityFor } from "@/data/swarm-identity";
 import { SAMPLE_SWARM_AGENTS } from "@/data/swarm-sample-deck";
+import {
+  MODEL_CARD_H,
+  MODEL_CARD_W,
+  MODEL_LOGOS,
+  MODELS_ASSET,
+  dedupeByHandle,
+  toCardData,
+} from "@/lib/swarm-card-data";
 import { cn } from "@/lib/utils";
 
-const CARD_W = 650;
-const CARD_H = 1110;
 const FIT_PAD = 80;
-
-const MODELS_ASSET = "/swarm-arena-cards/assets/models";
-/** Handles with a monochrome mark on disk; others fall back to a monogram. */
-const MODEL_LOGOS: Record<string, string> = {
-  GPT: "chatgpt",
-  CLAUDE: "claude",
-  GEMINI: "google",
-  KIMI: "kimi",
-  GLM: "glm",
-  GROK: "grok",
-  DEEPSEEK: "deepseek",
-  MINIMAX: "minimax",
-};
 
 type DeckResponse = { at?: string | null; agents: EngineAgent[] };
 type DeckState =
   | { status: "loading" }
   | { status: "error"; message: string }
   | { status: "ready"; deck: DeckResponse };
-
-/** "BACK Yes @ 0.38" → { label: "BACK Yes at:", value: "0.38" } */
-function toPickRow(side: string): { label: string; value: string } {
-  const at = side.lastIndexOf(" @ ");
-  if (at === -1) return { label: side, value: "—" };
-  return { label: `${side.slice(0, at)} at:`, value: side.slice(at + 3) };
-}
-
-function toCardData(a: EngineAgent, rank: number, rankOf: number): SwarmArenaModelCardData {
-  const base = a.spark?.[0] ?? 1000;
-  const equity = a.spark?.[a.spark.length - 1] ?? base * (1 + a.roiPct / 100);
-  const wins = Math.round(a.signals * a.pickPct);
-  const logoFile = MODEL_LOGOS[a.handle];
-  const hasPick = a.pick && a.pick.side && a.pick.side !== "—";
-  return {
-    // Versioned display name ("Kimi K2", "GPT-5.1") from the design-owned
-    // registry — the deck's `label` is the short headline ("Kimi").
-    name: identityFor(a.handle)?.label ?? a.label ?? a.short ?? a.handle,
-    logo: logoFile ? `${MODELS_ASSET}/${logoFile}.svg` : undefined,
-    monogram: a.code,
-    monogramColor: a.color,
-    pnlUsd: equity - base,
-    profitPct: a.roiPct,
-    equityUsd: equity,
-    baseUsd: base,
-    pickAccuracyPct: a.pickPct * 100,
-    record: a.record ?? `${wins}-${Math.max(0, a.signals - wins)}`,
-    rank,
-    rankOf,
-    topPick: hasPick ? toPickRow(a.pick.side) : undefined,
-    latestPicks: (a.recent ?? []).slice(0, 3).map((r) => toPickRow(r.side)),
-    // Equity curve for the background chart.
-    spark: a.spark,
-  };
-}
 
 /** Rail chip avatar: the model's mark tinted in its brand color (via CSS mask
  *  — the SVGs are currentColor marks, which render black through an <img>),
@@ -136,7 +91,6 @@ export function SwarmArenaKit() {
       })
       .then((deck: DeckResponse) => {
         setDeckState({ status: "ready", deck });
-        setAgent((cur) => cur ?? deck.agents[0]?.handle ?? null);
       })
       .catch((err) => {
         if (!ctrl.signal.aborted)
@@ -154,23 +108,15 @@ export function SwarmArenaKit() {
   };
 
   // Sample mode renders the Design fixtures; live mode the deduped R2 deck.
-  // (Dedupe is a defense: the upstream feed has produced colliding handles —
-  // two agents reporting "GPT" — keep the first/higher-ranked per handle so
-  // selection and React keys stay sound.) Both sorted by ROI for rank.
   const agents = useMemo(() => {
     if (source === "sample") {
       return [...SAMPLE_SWARM_AGENTS].sort((a, b) => b.roiPct - a.roiPct);
     }
     if (deckState.status !== "ready") return [];
-    const seen = new Set<string>();
-    return deckState.deck.agents.filter((a) => {
-      if (seen.has(a.handle)) return false;
-      seen.add(a.handle);
-      return true;
-    });
+    return dedupeByHandle(deckState.deck.agents);
   }, [deckState, source]);
 
-  // Scale-to-fit: the card is a fixed 650×1050, so the scale falls out of the
+  // Scale-to-fit: the card is a fixed 650×1110, so the scale falls out of the
   // stage box alone — observe it (covers window resizes and app-sidebar
   // collapse/expand) instead of measuring the card.
   const stageRef = useRef<HTMLDivElement>(null);
@@ -180,8 +126,8 @@ export function SwarmArenaKit() {
     const update = () =>
       setScale(
         Math.min(
-          (stage.clientWidth - FIT_PAD) / CARD_W,
-          (stage.clientHeight - FIT_PAD) / CARD_H,
+          (stage.clientWidth - FIT_PAD) / MODEL_CARD_W,
+          (stage.clientHeight - FIT_PAD) / MODEL_CARD_H,
           1,
         ),
       );

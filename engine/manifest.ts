@@ -25,6 +25,13 @@ export const engineManifest: EngineEntryMeta[] = [
     shortLabel: "Kit",
     meta: "live R2",
   },
+  {
+    id: "swarm-arena-history",
+    label: "Swarm Arena History",
+    group: "Swarm Arena",
+    shortLabel: "History",
+    meta: "live R2",
+  },
 ];
 
 export function getEngineEntryMeta(id: string): EngineEntryMeta | undefined {

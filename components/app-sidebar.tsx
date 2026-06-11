@@ -46,7 +46,7 @@ const WORKSPACES: Workspace[] = [
     label: "Engine",
     icon: Cpu,
     href: "/engine",
-    items: [{ title: "Kit", href: "/engine", icon: Hexagon }],
+    items: [{ title: "Swarm Arena", href: "/engine", icon: Hexagon }],
   },
 ];
 

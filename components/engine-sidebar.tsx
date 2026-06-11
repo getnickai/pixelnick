@@ -2,12 +2,13 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { Hexagon } from "lucide-react";
+import { Hexagon, History } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { engineManifest } from "@/engine/manifest";
 
 const ICONS: Record<string, typeof Hexagon> = {
   "swarm-arena-kit": Hexagon,
+  "swarm-arena-history": History,
 };
 
 /**
