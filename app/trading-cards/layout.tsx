@@ -14,6 +14,8 @@
  *    pinning `html` to 16px on these card-kit pages guarantees that. (The style
  *    is scoped to this segment — it unmounts when you navigate away.)
  */
+import { PinRootFontSize } from "@/components/pin-root-font-size";
+
 export const dynamic = "force-dynamic";
 
 export default function TradingCardsLayout({
@@ -23,7 +25,7 @@ export default function TradingCardsLayout({
 }) {
   return (
     <>
-      <style>{"html{font-size:16px}"}</style>
+      <PinRootFontSize />
       {children}
     </>
   );
