@@ -44,7 +44,10 @@ const GALLERY_CSS = `
   .sah-cell{display:flex;flex-direction:column;gap:10px}
   .sah-thumb{width:286px;height:500px;overflow:hidden;border-radius:18px;border:1px solid var(--border-solid);background:#15140F;position:relative}
   .sah-thumb-inner{position:absolute;top:0;left:0;transform:scale(.44);transform-origin:top left}
-  .sah-cap{display:flex;align-items:center;gap:8px;color:var(--text-dim);font-size:12.5px}
+  .sah-cap{display:flex;align-items:center;justify-content:space-between;gap:8px;color:var(--text-dim);font-size:12.5px}
+  .sah-dl{font:inherit;font-size:11px;color:var(--text);background:var(--bg-panel);border:1px solid var(--border-solid);border-radius:6px;padding:3px 9px;cursor:pointer;transition:all .14s ease;white-space:nowrap}
+  .sah-dl:hover{border-color:color-mix(in srgb,var(--brand) 45%,transparent)}
+  .sah-dl:disabled{opacity:.5;cursor:default}
   .sah-empty{font-family:var(--font-mono);font-size:13px;color:var(--text-faint);padding:50px 0;text-align:center}
 `;
 
@@ -54,9 +57,10 @@ export default function SwarmHistoryPage() {
   const [upStatus, setUpStatus] = useState("");
   const [when, setWhen] = useState(""); // "" = live; otherwise YYYY-MM-DD
   const [dates, setDates] = useState<string[]>([]);
+  const [theme, setTheme] = useState<"dark" | "light">("dark");
   const [engineReady, setEngineReady] = useState(false);
   const [leaderboardHtml, setLeaderboardHtml] = useState("");
-  const [upcomingHtml, setUpcomingHtml] = useState<{ html: string; label: string }[]>([]);
+  const [upcomingHtml, setUpcomingHtml] = useState<{ html: string; label: string; slug: string }[]>([]);
   const timer = useRef<ReturnType<typeof setInterval> | null>(null);
 
   // YYYY-MM-DD → end-of-day UTC so the deck reflects every run from that day.
@@ -100,6 +104,67 @@ export default function SwarmHistoryPage() {
 
   const [upcomingGames, setUpcomingGames] = useState<Game[]>([]);
 
+  // Best-effort PNG of a vanilla card (match / leaderboard — plain CSS). We
+  // rasterize inside a throwaway iframe that loads ONLY the engine stylesheets +
+  // its own html-to-image, so the page's Tailwind-v4 CSS (which hangs the
+  // rasterizer) is out of scope and the main thread never freezes. In-browser
+  // export of these cards is flaky regardless, so it fails gracefully and points
+  // at the render pipeline. The Tailwind-v4 model cards get no button at all.
+  const downloadCard = useCallback(
+    async (html: string, filename: string, btn: HTMLButtonElement) => {
+      const label = btn.textContent;
+      btn.disabled = true;
+      btn.textContent = "…";
+      const iframe = document.createElement("iframe");
+      iframe.setAttribute("aria-hidden", "true");
+      iframe.style.cssText =
+        "position:fixed;left:-10000px;top:0;width:650px;height:1200px;border:0;background:transparent";
+      document.body.appendChild(iframe);
+      try {
+        const doc = iframe.contentDocument!;
+        doc.open();
+        doc.write(
+          `<!doctype html><html data-theme="${theme}"><head><meta charset="utf-8">` +
+            `<link rel="stylesheet" href="/swarm-arena-cards/colors_and_type.css">` +
+            `<link rel="stylesheet" href="/swarm-arena-cards/card-styles.css">` +
+            `<script src="/swarm-arena-cards/html-to-image.js"></script>` +
+            `<style>html,body{margin:0;padding:0;background:transparent}</style>` +
+            `</head><body>${html}</body></html>`,
+        );
+        doc.close();
+        await new Promise<void>((res) => {
+          iframe.onload = () => res();
+          setTimeout(res, 4000);
+        });
+        await new Promise((r) => setTimeout(r, 400)); // settle layout + images
+        const win = iframe.contentWindow as unknown as {
+          htmlToImage?: { toPng: (n: Element, o?: unknown) => Promise<string> };
+        };
+        const card = doc.body.firstElementChild;
+        if (!win.htmlToImage || !card) throw new Error("rasterizer not ready");
+        const dataUrl = await Promise.race([
+          win.htmlToImage.toPng(card, { width: 650, height: 1136, pixelRatio: 2, cacheBust: false }),
+          new Promise<string>((_, rej) => setTimeout(() => rej(new Error("export timed out")), 12000)),
+        ]);
+        const a = document.createElement("a");
+        a.href = dataUrl;
+        a.download = `${filename}.png`;
+        a.click();
+      } catch (e) {
+        alert(
+          `In-browser PNG export failed (${e instanceof Error ? e.message : e}). ` +
+            `These cards rasterize unreliably in the browser — use the render pipeline ` +
+            `(generate-swarm-cards) for a clean PNG.`,
+        );
+      } finally {
+        iframe.remove();
+        btn.disabled = false;
+        btn.textContent = label;
+      }
+    },
+    [theme],
+  );
+
   useEffect(() => {
     loadDeck();
   }, [loadDeck]);
@@ -120,7 +185,7 @@ export default function SwarmHistoryPage() {
   // and data is in. window.SA.load() re-points the renderers at the live deck.
   useEffect(() => {
     if (!engineReady || typeof window === "undefined" || !window.SA) return;
-    const opts = { theme: "dark", size: "portrait" } as const;
+    const opts = { theme, size: "portrait" as const };
     if (deck) {
       window.SA.load({ agents: deck.agents });
       setLeaderboardHtml(window.SA.renderLeaderboardCard(opts));
@@ -129,12 +194,13 @@ export default function SwarmHistoryPage() {
       upcomingGames.map((g) => ({
         html: window.SA.renderMatchCard(g, opts),
         label: `${g.home.name} vs ${g.away.name}`,
+        slug: `preview-${(g.home.code ?? "").toLowerCase()}-${(g.away.code ?? "").toLowerCase()}`,
       })),
     );
-  }, [engineReady, deck, upcomingGames]);
+  }, [engineReady, deck, upcomingGames, theme]);
 
   return (
-    <SwarmCardsShell activeKey="swarm-history" tag="Live Cards">
+    <SwarmCardsShell activeKey="swarm-history" tag="Live Cards" theme={theme}>
       <style>{GALLERY_CSS}</style>
       {/* Vanilla engine + its stylesheets, for the Leaderboard + Upcoming cards
           only. The React model card is self-contained Tailwind and ignores these. */}
@@ -155,7 +221,7 @@ export default function SwarmHistoryPage() {
         }}
       />
 
-      <main className="sah-main" data-theme="dark">
+      <main className="sah-main" data-theme={theme}>
         <div className="sah-controls">
           <span className="blurb">
             Rendered live in your browser from the R2 agent output — no stored PNGs.
@@ -174,6 +240,16 @@ export default function SwarmHistoryPage() {
                   {d}
                 </option>
               ))}
+            </select>
+          </label>
+          <label>
+            Theme:
+            <select
+              value={theme}
+              onChange={(e) => setTheme(e.target.value === "light" ? "light" : "dark")}
+            >
+              <option value="dark">Dark</option>
+              <option value="light">Light</option>
             </select>
           </label>
           <span className="sah-status">{status}</span>
@@ -197,7 +273,16 @@ export default function SwarmHistoryPage() {
                     dangerouslySetInnerHTML={{ __html: c.html }}
                   />
                 </div>
-                <div className="sah-cap">{c.label}</div>
+                <div className="sah-cap">
+                  <span>{c.label}</span>
+                  <button
+                    type="button"
+                    className="sah-dl"
+                    onClick={(e) => downloadCard(c.html, c.slug, e.currentTarget)}
+                  >
+                    ↓ PNG
+                  </button>
+                </div>
               </div>
             ))}
           </div>
