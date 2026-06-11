@@ -20,6 +20,7 @@ import {
 } from "./compositions/swarm-card/props";
 import { SwarmIntroComposition } from "./compositions/swarm-intro/composition";
 import { swarmIntroDefaultProps } from "./compositions/swarm-intro/props";
+import { SwarmModelCardRender } from "./compositions/swarm-model-card/composition";
 import { getMotionEntryMeta } from "./manifest";
 
 const perf = getMotionEntryMeta("performance-card")!;
@@ -56,6 +57,18 @@ export const RemotionRoot: React.FC = () => {
         width={intro.width}
         height={intro.height}
         defaultProps={swarmIntroDefaultProps}
+      />
+      {/* Renders the REAL React design component (single source of truth) to
+          PNG/MP4. 650×1110 = the component's fixed size. Still by default
+          (1 frame); MP4 bumps duration + adds an entrance wrap (STA-417). */}
+      <Composition
+        id="swarm-model-card"
+        component={SwarmModelCardRender}
+        durationInFrames={1}
+        fps={30}
+        width={650}
+        height={1110}
+        defaultProps={{}}
       />
     </>
   );
