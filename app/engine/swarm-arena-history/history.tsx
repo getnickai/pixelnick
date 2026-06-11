@@ -40,6 +40,18 @@ type DeckResponse = {
   availableDates?: string[];
 };
 
+/**
+ * Session deck cache (module scope → survives Kit↔History navigation; lost only
+ * on a full reload). Keyed by timeline: "live" for now, else the YYYY-MM-DD
+ * point. A revisit renders from here instantly instead of re-running the slow
+ * R2 build, with stale-while-revalidate for the live deck and a permanent cache
+ * for immutable historical decks.
+ */
+const deckCache = new Map<string, { deck: DeckResponse; fetchedAt: number }>();
+/** Re-fetch the live deck in the background once the cached copy is older than
+ *  this (mirrors the API's own `max-age=30`). */
+const LIVE_STALE_MS = 30_000;
+
 /** One gallery cell: scaled card thumb + caption row with a PNG export. */
 function CardCell({
   agent,
@@ -111,22 +123,68 @@ function CardCell({
 }
 
 export function SwarmArenaHistory() {
-  const [deck, setDeck] = useState<DeckResponse | null>(null);
-  const [fetching, setFetching] = useState(true);
+  // Seed from the session cache so a revisit's first render already shows the
+  // live deck — no one-frame "Fetching deck…" flash. (`when` starts "" → live.)
+  const [deck, setDeck] = useState<DeckResponse | null>(
+    () => deckCache.get("live")?.deck ?? null,
+  );
+  const [fetching, setFetching] = useState(() => !deckCache.has("live"));
+  /** Background refresh in flight while a deck is already on screen (non-blocking). */
+  const [revalidating, setRevalidating] = useState(false);
   const [error, setError] = useState<string | null>(null);
   /** "" = live (now); otherwise a YYYY-MM-DD run date from the timeline. */
   const [when, setWhen] = useState("");
-  const [dates, setDates] = useState<string[]>([]);
-  const [updatedAt, setUpdatedAt] = useState<string | null>(null);
+  const [dates, setDates] = useState<string[]>(() => {
+    const live = deckCache.get("live")?.deck;
+    return live?.availableDates ? [...live.availableDates].reverse() : [];
+  });
+  const [updatedAt, setUpdatedAt] = useState<string | null>(() => {
+    const live = deckCache.get("live");
+    return live ? new Date(live.fetchedAt).toLocaleTimeString() : null;
+  });
   const [tick, setTick] = useState(0);
   /** Deck builds read R2 and can take many seconds; the auto-refresh tick
    *  must not abort a request that's still in flight (it would livelock the
    *  page on "fetching" if latency ever nears the interval). */
   const inFlight = useRef(false);
+  /** Separates a forced run (manual Refresh / auto-refresh tick) from a
+   *  navigation/timeline run, which serves the cache first. */
+  const prevTick = useRef(0);
 
-  // Deck fetch — re-runs on timeline change, manual refresh, and the live
-  // auto-refresh tick. The previous deck stays on screen while fetching.
+  // Deck fetch backed by the session cache. A timeline/mount run serves the
+  // cached deck instantly, then revalidates the *live* deck in the background
+  // once stale; a forced run (manual Refresh / auto-refresh tick) always
+  // re-fetches. Historical decks are immutable, so a cached date never hits the
+  // network. A background refresh never flips the blocking spinner.
   useEffect(() => {
+    const key = when || "live";
+    const forced = tick !== prevTick.current;
+    prevTick.current = tick;
+    const cached = deckCache.get(key);
+
+    if (cached && !forced) {
+      // Serve from cache immediately — no blocking "Fetching deck…".
+      setDeck(cached.deck);
+      setError(null);
+      setFetching(false);
+      setDates((cur) =>
+        cur.length ? cur : [...(cached.deck.availableDates ?? [])].reverse(),
+      );
+      // Historical = immutable; live = revalidate only once stale.
+      const stale = !when && Date.now() - cached.fetchedAt > LIVE_STALE_MS;
+      if (!stale) {
+        setRevalidating(false);
+        return;
+      }
+    } else if (!cached) {
+      // First load of this key — show the blocking spinner.
+      setFetching(true);
+    }
+
+    // We already have a deck on screen iff this key is cached → refresh quietly.
+    const background = !!cached;
+    setRevalidating(background);
+
     const ctrl = new AbortController();
     inFlight.current = true;
     // A date maps to end-of-day UTC so the deck reflects every run that day.
@@ -138,9 +196,11 @@ export function SwarmArenaHistory() {
       })
       .then((d: DeckResponse) => {
         inFlight.current = false;
+        deckCache.set(key, { deck: d, fetchedAt: Date.now() });
         setDeck(d);
         setError(null);
         setFetching(false);
+        setRevalidating(false);
         setUpdatedAt(new Date().toLocaleTimeString());
         // Populate the timeline once: each available run date, newest first.
         setDates((cur) =>
@@ -151,14 +211,19 @@ export function SwarmArenaHistory() {
         // On abort a newer effect run owns inFlight — leave it alone.
         if (ctrl.signal.aborted) return;
         inFlight.current = false;
-        setError(err instanceof Error ? err.message : String(err));
-        setFetching(false);
+        setRevalidating(false);
+        // Keep a cached deck on screen if a background refresh fails; only the
+        // first load of a key (nothing cached) surfaces the error UI.
+        if (!deckCache.has(key)) {
+          setError(err instanceof Error ? err.message : String(err));
+          setFetching(false);
+        }
       });
     return () => ctrl.abort();
   }, [when, tick]);
 
+  // Force a fresh fetch (bypasses the serve-from-cache branch via the tick).
   const refetch = useCallback(() => {
-    setFetching(true);
     setTick((t) => t + 1);
   }, []);
 
@@ -191,7 +256,7 @@ export function SwarmArenaHistory() {
       : deck
         ? `${agents.length} agent${agents.length === 1 ? "" : "s"} · ${
             deck.at ? `as of ${period}` : `live · updated ${updatedAt}`
-          }`
+          }${revalidating ? " · refreshing…" : ""}`
         : "";
 
   return (
@@ -239,10 +304,15 @@ export function SwarmArenaHistory() {
         </div>
         <button
           onClick={refetch}
-          disabled={fetching}
+          disabled={fetching || revalidating}
           className="inline-flex cursor-pointer items-center gap-1.5 rounded-md border border-input px-2 py-1 text-[11px] font-medium text-muted-foreground transition-colors hover:bg-accent hover:text-accent-foreground disabled:cursor-not-allowed disabled:opacity-50"
         >
-          <RefreshCw className={cn("size-3", fetching && "animate-spin")} />
+          <RefreshCw
+            className={cn(
+              "size-3",
+              (fetching || revalidating) && "animate-spin",
+            )}
+          />
           Refresh
         </button>
         <span className="font-mono text-[10px] tracking-wide text-muted-foreground">
