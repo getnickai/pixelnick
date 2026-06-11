@@ -20,11 +20,14 @@ import {
 } from "./compositions/swarm-card/props";
 import { SwarmIntroComposition } from "./compositions/swarm-intro/composition";
 import { swarmIntroDefaultProps } from "./compositions/swarm-intro/props";
+import { SwarmArenaModelCardComposition } from "./compositions/swarm-arena-model-card/composition";
+import { swarmArenaModelCardDefaultProps } from "./compositions/swarm-arena-model-card/props";
 import { getMotionEntryMeta } from "./manifest";
 
 const perf = getMotionEntryMeta("performance-card")!;
 const swarm = getMotionEntryMeta("swarm-card")!;
 const intro = getMotionEntryMeta("swarm-intro")!;
+const modelAnim = getMotionEntryMeta("swarm-arena-model-card")!;
 
 export const RemotionRoot: React.FC = () => {
   return (
@@ -56,6 +59,18 @@ export const RemotionRoot: React.FC = () => {
         width={intro.width}
         height={intro.height}
         defaultProps={swarmIntroDefaultProps}
+      />
+      {/* The full per-element animated model card (the /motion preview design),
+          data-driven. Registered here so it renders to PNG (settled frame) +
+          MP4 via the CLI, fed live agents by generate-swarm-cards. (STA-417) */}
+      <Composition
+        id="swarm-arena-model-card"
+        component={SwarmArenaModelCardComposition}
+        durationInFrames={modelAnim.durationInFrames}
+        fps={modelAnim.fps}
+        width={modelAnim.width}
+        height={modelAnim.height}
+        defaultProps={swarmArenaModelCardDefaultProps}
       />
     </>
   );

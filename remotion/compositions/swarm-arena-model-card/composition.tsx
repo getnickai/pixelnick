@@ -4,34 +4,32 @@ import {
   Easing,
   interpolate,
   spring,
+  staticFile,
   useCurrentFrame,
   useVideoConfig,
 } from "remotion";
 import { SlidingDigitCount } from "../_shared/sliding-digit-count";
+import {
+  SAMPLE_MODEL_CARD,
+  type SwarmArenaModelCardData,
+} from "../../../components/swarm-arena-model-card";
 import type { SwarmArenaModelCardProps } from "./props";
 
-const ASSET = "/swarm-arena-cards/assets";
-const MODELS_ASSET = `${ASSET}/models`;
+// staticFile() so assets resolve in BOTH the web Player and headless CLI/MP4
+// renders. A bare "/swarm-arena-cards/..." only resolves against the page
+// origin (Player); a headless render serves assets through the bundler. The
+// base prepends remotion_staticBase; sub-paths concatenate correctly. (STA-417)
+const ASSET = staticFile("swarm-arena-cards/assets");
 
-const MODELS = {
-  chatgpt: { logo: `${MODELS_ASSET}/chatgpt.svg`, name: "GPT 5.5" },
-  claude: { logo: `${MODELS_ASSET}/claude.svg`, name: "Claude 4.5" },
-  kimi: { logo: `${MODELS_ASSET}/kimi.svg`, name: "Kimi K2" },
-  glm: { logo: `${MODELS_ASSET}/glm.svg`, name: "GLM-4.6" },
-  google: { logo: `${MODELS_ASSET}/google.svg`, name: "Gemini 2.5" },
-} as const;
+const GREEN = "#8bce6c";
+const ROSE = "#ff6b6b";
 
-/** Hardcoded to the Figma sample (GPT 5.5), mirroring the static card. */
-const MODEL: keyof typeof MODELS = "chatgpt";
-
-const LATEST_PICKS = [
-  { label: "BACK PSG at:", value: "0.44" },
-  { label: "Dembélé at:", value: "0.44" },
-  { label: "Over 2.5 at:", value: "0.44" },
-];
-
-/** Rank shown inside the hexagon badge (matches the "Rank" stat: #1 / 11). */
-const RANK = "1";
+/** Agent logo URLs arrive as public paths in the deck data; route them through
+ *  staticFile() so they resolve in a headless render. */
+const toStatic = (url?: string) =>
+  url && url.startsWith("/") ? staticFile(url.replace(/^\/+/, "")) : url;
+const fmtMoney = (n: number) =>
+  `$${Math.round(Math.abs(n)).toLocaleString("en-US")}`;
 
 /**
  * Master timeline (30fps). Each window is [startFrame, endFrame]; the element
@@ -94,10 +92,13 @@ const ANIM = {
  */
 export const SwarmArenaModelCardComposition: React.FC<
   SwarmArenaModelCardProps
-> = ({ slide = true }) => {
+> = ({ slide = true, data = SAMPLE_MODEL_CARD }) => {
   const frame = useCurrentFrame();
   const { fps } = useVideoConfig();
-  const model = MODELS[MODEL];
+  const logoSrc = toStatic(data.logo);
+  const pos = data.pnlUsd >= 0;
+  const accent = pos ? GREEN : ROSE;
+  const hasTopPick = Boolean(data.topPick);
 
   // Cubic-out opacity fade over a [start, end] window.
   const fade = (w: readonly [number, number]) =>
@@ -282,13 +283,22 @@ export const SwarmArenaModelCardComposition: React.FC<
                 transform: `scale(${avatarScale})`,
               }}
             >
-              <img alt={model.name} src={model.logo} className="size-[39px]" />
+              {logoSrc ? (
+                <img alt={data.name} src={logoSrc} className="size-[39px]" />
+              ) : (
+                <span
+                  className="font-mono text-[22px] font-bold"
+                  style={{ color: data.monogramColor ?? "#161210" }}
+                >
+                  {data.monogram}
+                </span>
+              )}
             </div>
             <p
               className="min-w-0 flex-1 font-heading text-[54px] font-semibold leading-[1.2] text-[#fff8ea]"
               style={upStyle(ANIM.modelName)}
             >
-              {model.name}
+              {data.name}
             </p>
           </div>
         </div>
@@ -308,21 +318,22 @@ export const SwarmArenaModelCardComposition: React.FC<
                 </p>
                 <div className="relative">
                   <p
-                    className="font-heading text-[54px] font-semibold leading-none tracking-[1px] text-[#8bce6c]"
-                    style={{ opacity: fade(ANIM.pnlValue) }}
+                    className="font-heading text-[54px] font-semibold leading-none tracking-[1px]"
+                    style={{ opacity: fade(ANIM.pnlValue), color: accent }}
                   >
                     <SlidingDigitCount
-                      targetValue={184}
+                      targetValue={Math.abs(data.pnlUsd)}
                       countWindow={ANIM.pnlCount}
                       decimals={0}
-                      prefix="+$"
+                      prefix={pos ? "+$" : "-$"}
                       slide={slide}
                     />
                   </p>
                   {/* Accent bar — centered on the value, bleeds off the left edge */}
                   <div
-                    className="absolute top-1/2 -left-[86px] h-[41px] w-[39px] rounded-lg bg-[#8bce6c]"
+                    className="absolute top-1/2 -left-[86px] h-[41px] w-[39px] rounded-lg"
                     style={{
+                      background: accent,
                       transform: `translateY(-50%) scale(${barFinalScaleX}, ${barFinalScaleY})`,
                       transformOrigin: "left center",
                     }}
@@ -349,7 +360,7 @@ export const SwarmArenaModelCardComposition: React.FC<
                   />
                   <p className="whitespace-nowrap font-heading text-[54px] font-semibold leading-none tracking-[1px] text-[#fff8ea]">
                     <SlidingDigitCount
-                      targetValue={27.97}
+                      targetValue={data.profitPct}
                       countWindow={ANIM.profitCount}
                       decimals={2}
                       suffix="%"
@@ -373,14 +384,14 @@ export const SwarmArenaModelCardComposition: React.FC<
             >
               <div className="flex items-end gap-3">
                 <p className="text-[28px] font-semibold leading-none text-[#fff8ea]">
-                  $1,184
+                  {fmtMoney(data.equityUsd)}
                 </p>
                 <p className="pb-1 text-xl font-normal leading-4 text-[#8a8174]">
                   Equity
                 </p>
               </div>
               <p className="text-xl font-normal leading-4 text-[#8a8174]">
-                <span className="font-semibold text-[#fff8ea]">$1,000</span> base
+                <span className="font-semibold text-[#fff8ea]">{fmtMoney(data.baseUsd)}</span> base
               </p>
             </div>
           </div>
@@ -396,7 +407,7 @@ export const SwarmArenaModelCardComposition: React.FC<
                   Pick Accuracy
                 </p>
                 <p className="text-[28px] font-bold leading-none text-[#fff8ea]">
-                  71%
+                  {Math.round(data.pickAccuracyPct)}%
                 </p>
               </div>
               <div className="flex flex-1 flex-col gap-1" style={{ opacity: fade(ANIM.stat2) }}>
@@ -404,7 +415,7 @@ export const SwarmArenaModelCardComposition: React.FC<
                   Record
                 </p>
                 <p className="text-[28px] font-bold leading-none text-[#fff8ea]">
-                  17-7
+                  {data.record}
                 </p>
               </div>
               <div className="flex flex-1 flex-col gap-1" style={{ opacity: fade(ANIM.stat3) }}>
@@ -412,7 +423,7 @@ export const SwarmArenaModelCardComposition: React.FC<
                   Rank
                 </p>
                 <p className="text-[28px] font-bold leading-none text-[#fff8ea]">
-                  #1 / 11
+                  #{data.rank} / {data.rankOf}
                 </p>
               </div>
             </div>
@@ -427,8 +438,8 @@ export const SwarmArenaModelCardComposition: React.FC<
                   Top Pick
                 </p>
                 <div className="flex w-[206px] justify-between text-[17px] font-bold text-[#8bce6c]">
-                  <span>BACK Yes at:</span>
-                  <span className="w-[75px] text-right">0.58</span>
+                  <span>{hasTopPick ? data.topPick!.label : "No open picks"}</span>
+                  <span className="w-[75px] text-right">{hasTopPick ? data.topPick!.value : "—"}</span>
                 </div>
               </div>
 
@@ -446,7 +457,7 @@ export const SwarmArenaModelCardComposition: React.FC<
                   Latest Picks
                 </p>
                 <div className="flex w-[206px] flex-col gap-2.5 text-[17px] font-bold text-[#fff8ea]">
-                  {LATEST_PICKS.map((pick, i) => (
+                  {data.latestPicks.map((pick, i) => (
                     <div
                       key={pick.label}
                       className="flex w-full items-start justify-between"
@@ -595,7 +606,7 @@ export const SwarmArenaModelCardComposition: React.FC<
           }}
         >
           <span className="font-heading text-[48px] font-bold leading-none tracking-[1px] text-[#fff8ea]">
-            {RANK}
+            {data.rank}
           </span>
         </div>
       </div>

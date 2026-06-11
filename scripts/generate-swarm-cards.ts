@@ -27,14 +27,16 @@ import { renderStill, renderMedia, selectComposition } from "@remotion/renderer"
 import { enableTailwind } from "@remotion/tailwind-v4";
 import { loadSwarmDeck } from "./swarm-feed";
 import type { SwarmCardProps } from "../remotion/compositions/swarm-card/props";
+import { toCardData } from "../lib/swarm-card-data";
 
-const COMPOSITION_ID = "swarm-card";
 const PUBLIC_DIR = path.join(process.cwd(), "public");
 
 type Flags = {
   theme: "dark" | "light";
   size: SwarmCardProps["size"];
   layout: NonNullable<SwarmCardProps["layout"]>;
+  /** Card design: classic editorial engine vs the new React model card. */
+  design: "classic" | "model";
   slug?: string;
   out: string;
   /** Pre-built deck JSON (EngineAgent[] + match). Bypasses loadSwarmDeck. */
@@ -50,6 +52,7 @@ function parseFlags(argv: string[]): Flags {
     theme: "dark",
     size: "portrait",
     layout: "editorial",
+    design: "classic",
     out: path.join(process.cwd(), "out", "swarm-arena"),
     mp4: false,
     seconds: 5,
@@ -58,6 +61,7 @@ function parseFlags(argv: string[]): Flags {
     if (arg.startsWith("--theme=")) f.theme = arg.slice(8) as Flags["theme"];
     else if (arg.startsWith("--size=")) f.size = arg.slice(7) as Flags["size"];
     else if (arg.startsWith("--layout=")) f.layout = arg.slice(9) as Flags["layout"];
+    else if (arg.startsWith("--card=")) f.design = arg.slice(7) as Flags["design"];
     else if (arg.startsWith("--slug=")) f.slug = arg.slice(7);
     else if (arg.startsWith("--out=")) f.out = path.resolve(arg.slice(6));
     else if (arg.startsWith("--deck=")) f.deck = path.resolve(arg.slice(7));
@@ -67,13 +71,40 @@ function parseFlags(argv: string[]): Flags {
   return f;
 }
 
-/** Build the list of cards to render, with an output slug for each. */
-function plan(flags: Flags, deck: Awaited<ReturnType<typeof loadSwarmDeck>>["deck"]) {
-  const jobs: { slug: string; props: SwarmCardProps }[] = [];
+type Job = { slug: string; compositionId: string; props: Record<string, unknown> };
+
+/** Build the list of cards to render, with an output slug + composition for each. */
+function plan(flags: Flags, deck: Awaited<ReturnType<typeof loadSwarmDeck>>["deck"]): Job[] {
+  const jobs: Job[] = [];
+
+  if (flags.design === "model") {
+    // New React design (single source of truth). Agent cards only — the
+    // leaderboard + match designs have no React equivalent yet, so they stay
+    // on the classic engine. Rank from the ROI order, like the live gallery.
+    // Dedupe colliding handles (the upstream feed has produced two "GPT"s),
+    // same defense as the live gallery, so we don't render one slug twice.
+    const seen = new Set<string>();
+    const unique = deck.agents.filter((a) =>
+      seen.has(a.handle) ? false : (seen.add(a.handle), true),
+    );
+    const ranked = [...unique].sort((a, b) => b.roiPct - a.roiPct);
+    ranked.forEach((a, i) => {
+      jobs.push({
+        slug: `model-${a.handle.toLowerCase()}`,
+        // The full per-element animated design (the /motion composition), now
+        // data-driven. PNG = its settled last frame; MP4 = the whole animation.
+        compositionId: "swarm-arena-model-card",
+        props: { data: toCardData(a, i + 1, ranked.length), slide: true },
+      });
+    });
+    return flags.slug ? jobs.filter((j) => j.slug === flags.slug) : jobs;
+  }
+
   const base = { theme: flags.theme, size: flags.size, deck } as const;
   for (const a of deck.agents) {
     jobs.push({
       slug: `agent-${a.handle.toLowerCase()}`,
+      compositionId: "swarm-card",
       props: { ...base, card: "agent", handle: a.handle, layout: flags.layout },
     });
   }
@@ -81,11 +112,11 @@ function plan(flags: Flags, deck: Awaited<ReturnType<typeof loadSwarmDeck>>["dec
   // crash) when there's none yet, e.g. a single-agent live deck before the
   // World Cup bracket is populated.
   if (deck.match) {
-    jobs.push({ slug: "match", props: { ...base, card: "match" } });
+    jobs.push({ slug: "match", compositionId: "swarm-card", props: { ...base, card: "match" } });
   } else {
     console.warn("Skipping match card: deck has no match data (deck.match is null).");
   }
-  jobs.push({ slug: "leaderboard", props: { ...base, card: "leaderboard" } });
+  jobs.push({ slug: "leaderboard", compositionId: "swarm-card", props: { ...base, card: "leaderboard" } });
   return flags.slug ? jobs.filter((j) => j.slug === flags.slug) : jobs;
 }
 
@@ -115,7 +146,7 @@ async function main() {
   for (const job of jobs) {
     const composition = await selectComposition({
       serveUrl,
-      id: COMPOSITION_ID,
+      id: job.compositionId,
       inputProps: job.props,
     });
     const output = path.join(flags.out, `${job.slug}.png`);
@@ -131,9 +162,13 @@ async function main() {
     console.log(`  ✓ ${job.slug}.png  (${composition.width}×${composition.height})`);
 
     if (flags.mp4) {
-      // The card is a broadcast still (only the live-dot pulses, via CSS, which
-      // Remotion plays across frames). Hold it for `seconds` at the comp's fps.
-      const durationInFrames = Math.max(1, Math.round(composition.fps * flags.seconds));
+      // The model card has a full entrance animation: play its native duration
+      // so the cascade isn't truncated. Other (broadcast-still) cards hold for
+      // `seconds` at the comp's fps.
+      const durationInFrames =
+        job.compositionId === "swarm-arena-model-card"
+          ? composition.durationInFrames
+          : Math.max(1, Math.round(composition.fps * flags.seconds));
       const mp4Out = path.join(flags.out, `${job.slug}.mp4`);
       await renderMedia({
         composition: { ...composition, durationInFrames },
@@ -143,7 +178,8 @@ async function main() {
         outputLocation: mp4Out,
         inputProps: job.props,
       });
-      console.log(`  ✓ ${job.slug}.mp4  (${flags.seconds}s, ${composition.width}×${composition.height})`);
+      const secs = (durationInFrames / composition.fps).toFixed(1);
+      console.log(`  ✓ ${job.slug}.mp4  (${secs}s, ${composition.width}×${composition.height})`);
     }
   }
 

@@ -99,9 +99,10 @@
       "roiPct": 0,
       "pickPct": 0,
       "signals": 0,
-      "nextRun": "2h 57m",
+      "nextRun": "23m",
       "activeSince": "Jun 09, 2026",
       "spark": [
+        1000,
         1000,
         1000,
         1000,
@@ -184,7 +185,7 @@
       "roiPct": 0,
       "pickPct": 0,
       "signals": 0,
-      "nextRun": "37m",
+      "nextRun": "due",
       "activeSince": "Jun 09, 2026",
       "spark": [
         1000,
@@ -235,8 +236,8 @@
       "kind": "llm",
       "roiPct": 0,
       "pickPct": 0,
-      "signals": 15,
-      "nextRun": "2h 48m",
+      "signals": 16,
+      "nextRun": "15m",
       "activeSince": "Jun 11, 2026",
       "spark": [
         1000,
@@ -293,6 +294,8 @@
         1000,
         1000,
         1000,
+        1000,
+        1000,
         1000
       ],
       "record": "0-0",
@@ -331,8 +334,8 @@
       "kind": "llm",
       "roiPct": 0,
       "pickPct": 0,
-      "signals": 13,
-      "nextRun": "27m",
+      "signals": 15,
+      "nextRun": "53m",
       "activeSince": "Jun 09, 2026",
       "spark": [
         1000,
@@ -343,6 +346,8 @@
         1001.72,
         1001.72,
         1001.72,
+        1000,
+        1000,
         1000,
         1000,
         1000
@@ -373,43 +378,45 @@
       "streak": "—"
     },
     {
-      "handle": "MINIMAX",
-      "code": "MM",
-      "short": "MiniMax",
-      "label": "MiniMax",
-      "provider": "MiniMax",
-      "flag": "🇨🇳",
-      "color": "#f2385a",
+      "handle": "GPT",
+      "code": "GPT",
+      "short": "GPT",
+      "label": "GPT",
+      "provider": "OpenAI",
+      "flag": "🇺🇸",
+      "color": "#a89a86",
       "kind": "llm",
-      "roiPct": 0,
-      "pickPct": 0,
-      "signals": 3,
-      "nextRun": "due",
-      "activeSince": "Jun 10, 2026",
+      "roiPct": -0.14,
+      "pickPct": 0.13,
+      "signals": 7,
+      "nextRun": "58m",
+      "activeSince": "Jun 11, 2026",
       "spark": [
         1000,
-        1000
+        1000,
+        998.95,
+        998.64
       ],
       "record": "0-0",
       "pick": {
-        "market": "Mexico v South Africa",
+        "market": "Qatar v Switzerland",
         "side": "BACK Yes @ 0.38",
-        "edgePp": 11.2
+        "edgePp": 18.1
       },
       "recent": [
+        {
+          "market": "Qatar v Switzerland",
+          "side": "BACK Yes @ 0.38",
+          "pnl": 0
+        },
         {
           "market": "Mexico v South Africa",
           "side": "BACK Yes @ 0.38",
           "pnl": 0
         },
         {
-          "market": "United States v Paraguay",
-          "side": "BACK Over @ 0.42",
-          "pnl": 0
-        },
-        {
-          "market": "United States v Paraguay",
-          "side": "BACK Yes @ 0.47",
+          "market": "Mexico v South Africa (2026-06-11)",
+          "side": "BACK Yes @ 0.38",
           "pnl": 0
         }
       ],

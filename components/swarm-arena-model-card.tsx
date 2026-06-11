@@ -159,8 +159,16 @@ function SparkChartPlot({ spark, accent }: { spark: number[]; accent: string }) 
 
 export default function SwarmArenaModelCard({
   data = SAMPLE_MODEL_CARD,
+  assetBase = ASSET,
 }: {
   data?: SwarmArenaModelCardData;
+  /**
+   * Base URL for the card's chrome assets (logo marks, rank hex, arrow,
+   * wordmark). Defaults to the public path, which resolves against the origin
+   * in the browser (app / Player). Headless Remotion renders pass a
+   * `staticFile()`-prefixed base so the bundler serves them. (STA-417)
+   */
+  assetBase?: string;
 }) {
   const pos = data.pnlUsd >= 0;
   const accent = pos ? GREEN : ROSE;
@@ -175,7 +183,7 @@ export default function SwarmArenaModelCard({
       <div className="pointer-events-none absolute left-[-127.46px] top-[766.37px] h-[471.227px] w-[412.465px] mix-blend-overlay">
         <img
           alt=""
-          src={`${ASSET}/logoshp-bottom.svg`}
+          src={`${assetBase}/logoshp-bottom.svg`}
           className="block size-full max-w-none -scale-y-100 rotate-180"
         />
       </div>
@@ -184,7 +192,7 @@ export default function SwarmArenaModelCard({
       <div className="pointer-events-none absolute left-[318px] top-[-284.61px] h-[471.227px] w-[412.465px] mix-blend-overlay">
         <img
           alt=""
-          src={`${ASSET}/logoshp-top.svg`}
+          src={`${assetBase}/logoshp-top.svg`}
           className="block size-full max-w-none -scale-y-100 rotate-180"
         />
       </div>
@@ -203,7 +211,7 @@ export default function SwarmArenaModelCard({
       <div className="absolute left-16 top-[57px] flex items-center gap-5">
         <img
           alt=""
-          src={`${ASSET}/logos/swarm-arena.svg`}
+          src={`${assetBase}/logos/swarm-arena.svg`}
           className="h-10 w-[35.012px] shrink-0"
         />
         <p className="font-sans text-2xl font-bold uppercase leading-none text-[#fff8ea]">
@@ -286,7 +294,7 @@ export default function SwarmArenaModelCard({
                 <div className="flex items-center gap-4">
                   <img
                     alt=""
-                    src={`${ASSET}/arrow-up.svg`}
+                    src={`${assetBase}/arrow-up.svg`}
                     className={`h-10 w-[34.29px] shrink-0${pos ? "" : " rotate-180"}`}
                   />
                   <p className="whitespace-nowrap font-heading text-[54px] font-semibold leading-none tracking-[1px] text-[#fff8ea]">
@@ -410,7 +418,7 @@ export default function SwarmArenaModelCard({
         </p>
         <img
           alt="NickAI"
-          src={`${ASSET}/NickAI-wordmark-white.svg`}
+          src={`${assetBase}/NickAI-wordmark-white.svg`}
           className="h-[28.39px] w-[119.219px]"
         />
       </div>
@@ -448,7 +456,7 @@ export default function SwarmArenaModelCard({
         <div className="absolute inset-[2.33%_6.7%]">
           <img
             alt=""
-            src={`${ASSET}/rank-hex.svg`}
+            src={`${assetBase}/rank-hex.svg`}
             className="block size-full max-w-none"
           />
         </div>
@@ -456,7 +464,7 @@ export default function SwarmArenaModelCard({
           <div className="absolute inset-[1.92%_6.7%]">
             <img
               alt=""
-              src={`${ASSET}/rank-hex-overlay.svg`}
+              src={`${assetBase}/rank-hex-overlay.svg`}
               className="block size-full max-w-none"
             />
           </div>
@@ -464,7 +472,7 @@ export default function SwarmArenaModelCard({
 
         {/* RANK ribbon — banner across the hexagon's lower third */}
         <div className="absolute left-[-16.3px] top-[52px] h-[50px] w-[139px]">
-          <img alt="" src={`${ASSET}/rank-ribbon.svg`} className="block size-full" />
+          <img alt="" src={`${assetBase}/rank-ribbon.svg`} className="block size-full" />
           <div className="absolute inset-x-0 top-0 flex h-[31px] items-center justify-center">
             <span className="font-heading text-[18px] font-bold uppercase leading-none text-[#0d0907]">
               Rank
