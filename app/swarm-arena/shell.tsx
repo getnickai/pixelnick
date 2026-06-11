@@ -26,6 +26,13 @@ const SHELL_CSS = `
     position:fixed;inset:0;z-index:50;display:flex;flex-direction:column;
     background:var(--bg);color:var(--text);font-family:var(--font-body);-webkit-font-smoothing:antialiased;overflow:hidden;
   }
+  /* Light theme — mirrors colors_and_type.css light tokens so the page chrome
+     switches with the vanilla cards. (The React model cards stay fixed-dark.) */
+  .sah-root[data-theme="light"]{
+    --bg:#e6dac4; --bg-panel:#efe5d2; --bg-panel-2:#d8ccb6; --text:#282418; --text-dim:#4f4836;
+    --text-faint:#6f6450; --brand:#b84c30; --border:#c8bda7; --border-solid:#b0a594;
+    --glow:rgba(184,76,48,0.34);
+  }
   .sah-root *{box-sizing:border-box}
   .sah-shell-glow{position:fixed;top:-30%;right:-18%;width:60vw;aspect-ratio:1;border-radius:50%;background:radial-gradient(circle,var(--glow) 0%,transparent 62%);filter:blur(3px);pointer-events:none;z-index:0;opacity:0.5}
   .sah-root header{position:relative;z-index:2;display:flex;align-items:center;justify-content:space-between;gap:20px;padding:18px 28px;border-bottom:1px solid var(--border);flex-wrap:wrap}
@@ -46,10 +53,12 @@ const SHELL_CSS = `
 export function SwarmCardsShell({
   activeKey,
   tag,
+  theme = "dark",
   children,
 }: {
   activeKey: ActiveKey;
   tag: string;
+  theme?: "dark" | "light";
   children: ReactNode;
 }) {
   const link = (href: string, key: ActiveKey, label: string) => (
@@ -59,7 +68,7 @@ export function SwarmCardsShell({
   );
 
   return (
-    <div className="sah-root">
+    <div className="sah-root" data-theme={theme}>
       <style>{SHELL_CSS}</style>
       <div className="sah-shell-glow" />
       <header>
