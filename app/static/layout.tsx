@@ -2,11 +2,13 @@ import type { ReactNode } from "react";
 import { SidebarTrigger } from "@/components/ui/sidebar";
 import { StaticSidebar } from "@/components/static-sidebar";
 import { DashboardBreadcrumb } from "@/components/dashboard-breadcrumb";
+import { PinRootFontSize } from "@/components/pin-root-font-size";
 import { staticManifest } from "@/static/manifest";
 
 export default function StaticLayout({ children }: { children: ReactNode }) {
   return (
     <div className="relative flex min-h-dvh flex-col bg-background">
+      <PinRootFontSize />
       <header className="sticky top-0 z-20 flex h-12 shrink-0 items-center gap-2 border-b border-sidebar-border px-4">
         <SidebarTrigger className="text-sidebar-foreground" />
         <DashboardBreadcrumb root="Static" items={staticManifest} />
