@@ -22,7 +22,7 @@ export const staticManifest: StaticEntryMeta[] = [
     id: "swarm-arena-model-card",
     label: "SwarmArena Model Card",
     width: 650,
-    height: 1050,
+    height: 1110,
   },
 ];
 

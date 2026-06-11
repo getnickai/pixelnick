@@ -28,6 +28,8 @@ export type SwarmArenaModelCardData = {
   rankOf: number;
   topPick?: ModelCardPick;
   latestPicks: ModelCardPick[];
+  /** Equity curve for the background chart (raw values; normalized to fit). */
+  spark?: number[];
 };
 
 /** The Figma sample (GPT 5.5) — what /static renders, and the design baseline. */
@@ -48,12 +50,112 @@ export const SAMPLE_MODEL_CARD: SwarmArenaModelCardData = {
     { label: "Dembélé at:", value: "0.44" },
     { label: "Over 2.5 at:", value: "0.44" },
   ],
+  // Stepped equity curve (plateaus + ramps) for the background chart.
+  spark: [1004, 1004, 1188, 1188, 1092, 1092, 1002, 1002, 1190, 1190, 1096, 1184],
 };
 
 const GREEN = "#8bce6c";
 const ROSE = "#ff6b6b";
 
 const fmtMoney = (n: number) => `$${Math.round(Math.abs(n)).toLocaleString("en-US")}`;
+
+/* ───────────────────────── Background spark chart ─────────────────────────
+   Recharts-style "rounded step": straight segments between points with every
+   elbow rounded by an arc (the snippet's A8,8 corners). Pure SVG — no chart
+   dependency; the path is generated from the raw spark values. */
+
+function roundedSparkPath(pts: { x: number; y: number }[], r: number): string {
+  if (pts.length < 2) return "";
+  const f = (n: number) => +n.toFixed(2);
+  let d = `M${f(pts[0].x)},${f(pts[0].y)}`;
+  for (let i = 1; i < pts.length - 1; i++) {
+    const prev = pts[i - 1];
+    const p = pts[i];
+    const next = pts[i + 1];
+    const v1 = { x: p.x - prev.x, y: p.y - prev.y };
+    const v2 = { x: next.x - p.x, y: next.y - p.y };
+    const l1 = Math.hypot(v1.x, v1.y);
+    const l2 = Math.hypot(v2.x, v2.y);
+    if (!l1 || !l2) continue;
+    // Proper tangent fillet: the trim distance follows the turn angle
+    // (d = r·tan(φ/2)). A fixed trim turns shallow elbows into semicircle
+    // bumps — the arc's chord outgrows what the radius can span.
+    const cos = Math.min(1, Math.max(-1, (v1.x * v2.x + v1.y * v2.y) / (l1 * l2)));
+    const phi = Math.acos(cos); // turn angle: 0 = straight on
+    if (phi < 0.05) continue; // < ~3° → effectively straight
+    let trim = r * Math.tan(phi / 2);
+    let rr = r;
+    const trimMax = Math.min(l1, l2) / 2;
+    if (trim > trimMax) {
+      trim = trimMax;
+      rr = trim / Math.tan(phi / 2);
+    }
+    const entry = { x: p.x - (v1.x / l1) * trim, y: p.y - (v1.y / l1) * trim };
+    const exit = { x: p.x + (v2.x / l2) * trim, y: p.y + (v2.y / l2) * trim };
+    const sweep = v1.x * v2.y - v1.y * v2.x > 0 ? 1 : 0;
+    d += `L${f(entry.x)},${f(entry.y)}A${f(rr)},${f(rr)},0,0,${sweep},${f(exit.x)},${f(exit.y)}`;
+  }
+  const last = pts[pts.length - 1];
+  d += `L${f(last.x)},${f(last.y)}`;
+  return d;
+}
+
+const SPARK_W = 650;
+const SPARK_H = 410;
+/** Grid extends higher than the line for the background feel… */
+const GRID_TOP = 8;
+/** …but the line itself stays in the card's bottom region (band sits at
+ *  y 700 — peaks at ~790 emerge from behind the glass panel's lower edge,
+ *  and the curve fades out under the bottom progressive blur). */
+const SPARK_TOP = 90;
+const SPARK_BOT = SPARK_H - 60;
+
+const GRID_TICKS = 6;
+const tickXs = (n: number) =>
+  Array.from({ length: n }, (_, i) => ((i + 0.5) / n) * SPARK_W);
+
+function SparkChartPlot({ spark, accent }: { spark: number[]; accent: string }) {
+  const min = Math.min(...spark);
+  const max = Math.max(...spark);
+  const range = max - min;
+  const y = (v: number) =>
+    range ? SPARK_BOT - ((v - min) / range) * (SPARK_BOT - SPARK_TOP) : (SPARK_TOP + SPARK_BOT) / 2;
+  const pts = spark.map((v, i) => ({ x: (i / (spark.length - 1)) * SPARK_W, y: y(v) }));
+  const d = roundedSparkPath(pts, 30);
+  const fillId = `sa-spark-${accent.replace("#", "")}`;
+  return (
+    <svg
+      width={SPARK_W}
+      height={SPARK_H}
+      viewBox={`0 0 ${SPARK_W} ${SPARK_H}`}
+      fill="none"
+      aria-hidden
+    >
+      <defs>
+        <linearGradient id={fillId} x1="0" y1="0" x2="0" y2="1">
+          {/* Same fall-off as the HTML card's ridge fill (0.34 → 0). */}
+          <stop offset="0%" stopColor={accent} stopOpacity="0.34" />
+          <stop offset="100%" stopColor={accent} stopOpacity="0" />
+        </linearGradient>
+      </defs>
+      {tickXs(GRID_TICKS).map((gx) => (
+        <line
+          key={gx}
+          x1={gx}
+          y1={GRID_TOP}
+          x2={gx}
+          y2={SPARK_BOT}
+          stroke="#fff8ea"
+          strokeOpacity="0.07"
+          strokeWidth="1"
+          strokeDasharray="2 3"
+        />
+      ))}
+      <path d={`${d}L${SPARK_W},${SPARK_BOT}L0,${SPARK_BOT}Z`} fill={`url(#${fillId})`} />
+      <path d={d} stroke={accent} strokeOpacity="0.9" strokeWidth="2.5" strokeLinecap="round" />
+    </svg>
+  );
+}
 
 export default function SwarmArenaModelCard({
   data = SAMPLE_MODEL_CARD,
@@ -65,7 +167,7 @@ export default function SwarmArenaModelCard({
 
   return (
     <article
-      className="relative h-[1050px] w-[650px] overflow-clip rounded-2xl bg-gradient-to-b from-[#110d0b] to-[#2f231e] font-sans"
+      className="relative h-[1110px] w-[650px] overflow-clip rounded-2xl bg-gradient-to-b from-[#110d0b] to-[#2f231e] font-sans"
       data-node-id="350:124"
     >
       {/* Decorative logo-shape watermark — bottom left (behind content, so the
@@ -86,6 +188,16 @@ export default function SwarmArenaModelCard({
           className="block size-full max-w-none -scale-y-100 rotate-180"
         />
       </div>
+
+      {/* Background equity chart — rounded-step spark over a dashed grid.
+          Sits behind the content stack (the glass panel's backdrop-blur frosts
+          the section it overlaps, like the watermarks); crisp in the open
+          strips. Tick labels render separately after the blur band. */}
+      {data.spark && data.spark.length > 1 ? (
+        <div className="pointer-events-none absolute inset-x-0 top-[700px]">
+          <SparkChartPlot spark={data.spark} accent={accent} />
+        </div>
+      ) : null}
 
       {/* Header — Swarm Arena lockup */}
       <div className="absolute left-16 top-[57px] flex items-center gap-5">
@@ -261,7 +373,7 @@ export default function SwarmArenaModelCard({
           Layered backdrop-blur passes, each masked to fade out toward the top so
           blur ramps up to the bottom edge. Sits above the backdrop/watermark but
           below the footer so BUILT ON / NickAI / CTA stay crisp. */}
-      <div className="pointer-events-none absolute inset-x-0 bottom-0 h-[169px] overflow-hidden">
+      <div className="pointer-events-none absolute inset-x-0 bottom-0 h-[290px] overflow-hidden">
         <div
           className="absolute inset-x-0 bottom-0 h-[76%] backdrop-blur-[4px]"
           style={{
@@ -292,7 +404,7 @@ export default function SwarmArenaModelCard({
       </div>
 
       {/* Footer — built-on credit */}
-      <div className="absolute left-[77px] top-[937px] flex w-[119.219px] flex-col gap-0.5">
+      <div className="absolute left-[77px] top-[997px] flex w-[119.219px] flex-col gap-0.5">
         <p className="font-mono text-[11.5px] font-normal uppercase leading-none tracking-[2px] text-[#7e7568]">
           Built On
         </p>
@@ -305,7 +417,7 @@ export default function SwarmArenaModelCard({
 
       {/* Footer — CTA */}
       <div
-        className="absolute left-[314px] top-[933px] flex items-center gap-[9px] rounded-xl px-5 py-4 text-white shadow-[inset_0px_1px_1px_0px_rgba(255,255,255,0.6)]"
+        className="absolute left-[314px] top-[993px] flex items-center gap-[9px] rounded-xl px-5 py-4 text-white shadow-[inset_0px_1px_1px_0px_rgba(255,255,255,0.6)]"
         style={{
           backgroundImage:
             "linear-gradient(169.388deg, #f98051 17.138%, #e75218 89.208%)",
