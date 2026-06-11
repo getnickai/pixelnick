@@ -91,8 +91,10 @@ function plan(flags: Flags, deck: Awaited<ReturnType<typeof loadSwarmDeck>>["dec
     ranked.forEach((a, i) => {
       jobs.push({
         slug: `model-${a.handle.toLowerCase()}`,
-        compositionId: "swarm-model-card",
-        props: { data: toCardData(a, i + 1, ranked.length) },
+        // The full per-element animated design (the /motion composition), now
+        // data-driven. PNG = its settled last frame; MP4 = the whole animation.
+        compositionId: "swarm-arena-model-card",
+        props: { data: toCardData(a, i + 1, ranked.length), slide: true },
       });
     });
     return flags.slug ? jobs.filter((j) => j.slug === flags.slug) : jobs;
@@ -160,9 +162,13 @@ async function main() {
     console.log(`  ✓ ${job.slug}.png  (${composition.width}×${composition.height})`);
 
     if (flags.mp4) {
-      // The card is a broadcast still (only the live-dot pulses, via CSS, which
-      // Remotion plays across frames). Hold it for `seconds` at the comp's fps.
-      const durationInFrames = Math.max(1, Math.round(composition.fps * flags.seconds));
+      // The model card has a full entrance animation: play its native duration
+      // so the cascade isn't truncated. Other (broadcast-still) cards hold for
+      // `seconds` at the comp's fps.
+      const durationInFrames =
+        job.compositionId === "swarm-arena-model-card"
+          ? composition.durationInFrames
+          : Math.max(1, Math.round(composition.fps * flags.seconds));
       const mp4Out = path.join(flags.out, `${job.slug}.mp4`);
       await renderMedia({
         composition: { ...composition, durationInFrames },
@@ -172,7 +178,8 @@ async function main() {
         outputLocation: mp4Out,
         inputProps: job.props,
       });
-      console.log(`  ✓ ${job.slug}.mp4  (${flags.seconds}s, ${composition.width}×${composition.height})`);
+      const secs = (durationInFrames / composition.fps).toFixed(1);
+      console.log(`  ✓ ${job.slug}.mp4  (${secs}s, ${composition.width}×${composition.height})`);
     }
   }
 
