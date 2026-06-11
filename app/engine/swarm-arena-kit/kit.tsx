@@ -121,7 +121,7 @@ type DataSource = "live" | "sample";
 export function SwarmArenaKit() {
   const [deckState, setDeckState] = useState<DeckState>({ status: "loading" });
   const [retryKey, setRetryKey] = useState(0);
-  const [source, setSource] = useState<DataSource>("live");
+  const [source, setSource] = useState<DataSource>("sample");
   const [agent, setAgent] = useState<string | null>(null);
   const [scale, setScale] = useState(1);
 
@@ -212,7 +212,7 @@ export function SwarmArenaKit() {
             Data
           </p>
           <div className="grid grid-cols-2 gap-1 rounded-lg border border-input p-1">
-            {(["live", "sample"] as const).map((s) => (
+            {(["sample", "live"] as const).map((s) => (
               <button
                 key={s}
                 aria-pressed={source === s}
@@ -273,7 +273,7 @@ export function SwarmArenaKit() {
 
         <p className="px-1 text-xs leading-relaxed text-muted-foreground">
           {source === "live"
-            ? "The Design card (Pixelnick Design → Static) rendered with the live R2 deck — same component, real data."
+            ? "The Design card (Design → Static) rendered with the live R2 deck — same component, real data."
             : "Design fixtures — the same fictional roster the static HTML kit ships, rich enough to exercise every card state."}
         </p>
         <p className="px-1 font-mono text-[10px] tracking-wide text-muted-foreground">

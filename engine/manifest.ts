@@ -7,7 +7,12 @@
  */
 export type EngineEntryMeta = {
   id: string;
+  /** Full label — used by breadcrumbs and page titles. */
   label: string;
+  /** Section group shown as the sidebar heading (e.g. "Swarm Arena"). */
+  group?: string;
+  /** Condensed display name for sidebar entries (falls back to label). */
+  shortLabel?: string;
   /** Short mono annotation shown in the section sidebar (e.g. data source). */
   meta?: string;
 };
@@ -16,6 +21,8 @@ export const engineManifest: EngineEntryMeta[] = [
   {
     id: "swarm-arena-kit",
     label: "Swarm Arena Kit",
+    group: "Swarm Arena",
+    shortLabel: "Kit",
     meta: "live R2",
   },
 ];
