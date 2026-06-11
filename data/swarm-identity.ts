@@ -45,6 +45,7 @@ export const SWARM_AGENT_IDENTITY: Record<string, SwarmAgentIdentity> = {
   TEAMCHINA: { handle: "TEAMCHINA", code: "CHN", label: "Team China",      short: "China",    provider: "DeepSeek · Qwen · Kimi · GLM", flag: "🇨🇳", color: "#cf3a44", kind: "ensemble" },
   KIMI:      { handle: "KIMI",      code: "KMI", label: "Kimi K2",         short: "Kimi",     provider: "Moonshot AI",                  flag: "🇨🇳", color: "#9b7bd4", kind: "llm" },
   GLM:       { handle: "GLM",       code: "GLM", label: "GLM-4.6",         short: "GLM",      provider: "Zhipu AI",                     flag: "🇨🇳", color: "#4f78e0", kind: "llm" },
+  MINIMAX:   { handle: "MINIMAX",   code: "MM",  label: "MiniMax M2.5",    short: "MiniMax",  provider: "MiniMax",                      flag: "🇨🇳", color: "#f2385a", kind: "llm" },
   GPT:       { handle: "GPT",       code: "GPT", label: "GPT-5.1",         short: "GPT",      provider: "OpenAI",                       flag: "🇺🇸", color: "#a89a86", kind: "llm" },
 };
 

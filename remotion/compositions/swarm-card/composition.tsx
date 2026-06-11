@@ -27,7 +27,9 @@ import "../../../public/swarm-arena-cards/card-styles.css";
 import "../../../public/swarm-arena-cards/card-engine.js";
 
 import type { SwarmCardProps } from "./props";
-import type { SwarmDeck } from "../../../data/swarm-output";
+// Window.SA / window.__resources typing lives in lib/swarm-engine (shared
+// with the /engine kit page — two `declare global`s would be a TS error).
+import type {} from "../../../lib/swarm-engine";
 
 // Register the two families the card sheet asks for ("Geist", "Fira Code").
 // @remotion/google-fonts integrates with delayRender, so the still waits for
@@ -44,26 +46,14 @@ loadFira("normal", {
 
 // Point the engine's footer wordmark at the bundled public assets. Set once at
 // module load (before any render), so the engine's footerHTML() picks it up.
+// Merge-spread: the /engine kit page shares window.__resources (assetBase) —
+// neither host may clobber the other's keys.
 if (typeof window !== "undefined") {
   window.__resources = {
+    ...window.__resources,
     nickWhite: staticFile("swarm-arena-cards/assets/NickAI-wordmark-white.svg"),
     nickDark: staticFile("swarm-arena-cards/assets/NickAI-wordmark-dark.svg"),
   };
-}
-
-type RenderOpts = { variant?: string; layout?: string; theme: string; size: string };
-type SwarmEngine = {
-  load: (deck: SwarmDeck) => void;
-  renderAgentCard: (handleOrAgent: string, opts: RenderOpts) => string;
-  renderMatchCard: (match: unknown, opts: RenderOpts) => string;
-  renderLeaderboardCard: (opts: RenderOpts) => string;
-};
-
-declare global {
-  interface Window {
-    SA: SwarmEngine;
-    __resources?: { nickWhite: string; nickDark: string };
-  }
 }
 
 export const SwarmCardComposition: React.FC<SwarmCardProps> = ({

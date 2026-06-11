@@ -486,10 +486,14 @@
      HTML/CSS and is fed by EngineAgent fields. Dark, branded palette (Onur's
      exact hexes), theme-independent. See docs/model-card-engine-guide.md. */
   const MODEL_NAMES = { GPT: "GPT 5.5", CLAUDE: "Claude 4.5", GEMINI: "Gemini 2.5", KIMI: "Kimi K2", GLM: "GLM-4.6", GROK: "Grok 3", DEEPSEEK: "DeepSeek V3", QWEN: "Qwen 3", MINIMAX: "MiniMax" };
-  const MODEL_LOGOS = { GPT: "chatgpt", CLAUDE: "claude", GEMINI: "google", KIMI: "kimi", GLM: "glm" };
+  const MODEL_LOGOS = { GPT: "chatgpt", CLAUDE: "claude", GEMINI: "google", KIMI: "kimi", GLM: "glm", GROK: "grok", DEEPSEEK: "deepseek", MINIMAX: "minimax" };
   function renderModelCard(agent, opts = {}) {
     const a = typeof agent === "string" ? byHandle[agent] : agent;
-    const ASSET = "assets";
+    /* Same host-override pattern as footerHTML(): a React/Next host serves
+       this card off-directory and sets window.__resources.assetBase to the
+       absolute /swarm-arena-cards/assets; the static kit pages set nothing
+       and keep the relative fallback. */
+    const ASSET = (typeof window !== "undefined" && window.__resources && window.__resources.assetBase) || "assets";
     const G = "#8bce6c", CREAM = "#fff8ea", DIM = "#8a8174", ORANGE = "#f98051";
     const rank = Math.max(1, LEADERBOARD.findIndex((x) => x.handle === a.handle) + 1);
     const equity = BASE * (1 + a.roiPct / 100);

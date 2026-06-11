@@ -4,34 +4,64 @@ const ASSET = "/swarm-arena-cards/assets";
 const MODELS_ASSET = `${ASSET}/models`;
 
 /**
- * Competing models in the Swarm Arena. Logos are monochrome marks (lobehub),
- * rendered black inside the white avatar circle to match the Figma treatment.
- * Flip `MODEL` to re-skin the card for another entrant — logo + name swap together.
+ * Swarm Arena model card — the design source of truth for this card (Pixelnick
+ * Design). Renders the Figma sample by default (no props → /static preview is
+ * unchanged); the Engine kit passes live `data` mapped from /api/swarm-deck.
  */
-const MODELS = {
-  chatgpt: { logo: `${MODELS_ASSET}/chatgpt.svg`, name: "GPT 5.5" },
-  claude: { logo: `${MODELS_ASSET}/claude.svg`, name: "Claude 4.5" },
-  kimi: { logo: `${MODELS_ASSET}/kimi.svg`, name: "Kimi K2" },
-  glm: { logo: `${MODELS_ASSET}/glm.svg`, name: "GLM-4.6" },
-  google: { logo: `${MODELS_ASSET}/google.svg`, name: "Gemini 2.5" },
-} as const;
+export type ModelCardPick = { label: string; value: string };
 
-type ModelKey = keyof typeof MODELS;
+export type SwarmArenaModelCardData = {
+  /** Display name, e.g. "GPT 5.5" / "Kimi K2". */
+  name: string;
+  /** Monochrome mark URL (rendered black in the white circle). */
+  logo?: string;
+  /** Fallback avatar when there is no logo: short code + brand color. */
+  monogram?: string;
+  monogramColor?: string;
+  pnlUsd: number;
+  profitPct: number;
+  equityUsd: number;
+  baseUsd: number;
+  pickAccuracyPct: number;
+  record: string;
+  rank: number | string;
+  rankOf: number;
+  topPick?: ModelCardPick;
+  latestPicks: ModelCardPick[];
+};
 
-/** Card is hardcoded to the Figma sample (GPT 5.5); change this to re-skin. */
-const MODEL: ModelKey = "chatgpt";
+/** The Figma sample (GPT 5.5) — what /static renders, and the design baseline. */
+export const SAMPLE_MODEL_CARD: SwarmArenaModelCardData = {
+  name: "GPT 5.5",
+  logo: `${MODELS_ASSET}/chatgpt.svg`,
+  pnlUsd: 184,
+  profitPct: 27.97,
+  equityUsd: 1184,
+  baseUsd: 1000,
+  pickAccuracyPct: 71,
+  record: "17-7",
+  rank: 1,
+  rankOf: 11,
+  topPick: { label: "BACK Yes at:", value: "0.58" },
+  latestPicks: [
+    { label: "BACK PSG at:", value: "0.44" },
+    { label: "Dembélé at:", value: "0.44" },
+    { label: "Over 2.5 at:", value: "0.44" },
+  ],
+};
 
-const LATEST_PICKS = [
-  { label: "BACK PSG at:", value: "0.44" },
-  { label: "Dembélé at:", value: "0.44" },
-  { label: "Over 2.5 at:", value: "0.44" },
-];
+const GREEN = "#8bce6c";
+const ROSE = "#ff6b6b";
 
-/** Rank shown inside the hexagon badge (matches the "Rank" stat: #1 / 11). */
-const RANK = "1";
+const fmtMoney = (n: number) => `$${Math.round(Math.abs(n)).toLocaleString("en-US")}`;
 
-export default function SwarmArenaModelCard() {
-  const model = MODELS[MODEL];
+export default function SwarmArenaModelCard({
+  data = SAMPLE_MODEL_CARD,
+}: {
+  data?: SwarmArenaModelCardData;
+}) {
+  const pos = data.pnlUsd >= 0;
+  const accent = pos ? GREEN : ROSE;
 
   return (
     <article
@@ -88,11 +118,24 @@ export default function SwarmArenaModelCard() {
           </div>
 
           <div className="flex w-full items-center gap-5">
-            <div className="grid size-[65px] shrink-0 place-items-center overflow-clip rounded-full bg-white">
-              <img alt={model.name} src={model.logo} className="size-[39px]" />
-            </div>
+            {data.logo ? (
+              <div className="grid size-[65px] shrink-0 place-items-center overflow-clip rounded-full bg-white">
+                <img alt={data.name} src={data.logo} className="size-[39px]" />
+              </div>
+            ) : (
+              <div
+                className="grid size-[65px] shrink-0 place-items-center overflow-clip rounded-full font-mono text-[22px] font-bold"
+                style={{
+                  background: `${data.monogramColor ?? "#8a8174"}22`,
+                  border: `1px solid ${data.monogramColor ?? "#8a8174"}66`,
+                  color: data.monogramColor ?? "#fff8ea",
+                }}
+              >
+                {data.monogram ?? data.name.slice(0, 2).toUpperCase()}
+              </div>
+            )}
             <p className="min-w-0 flex-1 font-heading text-[54px] font-semibold leading-[1.2] text-[#fff8ea]">
-              {model.name}
+              {data.name}
             </p>
           </div>
         </div>
@@ -108,11 +151,18 @@ export default function SwarmArenaModelCard() {
                   Season PNL
                 </p>
                 <div className="relative">
-                  <p className="font-heading text-[54px] font-semibold leading-none tracking-[1px] text-[#8bce6c]">
-                    +$184
+                  <p
+                    className="font-heading text-[54px] font-semibold leading-none tracking-[1px]"
+                    style={{ color: accent }}
+                  >
+                    {pos ? "+" : "−"}
+                    {fmtMoney(data.pnlUsd)}
                   </p>
                   {/* Accent bar, centered on the value, bleeding off the left edge */}
-                  <div className="absolute top-1/2 -left-[86px] h-[41px] w-[39px] -translate-y-1/2 rounded-lg bg-[#8bce6c]" />
+                  <div
+                    className="absolute top-1/2 -left-[86px] h-[41px] w-[39px] -translate-y-1/2 rounded-lg"
+                    style={{ background: accent }}
+                  />
                 </div>
               </div>
 
@@ -125,10 +175,10 @@ export default function SwarmArenaModelCard() {
                   <img
                     alt=""
                     src={`${ASSET}/arrow-up.svg`}
-                    className="h-10 w-[34.29px] shrink-0"
+                    className={`h-10 w-[34.29px] shrink-0${pos ? "" : " rotate-180"}`}
                   />
                   <p className="whitespace-nowrap font-heading text-[54px] font-semibold leading-none tracking-[1px] text-[#fff8ea]">
-                    27.97%
+                    {Math.abs(data.profitPct).toFixed(2)}%
                   </p>
                 </div>
               </div>
@@ -141,14 +191,14 @@ export default function SwarmArenaModelCard() {
             <div className="flex w-full items-center justify-between">
               <div className="flex items-end gap-3">
                 <p className="text-[28px] font-semibold leading-none text-[#fff8ea]">
-                  $1,184
+                  {fmtMoney(data.equityUsd)}
                 </p>
                 <p className="pb-1 text-xl font-normal leading-4 text-[#8a8174]">
                   Equity
                 </p>
               </div>
               <p className="text-xl font-normal leading-4 text-[#8a8174]">
-                <span className="font-semibold text-[#fff8ea]">$1,000</span> base
+                <span className="font-semibold text-[#fff8ea]">{fmtMoney(data.baseUsd)}</span> base
               </p>
             </div>
           </div>
@@ -156,9 +206,9 @@ export default function SwarmArenaModelCard() {
           {/* Glass stats panel */}
           <div className="flex w-full flex-col gap-9 rounded-2xl bg-[rgba(10,10,6,0.5)] p-8 backdrop-blur-[24px]">
             <div className="flex w-full items-center gap-9">
-              <Stat label="Pick Accuracy" value="71%" />
-              <Stat label="Record" value="17-7" />
-              <Stat label="Rank" value="#1 / 11" />
+              <Stat label="Pick Accuracy" value={`${Math.round(data.pickAccuracyPct)}%`} />
+              <Stat label="Record" value={data.record} />
+              <Stat label="Rank" value={`#${data.rank} / ${data.rankOf}`} />
             </div>
 
             <div className="flex w-full flex-col gap-[11px]">
@@ -168,8 +218,8 @@ export default function SwarmArenaModelCard() {
                   Top Pick
                 </p>
                 <div className="flex w-[206px] justify-between text-[17px] font-bold text-[#8bce6c]">
-                  <span>BACK Yes at:</span>
-                  <span className="w-[75px] text-right">0.58</span>
+                  <span>{data.topPick?.label ?? "No open picks"}</span>
+                  <span className="w-[75px] text-right">{data.topPick?.value ?? "—"}</span>
                 </div>
               </div>
 
@@ -184,15 +234,22 @@ export default function SwarmArenaModelCard() {
                   Latest Picks
                 </p>
                 <div className="flex w-[206px] flex-col gap-2.5 text-[17px] font-bold text-[#fff8ea]">
-                  {LATEST_PICKS.map((pick) => (
-                    <div
-                      key={pick.label}
-                      className="flex w-full items-start justify-between"
-                    >
-                      <span className="whitespace-nowrap">{pick.label}</span>
-                      <span className="w-[75px] text-right">{pick.value}</span>
+                  {data.latestPicks.length ? (
+                    data.latestPicks.map((pick, i) => (
+                      <div
+                        key={`${pick.label}-${i}`}
+                        className="flex w-full items-start justify-between"
+                      >
+                        <span className="whitespace-nowrap">{pick.label}</span>
+                        <span className="w-[75px] text-right">{pick.value}</span>
+                      </div>
+                    ))
+                  ) : (
+                    <div className="flex w-full items-start justify-between">
+                      <span className="whitespace-nowrap text-[#8a8174]">No picks yet</span>
+                      <span className="w-[75px] text-right text-[#8a8174]">—</span>
                     </div>
-                  ))}
+                  )}
                 </div>
               </div>
             </div>
@@ -306,7 +363,7 @@ export default function SwarmArenaModelCard() {
         {/* Rank number — centered in the upper hexagon, above the ribbon */}
         <div className="absolute inset-x-0 top-0 flex h-[76px] items-center justify-center">
           <span className="font-heading text-[48px] font-bold leading-none tracking-[1px] text-[#fff8ea]">
-            {RANK}
+            {data.rank}
           </span>
         </div>
       </div>

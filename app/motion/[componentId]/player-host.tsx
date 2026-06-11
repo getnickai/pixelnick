@@ -54,72 +54,68 @@ export function PlayerHost({ entry }: { entry: MotionEntry }) {
     [entry.defaultProps, slide],
   );
 
-  // Layout structure:
-  //   - Outer div: holds the Player's *visual rectangle* sizing (intrinsic
-  //     width/aspect-ratio), and acts as the positioning anchor for the
-  //     mode toggle floating to its right. `position: relative`, no overflow
-  //     hidden — children can extend past its bounds.
-  //   - Player wrapper (inside): `absolute inset-0` fills the outer, then
-  //     adds the rounded corners + ring + overflow-hidden so the Player content
-  //     is clipped to the rounded rect.
-  //   - Mode toggle: `absolute left-full` positions it just outside the
-  //     outer div's right edge, vertically centered.
+  const aspect = entry.width / entry.height;
+  // Cap at the composition's intrinsic frame width (e.g. 650px) so wide-aspect
+  // entries don't blow up to the full main column; still shrink on narrow viewports.
+  const playerWidth = `min(${entry.width}px, 100%, calc((100dvh - 8rem) * ${aspect}))`;
+
+  // Outer `w-full` so player `min(100%, …)` resolves against the main column,
+  // not the shrink-wrapped toggle width.
   return (
-    <div
-      className="relative"
-      style={{
-        width: `min(100%, calc((100dvh - 8rem) * ${entry.width / entry.height}))`,
-        aspectRatio: `${entry.width} / ${entry.height}`,
-      }}
-    >
-      <div className="group absolute inset-0 overflow-hidden rounded-2xl shadow-2xl shadow-black/50 ring-1 ring-zinc-800">
-        <Player
-          ref={playerRef}
-          component={entry.component}
-          inputProps={inputProps}
-          durationInFrames={entry.durationInFrames}
-          fps={entry.fps}
-          compositionWidth={entry.width}
-          compositionHeight={entry.height}
-          style={{ width: "100%", height: "100%" }}
-          // This composition has no audio. numberOfSharedAudioTags={0} prevents
-          // Remotion from creating a Web Audio AudioContext, which otherwise blocks
-          // the animation loop waiting for AudioContext.resume() to be confirmed
-          // via requestAnimationFrame — a confirmation gated behind a user gesture.
-          numberOfSharedAudioTags={0}
-          loop
-          spaceKeyToPlayOrPause
-          acknowledgeRemotionLicense
-        />
+    <div className="flex w-full flex-col items-center gap-4">
+      <ModeToggle slide={slide} onSlideChange={setSlide} />
 
-        {/* Play / pause overlay */}
-        <button
-          onClick={toggle}
-          aria-label={playing ? "Pause" : "Play"}
-          className="absolute inset-0 flex items-end justify-end p-4"
-          style={{ opacity: playing ? 0 : 1, transition: "opacity 0.2s" }}
-          onMouseEnter={(e) => {
-            (e.currentTarget as HTMLButtonElement).style.opacity = "1";
-          }}
-          onMouseLeave={(e) => {
-            (e.currentTarget as HTMLButtonElement).style.opacity = playing
-              ? "0"
-              : "1";
-          }}
-        >
-          <div className="flex h-10 w-10 items-center justify-center rounded-full bg-white/10 ring-1 ring-white/20 backdrop-blur-sm transition-colors hover:bg-white/20">
-            {playing ? (
-              <Pause className="size-4 fill-white text-white" />
-            ) : (
-              <Play className="size-4 fill-white text-white" />
-            )}
-          </div>
-        </button>
-      </div>
+      <div
+        className="relative"
+        style={{
+          width: playerWidth,
+          aspectRatio: `${entry.width} / ${entry.height}`,
+        }}
+      >
+        <div className="group absolute inset-0 overflow-hidden rounded-2xl shadow-2xl shadow-black/50 ring-1 ring-zinc-800">
+          <Player
+            ref={playerRef}
+            component={entry.component}
+            inputProps={inputProps}
+            durationInFrames={entry.durationInFrames}
+            fps={entry.fps}
+            compositionWidth={entry.width}
+            compositionHeight={entry.height}
+            style={{ width: "100%", height: "100%" }}
+            // This composition has no audio. numberOfSharedAudioTags={0} prevents
+            // Remotion from creating a Web Audio AudioContext, which otherwise blocks
+            // the animation loop waiting for AudioContext.resume() to be confirmed
+            // via requestAnimationFrame — a confirmation gated behind a user gesture.
+            numberOfSharedAudioTags={0}
+            loop
+            spaceKeyToPlayOrPause
+            acknowledgeRemotionLicense
+          />
 
-      {/* Mode toggle floats just to the right of the player. */}
-      <div className="absolute left-full top-1/2 ml-4 -translate-y-1/2">
-        <ModeToggle slide={slide} onSlideChange={setSlide} />
+          {/* Play / pause overlay */}
+          <button
+            onClick={toggle}
+            aria-label={playing ? "Pause" : "Play"}
+            className="absolute inset-0 flex items-end justify-end p-4"
+            style={{ opacity: playing ? 0 : 1, transition: "opacity 0.2s" }}
+            onMouseEnter={(e) => {
+              (e.currentTarget as HTMLButtonElement).style.opacity = "1";
+            }}
+            onMouseLeave={(e) => {
+              (e.currentTarget as HTMLButtonElement).style.opacity = playing
+                ? "0"
+                : "1";
+            }}
+          >
+            <div className="flex h-10 w-10 items-center justify-center rounded-full bg-white/10 ring-1 ring-white/20 backdrop-blur-sm transition-colors hover:bg-white/20">
+              {playing ? (
+                <Pause className="size-4 fill-white text-white" />
+              ) : (
+                <Play className="size-4 fill-white text-white" />
+              )}
+            </div>
+          </button>
+        </div>
       </div>
     </div>
   );
@@ -136,7 +132,7 @@ function ModeToggle({
     <div
       role="group"
       aria-label="Count-up display mode"
-      className="flex flex-col overflow-hidden rounded-md bg-zinc-900/60 ring-1 ring-zinc-800 backdrop-blur-sm"
+      className="flex flex-row overflow-hidden rounded-md bg-zinc-900/60 ring-1 ring-zinc-800 backdrop-blur-sm"
     >
       <ModeToggleButton
         active={slide}
@@ -146,7 +142,7 @@ function ModeToggle({
       >
         <ChevronsUpDown className="size-4" />
       </ModeToggleButton>
-      <div aria-hidden className="h-px bg-zinc-800" />
+      <div aria-hidden className="w-px self-stretch bg-zinc-800" />
       <ModeToggleButton
         active={!slide}
         onClick={() => onSlideChange(false)}

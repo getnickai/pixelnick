@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { Film, Image } from "lucide-react";
+import { Film, Hexagon, Image } from "lucide-react";
 import {
   Sidebar,
   SidebarContent,
@@ -15,16 +15,31 @@ import {
   SidebarMenuItem,
 } from "@/components/ui/sidebar";
 
-const NAV_ITEMS = [
+const NAV_GROUPS = [
   {
-    title: "Static",
-    href: "/static",
-    icon: Image,
+    label: "Pixelnick Design",
+    items: [
+      {
+        title: "Static",
+        href: "/static",
+        icon: Image,
+      },
+      {
+        title: "Motion",
+        href: "/motion",
+        icon: Film,
+      },
+    ],
   },
   {
-    title: "Motion",
-    href: "/motion",
-    icon: Film,
+    label: "Pixelnick Engine",
+    items: [
+      {
+        title: "Swarm Arena Kit",
+        href: "/engine",
+        icon: Hexagon,
+      },
+    ],
   },
 ] as const;
 
@@ -44,30 +59,32 @@ export function AppSidebar() {
         </div>
       </SidebarHeader>
       <SidebarContent>
-        <SidebarGroup>
-          <SidebarGroupLabel>Dashboards</SidebarGroupLabel>
-          <SidebarGroupContent>
-            <SidebarMenu>
-              {NAV_ITEMS.map((item) => {
-                const isActive =
-                  pathname === item.href ||
-                  pathname.startsWith(`${item.href}/`);
-                return (
-                  <SidebarMenuItem key={item.href}>
-                    <SidebarMenuButton
-                      render={<Link href={item.href} />}
-                      isActive={isActive}
-                      tooltip={item.title}
-                    >
-                      <item.icon />
-                      <span>{item.title}</span>
-                    </SidebarMenuButton>
-                  </SidebarMenuItem>
-                );
-              })}
-            </SidebarMenu>
-          </SidebarGroupContent>
-        </SidebarGroup>
+        {NAV_GROUPS.map((group) => (
+          <SidebarGroup key={group.label}>
+            <SidebarGroupLabel>{group.label}</SidebarGroupLabel>
+            <SidebarGroupContent>
+              <SidebarMenu>
+                {group.items.map((item) => {
+                  const isActive =
+                    pathname === item.href ||
+                    pathname.startsWith(`${item.href}/`);
+                  return (
+                    <SidebarMenuItem key={item.href}>
+                      <SidebarMenuButton
+                        render={<Link href={item.href} />}
+                        isActive={isActive}
+                        tooltip={item.title}
+                      >
+                        <item.icon />
+                        <span>{item.title}</span>
+                      </SidebarMenuButton>
+                    </SidebarMenuItem>
+                  );
+                })}
+              </SidebarMenu>
+            </SidebarGroupContent>
+          </SidebarGroup>
+        ))}
       </SidebarContent>
     </Sidebar>
   );
