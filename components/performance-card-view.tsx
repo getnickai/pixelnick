@@ -135,6 +135,12 @@ export function PerformanceCardView({
   } = props;
 
   const isLossPercent = profitPercent < 0;
+  // Loss polarity drives the colour: green when up, red when down. The PNL chip
+  // (bar + icon + value pill) keys off the PNL value; the profit arrow + number
+  // key off profit %. They agree in sign in practice but are derived independently.
+  const isLossPnl = pnl < 0;
+  const pnlFill = isLossPnl ? "bg-red-600" : "bg-green-600";
+  const profitColor = isLossPercent ? "text-red-500" : "text-white";
   const pnlNode = anim.pnlNode ?? formatPnl(pnl);
   const profitNode = anim.profitNode ?? formatProfit(profitPercent);
 
@@ -190,8 +196,15 @@ export function PerformanceCardView({
         </div>
       </div>
 
-      {/* Card content stack */}
-      <div className="absolute left-16 top-1/2 flex w-[522px] -translate-y-[calc(50%+30.5px)] flex-col gap-[72px]">
+      {/* Card content stack. The vertical-centering offset is an INLINE style
+          (not a `-translate-y-[calc(...)]` arbitrary class): that class is
+          invalid CSS without underscore-spaces, so the production Tailwind build
+          drops it (transform: none) and the un-shifted content collides with the
+          footer. Inline style parses correctly and can't be purged. */}
+      <div
+        className="absolute left-16 top-1/2 flex w-[522px] flex-col gap-[72px]"
+        style={{ transform: "translateY(calc(-50% - 30.5px))" }}
+      >
         {/* Top: Type indicator + headline */}
         <div className="flex w-full flex-col gap-4">
           {/* Type indicator pill */}
@@ -273,7 +286,7 @@ export function PerformanceCardView({
               <div className="relative flex items-center justify-center gap-6">
                 {/* Decorative left-edge green bar */}
                 <div
-                  className="absolute -left-[87px] top-0 bottom-0 w-10 rounded-none rounded-r-3xl bg-green-600"
+                  className={`absolute -left-[87px] top-0 bottom-0 w-10 rounded-none rounded-r-3xl ${pnlFill}`}
                   style={{
                     opacity: anim.barOpacity,
                     transform: `scale(${anim.barScaleX}, ${anim.barScaleY})`,
@@ -283,7 +296,7 @@ export function PerformanceCardView({
                 />
                 <div className="inline-flex items-center gap-1" style={{ opacity: anim.pnlLabelOpacity }}>
                   <span
-                    className="grid size-[3.75rem] shrink-0 place-items-center rounded-4xl rounded-r-lg bg-green-600 text-white"
+                    className={`grid size-[3.75rem] shrink-0 place-items-center rounded-4xl rounded-r-lg ${pnlFill} text-white`}
                     aria-hidden
                   >
                     {pnl < 0 ? (
@@ -318,7 +331,7 @@ export function PerformanceCardView({
                       </svg>
                     )}
                   </span>
-                  <span className="inline-flex h-[3.75rem] items-center whitespace-nowrap rounded-4xl rounded-l-lg bg-green-600 px-6 font-heading text-5xl font-medium leading-none text-white">
+                  <span className={`inline-flex h-[3.75rem] items-center whitespace-nowrap rounded-4xl rounded-l-lg ${pnlFill} px-6 font-heading text-5xl font-medium leading-none text-white`}>
                     {pnlNode}
                   </span>
                 </div>
@@ -350,20 +363,31 @@ export function PerformanceCardView({
               >
                 Profit %
               </p>
-              <div className="flex items-center gap-4">
+              <div className={`flex items-center gap-4 ${profitColor}`}>
                 <div
                   className="relative h-8 w-[27.429px] shrink-0"
                   style={{ transform: isLossPercent ? "rotate(180deg)" : undefined }}
                 >
+                  {/* Inline (not <img>) so the arrow inherits currentColor — white on
+                      a gain, red on a loss — instead of the SVG's baked-in fill. */}
                   <div className="absolute inset-[-6.63%_-7.73%_-4.69%_-7.73%]">
-                    <img alt="" src={`${ASSET}/arrow-up.svg`} className="block size-full max-w-none" />
+                    <svg
+                      viewBox="0 0 31.6712 35.6213"
+                      fill="none"
+                      preserveAspectRatio="none"
+                      className="block size-full max-w-none"
+                      aria-hidden
+                    >
+                      <path
+                        d="M29.5499 15.8356L15.8356 2.12132L2.12132 15.8356M15.8356 3.26418V34.1213"
+                        stroke="currentColor"
+                        strokeWidth="3"
+                        strokeLinecap="square"
+                      />
+                    </svg>
                   </div>
                 </div>
-                <p
-                  className={`whitespace-nowrap font-heading text-5xl font-medium leading-[1.4] ${
-                    isLossPercent ? "text-red-500" : "text-white"
-                  }`}
-                >
+                <p className="whitespace-nowrap font-heading text-5xl font-medium leading-[1.4]">
                   {profitNode}
                 </p>
               </div>
