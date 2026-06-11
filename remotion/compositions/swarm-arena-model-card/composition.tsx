@@ -4,13 +4,18 @@ import {
   Easing,
   interpolate,
   spring,
+  staticFile,
   useCurrentFrame,
   useVideoConfig,
 } from "remotion";
 import { SlidingDigitCount } from "../_shared/sliding-digit-count";
 import type { SwarmArenaModelCardProps } from "./props";
 
-const ASSET = "/swarm-arena-cards/assets";
+// staticFile() so assets resolve in BOTH the web Player and headless CLI/MP4
+// renders. A bare "/swarm-arena-cards/..." only resolves against the page
+// origin (Player); a headless render serves assets through the bundler. The
+// base prepends remotion_staticBase; sub-paths concatenate correctly. (STA-417)
+const ASSET = staticFile("swarm-arena-cards/assets");
 const MODELS_ASSET = `${ASSET}/models`;
 
 const MODELS = {
