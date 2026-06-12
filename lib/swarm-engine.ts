@@ -16,6 +16,35 @@ export type EngineRenderOpts = {
   size: string;
 };
 
+/** One "Market vs Agents" consensus record (game × market), from swarm-consensus. */
+export type ConsensusRecord = {
+  home: string;
+  away: string;
+  homeCode?: string;
+  awayCode?: string;
+  game: string;
+  kickoff?: string;
+  competition?: string;
+  stage?: string;
+  venue?: string | null;
+  marketType: "moneyline" | "btts" | "totals" | string;
+  line: number | null;
+  selection: string;
+  marketPrice: number;
+  consensus: number;
+  spread: [number, number];
+  edgePp: number;
+  agentsN: number;
+  agentsTotal: number;
+  perAgent: { handle: string; fairValue: number; edgePp: number }[];
+};
+
+export type ConsensusRenderOpts = EngineRenderOpts & {
+  betStyle?: "question" | "emphasis";
+  breakdown?: "list" | "histogram";
+  colors?: { bar?: string; line?: string };
+};
+
 /** What SA.load() accepts. The live /api/swarm-deck returns `match: null`
  *  (no aggregated fixture yet); the stricter SwarmDeck remains assignable. */
 export type EngineDeck = { agents: EngineAgent[]; match?: EngineMatch | null };
@@ -28,6 +57,7 @@ export type SwarmEngine = {
   renderAgentCard: (handleOrAgent: string | EngineAgent, opts: EngineRenderOpts) => string;
   renderModelCard: (handleOrAgent: string | EngineAgent, opts: EngineRenderOpts) => string;
   renderMatchCard: (match: unknown, opts: EngineRenderOpts) => string;
+  renderMatchConsensusCard: (rec: ConsensusRecord, opts: ConsensusRenderOpts) => string;
   renderLeaderboardCard: (opts: EngineRenderOpts) => string;
 };
 

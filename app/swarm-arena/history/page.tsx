@@ -17,6 +17,7 @@ import { useCallback, useEffect, useRef, useState } from "react";
 import Script from "next/script";
 import SwarmArenaModelCard from "@/components/swarm-arena-model-card";
 import type { EngineAgent } from "@/data/swarm-output";
+import type { ConsensusRecord } from "@/lib/swarm-engine";
 import { toCardData } from "@/lib/swarm-card-data";
 import { SwarmCardsShell } from "../shell";
 
@@ -61,6 +62,11 @@ export default function SwarmHistoryPage() {
   const [engineReady, setEngineReady] = useState(false);
   const [leaderboardHtml, setLeaderboardHtml] = useState("");
   const [upcomingHtml, setUpcomingHtml] = useState<{ html: string; label: string; slug: string }[]>([]);
+  // Consensus ("Market vs Agents") cards — placeholder design, fed from the static
+  // consensus.json snapshot for now (a live /api/swarm-consensus is a follow-up).
+  const [consensusRecords, setConsensusRecords] = useState<ConsensusRecord[]>([]);
+  const [consensusHtml, setConsensusHtml] = useState<{ html: string; label: string; slug: string }[]>([]);
+  const [consStatus, setConsStatus] = useState("");
   const timer = useRef<ReturnType<typeof setInterval> | null>(null);
 
   // YYYY-MM-DD → end-of-day UTC so the deck reflects every run from that day.
@@ -100,6 +106,18 @@ export default function SwarmHistoryPage() {
         setUpStatus(`${games.length} fixture(s)`);
       })
       .catch((err) => setUpStatus(`Error (${err})`));
+  }, []);
+
+  const loadConsensus = useCallback(() => {
+    setConsStatus("Loading…");
+    fetch("/swarm-arena-cards/consensus.json", { cache: "no-store" })
+      .then((r) => (r.ok ? r.json() : Promise.reject(`consensus ${r.status}`)))
+      .then((d: { records?: ConsensusRecord[] }) => {
+        const recs = d.records ?? [];
+        setConsensusRecords(recs);
+        setConsStatus(`${recs.length} market(s) · placeholder`);
+      })
+      .catch((err) => setConsStatus(`Error (${err})`));
   }, []);
 
   const [upcomingGames, setUpcomingGames] = useState<Game[]>([]);
@@ -171,6 +189,9 @@ export default function SwarmHistoryPage() {
   useEffect(() => {
     loadUpcoming();
   }, [loadUpcoming]);
+  useEffect(() => {
+    loadConsensus();
+  }, [loadConsensus]);
 
   // Auto-refresh in live mode only; a historical point is fixed.
   useEffect(() => {
@@ -197,7 +218,14 @@ export default function SwarmHistoryPage() {
         slug: `preview-${(g.home.code ?? "").toLowerCase()}-${(g.away.code ?? "").toLowerCase()}`,
       })),
     );
-  }, [engineReady, deck, upcomingGames, theme]);
+    setConsensusHtml(
+      consensusRecords.map((r) => ({
+        html: window.SA.renderMatchConsensusCard(r, { ...opts, betStyle: "question" }),
+        label: `${r.game} · ${r.marketType}`,
+        slug: `consensus-${r.marketType}-${String(r.home).toLowerCase()}-${String(r.away).toLowerCase()}`,
+      })),
+    );
+  }, [engineReady, deck, upcomingGames, consensusRecords, theme]);
 
   return (
     <SwarmCardsShell activeKey="swarm-history" tag="Live Cards" theme={theme}>
@@ -228,7 +256,7 @@ export default function SwarmHistoryPage() {
             Agent cards use the Swarm Arena model design; the leaderboard and
             upcoming previews use the classic engine.
           </span>
-          <button type="button" onClick={() => { loadDeck(); loadUpcoming(); }}>
+          <button type="button" onClick={() => { loadDeck(); loadUpcoming(); loadConsensus(); }}>
             Refresh
           </button>
           <label>
@@ -272,6 +300,36 @@ export default function SwarmHistoryPage() {
                     className="sah-thumb-inner"
                     dangerouslySetInnerHTML={{ __html: c.html }}
                   />
+                </div>
+                <div className="sah-cap">
+                  <span>{c.label}</span>
+                  <button
+                    type="button"
+                    className="sah-dl"
+                    onClick={(e) => downloadCard(c.html, c.slug, e.currentTarget)}
+                  >
+                    ↓ PNG
+                  </button>
+                </div>
+              </div>
+            ))}
+          </div>
+        )}
+
+        <div className="sah-sechead">
+          <h2>Market vs Agents</h2>
+          <span className="sah-status">{consStatus}</span>
+        </div>
+        {consensusHtml.length === 0 ? (
+          <div className="sah-empty">
+            {engineReady ? "No consensus markets right now." : "Loading engine…"}
+          </div>
+        ) : (
+          <div className="sah-grid">
+            {consensusHtml.map((c, i) => (
+              <div className="sah-cell" key={i}>
+                <div className="sah-thumb">
+                  <div className="sah-thumb-inner" dangerouslySetInnerHTML={{ __html: c.html }} />
                 </div>
                 <div className="sah-cap">
                   <span>{c.label}</span>
