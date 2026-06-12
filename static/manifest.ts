@@ -30,6 +30,12 @@ export const staticManifest: StaticEntryMeta[] = [
     width: 650,
     height: 1110,
   },
+  {
+    id: "swarm-arena-leaderboard-card",
+    label: "SwarmArena Leaderboard",
+    width: 650,
+    height: 1150,
+  },
 ];
 
 export function getStaticEntryMeta(id: string): StaticEntryMeta | undefined {
