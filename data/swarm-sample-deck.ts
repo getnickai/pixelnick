@@ -59,7 +59,7 @@ export const SAMPLE_SWARM_AGENTS: EngineAgent[] = [
     pick: { market: "Total goals", side: "BACK Under 2.5 @ 0.39", edgePp: 4.1 },
   },
   {
-    handle: "TEAMCHINA", code: "CHN", label: "Team China", short: "China", provider: "DeepSeek · Qwen · Kimi · GLM", flag: "🇨🇳", color: "#cf3a44", kind: "ensemble",
+    handle: "TEAMCHINA", code: "CHN", label: "Team China", short: "China", provider: "DeepSeek · Qwen · Kimi", flag: "🇨🇳", color: "#cf3a44", kind: "ensemble",
     roiPct: 0.4, pickPct: 0.55, signals: 29, nextRun: "1h 09m", activeSince: "May 28, 2026",
     spark: [1000, 1006, 1001, 1009, 1003, 1011, 1005, 1010, 1004, 1009, 1006, 1004],
     pick: { market: "Total goals", side: "BACK Under 2.5 @ 0.39", edgePp: 3.5 },
@@ -69,12 +69,6 @@ export const SAMPLE_SWARM_AGENTS: EngineAgent[] = [
     roiPct: -2.6, pickPct: 0.52, signals: 15, nextRun: "8h 41m", activeSince: "May 28, 2026",
     spark: [1000, 1007, 1001, 994, 1003, 996, 988, 994, 985, 990, 982, 974],
     pick: { market: "Method · penalties", side: "BACK PSG pens @ 0.14", edgePp: 6.7 },
-  },
-  {
-    handle: "GLM", code: "GLM", label: "GLM-4.6", short: "GLM", provider: "Zhipu AI", flag: "🇨🇳", color: "#4f78e0", kind: "llm",
-    roiPct: -5.8, pickPct: 0.49, signals: 14, nextRun: "7h 55m", activeSince: "May 28, 2026",
-    spark: [1000, 996, 1003, 994, 988, 996, 985, 978, 984, 972, 966, 942],
-    pick: { market: "Match winner 3-way", side: "ABSTAIN", edgePp: 0.0 },
   },
   {
     handle: "GPT", code: "GPT", label: "GPT-5.1", short: "GPT", provider: "OpenAI", flag: "🇺🇸", color: "#a89a86", kind: "llm",
