@@ -24,6 +24,12 @@ export const staticManifest: StaticEntryMeta[] = [
     width: 650,
     height: 1110,
   },
+  {
+    id: "consensus-card",
+    label: "Consensus Card",
+    width: 650,
+    height: 1110,
+  },
 ];
 
 export function getStaticEntryMeta(id: string): StaticEntryMeta | undefined {
