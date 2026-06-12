@@ -1,0 +1,73 @@
+<!doctype html>
+<html lang="en" data-theme="dark">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Market vs Agents — Design B (STA-419)</title>
+<link rel="stylesheet" href="colors_and_type.css" />
+<link rel="stylesheet" href="card-styles.css" />
+<style>
+  html, body { margin:0; min-height:100%; }
+  body { background:var(--bg); color:var(--text); font-family:var(--font-body); -webkit-font-smoothing:antialiased; transition:background .2s ease; }
+  /* top nav with the theme toggle (mirrors the live site's nav toggle) */
+  .nav { display:flex; align-items:center; justify-content:space-between; padding:16px 32px; border-bottom:1px solid var(--border); }
+  .nav .wm { font-family:var(--font-mono); font-weight:700; letter-spacing:.1em; text-transform:uppercase; font-size:15px; }
+  .nav .wm b { color:var(--brand); }
+  .toggle { display:flex; gap:0; border:1px solid var(--border-solid); border-radius:8px; overflow:hidden; }
+  .toggle button { font-family:var(--font-mono); font-size:12px; font-weight:600; letter-spacing:.04em; padding:7px 14px; background:var(--bg-panel); color:var(--text-dim); border:0; cursor:pointer; }
+  .toggle button[aria-pressed="true"] { background:var(--brand); color:var(--text-invert); }
+  main { padding:40px; }
+  .sub { font-family:var(--font-mono); font-size:12px; color:var(--text-faint); margin:0 0 22px; }
+  .board { display:flex; gap:44px; align-items:flex-start; flex-wrap:wrap; }
+  .cell { display:flex; flex-direction:column; }
+  .cell .lab { font-family:var(--font-mono); font-size:12px; letter-spacing:.04em; text-transform:uppercase; color:var(--text-dim); margin:0 0 12px; }
+  .sa-card { border:1px solid rgba(128,128,128,.18); }
+  .err { color:#d88; font-family:var(--font-mono); white-space:pre-wrap; }
+</style>
+</head>
+<body>
+<div class="nav">
+  <span class="wm">SWARM<b>ARENA</b> · consensus cards</span>
+  <div class="toggle" id="toggle">
+    <button data-theme="dark" aria-pressed="true">Dark</button>
+    <button data-theme="light" aria-pressed="false">Light</button>
+  </div>
+</div>
+<main id="main"></main>
+
+<script src="card-engine.js"></script>
+<script>
+(function(){
+  var main = document.getElementById("main");
+  var records = [{"home":"Sweden","away":"Tunisia","homeCode":"SE","awayCode":"TN","game":"Sweden vs Tunisia","kickoffISO":"2026-06-15T02:00:00.000Z","kickoff":"Mon, Jun 15 · 02:00 UTC","competition":"FIFA World Cup 2026","stage":"Group Stage","venue":"Estadio BBVA","upcoming":true,"marketType":"moneyline","line":null,"selection":"Away","marketPrice":0.215,"consensus":0.2483,"spread":[0.2483,0.2483],"edgePp":3.3,"agentsN":2,"agentsTotal":8,"perAgent":[{"handle":"GEMINI","fairValue":0.2483,"edgePp":2.83},{"handle":"KIMI","fairValue":0.2483,"edgePp":2.83}]},{"home":"Germany","away":"Curaçao","homeCode":"DE","awayCode":"CW","game":"Germany vs Curaçao","kickoffISO":"2026-06-14T17:00:00.000Z","kickoff":"Sun, Jun 14 · 17:00 UTC","competition":"FIFA World Cup 2026","stage":"Group Stage","venue":"Reliant Stadium","upcoming":true,"marketType":"btts","line":null,"selection":"Yes","marketPrice":0.3242,"consensus":0.6331,"spread":[0.6231,0.6381],"edgePp":30.9,"agentsN":6,"agentsTotal":8,"perAgent":[{"handle":"GROK","fairValue":0.6381,"edgePp":30.81},{"handle":"DEEPSEEK","fairValue":0.6381,"edgePp":30.81},{"handle":"MINIMAX","fairValue":0.6381,"edgePp":30.81},{"handle":"KIMI","fairValue":0.6331,"edgePp":30.31},{"handle":"GPT","fairValue":0.6281,"edgePp":29.81},{"handle":"GEMINI","fairValue":0.6231,"edgePp":29.31}]},{"home":"USA","away":"Paraguay","homeCode":"US","awayCode":"PY","game":"USA vs Paraguay","kickoffISO":"2026-06-13T01:00:00.000Z","kickoff":"Sat, Jun 13 · 01:00 UTC","competition":"FIFA World Cup 2026","stage":"Group Stage","venue":"SoFi Stadium","upcoming":true,"marketType":"totals","line":2.5,"selection":"Over","marketPrice":0.4093,"consensus":0.5283,"spread":[0.5242,0.5292],"edgePp":11.9,"agentsN":7,"agentsTotal":8,"perAgent":[{"handle":"GPT","fairValue":0.5242,"edgePp":12.42},{"handle":"DEEPSEEK","fairValue":0.5292,"edgePp":10.92},{"handle":"MINIMAX","fairValue":0.5292,"edgePp":10.92},{"handle":"QWEN","fairValue":0.5292,"edgePp":10.92},{"handle":"GEMINI","fairValue":0.5288,"edgePp":10.88},{"handle":"GROK","fairValue":0.5288,"edgePp":10.88},{"handle":"KIMI","fairValue":0.5288,"edgePp":10.88}]}];
+  var pillLabel = { moneyline:"Who Wins", btts:"Both Teams To Score", totals:"Over / Under" };
+  var theme = "dark";
+  // Finalists: B (saturated orange line) and C (deep burnt-orange line), both lighter green.
+  var colorOptions = [
+    ["Option B — saturated orange line", {bar:"#9ec46a", line:"#db5a1e"}],
+    ["Option C — deep burnt-orange line", {bar:"#9ec46a", line:"#a83a1a"}],
+  ];
+  function render(){
+    try {
+      main.innerHTML = colorOptions.map(function(o){
+        var cards = records.map(function(r){
+          return '<div class="cell"><p class="lab">'+pillLabel[r.marketType]+'</p>'
+            + window.SA.renderMatchConsensusCard(r, { size:"portrait", theme:theme, breakdown:"histogram", betStyle:"question", colors:o[1] })
+            + '</div>';
+        }).join("");
+        return '<h2 style="font-family:var(--font-mono);font-size:15px;letter-spacing:.06em;text-transform:uppercase;color:var(--brand);margin:8px 0 18px">'+o[0]+'</h2><div class="board">'+cards+'</div>';
+      }).join("");
+    } catch(e){ main.innerHTML = '<pre class="err">'+(e&&e.stack||e)+'</pre>'; }
+  }
+  document.getElementById("toggle").addEventListener("click", function(e){
+    var b = e.target.closest("button"); if(!b) return;
+    theme = b.getAttribute("data-theme");
+    document.documentElement.setAttribute("data-theme", theme);
+    [].forEach.call(this.querySelectorAll("button"), function(x){ x.setAttribute("aria-pressed", x===b); });
+    render();
+  });
+  render();
+})();
+</script>
+</body>
+</html>

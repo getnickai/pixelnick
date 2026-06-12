@@ -648,6 +648,132 @@
     return frame(opts, inner);
   }
 
+  /* ════════════════ MATCH CONSENSUS CARD ════════════════
+     "Market vs Agents" — one card per (game × market). Shows the market price,
+     the swarm consensus (mean of the agents' fair_value, N of 8 + spread), and
+     the edge between them. Fed by a record from scripts/swarm-consensus.ts. */
+  const MARKET_PILL = { moneyline: "Who Wins", btts: "Both Teams to Score", totals: "Over / Under" };
+  const ALL_HANDLES = ["CLAUDE", "GPT", "GEMINI", "GROK", "DEEPSEEK", "KIMI", "MINIMAX", "QWEN"];
+  function renderMatchConsensusCard(rec, opts = {}) {
+    const pct = (x) => Math.round(x * 100);
+    const market = pct(rec.marketPrice), swarm = pct(rec.consensus);
+    const pill = MARKET_PILL[rec.marketType] || "Market vs Swarm";
+    const title =
+      rec.marketType === "btts" ? "Both teams to score"
+      : rec.marketType === "totals" ? `${rec.selection} ${rec.line} goals`
+      : `${(rec.selection === "Away" ? rec.away : rec.home)} to win`;
+    // The bet as a yes/no question (Design 1 chip) + the outcome the % refers to (Design 1 title).
+    const pickedTeam = rec.selection === "Away" ? rec.away : rec.selection === "Home" ? rec.home : null;
+    const overUnder = String(rec.selection).toLowerCase() === "under" ? "fewer" : "more";
+    const question =
+      rec.marketType === "btts" ? "Will both teams score?"
+      : rec.marketType === "totals" ? `${overUnder === "more" ? "More" : "Fewer"} than ${rec.line} goals?`
+      : pickedTeam ? `Will ${pickedTeam} win?` : "Match winner?";
+    // The title repeats the question as an affirmative answer, so the % is unambiguous.
+    const answer =
+      rec.marketType === "btts" ? "Yes, both teams will score"
+      : rec.marketType === "totals" ? `Yes, ${overUnder} than ${rec.line} goals`
+      : pickedTeam ? `Yes, ${pickedTeam} will win` : "Yes";
+    const qMode = opts.betStyle === "question";
+    const emphasize = opts.betStyle === "emphasis";
+    const teamHTML = (name, code) => `
+      <div class="sa-team">
+        <div class="sa-shield">${shieldCrestSVG(teamMark(code))}</div>
+        <div><div class="tname">${esc(name)}</div></div>
+      </div>`;
+    const bar = (label, value, color, strong) => `
+      <div style="display:flex;align-items:center;gap:0.9em">
+        <span style="width:5.4em;font-family:'Fira Code',monospace;font-size:0.74em;font-weight:700;letter-spacing:0.04em;color:var(--text-dim);text-transform:uppercase">${esc(label)}</span>
+        <span style="flex:1;height:1.35em;background:var(--inset);border-radius:0.3em;overflow:hidden;display:block"><span style="display:block;height:100%;width:${value}%;background:${color}"></span></span>
+        <span style="width:2.9em;text-align:right;font-family:'Fira Code',monospace;font-size:1.1em;font-weight:700;color:${strong ? color : "var(--text)"}">${value}%</span>
+      </div>`;
+    const spread = rec.spread && rec.spread[0] !== rec.spread[1] ? ` · range ${pct(rec.spread[0])}–${pct(rec.spread[1])}%` : "";
+
+    // Per-agent reads. byHandle has codes/colors for known models; fall back for any not registered (e.g. MINIMAX).
+    const idOf = (h) => byHandle[h] || { handle: h, code: h.slice(0, 3), short: h.charAt(0) + h.slice(1).toLowerCase(), color: "#9a8f7e", kind: "llm" };
+    const picks = new Map((rec.perAgent || []).map((a) => [a.handle, a.fairValue]));
+
+    // Design A — list: every agent, one row; pickers colored with their %, the rest greyed "no pick".
+    const ordered = ALL_HANDLES.slice().sort((a, b) => {
+      const pa = picks.has(a), pb = picks.has(b);
+      if (pa !== pb) return pa ? -1 : 1;
+      return (picks.get(b) || 0) - (picks.get(a) || 0);
+    });
+    const listHTML = ordered.map((h) => {
+      const id = idOf(h), v = picks.get(h), on = v != null, pv = on ? Math.round(v * 100) : 0;
+      return `<div style="display:flex;align-items:center;gap:0.7em;opacity:${on ? 1 : 0.5}">
+        ${avatar(id, 1.5)}
+        <span style="width:5em;font-family:'Fira Code',monospace;font-size:0.76em;font-weight:600;color:${on ? "var(--text)" : "var(--text-faint)"}">${esc(id.short)}</span>
+        <span style="flex:1;height:0.85em;background:var(--inset);border-radius:0.25em;overflow:hidden"><span style="display:block;height:100%;width:${pv}%;background:var(--positive)"></span></span>
+        <span style="width:3.2em;text-align:right;font-family:'Fira Code',monospace;font-size:0.86em;font-weight:700;color:${on ? "var(--positive)" : "var(--text-faint)"}">${on ? pv + "%" : "no pick"}</span>
+      </div>`;
+    }).join("");
+
+    // Design B — histogram: a fixed-order bar per agent (height = fair value), market price as a dashed reference line.
+    // Bar (swarm) + line (market) colors. Default = Option B (lighter green + saturated
+    // orange) for max contrast; both read well on dark + light. Override via opts.colors.
+    const BAR = opts.colors && opts.colors.bar ? opts.colors.bar : "#9ec46a";
+    const LINE = opts.colors && opts.colors.line ? opts.colors.line : "#db5a1e";
+    const histBar = (h) => {
+      const v = picks.get(h), on = v != null, pv = on ? Math.round(v * 100) : 0;
+      return `<div style="flex:1;height:${on ? pv : 6}%;background:${on ? BAR : "var(--inset)"};opacity:${on ? 1 : 0.5};border-radius:0.2em 0.2em 0 0;min-height:0.25em"></div>`;
+    };
+    const HIST_H = 6; // em — histogram track height (sized to fill the lower card)
+    const histHTML = `
+      <div style="position:relative;height:${HIST_H}em;display:flex;align-items:flex-end;gap:0.55em">
+        ${ALL_HANDLES.map(histBar).join("")}
+        <div style="position:absolute;left:0;right:0;bottom:${(market / 100) * HIST_H}em;border-top:2px dashed ${LINE}"></div>
+        <div style="position:absolute;right:0.1em;bottom:${(market / 100) * HIST_H}em;font-family:'Fira Code',monospace;font-size:0.74em;font-weight:700;color:${LINE};transform:translateY(-118%)">market ${market}%</div>
+      </div>
+      <div style="display:flex;gap:0.55em;margin-top:0.6em">
+        ${ALL_HANDLES.map((h) => { const on = picks.has(h); return `<span style="flex:1;text-align:center;font-family:'Fira Code',monospace;font-size:0.72em;font-weight:600;color:${on ? "var(--text-dim)" : "var(--text-faint)"};opacity:${on ? 1 : 0.55}">${esc(idOf(h).code)}</span>`; }).join("")}
+      </div>`;
+
+    const breakdownHTML = opts.breakdown === "list" ? listHTML : histHTML;
+    const inner = `
+      <div class="sa-grid"></div>
+      <div class="sa-glow" style="top:-30%;left:-26%;width:90%"></div>
+      <div class="sa-dots" style="bottom:2%;right:-10%;width:48%;height:26%;opacity:0.45">${swarmDotsSVG()}</div>
+      <div class="sa-content" style="padding:3em;gap:1.5em">
+        <div class="sa-row sa-between">
+          <div class="sa-wordmark"><span class="sa-wordmark-mark">${markSVG()}</span><span class="sa-wordmark-text">SWARM<b>ARENA</b></span></div>
+          <div class="sa-pill">${esc(pill)}</div>
+        </div>
+        <div>
+          <div class="sa-eyebrow">${esc(rec.competition || "FIFA World Cup 2026")}${rec.stage ? ` · ${esc(rec.stage)}` : ""}</div>
+          <div class="sa-sub sa-mono" style="margin-top:0.4em">${esc(rec.venue || "")}${rec.kickoff ? ` · ${esc(rec.kickoff)}` : ""}</div>
+        </div>
+        <div class="sa-vs" style="margin:1.2em 0 0.6em;font-size:1.22em">
+          ${teamHTML(rec.home, rec.homeCode)}
+          <div class="sa-vs-mid"><span class="v">VS</span></div>
+          ${teamHTML(rec.away, rec.awayCode)}
+        </div>
+        ${qMode ? `<div style="text-align:center;margin:0.1em 0 0.35em">
+          <span class="sa-pill" style="font-size:0.92em">${esc(question)}</span>
+        </div>` : ""}
+        <div class="sa-panel">
+          <div class="sa-panel-title" style="justify-content:center"><span style="text-transform:uppercase;letter-spacing:0.09em;color:var(--text);font-size:0.92em;font-weight:700;text-align:center;white-space:normal">${esc(qMode ? answer : title)}</span></div>
+          <div class="sa-panel-body" style="padding:1.3em 1.2em;display:flex;flex-direction:column;gap:0.95em">
+            ${bar("Market", market, "var(--text-dim)", false)}
+            ${bar(`Swarm ${rec.agentsN}/${rec.agentsTotal}`, swarm, BAR, true)}
+            <div style="display:flex;align-items:center;justify-content:space-between;margin-top:0.3em;padding:1em 1.1em;background:var(--bg-panel-2);border:1px solid var(--border-solid);border-radius:0.5em">
+              <div class="sa-sub" style="font-weight:600;color:var(--text)">Swarm Arena agents see value</div>
+              <div style="font-family:'Fira Code',monospace;font-size:2.1em;font-weight:800;color:${BAR};line-height:1">${rec.edgePp > 0 ? "+" : ""}${rec.edgePp}<span style="font-size:0.45em;font-weight:700">pp</span></div>
+            </div>
+          </div>
+        </div>
+        <div>
+          <div class="sa-eyebrow" style="margin-bottom:0.85em;text-align:center">${rec.agentsN} of ${rec.agentsTotal} agents backing this pick${rec.spread && rec.spread[0] !== rec.spread[1] ? ` within a ${pct(rec.spread[0])}–${pct(rec.spread[1])}% range` : ""}</div>
+          ${breakdownHTML}
+        </div>
+        <div class="sa-grow"></div>
+        <div class="sa-sub sa-mono" style="color:var(--text-faint);font-size:0.82em">Market = Polymarket · Swarm = mean agent fair value · swarmarena.ai</div>
+        ${footerHTML()}
+      </div>`;
+    return frame(opts, inner);
+  }
+
+
   /* ════════════════ MATCH CARD ════════════════ */
   function renderMatchCard(m, opts = {}) {
     m = m || MATCH;
@@ -776,7 +902,7 @@
     return SA;
   }
 
-  const SA = { AGENTS, byHandle, LEADERBOARD, MATCH, BASE, renderAgentCard, renderModelCard, renderMatchCard, renderLeaderboardCard, mount, fmt$, load };
+  const SA = { AGENTS, byHandle, LEADERBOARD, MATCH, BASE, renderAgentCard, renderModelCard, renderMatchCard, renderMatchConsensusCard, renderLeaderboardCard, mount, fmt$, load };
   // Guard the global write so this file is safe to import in a server context
   // (Next.js prerenders the client player route, which pulls in the engine via
   // the Remotion registry). The renderers only run in the browser / headless

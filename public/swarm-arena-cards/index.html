@@ -81,12 +81,17 @@
       <div class="seg" id="seg-type">
         <button data-v="agent" aria-pressed="true">Agent</button>
         <button data-v="match">Match</button>
+        <button data-v="consensus">Market vs Agents</button>
         <button data-v="leaderboard">Leaderboard</button>
       </div>
     </div>
     <div class="grp" id="grp-agent">
       <span class="lbl">Agent</span>
       <div class="agentsel" id="agent-list"></div>
+    </div>
+    <div class="grp" id="grp-consensus" style="display:none">
+      <span class="lbl">Game · market</span>
+      <div class="agentsel" id="consensus-list" style="grid-template-columns:1fr"></div>
     </div>
     <div class="grp" id="grp-layout">
       <span class="lbl">Layout</span>
@@ -124,7 +129,19 @@
 <script src="card-engine.js"></script>
 <script>
   const SA = window.SA;
-  const state = { type:"agent", agent:"GROK", layout:"editorial", theme:"dark", size:"portrait" };
+  const state = { type:"agent", agent:"GROK", layout:"editorial", theme:"dark", size:"portrait", consensus:[], consensusIdx:0 };
+
+  // Consensus ("Market vs Agents") records — one per game × market, from the live feed.
+  const PILL = { moneyline:"Who Wins", btts:"BTTS", totals:"O/U" };
+  const consList = document.getElementById("consensus-list");
+  fetch("consensus.json", { cache:"no-store" }).then(r=>r.ok?r.json():{records:[]}).then(d=>{
+    state.consensus = d.records || [];
+    consList.innerHTML = state.consensus.map((r,i)=>
+      `<button data-v="${i}" aria-pressed="${i===0}"><span>${r.game} · ${PILL[r.marketType]||r.marketType}</span></button>`
+    ).join("") || `<p class="hint">No consensus records (run swarm-consensus.ts).</p>`;
+    if (state.type==="consensus") render();
+  }).catch(()=>{ consList.innerHTML = `<p class="hint">Could not load consensus.json.</p>`; });
+  consList.addEventListener("click",e=>{const b=e.target.closest("button");if(!b)return;state.consensusIdx=+b.dataset.v;consList.querySelectorAll("button").forEach(x=>x.setAttribute("aria-pressed",+x.dataset.v===state.consensusIdx));render();});
 
   // Shared nav active-state.
   const ACTIVE_KEY = "swarm-kit";
@@ -156,13 +173,18 @@
         : SA.renderAgentCard(state.agent, { ...o, variant: state.layout==="terminal"?"terminal":"ridge", layout: state.layout });
     } else if (state.type==="match"){
       html = SA.renderMatchCard(null, o);
+    } else if (state.type==="consensus"){
+      const rec = state.consensus[state.consensusIdx];
+      html = rec ? SA.renderMatchConsensusCard(rec, { ...o, betStyle:"question" })
+                 : `<div class="sa-card" data-theme="${state.theme}" style="width:650px;height:1136px;display:flex;align-items:center;justify-content:center"><span class="hint">No consensus data loaded.</span></div>`;
     } else {
       html = SA.renderLeaderboardCard(o);
     }
     document.getElementById("cardwrap").innerHTML = html;
-    // toggle agent/layout controls
+    // toggle contextual controls
     document.getElementById("grp-agent").style.display = state.type==="agent" ? "" : "none";
     document.getElementById("grp-layout").style.display = state.type==="agent" ? "" : "none";
+    document.getElementById("grp-consensus").style.display = state.type==="consensus" ? "" : "none";
     fit();
   }
   function fit(){
