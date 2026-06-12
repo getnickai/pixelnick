@@ -57,6 +57,12 @@ const SETTLE_BUFFER_FRAMES = 30;
 // 30fps gives `dt ≈ 4ms`, comfortably stable.
 const SUB_STEPS = 8;
 
+// Slot-machine SPIN (when `spinWindow` is set): each reel free-rolls at this
+// base speed (placeValue units per frame), staggered per digit so the reels
+// look independent rather than locked together.
+const SPIN_SPEED = 0.5;
+const SPIN_STAGGER = 0.12;
+
 // Default easing for the value count-up: standard "ease-out cubic" — starts
 // fast (digits spin rapidly), gracefully decelerates into the target (digits
 // settle smoothly). This is the curve most counter animations on the web use.
@@ -67,6 +73,15 @@ type SlidingDigitCountProps = {
   targetValue: number;
   /** Frame window `[startFrame, endFrame]` over which value counts up. */
   countWindow: readonly [number, number];
+  /**
+   * Optional `[startFrame, endFrame]` slot-machine SPIN before the count. During
+   * it the reels free-spin (continuous roll, staggered per digit) — eye-catching
+   * "intrigue" motion, e.g. behind a blur. `endFrame` should equal
+   * `countWindow[0]`; at that handoff the reels carry their spin velocity into
+   * the spring, which then DECELERATES onto the final value (a real slot-machine
+   * land, not a count-from-zero). Only meaningful with `slide` (default).
+   */
+  spinWindow?: readonly [number, number];
   /** Decimal places to display. Default 0. */
   decimals?: number;
   /** Static prefix (e.g. "$"). Sign rendered separately when `showSign` is true. */
@@ -116,6 +131,7 @@ type Slot =
 export const SlidingDigitCount: React.FC<SlidingDigitCountProps> = ({
   targetValue,
   countWindow,
+  spinWindow,
   decimals = 0,
   prefix = "",
   suffix = "",
@@ -181,20 +197,42 @@ export const SlidingDigitCount: React.FC<SlidingDigitCountProps> = ({
     const velocities: number[] = new Array(totalDigits).fill(0);
     const subDt = 1 / fps / SUB_STEPS;
 
-    // Start iterating at the count start (before that, springs are at rest at 0).
-    // End at the current frame, but cap a bit past countEnd — beyond that the
-    // spring has fully settled and extra iterations are wasted.
-    const startIter = Math.max(0, countStart);
+    const hasSpin = !!spinWindow && spinWindow[0] < countStart;
+    const spinStart = hasSpin ? spinWindow![0] : countStart;
+    // Slot machine lands on the FINAL value (not a count-from-zero) after a spin.
+    const finalDigits = digitsAt(absTarget);
+
+    // Start iterating at the spin start (or the count start, springs at rest at
+    // 0 before). End at the current frame, capped a bit past countEnd — beyond
+    // that the spring has fully settled and extra iterations are wasted.
+    const startIter = Math.max(0, Math.min(spinStart, countStart));
     const endIter = Math.min(frame, countEnd + SETTLE_BUFFER_FRAMES);
 
     for (let f = startIter; f <= endIter; f++) {
-      const digits = digitsAt(valueAt(f));
-      for (let i = 0; i < totalDigits; i++) {
-        stepSpringFrame(positions, velocities, i, digits[i], subDt);
+      if (hasSpin && f < countStart) {
+        // Free spin: roll each reel at a staggered constant speed, priming its
+        // velocity so the spring keeps rolling (then decelerates) at handoff.
+        for (let i = 0; i < totalDigits; i++) {
+          const sp = SPIN_SPEED * (1 + i * SPIN_STAGGER);
+          positions[i] += sp;
+          velocities[i] = sp * fps;
+        }
+      } else {
+        // Landing (spin → decelerate onto the final value) or, with no spin
+        // window, the normal count-up toward the eased value.
+        const digits = hasSpin ? finalDigits : digitsAt(valueAt(f));
+        for (let i = 0; i < totalDigits; i++) {
+          stepSpringFrame(positions, velocities, i, digits[i], subDt);
+        }
       }
     }
     // Normalize each spring position into [0, 10) for rendering.
     placeValues = positions.map((p) => ((p % 10) + 10) % 10);
+  } else if (spinWindow && frame >= spinWindow[0] && frame < countStart) {
+    // Snap mode, spin phase: cycle each digit per frame (no spring).
+    placeValues = Array.from({ length: totalDigits }, (_, i) =>
+      Math.floor((frame - spinWindow[0]) * (2 + i) + i * 3) % 10,
+    );
   } else {
     // Snap mode: no spring, no iteration. Just the current frame's digits.
     placeValues = digitsAt(valueAt(frame));
