@@ -16,6 +16,11 @@ import {
   swarmArenaModelCardDefaultProps,
   type SwarmArenaModelCardProps,
 } from "./compositions/swarm-arena-model-card/props";
+import { SwarmArenaLeaderboardCardComposition } from "./compositions/swarm-arena-leaderboard-card/composition";
+import {
+  swarmArenaLeaderboardCardDefaultProps,
+  type SwarmArenaLeaderboardCardProps,
+} from "./compositions/swarm-arena-leaderboard-card/props";
 import { SwarmIntroComposition } from "./compositions/swarm-intro/composition";
 import {
   swarmIntroDefaultProps,
@@ -71,6 +76,10 @@ const componentBindings: Record<string, ComponentBinding> = {
     component: SwarmArenaModelCardComposition,
     defaultProps: swarmArenaModelCardDefaultProps,
   } as ComponentBinding<SwarmArenaModelCardProps> as ComponentBinding,
+  "swarm-arena-leaderboard-card": {
+    component: SwarmArenaLeaderboardCardComposition,
+    defaultProps: swarmArenaLeaderboardCardDefaultProps,
+  } as ComponentBinding<SwarmArenaLeaderboardCardProps> as ComponentBinding,
   "swarm-intro": {
     component: SwarmIntroComposition,
     defaultProps: swarmIntroDefaultProps,

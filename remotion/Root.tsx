@@ -24,6 +24,8 @@ import { SwarmArenaModelCardComposition } from "./compositions/swarm-arena-model
 import { swarmArenaModelCardDefaultProps } from "./compositions/swarm-arena-model-card/props";
 import { ConsensusCardComposition } from "./compositions/consensus-card/composition";
 import { consensusCardDefaultProps } from "./compositions/consensus-card/props";
+import { SwarmArenaLeaderboardCardComposition } from "./compositions/swarm-arena-leaderboard-card/composition";
+import { swarmArenaLeaderboardCardDefaultProps } from "./compositions/swarm-arena-leaderboard-card/props";
 import { getMotionEntryMeta } from "./manifest";
 
 const perf = getMotionEntryMeta("performance-card")!;
@@ -31,6 +33,7 @@ const swarm = getMotionEntryMeta("swarm-card")!;
 const intro = getMotionEntryMeta("swarm-intro")!;
 const modelAnim = getMotionEntryMeta("swarm-arena-model-card")!;
 const consensus = getMotionEntryMeta("consensus-card")!;
+const leaderboardAnim = getMotionEntryMeta("swarm-arena-leaderboard-card")!;
 
 export const RemotionRoot: React.FC = () => {
   return (
@@ -84,6 +87,18 @@ export const RemotionRoot: React.FC = () => {
         width={consensus.width}
         height={consensus.height}
         defaultProps={consensusCardDefaultProps}
+      />
+      {/* Animated leaderboard in the model-card design (PR #30). Registered
+          here so it renders to PNG (settled frame) + MP4 via the CLI, fed the
+          live ranked deck by generate-swarm-cards (--card=leaderboard). */}
+      <Composition
+        id="swarm-arena-leaderboard-card"
+        component={SwarmArenaLeaderboardCardComposition}
+        durationInFrames={leaderboardAnim.durationInFrames}
+        fps={leaderboardAnim.fps}
+        width={leaderboardAnim.width}
+        height={leaderboardAnim.height}
+        defaultProps={swarmArenaLeaderboardCardDefaultProps}
       />
     </>
   );

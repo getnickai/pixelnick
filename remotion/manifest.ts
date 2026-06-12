@@ -71,6 +71,17 @@ export const motionManifest: MotionEntryMeta[] = [
     durationInFrames: 240,
   },
   {
+    // Animated leaderboard — frame chrome cascades in, then the ranking reveals
+    // bottom-up (last place first → #1 winner last), footer + spark after.
+    // ~7s @ 30fps: ~5.7s reveal + hold on the champion.
+    id: "swarm-arena-leaderboard-card",
+    label: "SwarmArena Leaderboard",
+    width: 650,
+    height: 1150,
+    fps: 30,
+    durationInFrames: 210,
+  },
+  {
     // SwarmArena intro sting, four acts (Figma 373:1485 → 376:1644 →
     // 376:1656 → model card): the mark fade-zooms in and docks into the
     // "Swarm Arena" lockup; the lockup exits left (the mark flying to the

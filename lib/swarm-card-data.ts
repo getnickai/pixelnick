@@ -5,6 +5,7 @@
  * so the surfaces can't drift.
  */
 import type { SwarmArenaModelCardData } from "@/components/swarm-arena-model-card";
+import type { SwarmArenaLeaderboardCardData } from "@/components/swarm-arena-leaderboard-card";
 import { identityFor } from "@/data/swarm-identity";
 import type { EngineAgent } from "@/data/swarm-output";
 
@@ -76,4 +77,36 @@ export function dedupeByHandle(agents: EngineAgent[]): EngineAgent[] {
     seen.add(a.handle);
     return true;
   });
+}
+
+/**
+ * Map the live deck's agents to the leaderboard card's data — dedupe colliding
+ * handles, rank by ROI, and resolve each agent's name/provider/logo/colour from
+ * the design-owned identity registry (same source as the model card). The
+ * background spark is the leader's equity curve. Header copy is fixed editorial
+ * (no live equivalent), matching the component's built-in sample.
+ */
+export function toLeaderboardData(
+  agents: EngineAgent[],
+): SwarmArenaLeaderboardCardData {
+  const ranked = dedupeByHandle(agents).sort((a, b) => b.roiPct - a.roiPct);
+  return {
+    eyebrow: "The LLM World Cup · Leaderboard",
+    title: "Which agent predicts the World Cup best?",
+    subtitle:
+      "8 LLMs built their trading strategy and compete live with a $1,000 real money portfolio.",
+    rows: ranked.map((a, i) => {
+      const logoFile = MODEL_LOGOS[a.handle];
+      return {
+        rank: i + 1,
+        name: identityFor(a.handle)?.short ?? a.short ?? a.label ?? a.handle,
+        provider: identityFor(a.handle)?.provider ?? "",
+        logo: logoFile ? `${MODELS_ASSET}/${logoFile}.svg` : undefined,
+        monogram: a.code,
+        monogramColor: a.color,
+        roiPct: a.roiPct,
+      };
+    }),
+    spark: ranked[0]?.spark,
+  };
 }
