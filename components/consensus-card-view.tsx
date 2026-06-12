@@ -356,19 +356,19 @@ export function ConsensusCardView({
           </div>
         </div>
 
-        {/* Teams VS */}
+        {/* Teams VS — badge stacked over the country name, VS aligned to the badges */}
         <div
-          className="flex items-center justify-between"
+          className="flex items-start justify-center gap-9"
           style={{ opacity: anim.teamsOpacity, transform: `translateY(${anim.teamsY}px)` }}
         >
-          <div className="flex items-center gap-3.5">
+          <div className="flex flex-1 flex-col items-center gap-2">
             <Crest code={data.homeCode} assetBase={assetBase} />
-            <span className="text-2xl font-semibold text-[#fff8ea]">{data.home}</span>
+            <span className="text-center text-2xl font-semibold leading-tight text-[#fff8ea]">{data.home}</span>
           </div>
-          <span className="font-mono text-base font-bold" style={{ color: FAINT }}>VS</span>
-          <div className="flex flex-row-reverse items-center gap-3.5">
+          <span className="mt-[26px] shrink-0 font-mono text-base font-bold" style={{ color: FAINT }}>VS</span>
+          <div className="flex flex-1 flex-col items-center gap-2">
             <Crest code={data.awayCode} assetBase={assetBase} />
-            <span className="text-2xl font-semibold text-[#fff8ea]">{data.away}</span>
+            <span className="text-center text-2xl font-semibold leading-tight text-[#fff8ea]">{data.away}</span>
           </div>
         </div>
 
