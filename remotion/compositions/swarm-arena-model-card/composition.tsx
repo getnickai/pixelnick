@@ -238,6 +238,7 @@ export const SwarmArenaModelCardComposition: React.FC<
       <SlidingDigitCount
         targetValue={Math.abs(data.pnlUsd)}
         countWindow={ANIM.pnlCount}
+        spinWindow={[40, ANIM.pnlCount[0]]}
         decimals={0}
         prefix={pos ? "+$" : "-$"}
         slide={slide}
@@ -247,6 +248,7 @@ export const SwarmArenaModelCardComposition: React.FC<
       <SlidingDigitCount
         targetValue={Math.abs(data.profitPct)}
         countWindow={ANIM.profitCount}
+        spinWindow={[54, ANIM.profitCount[0]]}
         decimals={2}
         suffix="%"
         slide={slide}
