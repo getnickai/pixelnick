@@ -35,6 +35,10 @@ const OUT = path.join(process.cwd(), "public", "swarm-arena-cards", "consensus.j
 const AGENTS = ["claude", "gpt", "gemini", "grok", "deepseek", "kimi", "minimax", "qwen"].map(
   (m) => `s1-match-reader-${m}`,
 );
+// Display-handle aliases. The backend R2 agent is still `s1-match-reader-minimax`
+// (rename pending with the agent team), but the brand is Mistral now — normalize
+// at this boundary so every downstream surface only ever sees MISTRAL.
+const HANDLE_ALIAS: Record<string, string> = { MINIMAX: "MISTRAL" };
 
 const client = s3Client();
 async function getJson<T>(key: string): Promise<T | null> {
@@ -135,7 +139,8 @@ async function main() {
   const positions: Pos[] = [];
   for (const agent of AGENTS) {
     const doc = await newestRun(agent);
-    const handle = agent.replace("s1-match-reader-", "").toUpperCase();
+    const rawHandle = agent.replace("s1-match-reader-", "").toUpperCase();
+    const handle = HANDLE_ALIAS[rawHandle] ?? rawHandle;
     if (!doc) {
       console.log(`  ${handle}: no run`);
       continue;

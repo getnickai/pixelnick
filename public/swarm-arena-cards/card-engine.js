@@ -653,7 +653,7 @@
      the swarm consensus (mean of the agents' fair_value, N of 8 + spread), and
      the edge between them. Fed by a record from scripts/swarm-consensus.ts. */
   const MARKET_PILL = { moneyline: "Who Wins", btts: "Both Teams to Score", totals: "Over / Under" };
-  const ALL_HANDLES = ["CLAUDE", "GPT", "GEMINI", "GROK", "DEEPSEEK", "KIMI", "MINIMAX", "QWEN"];
+  const ALL_HANDLES = ["CLAUDE", "GPT", "GEMINI", "GROK", "DEEPSEEK", "KIMI", "MISTRAL", "QWEN"];
   function renderMatchConsensusCard(rec, opts = {}) {
     const pct = (x) => Math.round(x * 100);
     const market = pct(rec.marketPrice), swarm = pct(rec.consensus);
@@ -689,7 +689,7 @@
       </div>`;
     const spread = rec.spread && rec.spread[0] !== rec.spread[1] ? ` · range ${pct(rec.spread[0])}–${pct(rec.spread[1])}%` : "";
 
-    // Per-agent reads. byHandle has codes/colors for known models; fall back for any not registered (e.g. MINIMAX).
+    // Per-agent reads. byHandle has codes/colors for known models; fall back for any not registered.
     const idOf = (h) => byHandle[h] || { handle: h, code: h.slice(0, 3), short: h.charAt(0) + h.slice(1).toLowerCase(), color: "#9a8f7e", kind: "llm" };
     const picks = new Map((rec.perAgent || []).map((a) => [a.handle, a.fairValue]));
 
