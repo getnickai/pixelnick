@@ -49,16 +49,21 @@ const ANIM = {
   tagWorld: [20, 32],
   avatar: [16, 30],
   modelName: [20, 46],
+  // PNL + Profit appear early as BLURRED placeholders (opacity in with the
+  // cascade), then focus in + roll up as the FINALE. metricBlur clears the blur
+  // and the count-ups are synced to it.
   pnlLabel: [32, 46],
-  pnlValue: [36, 48], // fade the value in as the count starts (no "+$0" flash)
-  pnlCount: [36, 78],
+  pnlValue: [36, 48], // opacity ramp for the blurred placeholder
   profitLabel: [46, 60],
-  profitOpacity: [50, 64], // arrow + value; starts with the count
-  profitCount: [50, 92],
+  profitOpacity: [50, 64], // arrow + value placeholder fade in (blurred)
+  metricBlur: [162, 206], // blur 14px → 0: the finale focus-in for both metrics
+  pnlCount: [162, 206], // slot-machine roll synced to the blur removal
+  profitCount: [162, 206],
   equity: [64, 82],
-  // Background equity curve — fades in and wipes left→right under the cascade.
-  sparkFade: [56, 76],
-  sparkReveal: [56, 104],
+  // Background equity curve — the closing flourish: starts ~0.5s (15f) before
+  // the blur lifts (metricBlur@162) and finishes LAST, once everything settled.
+  sparkFade: [138, 152],
+  sparkReveal: [147, 222],
   glassPanel: [78, 98],
   stat1: [94, 108],
   stat2: [98, 112],
@@ -200,10 +205,12 @@ export const SwarmArenaModelCardComposition: React.FC<
     modelNameY: rise(ANIM.modelName),
     pnlLabelOpacity: fade(ANIM.pnlLabel),
     pnlValueOpacity: fade(ANIM.pnlValue),
+    pnlBlur: (1 - fade(ANIM.metricBlur)) * 14,
     barScaleX: barPulseAmount,
     barScaleY: barScaleY * barPulseAmount,
     profitLabelOpacity: fade(ANIM.profitLabel),
     profitRowOpacity: fade(ANIM.profitOpacity),
+    profitBlur: (1 - fade(ANIM.metricBlur)) * 14,
     dividerOpacity: fade(ANIM.equity),
     equityOpacity: fade(ANIM.equity),
     equityY: rise(ANIM.equity),
