@@ -43,9 +43,10 @@ export function toCardData(
   const logoFile = MODEL_LOGOS[a.handle];
   const hasPick = a.pick && a.pick.side && a.pick.side !== "—";
   return {
-    // Versioned display name ("Kimi K2", "GPT-5.1") from the design-owned
-    // registry — the deck's `label` is the short headline ("Kimi").
-    name: identityFor(a.handle)?.label ?? a.label ?? a.short ?? a.handle,
+    // Meta model name only ("Gemini", "Kimi", "GPT") — NOT the version
+    // ("Gemini 3 Pro"). The design-owned registry's `short` is purpose-built
+    // for this; fall back to the deck's short fields.
+    name: identityFor(a.handle)?.short ?? a.short ?? a.label ?? a.handle,
     logo: logoFile ? `${MODELS_ASSET}/${logoFile}.svg` : undefined,
     monogram: a.code,
     monogramColor: a.color,

@@ -11,7 +11,7 @@ import {
 import { SlidingDigitCount } from "../_shared/sliding-digit-count";
 import {
   SAMPLE_MODEL_CARD,
-  type SwarmArenaModelCardData,
+  SparkChartPlot,
 } from "../../../components/swarm-arena-model-card";
 import type { SwarmArenaModelCardProps } from "./props";
 
@@ -53,12 +53,18 @@ const ANIM = {
   tagWorld: [20, 32],
   avatar: [16, 30],
   modelName: [20, 46],
-  pnlLabel: [32, 46],
-  pnlValue: [36, 48], // fade the value in as the count starts (no "+$0" flash)
-  pnlCount: [36, 78],
+  // Season PNL + Profit % are present from the start but BLURRED (unreadable
+  // placeholders) — both focus into legibility LAST (together), after the whole
+  // card has settled. `metricBlur` drives the shared finale focus-in.
+  pnlLabel: [30, 46],
+  pnlValue: [34, 50], // opacity ramp (the blurred placeholder fades in early)
+  metricBlur: [162, 206], // blur 14px → 0: the finale focus-in for both metrics
+  // Slot-machine count-ups are SYNCED to the blur-removal: the numbers roll up
+  // as they come into focus (not earlier, while still blurred).
+  pnlCount: [162, 206],
   profitLabel: [46, 60],
-  profitOpacity: [50, 64], // arrow + value; starts with the count
-  profitCount: [50, 92],
+  profitOpacity: [50, 64], // arrow + value fade in early (blurred placeholder)
+  profitCount: [162, 206], // synced to the blur-removal, same as PNL
   equity: [64, 82],
   glassPanel: [78, 98],
   stat1: [94, 108],
@@ -79,7 +85,7 @@ const ANIM = {
   tagDotSpringStart: 10,
   tagPillSpringStart: 15,
   avatarSpringStart: 18,
-  barSpringStart: 40,
+  barSpringStart: 40, // accent bar present early with the (blurred) PNL value
 } as const;
 
 /**
@@ -223,6 +229,31 @@ export const SwarmArenaModelCardComposition: React.FC<
         />
       </div>
 
+      {/* Background equity curve — mirrors the static card (the React
+          SparkChartPlot). Sits behind the content; the glass panel's
+          backdrop-blur frosts the part it overlaps. Fades in with the lower
+          section. (STA-417) */}
+      {data.spark && data.spark.length > 1 ? (
+        <div
+          className="pointer-events-none absolute inset-x-0 top-[700px]"
+          style={{ opacity: fade([138, 152]) }}
+        >
+          <SparkChartPlot
+            spark={data.spark}
+            accent={accent}
+            // The curve is the closing flourish: it STARTS drawing ~0.5s (15f)
+            // before the blur begins to fade (metricBlur starts at 162, so 147),
+            // draws through the blur-clear + number roll-up, and finishes LAST
+            // (~222) once everything else is settled.
+            progress={interpolate(frame, [147, 222], [0, 1], {
+              easing: Easing.out(Easing.cubic),
+              extrapolateLeft: "clamp",
+              extrapolateRight: "clamp",
+            })}
+          />
+        </div>
+      ) : null}
+
       {/* Header — Swarm Arena lockup */}
       <div
         className="absolute left-16 top-[57px] flex items-center gap-5"
@@ -319,7 +350,12 @@ export const SwarmArenaModelCardComposition: React.FC<
                 <div className="relative">
                   <p
                     className="font-heading text-[54px] font-semibold leading-none tracking-[1px]"
-                    style={{ opacity: fade(ANIM.pnlValue), color: accent }}
+                    style={{
+                      opacity: fade(ANIM.pnlValue),
+                      color: accent,
+                      // Blur 14px → 0 across the finale: the value focuses in.
+                      filter: `blur(${(1 - fade(ANIM.metricBlur)) * 14}px)`,
+                    }}
                   >
                     <SlidingDigitCount
                       targetValue={Math.abs(data.pnlUsd)}
@@ -351,7 +387,11 @@ export const SwarmArenaModelCardComposition: React.FC<
                 </p>
                 <div
                   className="flex items-center gap-4"
-                  style={{ opacity: fade(ANIM.profitOpacity) }}
+                  style={{
+                    opacity: fade(ANIM.profitOpacity),
+                    // Focus in last, together with the PNL value.
+                    filter: `blur(${(1 - fade(ANIM.metricBlur)) * 14}px)`,
+                  }}
                 >
                   <img
                     alt=""
@@ -509,7 +549,7 @@ export const SwarmArenaModelCardComposition: React.FC<
 
       {/* Footer — built-on credit */}
       <div
-        className="absolute left-[77px] top-[937px] flex w-[119.219px] flex-col gap-0.5"
+        className="absolute left-[77px] top-[997px] flex w-[119.219px] flex-col gap-0.5"
         style={upStyle(ANIM.builtOn, 10)}
       >
         <p className="font-mono text-[11.5px] font-normal uppercase leading-none tracking-[2px] text-[#7e7568]">
@@ -524,7 +564,7 @@ export const SwarmArenaModelCardComposition: React.FC<
 
       {/* Footer — CTA */}
       <div
-        className="absolute left-[314px] top-[933px] flex items-center gap-[9px] rounded-xl px-5 py-4 text-white shadow-[inset_0px_1px_1px_0px_rgba(255,255,255,0.6)]"
+        className="absolute left-[314px] top-[993px] flex items-center gap-[9px] rounded-xl px-5 py-4 text-white shadow-[inset_0px_1px_1px_0px_rgba(255,255,255,0.6)]"
         style={{
           backgroundImage:
             "linear-gradient(169.388deg, #f98051 17.138%, #e75218 89.208%)",

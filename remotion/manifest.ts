@@ -54,7 +54,9 @@ export const motionManifest: MotionEntryMeta[] = [
     id: "swarm-arena-model-card",
     label: "SwarmArena Model Card",
     width: 650,
-    height: 1050,
+    // 1110 to match the design source (components/swarm-arena-model-card.tsx is
+    // h-[1110px]); the animated mirror was authored 60px short. (STA-417)
+    height: 1110,
     fps: 30,
     durationInFrames: 240,
   },

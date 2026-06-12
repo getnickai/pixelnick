@@ -34,7 +34,7 @@ export type SwarmArenaModelCardData = {
 
 /** The Figma sample (GPT 5.5) — what /static renders, and the design baseline. */
 export const SAMPLE_MODEL_CARD: SwarmArenaModelCardData = {
-  name: "GPT 5.5",
+  name: "GPT",
   logo: `${MODELS_ASSET}/chatgpt.svg`,
   pnlUsd: 184,
   profitPct: 27.97,
@@ -114,14 +114,40 @@ const GRID_TICKS = 6;
 const tickXs = (n: number) =>
   Array.from({ length: n }, (_, i) => ((i + 0.5) / n) * SPARK_W);
 
-function SparkChartPlot({ spark, accent }: { spark: number[]; accent: string }) {
+export function SparkChartPlot({
+  spark,
+  accent,
+  progress = 1,
+}: {
+  spark: number[];
+  accent: string;
+  /** 0→1 progressive reveal — the curve builds period by period. 1 = full
+   *  (the static card's default; the motion composition animates it). */
+  progress?: number;
+}) {
   const min = Math.min(...spark);
   const max = Math.max(...spark);
   const range = max - min;
   const y = (v: number) =>
     range ? SPARK_BOT - ((v - min) / range) * (SPARK_BOT - SPARK_TOP) : (SPARK_TOP + SPARK_BOT) / 2;
   const pts = spark.map((v, i) => ({ x: (i / (spark.length - 1)) * SPARK_W, y: y(v) }));
-  const d = roundedSparkPath(pts, 30);
+
+  // Reveal the curve up to `progress` of the periods. The final segment is
+  // partially drawn (linear lerp to the in-between point) so it grows smoothly
+  // rather than snapping a whole segment at a time. y-scale uses the FULL spark
+  // so the curve doesn't rescale as it builds.
+  const p = Math.max(0, Math.min(1, progress));
+  const lastIdx = (pts.length - 1) * p;
+  const k = Math.floor(lastIdx);
+  const frac = lastIdx - k;
+  let vpts = pts.slice(0, k + 1);
+  if (k < pts.length - 1 && frac > 0) {
+    const a = pts[k];
+    const b = pts[k + 1];
+    vpts = [...vpts, { x: a.x + (b.x - a.x) * frac, y: a.y + (b.y - a.y) * frac }];
+  }
+  const endX = vpts.length ? vpts[vpts.length - 1].x : 0;
+  const d = vpts.length > 1 ? roundedSparkPath(vpts, 30) : "";
   const fillId = `sa-spark-${accent.replace("#", "")}`;
   return (
     <svg
@@ -151,8 +177,12 @@ function SparkChartPlot({ spark, accent }: { spark: number[]; accent: string }) 
           strokeDasharray="2 3"
         />
       ))}
-      <path d={`${d}L${SPARK_W},${SPARK_BOT}L0,${SPARK_BOT}Z`} fill={`url(#${fillId})`} />
-      <path d={d} stroke={accent} strokeOpacity="0.9" strokeWidth="2.5" strokeLinecap="round" />
+      {d ? (
+        <>
+          <path d={`${d}L${endX},${SPARK_BOT}L0,${SPARK_BOT}Z`} fill={`url(#${fillId})`} />
+          <path d={d} stroke={accent} strokeOpacity="0.9" strokeWidth="2.5" strokeLinecap="round" />
+        </>
+      ) : null}
     </svg>
   );
 }
