@@ -4,8 +4,8 @@ description: >-
   On-demand render of Swarm Arena share cards to MP4 (and PNG) from the live R2
   agent output, for download — NOT posted to Slack. Covers every Swarm Arena
   card design: agent cards (classic + the model-card design), the leaderboard
-  (classic + the model-design leaderboard), the match/Elo preview, and the
-  "Market vs Agents" consensus/games card. Use whenever Badi asks to "generate
+  (classic + the model-design leaderboard), and the "Market vs Agents"
+  consensus/games card (the design for game/match cards). Use whenever Badi asks to "generate
   an mp4", "make a video of the leaderboard", "render the consensus card for
   <game>", "render GROK as an mp4", "swarm arena card video", "do the games for
   today as mp4", or wants a downloadable clip of any Swarm Arena card. This is
@@ -70,28 +70,39 @@ committed `history/` dir — **use it for on-demand downloads.**
 | **Leaderboard — model design** (animated) | the ranking in the model-card design language; bottom-up reveal | `bun scripts/swarm-adapter.ts` then `bun scripts/generate-swarm-cards.ts --deck=public/swarm-arena-cards/live-deck.json --card=leaderboard --mp4 --no-archive --out=out/swarm-model` → `leaderboard-model.{png,mp4}` |
 | **Games — consensus "Market vs Agents"** (animated) | per-fixture/market; slot-machine + blur-edge reveal | `bun scripts/swarm-consensus.ts` then `bun scripts/render-consensus.ts --game="<substr>" [--market=btts\|totals\|moneyline] [--all] [--no-mp4] --out=out/consensus` |
 | **Agent — classic editorial** (broadcast still) | the original `swarm-card` engine agent card | `bun scripts/generate-swarm-cards.ts --slug=agent-<handle> --mp4 --no-archive` |
-| **Match — classic Elo preview** (still) | head-to-head Elo-only preview (no agent consensus) | per-fixture PNG: `bun scripts/generate-upcoming-cards.ts --n=5` · single from deck: `--slug=match` |
 | **Leaderboard — classic** (still) | the original engine leaderboard | `bun scripts/generate-swarm-cards.ts --slug=leaderboard --mp4 --no-archive` |
 
 - **Animated designs** (model card, model leaderboard, consensus) render their
   full native choreography for MP4 (the script plays `durationInFrames`, not
   `--seconds`). **Still designs** (classic agent/match/leaderboard) hold for
   `--seconds` (default 5).
-- The model card + model leaderboard are **agent/ranking only**; the classic
-  engine still owns the match still. Slugs: model agent = `model-<handle>`,
-  model leaderboard = `leaderboard-model`, consensus = `consensus-<market>-<homeCode>-<awayCode>`.
+- The model card + model leaderboard are **agent/ranking only**; game/match
+  cards are the consensus design (see below). Slugs: model agent =
+  `model-<handle>`, model leaderboard = `leaderboard-model`, consensus =
+  `consensus-<market>-<homeCode>-<awayCode>`.
 
-## Consensus / games card — honest-data rule
+## The games/match card IS the consensus card
+**For any game/match, always render the consensus "Market vs Agents" design**
+(the design built 2026-06-12, STA-421). The old classic Elo match-preview card
+(`swarm-card` "match" / `generate-upcoming-cards.ts`) is **deprecated — do not
+use it** for game cards, even as a fallback. Badi's standing instruction: the
+new consensus design is the only games card.
+
+### Honest-data rule (the catch)
 The consensus card is **Market vs Agents**: it only renders a game if the
 match-reader agents actually took positions on it. `swarm-consensus.ts`
 aggregates the 8 `s1-match-reader-<model>` agents' R2 runs; a fixture with **zero
-agent positions produces no record**, and `render-consensus.ts` will skip it
-with a warning. **Do not fabricate an agents side** — if a game isn't in
-`consensus.json`, the agents haven't covered it yet (they tend to pick up a
-fixture closer to kickoff). Example seen 2026-06-12: Canada vs Bosnia had zero
-coverage at midday while USA vs Paraguay had 6/8 — only the latter was
-renderable. When a requested game is missing, say so and offer the classic
-Elo match preview (honest, market/Elo-based) instead.
+agent positions produces no record**, and `render-consensus.ts` skips it with a
+warning. **Do not fabricate an agents side, and do not fall back to the old Elo
+card.** If a game isn't in `consensus.json`, the agents haven't covered it yet
+(they tend to pick up a fixture closer to kickoff) — say so and **re-check
+later**; the game simply isn't renderable until then. Example 2026-06-12: USA vs
+Paraguay had 6/8 agents and rendered; Canada vs Bosnia had zero coverage right up
+to ~1h before kickoff, so it had to wait (no substitute card).
+
+> Future enhancement worth proposing: give the consensus design an Elo-only
+> preview mode so no-coverage games can still render in the right look — which
+> would fully retire the old match card.
 
 `render-consensus.ts` selection: `--game=<substr>` (repeatable) matches on the
 record's `game`; with several markets per game it keeps the **highest-edge** one
