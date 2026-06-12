@@ -191,8 +191,50 @@ function codeToFlag(code: string): string {
   return String.fromCodePoint(...[...cc].map((c) => 0x1f1e6 + c.charCodeAt(0) - 65));
 }
 
-/** Shield crest — flag + code on a dark glass shield (match-card family). */
-function Crest({ code }: { code: string }) {
+/* ── Real-flag hexagon (Onur's national-team badge) ───────────────────────
+   The country's real flag (lipis/flag-icons, bundled locally under
+   `${assetBase}/flags` — no CDN, so the headless Remotion render can't race a
+   network load) cropped to COVER Onur's brand hexagon, with a hairline outline.
+   Falls back to the dark-glass shield crest when we have no flag mapping (clubs
+   / unknown nations — keeps the trademark-safe path). Mirrors Onur's
+   country-hex-flag.tsx, inlined because this module is bundled into Remotion's
+   webpack (no "@/" alias imports allowed). ── */
+
+// Pointy-top rounded hexagon (151×170 design units, brand asset).
+const HEX_VB_W = 151;
+const HEX_VB_H = 170;
+const HEX_PATH =
+  "M68.4685 1.84235C72.7232 -0.614116 77.9652 -0.614119 82.22 1.84235L143.813 37.4029C148.067 39.8594 150.688 44.3991 150.688 49.3121V120.433C150.688 125.346 148.067 129.886 143.813 132.342L82.22 167.903C77.9652 170.359 72.7232 170.359 68.4685 167.903L6.87576 132.342C2.62103 129.886 0 125.346 0 120.433V49.3121C0 44.3991 2.62102 39.8594 6.87575 37.4029L68.4685 1.84235Z";
+// Document-wide clip id: the hex clip is identical for every flag, so one
+// shared id is safe even with multiple crests on the card.
+const HEX_CLIP_ID = "consensus-hex-clip";
+
+// Slugs we actually bundled under `${assetBase}/flags` (lipis/flag-icons 1x1).
+// Gating on this set means an unrecognized code falls back to the shield
+// instead of emitting a 404'd flag (blank hexagon).
+const AVAILABLE_FLAGS = new Set(
+  ("ad ae af ag ai al am ao aq ar arab as asean at au aw ax az ba bb bd be bf bg bh bi bj bl bm bn bo bq br bs bt bv bw by bz ca cc cd cefta cf cg ch ci ck cl cm cn co cp cr cu cv cw cx cy cz de dg dj dk dm do dz eac ec ee eg eh er es es-ct es-ga es-pv et eu fi fj fk fm fo fr ga gb gb-eng gb-nir gb-sct gb-wls gd ge gf gg gh gi gl gm gn gp gq gr gs gt gu gw gy hk hm hn hr ht hu ic id ie il im in io iq ir is it je jm jo jp ke kg kh ki km kn kp kr kw ky kz la lb lc li lk lr ls lt lu lv ly ma mc md me mf mg mh mk ml mm mn mo mp mq mr ms mt mu mv mw mx my mz na nc ne nf ng ni nl no np nr nu nz om pa pc pe pf pg ph pk pl pm pn pr ps pt pw py qa re ro rs ru rw sa sb sc sd se sg sh sh-ac sh-hl sh-ta si sj sk sl sm sn so sr ss st sv sx sy sz tc td tf tg th tj tk tl tm tn to tr tt tv tw tz ua ug um un us uy uz va vc ve vg vi vn vu wf ws xk xx ye yt za zm zw").split(" ")
+);
+
+/** Resolve a team code to a bundled flag slug, or "" to fall back to the shield. */
+function flagSlug(rawCode: string): string {
+  const c = (rawCode || "").toUpperCase();
+  let key = c;
+  if (c === "USA") key = "US";
+  else if (c === "CHN") key = "CN";
+  else if (c === "FRA") key = "FR";
+  else if (c === "SCT" || c === "SC") key = "GB-SCT";
+  else if (c === "ENG" || c === "EN") key = "GB";
+  let slug: string;
+  if (key === "GB") slug = "gb-eng"; // England, not the Union Jack
+  else if (key === "GB-SCT") slug = "gb-sct";
+  else if (/^[A-Z]{2}$/.test(key)) slug = key.toLowerCase();
+  else return ""; // clubs / 3-letter → shield
+  return AVAILABLE_FLAGS.has(slug) ? slug : ""; // unknown ISO-2 → shield
+}
+
+/** Dark-glass shield crest — emoji flag + code. The fallback when no real flag. */
+function ShieldCrest({ code }: { code: string }) {
   const flag = codeToFlag(code);
   const gid = `crest-${code}`;
   return (
@@ -216,6 +258,43 @@ function Crest({ code }: { code: string }) {
         <span className="font-mono text-[10px] font-bold tracking-wide text-[#fff8ea]">{code}</span>
       </div>
     </div>
+  );
+}
+
+/** Team badge: real flag in Onur's hexagon when we have one, else the shield. */
+function Crest({ code, assetBase }: { code: string; assetBase: string }) {
+  const slug = flagSlug(code);
+  if (!slug) return <ShieldCrest code={code} />;
+  const w = 68;
+  const h = Math.round((w * HEX_VB_H) / HEX_VB_W); // keep the 151:170 aspect
+  return (
+    <span
+      className="relative block shrink-0"
+      style={{ width: w, height: h }}
+      role="img"
+      aria-label={`${code} team`}
+    >
+      {/* Shared scalable hex clip — normalized to the element's bounding box. */}
+      <svg width="0" height="0" className="absolute" aria-hidden>
+        <defs>
+          <clipPath id={HEX_CLIP_ID} clipPathUnits="objectBoundingBox">
+            <path d={HEX_PATH} transform={`scale(${1 / HEX_VB_W} ${1 / HEX_VB_H})`} />
+          </clipPath>
+        </defs>
+      </svg>
+      <img
+        alt=""
+        src={`${assetBase}/flags/${slug}.svg`}
+        width={w}
+        height={h}
+        className="block size-full object-cover"
+        style={{ clipPath: `url(#${HEX_CLIP_ID})`, WebkitClipPath: `url(#${HEX_CLIP_ID})` }}
+      />
+      {/* Hairline outline, light to read on the card's near-black surface. */}
+      <svg viewBox={`0 0 ${HEX_VB_W} ${HEX_VB_H}`} className="pointer-events-none absolute inset-0 size-full" aria-hidden>
+        <path d={HEX_PATH} fill="none" stroke="rgba(255,248,234,0.28)" strokeWidth="3" />
+      </svg>
+    </span>
   );
 }
 
@@ -277,19 +356,19 @@ export function ConsensusCardView({
           </div>
         </div>
 
-        {/* Teams VS */}
+        {/* Teams VS — badge stacked over the country name, VS aligned to the badges */}
         <div
-          className="flex items-center justify-between"
+          className="flex items-start justify-center gap-9"
           style={{ opacity: anim.teamsOpacity, transform: `translateY(${anim.teamsY}px)` }}
         >
-          <div className="flex items-center gap-3.5">
-            <Crest code={data.homeCode} />
-            <span className="text-2xl font-semibold text-[#fff8ea]">{data.home}</span>
+          <div className="flex flex-1 flex-col items-center gap-2">
+            <Crest code={data.homeCode} assetBase={assetBase} />
+            <span className="text-center text-2xl font-semibold leading-tight text-[#fff8ea]">{data.home}</span>
           </div>
-          <span className="font-mono text-base font-bold" style={{ color: FAINT }}>VS</span>
-          <div className="flex flex-row-reverse items-center gap-3.5">
-            <Crest code={data.awayCode} />
-            <span className="text-2xl font-semibold text-[#fff8ea]">{data.away}</span>
+          <span className="mt-[26px] shrink-0 font-mono text-base font-bold" style={{ color: FAINT }}>VS</span>
+          <div className="flex flex-1 flex-col items-center gap-2">
+            <Crest code={data.awayCode} assetBase={assetBase} />
+            <span className="text-center text-2xl font-semibold leading-tight text-[#fff8ea]">{data.away}</span>
           </div>
         </div>
 
