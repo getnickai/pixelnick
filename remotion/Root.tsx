@@ -22,12 +22,15 @@ import { SwarmIntroComposition } from "./compositions/swarm-intro/composition";
 import { swarmIntroDefaultProps } from "./compositions/swarm-intro/props";
 import { SwarmArenaModelCardComposition } from "./compositions/swarm-arena-model-card/composition";
 import { swarmArenaModelCardDefaultProps } from "./compositions/swarm-arena-model-card/props";
+import { ConsensusCardComposition } from "./compositions/consensus-card/composition";
+import { consensusCardDefaultProps } from "./compositions/consensus-card/props";
 import { getMotionEntryMeta } from "./manifest";
 
 const perf = getMotionEntryMeta("performance-card")!;
 const swarm = getMotionEntryMeta("swarm-card")!;
 const intro = getMotionEntryMeta("swarm-intro")!;
 const modelAnim = getMotionEntryMeta("swarm-arena-model-card")!;
+const consensus = getMotionEntryMeta("consensus-card")!;
 
 export const RemotionRoot: React.FC = () => {
   return (
@@ -71,6 +74,16 @@ export const RemotionRoot: React.FC = () => {
         width={modelAnim.width}
         height={modelAnim.height}
         defaultProps={swarmArenaModelCardDefaultProps}
+      />
+      {/* Animated Market-vs-Agents consensus card (STA-421). */}
+      <Composition
+        id="consensus-card"
+        component={ConsensusCardComposition}
+        durationInFrames={consensus.durationInFrames}
+        fps={consensus.fps}
+        width={consensus.width}
+        height={consensus.height}
+        defaultProps={consensusCardDefaultProps}
       />
     </>
   );
