@@ -21,6 +21,11 @@ import {
   swarmIntroDefaultProps,
   type SwarmIntroProps,
 } from "./compositions/swarm-intro/props";
+import { ConsensusCardComposition } from "./compositions/consensus-card/composition";
+import {
+  consensusCardDefaultProps,
+  type ConsensusCardProps,
+} from "./compositions/consensus-card/props";
 import {
   motionManifest,
   type MotionEntryMeta,
@@ -70,6 +75,10 @@ const componentBindings: Record<string, ComponentBinding> = {
     component: SwarmIntroComposition,
     defaultProps: swarmIntroDefaultProps,
   } as ComponentBinding<SwarmIntroProps> as ComponentBinding,
+  "consensus-card": {
+    component: ConsensusCardComposition,
+    defaultProps: consensusCardDefaultProps,
+  } as ComponentBinding<ConsensusCardProps> as ComponentBinding,
 };
 
 export const motionRegistry: MotionEntry[] = motionManifest

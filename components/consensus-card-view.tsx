@@ -329,9 +329,9 @@ export function ConsensusCardView({
                 <>
                   {data.edgePp > 0 ? "+" : ""}
                   {data.edgePp}
-                  <span className="text-[15px] font-bold">pp</span>
                 </>
               )}
+              <span className="text-[15px] font-bold">pp</span>
             </span>
           </div>
         </div>

@@ -60,6 +60,17 @@ export const motionManifest: MotionEntryMeta[] = [
     durationInFrames: 240,
   },
   {
+    // Animated Market-vs-Agents consensus card — drives the React
+    // ConsensusCardView via its anim contract. Cascade in + the edge "agents
+    // see value" reveal (blurred slot-spin → blur lifts → reels land). 8s.
+    id: "consensus-card",
+    label: "Consensus Card",
+    width: 650,
+    height: 1110,
+    fps: 30,
+    durationInFrames: 240,
+  },
+  {
     // SwarmArena intro sting, four acts (Figma 373:1485 → 376:1644 →
     // 376:1656 → model card): the mark fade-zooms in and docks into the
     // "Swarm Arena" lockup; the lockup exits left (the mark flying to the
