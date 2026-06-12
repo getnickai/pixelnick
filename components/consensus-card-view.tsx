@@ -97,6 +97,8 @@ export type ConsensusCardAnim = {
   edgeOpacity: number;
   /** Blur (px) on the edge number — focus-in reveal. */
   edgeBlur: number;
+  /** Whole histogram block (track + ghost bars + agent labels) fade-in. */
+  breakdownOpacity: number;
   breakdownLabelOpacity: number;
   /** Histogram reveal: bars grow from baseline (0..1) + market line draw (0..1). */
   histBarsPct: number;
@@ -125,6 +127,7 @@ export const SETTLED_CONSENSUS_ANIM: ConsensusCardAnim = {
   swarmBarPct: 1,
   edgeOpacity: 1,
   edgeBlur: 0,
+  breakdownOpacity: 1,
   breakdownLabelOpacity: 1,
   histBarsPct: 1,
   marketLinePct: 1,
@@ -337,7 +340,7 @@ export function ConsensusCardView({
         </div>
 
         {/* Per-agent histogram breakdown */}
-        <div>
+        <div style={{ opacity: anim.breakdownOpacity }}>
           <div
             className="mb-3 text-center font-mono text-xs font-semibold uppercase tracking-[0.14em]"
             style={{ color: DIM, opacity: anim.breakdownLabelOpacity }}

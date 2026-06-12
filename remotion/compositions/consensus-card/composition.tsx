@@ -38,6 +38,7 @@ const ANIM = {
   panel: [46, 66],
   bars: [60, 96], // Market + Swarm bars grow
   edgeRow: [72, 90], // edge callout box fades in
+  breakdownAppear: [76, 92], // empty histogram track fades in ~1s before it fills
   breakdownLabel: [98, 112],
   hist: [106, 152], // histogram bars grow + market line draws
   footer: [150, 168],
@@ -90,6 +91,7 @@ export const ConsensusCardComposition: React.FC<ConsensusCardProps> = ({
     swarmBarPct: fade(ANIM.bars),
     edgeOpacity: fade(ANIM.edgeRow),
     edgeBlur: (1 - fade(ANIM.edgeBlur)) * 14,
+    breakdownOpacity: fade(ANIM.breakdownAppear),
     breakdownLabelOpacity: fade(ANIM.breakdownLabel),
     histBarsPct: fade(ANIM.hist),
     marketLinePct: fade(ANIM.hist),
