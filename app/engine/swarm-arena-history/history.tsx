@@ -10,9 +10,11 @@
  * yet, so the upcoming-games and leaderboard sections stay behind in the
  * static page for now.
  */
-import { useCallback, useEffect, useMemo, useRef, useState } from "react";
+import { useCallback, useEffect, useMemo, useRef, useState, type ReactNode } from "react";
 import { Check, ChevronDown, Download, RefreshCw } from "lucide-react";
 import SwarmArenaModelCard from "@/components/swarm-arena-model-card";
+import SwarmArenaLeaderboardCard from "@/components/swarm-arena-leaderboard-card";
+import ConsensusCard, { type ConsensusCardData } from "@/components/consensus-card-view";
 import { Button } from "@/components/ui/button";
 import {
   DropdownMenu,
@@ -27,12 +29,76 @@ import {
   MODEL_CARD_W,
   dedupeByHandle,
   toCardData,
+  toLeaderboardData,
 } from "@/lib/swarm-card-data";
 import { cn } from "@/lib/utils";
 
+const LEADERBOARD_W = 650;
+const LEADERBOARD_H = 1150;
+
+/** /api/swarm-upcoming fixture shape (the fields the card needs). */
+type UpcomingGame = {
+  home: { name: string; code: string };
+  away: { name: string; code: string };
+  competition?: string;
+  stage?: string;
+  venue?: string;
+  kickoff?: string;
+  odds: { homePct: number; drawPct: number; awayPct: number; hasElo: boolean };
+  elo: { home: number | null; away: number | null };
+};
+
+/** Elo-only preview ConsensusCardData for a fixture the agents haven't traded. */
+function previewFromGame(g: UpcomingGame): ConsensusCardData {
+  const { homePct: h, drawPct: d, awayPct: a } = g.odds;
+  const fav = Math.max(h, d, a);
+  const modelRead =
+    fav === d
+      ? `Too close to call — the draw leads at ${d}%.`
+      : `${fav === h ? g.home.name : g.away.name} favoured at ${fav}%, but ${d}% says the draw is in play.`;
+  return {
+    home: g.home.name,
+    away: g.away.name,
+    homeCode: g.home.code,
+    awayCode: g.away.code,
+    competition: g.competition,
+    stage: g.stage,
+    venue: g.venue,
+    kickoff: g.kickoff,
+    marketType: "moneyline",
+    selection: "Home",
+    line: null,
+    marketPrice: 0,
+    consensus: 0,
+    edgePp: 0,
+    agentsN: 0,
+    agentsTotal: 0,
+    perAgent: [],
+    preview: true,
+    winProb: { home: h / 100, draw: d / 100, away: a / 100 },
+    elo:
+      g.elo.home != null && g.elo.away != null
+        ? { home: g.elo.home, away: g.elo.away }
+        : undefined,
+    modelRead,
+  };
+}
+
+/** Highest-edge consensus record matching a fixture (by team codes), else null. */
+function matchConsensus(
+  records: ConsensusCardData[],
+  g: UpcomingGame,
+): ConsensusCardData | null {
+  const hits = records.filter(
+    (r) =>
+      r.homeCode?.toUpperCase() === g.home.code.toUpperCase() &&
+      r.awayCode?.toUpperCase() === g.away.code.toUpperCase(),
+  );
+  if (!hits.length) return null;
+  return [...hits].sort((x, y) => (y.edgePp ?? 0) - (x.edgePp ?? 0))[0];
+}
+
 const THUMB_SCALE = 0.44;
-const THUMB_W = Math.round(MODEL_CARD_W * THUMB_SCALE);
-const THUMB_H = Math.round(MODEL_CARD_H * THUMB_SCALE);
 
 type DeckResponse = {
   at?: string | null;
@@ -52,33 +118,30 @@ const deckCache = new Map<string, { deck: DeckResponse; fetchedAt: number }>();
  *  this (mirrors the API's own `max-age=30`). */
 const LIVE_STALE_MS = 30_000;
 
-/** One gallery cell: scaled card thumb + caption row with a PNG export. */
+/** One gallery cell: a card scaled to a thumb + caption row with a PNG export.
+ *  Card-agnostic — pass any 650×H card node as children. */
 function CardCell({
-  agent,
-  rank,
-  rankOf,
-  period,
+  slug,
+  caption,
+  width,
+  height,
+  children,
 }: {
-  agent: EngineAgent;
-  rank: number;
-  rankOf: number;
-  period: string;
+  slug: string;
+  caption: string;
+  width: number;
+  height: number;
+  children: ReactNode;
 }) {
   const cardRef = useRef<HTMLDivElement>(null);
   const [busy, setBusy] = useState(false);
-  const card = toCardData(agent, rank, rankOf);
 
   const download = async () => {
     const node = cardRef.current;
     if (!node || busy) return;
     setBusy(true);
     try {
-      await exportStaticVisual(node, {
-        id: `agent-${agent.handle.toLowerCase()}-${period}`,
-        width: MODEL_CARD_W,
-        height: MODEL_CARD_H,
-        format: "png",
-      });
+      await exportStaticVisual(node, { id: slug, width, height, format: "png" });
     } catch (err) {
       alert(
         `In-browser PNG export failed (${err instanceof Error ? err.message : err}).`,
@@ -92,22 +155,22 @@ function CardCell({
     <div className="flex flex-col gap-2.5">
       <div
         className="relative overflow-hidden rounded-2xl border border-sidebar-border"
-        style={{ width: THUMB_W, height: THUMB_H }}
+        style={{ width: Math.round(width * THUMB_SCALE), height: Math.round(height * THUMB_SCALE) }}
       >
-        {/* The card renders at its native 650×1110; the wrapper scales it down.
-            The export captures this node with the transform neutralised, so
+        {/* The card renders at its native size; the wrapper scales it down. The
+            export captures this node with the transform neutralised, so
             downloads are full resolution. */}
         <div
           ref={cardRef}
           className="absolute left-0 top-0 origin-top-left"
           style={{ transform: `scale(${THUMB_SCALE})` }}
         >
-          <SwarmArenaModelCard data={card} />
+          {children}
         </div>
       </div>
       <div className="flex items-center justify-between gap-2 px-0.5">
         <span className="truncate text-xs font-medium text-zinc-300">
-          {card.name}
+          {caption}
         </span>
         <button
           onClick={download}
@@ -237,8 +300,38 @@ export function SwarmArenaHistory() {
     return () => clearInterval(timer);
   }, [when]);
 
+  // Upcoming fixtures (live, from the mirror) + the consensus snapshot (static
+  // consensus.json, refreshed on deploy). Each upcoming game renders the
+  // consensus card: the full Market-vs-Agents body if the agents cover it,
+  // otherwise the same design in Elo preview mode.
+  const [upcoming, setUpcoming] = useState<UpcomingGame[]>([]);
+  const [consensus, setConsensus] = useState<ConsensusCardData[]>([]);
+  useEffect(() => {
+    const ctrl = new AbortController();
+    fetch("/api/swarm-upcoming", { cache: "no-store", signal: ctrl.signal })
+      .then((r) => (r.ok ? r.json() : Promise.reject(`upcoming ${r.status}`)))
+      .then((d: { games?: UpcomingGame[] }) => setUpcoming(d.games ?? []))
+      .catch(() => {});
+    fetch("/swarm-arena-cards/consensus.json", { cache: "no-store", signal: ctrl.signal })
+      .then((r) => (r.ok ? r.json() : Promise.reject(`consensus ${r.status}`)))
+      .then((d: { records?: ConsensusCardData[] }) => setConsensus(d.records ?? []))
+      .catch(() => {});
+    return () => ctrl.abort();
+  }, [tick]);
+
   const agents = deck ? dedupeByHandle(deck.agents) : [];
   const period = deck?.at ? deck.at.slice(0, 10) : "live";
+  // One card per upcoming fixture: full consensus where covered, else Elo preview.
+  // Skip fixtures with neither agent coverage nor Elo (nothing real to show).
+  const upcomingCards = upcoming
+    .map((g) => {
+      const rec = matchConsensus(consensus, g);
+      if (rec) return { slug: `consensus-${g.home.code}-${g.away.code}`.toLowerCase(), caption: `${g.home.name} vs ${g.away.name}`, data: rec };
+      if (g.odds.hasElo) return { slug: `preview-${g.home.code}-${g.away.code}`.toLowerCase(), caption: `${g.home.name} vs ${g.away.name}`, data: previewFromGame(g) };
+      return null;
+    })
+    .filter((x): x is { slug: string; caption: string; data: ConsensusCardData } => x !== null);
+  const leaderboardData = agents.length ? toLeaderboardData(agents) : null;
   const timelineOptions = useMemo(
     () => [
       { value: "", label: "Live (now)" },
@@ -323,16 +416,70 @@ export function SwarmArenaHistory() {
       {/* Gallery */}
       <div className="min-h-0 flex-1 overflow-y-auto">
         {agents.length ? (
-          <div className="grid gap-7 p-6 [grid-template-columns:repeat(auto-fill,minmax(286px,1fr))]">
-            {agents.map((a, i) => (
-              <CardCell
-                key={a.handle}
-                agent={a}
-                rank={i + 1}
-                rankOf={agents.length}
-                period={period}
-              />
-            ))}
+          <div className="flex flex-col gap-8 p-6">
+            {/* Leaderboard */}
+            {leaderboardData ? (
+              <section className="flex flex-col gap-3">
+                <h2 className="font-mono text-[11px] font-semibold uppercase tracking-[0.14em] text-muted-foreground">
+                  Leaderboard
+                </h2>
+                <div className="grid gap-7 [grid-template-columns:repeat(auto-fill,minmax(286px,1fr))]">
+                  <CardCell
+                    slug={`leaderboard-${period}`}
+                    caption="Leaderboard"
+                    width={LEADERBOARD_W}
+                    height={LEADERBOARD_H}
+                  >
+                    <SwarmArenaLeaderboardCard data={leaderboardData} />
+                  </CardCell>
+                </div>
+              </section>
+            ) : null}
+
+            {/* Upcoming games — full consensus where agents cover it, else Elo preview */}
+            {upcomingCards.length ? (
+              <section className="flex flex-col gap-3">
+                <h2 className="font-mono text-[11px] font-semibold uppercase tracking-[0.14em] text-muted-foreground">
+                  Upcoming games
+                </h2>
+                <div className="grid gap-7 [grid-template-columns:repeat(auto-fill,minmax(286px,1fr))]">
+                  {upcomingCards.map((c) => (
+                    <CardCell
+                      key={c.slug}
+                      slug={c.slug}
+                      caption={c.caption}
+                      width={MODEL_CARD_W}
+                      height={MODEL_CARD_H}
+                    >
+                      <ConsensusCard data={c.data} />
+                    </CardCell>
+                  ))}
+                </div>
+              </section>
+            ) : null}
+
+            {/* Agents */}
+            <section className="flex flex-col gap-3">
+              <h2 className="font-mono text-[11px] font-semibold uppercase tracking-[0.14em] text-muted-foreground">
+                Agents
+              </h2>
+              <div className="grid gap-7 [grid-template-columns:repeat(auto-fill,minmax(286px,1fr))]">
+                {agents.map((a, i) => {
+                  const card = toCardData(a, i + 1, agents.length);
+                  return (
+                    <CardCell
+                      key={a.handle}
+                      slug={`agent-${a.handle.toLowerCase()}-${period}`}
+                      caption={card.name}
+                      width={MODEL_CARD_W}
+                      height={MODEL_CARD_H}
+                    >
+                      <SwarmArenaModelCard data={card} />
+                    </CardCell>
+                  );
+                })}
+              </div>
+            </section>
           </div>
         ) : (
           <div className="flex h-full items-center justify-center">
