@@ -46,7 +46,7 @@ export type SwarmArenaModelCardData = {
 
 /** The Figma sample (GPT 5.5) — what /static renders, and the design baseline. */
 export const SAMPLE_MODEL_CARD: SwarmArenaModelCardData = {
-  name: "GPT 5.5",
+  name: "GPT",
   logo: `${MODELS_ASSET}/chatgpt.svg`,
   pnlUsd: 184,
   profitPct: 27.97,
@@ -95,11 +95,15 @@ export type SwarmArenaModelCardAnim = {
   modelNameY: number;
   pnlLabelOpacity: number;
   pnlValueOpacity: number;
+  /** Blur (px) on the PNL value — held high, then cleared for the focus-in reveal. */
+  pnlBlur: number;
   /** Accent bar next to the PNL value (the composition adds a breathe pulse). */
   barScaleX: number;
   barScaleY: number;
   profitLabelOpacity: number;
   profitRowOpacity: number;
+  /** Blur (px) on the Profit row — focus-in reveal, in sync with the PNL value. */
+  profitBlur: number;
   /** 0..1 progress — the view multiplies by the divider's resting 0.12. */
   dividerOpacity: number;
   equityOpacity: number;
@@ -149,10 +153,12 @@ export const SETTLED_MODEL_CARD_ANIM: SwarmArenaModelCardAnim = {
   modelNameY: 0,
   pnlLabelOpacity: 1,
   pnlValueOpacity: 1,
+  pnlBlur: 0,
   barScaleX: 1,
   barScaleY: 1,
   profitLabelOpacity: 1,
   profitRowOpacity: 1,
+  profitBlur: 0,
   dividerOpacity: 1,
   equityOpacity: 1,
   equityY: 0,
@@ -424,7 +430,11 @@ export function SwarmArenaModelCardView({
                 <div className="relative">
                   <p
                     className="font-heading text-[54px] font-semibold leading-none tracking-[1px]"
-                    style={{ opacity: anim.pnlValueOpacity, color: accent }}
+                    style={{
+                      opacity: anim.pnlValueOpacity,
+                      color: accent,
+                      filter: `blur(${anim.pnlBlur}px)`,
+                    }}
                   >
                     {anim.pnlNode ?? (
                       <>
@@ -455,7 +465,7 @@ export function SwarmArenaModelCardView({
                 </p>
                 <div
                   className="flex items-center gap-4"
-                  style={{ opacity: anim.profitRowOpacity }}
+                  style={{ opacity: anim.profitRowOpacity, filter: `blur(${anim.profitBlur}px)` }}
                 >
                   <img
                     alt=""
