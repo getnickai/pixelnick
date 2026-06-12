@@ -88,21 +88,27 @@ committed `history/` dir — **use it for on-demand downloads.**
 use it** for game cards, even as a fallback. Badi's standing instruction: the
 new consensus design is the only games card.
 
-### Honest-data rule (the catch)
-The consensus card is **Market vs Agents**: it only renders a game if the
-match-reader agents actually took positions on it. `swarm-consensus.ts`
+### Two modes of the SAME design (consensus vs Elo preview)
+The consensus card is **Market vs Agents**, so the full body only renders when
+the match-reader agents have taken a position on the game. `swarm-consensus.ts`
 aggregates the 8 `s1-match-reader-<model>` agents' R2 runs; a fixture with **zero
-agent positions produces no record**, and `render-consensus.ts` skips it with a
-warning. **Do not fabricate an agents side, and do not fall back to the old Elo
-card.** If a game isn't in `consensus.json`, the agents haven't covered it yet
-(they tend to pick up a fixture closer to kickoff) — say so and **re-check
-later**; the game simply isn't renderable until then. Example 2026-06-12: USA vs
-Paraguay had 6/8 agents and rendered; Canada vs Bosnia had zero coverage right up
-to ~1h before kickoff, so it had to wait (no substitute card).
+agent positions produces no consensus record**.
 
-> Future enhancement worth proposing: give the consensus design an Elo-only
-> preview mode so no-coverage games can still render in the right look — which
-> would fully retire the old match card.
+**When a game has no agent coverage, render the SAME design in its Elo preview
+mode** — never fabricate an agents side, and never fall back to the old card:
+
+```bash
+bun scripts/render-consensus.ts --preview-game="<substr>" --out=out/consensus
+```
+
+This pulls the fixture + Elo from `/api/swarm-upcoming` and renders the
+consensus card's **preview branch** (`data.preview`): same shell/crests/footer,
+but the body is a 3-way win-probability panel + both teams' Elo ratings + an
+honest "agent picks land closer to kickoff" note (slug
+`consensus-preview-<homeCode>-<awayCode>`). Use the normal `--game=` path the
+moment the agents cover it (check `consensus.json`). Example 2026-06-12: USA vs
+Paraguay had 6/8 agents → full consensus card; Canada vs Bosnia had zero coverage
+to kickoff → Elo preview of the same design.
 
 `render-consensus.ts` selection: `--game=<substr>` (repeatable) matches on the
 record's `game`; with several markets per game it keeps the **highest-edge** one

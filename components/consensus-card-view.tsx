@@ -47,6 +47,21 @@ export type ConsensusCardData = {
   agentsN: number;
   agentsTotal: number;
   perAgent: ConsensusAgentRead[];
+  /**
+   * Elo-only PREVIEW mode. Set when the match-reader agents haven't taken a
+   * position on this fixture yet (no consensus to show). The card keeps its
+   * visual language but swaps the Market-vs-Agents body for an honest Elo read:
+   * 3-way win probability + both teams' Elo ratings + a one-line model read.
+   * When `preview` is true the consensus fields above (marketPrice, consensus,
+   * edgePp, perAgent…) are ignored.
+   */
+  preview?: boolean;
+  /** Elo-implied 3-way win probability, 0..1 (preview mode). */
+  winProb?: { home: number; draw: number; away: number };
+  /** Both teams' Elo ratings (preview mode). */
+  elo?: { home: number; away: number };
+  /** One-line honest read derived from the probabilities (preview mode). */
+  modelRead?: string;
 };
 
 /** Sample (Germany v Curaçao BTTS) — what /static renders, and the baseline. */
@@ -307,10 +322,12 @@ export function ConsensusCardView({
   assetBase?: string;
   anim?: ConsensusCardAnim;
 }) {
+  const isPreview = !!data.preview;
   const market = pct(data.marketPrice);
   const swarm = pct(data.consensus);
   const { question, answer } = betCopy(data);
   const picks = new Map(data.perAgent.map((a) => [a.handle, a.fairValue]));
+  const wp = data.winProb ?? { home: 0, draw: 0, away: 0 };
   const HIST_H = 170; // px — histogram track height
   const rangeTxt =
     data.spread && data.spread[0] !== data.spread[1]
@@ -340,7 +357,7 @@ export function ConsensusCardView({
             className="rounded-full bg-[#8bce6c] px-4 py-1.5 text-sm font-bold uppercase tracking-wide text-[#161210]"
             style={{ opacity: anim.pillOpacity, transform: `scale(${anim.pillScale})` }}
           >
-            {MARKET_PILL[data.marketType] ?? "Market vs Swarm"}
+            {isPreview ? "Match Preview" : MARKET_PILL[data.marketType] ?? "Market vs Swarm"}
           </div>
         </div>
 
@@ -372,6 +389,72 @@ export function ConsensusCardView({
           </div>
         </div>
 
+        {/* ── PREVIEW (Elo-only) body: no agent consensus yet ───────────── */}
+        {isPreview && (
+          <>
+            {/* Hero chip */}
+            <div className="flex justify-center" style={{ opacity: anim.questionOpacity, transform: `scale(${anim.questionScale})` }}>
+              <span className="rounded-full border border-[#f0935f]/70 bg-gradient-to-b from-[#e08060]/35 to-[#e08060]/15 px-7 py-3 text-[24px] font-bold leading-none text-[#fff8ea] shadow-[0_0_30px_rgba(224,128,96,0.30)]">
+                Who wins?
+              </span>
+            </div>
+
+            {/* Win-probability panel */}
+            <div
+              className="flex flex-col gap-5 rounded-2xl bg-[rgba(10,10,6,0.5)] p-7 backdrop-blur-[24px]"
+              style={{ opacity: anim.panelOpacity, transform: `translateY(${anim.panelY}px)` }}
+            >
+              <p className="text-center text-base font-bold uppercase tracking-[0.06em] text-[#fff8ea]">Win probability · Elo model</p>
+              {[
+                { label: data.home, v: wp.home },
+                { label: "Draw", v: wp.draw },
+                { label: data.away, v: wp.away },
+              ].map((r) => {
+                const strong = r.v === Math.max(wp.home, wp.draw, wp.away) && r.v > 0;
+                return (
+                  <div key={r.label} className="flex items-center gap-3.5">
+                    <span className="w-[7.4em] truncate font-mono text-[11px] font-bold uppercase tracking-[0.04em]" style={{ color: DIM }}>
+                      {r.label}
+                    </span>
+                    <span className="block h-[1.35em] flex-1 overflow-hidden rounded-md" style={{ background: INSET }}>
+                      <span className="block h-full" style={{ width: `${pct(r.v) * anim.swarmBarPct}%`, background: strong ? BAR : DIM }} />
+                    </span>
+                    <span className="w-[2.9em] text-right font-mono text-[17px] font-bold" style={{ color: strong ? BAR : CREAM }}>
+                      {pct(r.v)}%
+                    </span>
+                  </div>
+                );
+              })}
+
+              {/* Elo ratings */}
+              <div className="mt-1 flex gap-3" style={{ opacity: anim.edgeOpacity }}>
+                {[
+                  { code: data.homeCode, elo: data.elo?.home },
+                  { code: data.awayCode, elo: data.elo?.away },
+                ].map((e) => (
+                  <div key={e.code} className="flex-1 rounded-xl border border-[#3c3a34] bg-[#26241d] px-5 py-4 text-center">
+                    <div className="font-mono text-[28px] font-extrabold leading-none" style={{ color: CREAM }}>{e.elo ?? "—"}</div>
+                    <div className="mt-1.5 font-mono text-[11px] font-semibold uppercase tracking-[0.1em]" style={{ color: DIM }}>{e.code} Elo</div>
+                  </div>
+                ))}
+              </div>
+            </div>
+
+            {/* Model read + honest note */}
+            <div style={{ opacity: anim.breakdownOpacity }}>
+              {data.modelRead ? (
+                <p className="text-center text-[15px] font-semibold leading-snug text-[#fff8ea]">{data.modelRead}</p>
+              ) : null}
+              <p className="mt-2.5 text-center font-mono text-[11px] font-semibold uppercase tracking-[0.14em]" style={{ color: DIM }}>
+                Agent picks land closer to kickoff
+              </p>
+            </div>
+          </>
+        )}
+
+        {/* ── CONSENSUS (Market vs Agents) body ──────────────────────────── */}
+        {!isPreview && (
+          <>
         {/* Question chip — hero element, copper, glowing */}
         <div className="flex justify-center" style={{ opacity: anim.questionOpacity, transform: `scale(${anim.questionScale})` }}>
           <span className="rounded-full border border-[#f0935f]/70 bg-gradient-to-b from-[#e08060]/35 to-[#e08060]/15 px-7 py-3 text-[24px] font-bold leading-none text-[#fff8ea] shadow-[0_0_30px_rgba(224,128,96,0.30)]">
@@ -476,13 +559,17 @@ export function ConsensusCardView({
             })}
           </div>
         </div>
+          </>
+        )}
 
         <div className="flex-1" />
 
         {/* Footer: microcopy + Built On (left) + CTA (right) */}
         <div style={{ opacity: anim.footerOpacity, transform: `translateY(${anim.footerY}px)` }}>
           <p className="mb-3 font-mono text-[12px]" style={{ color: FAINT }}>
-            Market = Polymarket · Swarm = mean agent fair value · swarmarena.ai
+            {isPreview
+              ? "Win probability · Elo model · swarmarena.ai"
+              : "Market = Polymarket · Swarm = mean agent fair value · swarmarena.ai"}
           </p>
           <div className="flex items-center justify-between">
             <div className="flex flex-col gap-1">
