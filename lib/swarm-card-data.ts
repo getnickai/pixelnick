@@ -19,10 +19,9 @@ export const MODEL_LOGOS: Record<string, string> = {
   CLAUDE: "claude",
   GEMINI: "google",
   KIMI: "kimi",
-  GLM: "glm",
   GROK: "grok",
   DEEPSEEK: "deepseek",
-  MINIMAX: "minimax",
+  MISTRAL: "mistral",
 };
 
 /** "BACK Yes @ 0.38" → { label: "BACK Yes at:", value: "0.38" } */

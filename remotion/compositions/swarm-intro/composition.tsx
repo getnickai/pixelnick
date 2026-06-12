@@ -77,7 +77,7 @@ const ORBIT_LOGOS = [
   "openai",
   "claude",
   "kimi",
-  "minimax",
+  "mistral",
   "deepseek",
   "grok",
   "gemini",

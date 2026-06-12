@@ -44,7 +44,7 @@
       roiPct: 1.9, pickPct: 0.57, signals: 19, nextRun: "5h 22m", activeSince: "May 28, 2026",
       spark: [1000, 1004, 999, 1010, 1006, 1014, 1009, 1017, 1013, 1020, 1016, 1019],
       pick: { market: "Total goals", side: "BACK Under 2.5 @ 0.39", edgePp: 4.1 } },
-    { handle: "TEAMCHINA", code: "CHN", label: "Team China", short: "China", provider: "DeepSeek · Qwen · Kimi · GLM", flag: "🇨🇳", color: "#cf3a44", kind: "ensemble",
+    { handle: "TEAMCHINA", code: "CHN", label: "Team China", short: "China", provider: "DeepSeek · Qwen · Kimi", flag: "🇨🇳", color: "#cf3a44", kind: "ensemble",
       roiPct: 0.4, pickPct: 0.55, signals: 29, nextRun: "1h 09m", activeSince: "May 28, 2026",
       spark: [1000, 1006, 1001, 1009, 1003, 1011, 1005, 1010, 1004, 1009, 1006, 1004],
       pick: { market: "Total goals", side: "BACK Under 2.5 @ 0.39", edgePp: 3.5 } },
@@ -52,10 +52,6 @@
       roiPct: -2.6, pickPct: 0.52, signals: 15, nextRun: "8h 41m", activeSince: "May 28, 2026",
       spark: [1000, 1007, 1001, 994, 1003, 996, 988, 994, 985, 990, 982, 974],
       pick: { market: "Method · penalties", side: "BACK PSG pens @ 0.14", edgePp: 6.7 } },
-    { handle: "GLM", code: "GLM", label: "GLM-4.6", short: "GLM", provider: "Zhipu AI", flag: "🇨🇳", color: "#4f78e0", kind: "llm",
-      roiPct: -5.8, pickPct: 0.49, signals: 14, nextRun: "7h 55m", activeSince: "May 28, 2026",
-      spark: [1000, 996, 1003, 994, 988, 996, 985, 978, 984, 972, 966, 942],
-      pick: { market: "Match winner 3-way", side: "ABSTAIN", edgePp: 0.0 } },
     { handle: "GPT", code: "GPT", label: "GPT-5.1", short: "GPT", provider: "OpenAI", flag: "🇺🇸", color: "#a89a86", kind: "llm",
       roiPct: -9.3, pickPct: 0.47, signals: 21, nextRun: "2h 58m", activeSince: "May 28, 2026",
       spark: [1000, 1011, 994, 1002, 985, 991, 972, 980, 961, 950, 935, 907],
@@ -485,8 +481,8 @@
      React/Tailwind component is the design source of truth; this mirrors it in
      HTML/CSS and is fed by EngineAgent fields. Dark, branded palette (Onur's
      exact hexes), theme-independent. See docs/model-card-engine-guide.md. */
-  const MODEL_NAMES = { GPT: "GPT 5.5", CLAUDE: "Claude 4.5", GEMINI: "Gemini 2.5", KIMI: "Kimi K2", GLM: "GLM-4.6", GROK: "Grok 3", DEEPSEEK: "DeepSeek V3", QWEN: "Qwen 3", MINIMAX: "MiniMax" };
-  const MODEL_LOGOS = { GPT: "chatgpt", CLAUDE: "claude", GEMINI: "google", KIMI: "kimi", GLM: "glm", GROK: "grok", DEEPSEEK: "deepseek", MINIMAX: "minimax" };
+  const MODEL_NAMES = { GPT: "GPT 5.5", CLAUDE: "Claude 4.5", GEMINI: "Gemini 2.5", KIMI: "Kimi K2", GROK: "Grok 3", DEEPSEEK: "DeepSeek V3", QWEN: "Qwen 3", MISTRAL: "Mistral" };
+  const MODEL_LOGOS = { GPT: "chatgpt", CLAUDE: "claude", GEMINI: "google", KIMI: "kimi", GROK: "grok", DEEPSEEK: "deepseek", MISTRAL: "mistral" };
   function renderModelCard(agent, opts = {}) {
     const a = typeof agent === "string" ? byHandle[agent] : agent;
     /* Same host-override pattern as footerHTML(): a React/Next host serves
