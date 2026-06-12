@@ -8,7 +8,7 @@
  * read credentials from env); never imported into client bundles.
  */
 import { S3Client, ListObjectsV2Command, GetObjectCommand } from "@aws-sdk/client-s3";
-import { identityFor } from "../data/swarm-identity";
+import { canonicalHandle, identityFor } from "../data/swarm-identity";
 
 const BUCKET = "nickai-swarmarena-internal";
 
@@ -150,7 +150,7 @@ export function toEngineAgent(profile: any, snap: any, runs: any[]): any {
     const h = Math.floor(diffMin / 60), m = diffMin % 60;
     return h > 0 ? `${h}h ${m}m` : `${m}m`;
   })();
-  const handle = (profile.handle ?? "").toUpperCase() || deriveHandle(profile);
+  const handle = canonicalHandle((profile.handle ?? "").toUpperCase() || deriveHandle(profile));
   const id = identityFor(handle);
   const name: string = profile.name ?? profile.agentName ?? handle;
   const builder = profile.builder?.name;

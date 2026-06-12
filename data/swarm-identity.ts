@@ -47,7 +47,24 @@ export const SWARM_AGENT_IDENTITY: Record<string, SwarmAgentIdentity> = {
   GPT:       { handle: "GPT",       code: "GPT", label: "GPT-5.1",         short: "GPT",      provider: "OpenAI",                       flag: "🇺🇸", color: "#a89a86", kind: "llm" },
 };
 
-/** Look up identity by handle (case-insensitive). Returns undefined if unknown. */
+/**
+ * Backend → brand handle aliases. The agent backend still emits some legacy
+ * handles for agents we've since rebranded — e.g. the R2 match-reader agent is
+ * still `s1-match-reader-minimax`, but the brand is Mistral now. This is the
+ * ONE place that knows "minimax means mistral"; normalize every raw handle
+ * through `canonicalHandle()` at each ingestion boundary so the rest of the
+ * system only ever sees the brand handle. When the backend rename lands, delete
+ * the alias here and nothing else changes.
+ */
+export const HANDLE_ALIASES: Record<string, string> = { MINIMAX: "MISTRAL" };
+
+/** Resolve a raw backend handle to its canonical brand handle (uppercased). */
+export function canonicalHandle(handle: string): string {
+  const h = (handle || "").toUpperCase();
+  return HANDLE_ALIASES[h] ?? h;
+}
+
+/** Look up identity by handle (case-insensitive, alias-normalized). Undefined if unknown. */
 export function identityFor(handle: string): SwarmAgentIdentity | undefined {
-  return SWARM_AGENT_IDENTITY[(handle || "").toUpperCase()];
+  return SWARM_AGENT_IDENTITY[canonicalHandle(handle)];
 }

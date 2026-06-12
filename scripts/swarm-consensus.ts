@@ -28,6 +28,7 @@ import path from "node:path";
 import { ListObjectsV2Command, GetObjectCommand } from "@aws-sdk/client-s3";
 import { Pool } from "pg";
 import { s3Client } from "./feed";
+import { canonicalHandle } from "../data/swarm-identity";
 
 const BUCKET = "nickai-swarmarena-internal";
 const BASE = (process.env.SWARM_AGENTS_PREFIX ?? "swarm-arena/agents/").replace(/\/?$/, "/");
@@ -35,10 +36,6 @@ const OUT = path.join(process.cwd(), "public", "swarm-arena-cards", "consensus.j
 const AGENTS = ["claude", "gpt", "gemini", "grok", "deepseek", "kimi", "minimax", "qwen"].map(
   (m) => `s1-match-reader-${m}`,
 );
-// Display-handle aliases. The backend R2 agent is still `s1-match-reader-minimax`
-// (rename pending with the agent team), but the brand is Mistral now — normalize
-// at this boundary so every downstream surface only ever sees MISTRAL.
-const HANDLE_ALIAS: Record<string, string> = { MINIMAX: "MISTRAL" };
 
 const client = s3Client();
 async function getJson<T>(key: string): Promise<T | null> {
@@ -139,8 +136,9 @@ async function main() {
   const positions: Pos[] = [];
   for (const agent of AGENTS) {
     const doc = await newestRun(agent);
-    const rawHandle = agent.replace("s1-match-reader-", "").toUpperCase();
-    const handle = HANDLE_ALIAS[rawHandle] ?? rawHandle;
+    // Normalize the backend agent name to its brand handle (minimax → MISTRAL)
+    // via the one shared alias in data/swarm-identity.ts.
+    const handle = canonicalHandle(agent.replace("s1-match-reader-", ""));
     if (!doc) {
       console.log(`  ${handle}: no run`);
       continue;
