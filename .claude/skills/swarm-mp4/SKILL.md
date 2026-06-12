@@ -26,20 +26,16 @@ pipeline (`generate-cards.ts` / `bun run cards`, the `nickai-performance-cards`
 skill). Don't cross the wires.
 
 ## Which checkout to run from
-Most designs render from any `main` checkout. **The model-design leaderboard
-(`--card=leaderboard`) only exists on branch `feat/swarm-leaderboard-redesign`
-(PR #30, not yet merged).** That branch is rebased on `main`, so it is a
-**superset** — every design renders there. Until PR #30 lands on `main`:
+Every design is on `main` (PR #30 merged 2026-06-12) — render from any
+up-to-date `main` checkout. Override the repo dir with `PIXELNICK_DIR`.
 
-- Render workspace = the `feat/swarm-leaderboard-redesign` checkout, currently
-  the worktree **`~/claude/pixelnick-leaderboard`**. Override with
-  `PIXELNICK_DIR` if it moves.
-- Once PR #30 merges to `main`, a plain `main` checkout does everything and the
-  `--card=leaderboard` path comes with it.
+**Pull `main` first.** The design IS the code: each animated card renders its
+real source-of-truth React component, so a stale checkout renders a stale
+design. `git -C <dir> pull` before rendering to get the latest of every design.
 
-> ⚠️ Do NOT run from the shared `~/claude/pixelnick` checkout without checking
-> its branch — it's often a stale divergent branch and lacks the consensus +
-> leaderboard designs. Verify with `git -C <dir> branch --show-current`.
+> ⚠️ Check the branch before running — the shared `~/claude/pixelnick` checkout
+> is often a stale divergent branch. Verify with
+> `git -C <dir> branch --show-current` (want `main`) and pull before rendering.
 
 ## Prerequisites
 - `bun` on PATH; run from the repo root so `.env.local` auto-loads.
@@ -71,7 +67,7 @@ committed `history/` dir — **use it for on-demand downloads.**
 | Design | What it is | Command |
 |---|---|---|
 | **Agent — model card** (Onur's design, animated) | per-agent card, the `/motion/swarm-arena-model-card` choreography | `bun scripts/swarm-adapter.ts` then `bun scripts/generate-swarm-cards.ts --deck=public/swarm-arena-cards/live-deck.json --card=model --mp4 --no-archive [--slug=model-<handle>] --out=out/swarm-model` |
-| **Leaderboard — model design** (animated, PR #30) | the ranking in the model-card design language; bottom-up reveal | `bun scripts/swarm-adapter.ts` then `bun scripts/generate-swarm-cards.ts --deck=public/swarm-arena-cards/live-deck.json --card=leaderboard --mp4 --no-archive --out=out/swarm-model` → `leaderboard-model.{png,mp4}` |
+| **Leaderboard — model design** (animated) | the ranking in the model-card design language; bottom-up reveal | `bun scripts/swarm-adapter.ts` then `bun scripts/generate-swarm-cards.ts --deck=public/swarm-arena-cards/live-deck.json --card=leaderboard --mp4 --no-archive --out=out/swarm-model` → `leaderboard-model.{png,mp4}` |
 | **Games — consensus "Market vs Agents"** (animated) | per-fixture/market; slot-machine + blur-edge reveal | `bun scripts/swarm-consensus.ts` then `bun scripts/render-consensus.ts --game="<substr>" [--market=btts\|totals\|moneyline] [--all] [--no-mp4] --out=out/consensus` |
 | **Agent — classic editorial** (broadcast still) | the original `swarm-card` engine agent card | `bun scripts/generate-swarm-cards.ts --slug=agent-<handle> --mp4 --no-archive` |
 | **Match — classic Elo preview** (still) | head-to-head Elo-only preview (no agent consensus) | per-fixture PNG: `bun scripts/generate-upcoming-cards.ts --n=5` · single from deck: `--slug=match` |
@@ -129,7 +125,7 @@ the freshly built `public/swarm-arena-cards/consensus.json`.
 - Don't print or echo `.env.local` values when checking creds — key names only.
 ```bash
 # canonical full run (model leaderboard + the games card for a fixture)
-cd "${PIXELNICK_DIR:-$HOME/claude/pixelnick-leaderboard}"
+cd "${PIXELNICK_DIR:-$HOME/claude/pixelnick}"   # any up-to-date `main` checkout
 bun scripts/swarm-adapter.ts
 bun scripts/generate-swarm-cards.ts --deck=public/swarm-arena-cards/live-deck.json \
   --card=leaderboard --mp4 --no-archive --out=out/swarm-model
