@@ -27,7 +27,7 @@ import { renderStill, renderMedia, selectComposition } from "@remotion/renderer"
 import { enableTailwind } from "@remotion/tailwind-v4";
 import { loadSwarmDeck } from "./swarm-feed";
 import type { SwarmCardProps } from "../remotion/compositions/swarm-card/props";
-import { toCardData } from "../lib/swarm-card-data";
+import { toCardData, toLeaderboardData } from "../lib/swarm-card-data";
 
 const PUBLIC_DIR = path.join(process.cwd(), "public");
 
@@ -35,8 +35,13 @@ type Flags = {
   theme: "dark" | "light";
   size: SwarmCardProps["size"];
   layout: NonNullable<SwarmCardProps["layout"]>;
-  /** Card design: classic editorial engine vs the new React model card. */
-  design: "classic" | "model";
+  /**
+   * Card design:
+   *   classic     — the editorial engine (agent + match + leaderboard stills).
+   *   model       — the React per-agent model card (animated).
+   *   leaderboard — the React leaderboard card in the model-card design (animated).
+   */
+  design: "classic" | "model" | "leaderboard";
   slug?: string;
   out: string;
   /** Pre-built deck JSON (EngineAgent[] + match). Bypasses loadSwarmDeck. */
@@ -96,6 +101,17 @@ function plan(flags: Flags, deck: Awaited<ReturnType<typeof loadSwarmDeck>>["dec
         compositionId: "swarm-arena-model-card",
         props: { data: toCardData(a, i + 1, ranked.length), slide: true },
       });
+    });
+    return flags.slug ? jobs.filter((j) => j.slug === flags.slug) : jobs;
+  }
+
+  if (flags.design === "leaderboard") {
+    // The React leaderboard in the model-card design (the /motion composition),
+    // fed the live ranked deck. PNG = settled frame; MP4 = the bottom-up reveal.
+    jobs.push({
+      slug: "leaderboard-model",
+      compositionId: "swarm-arena-leaderboard-card",
+      props: { data: toLeaderboardData(deck.agents) },
     });
     return flags.slug ? jobs.filter((j) => j.slug === flags.slug) : jobs;
   }
@@ -162,13 +178,15 @@ async function main() {
     console.log(`  ✓ ${job.slug}.png  (${composition.width}×${composition.height})`);
 
     if (flags.mp4) {
-      // The model card has a full entrance animation: play its native duration
-      // so the cascade isn't truncated. Other (broadcast-still) cards hold for
-      // `seconds` at the comp's fps.
-      const durationInFrames =
-        job.compositionId === "swarm-arena-model-card"
-          ? composition.durationInFrames
-          : Math.max(1, Math.round(composition.fps * flags.seconds));
+      // The model + leaderboard cards have a full entrance animation: play
+      // their native duration so the cascade isn't truncated. Other
+      // (broadcast-still) cards hold for `seconds` at the comp's fps.
+      const animated =
+        job.compositionId === "swarm-arena-model-card" ||
+        job.compositionId === "swarm-arena-leaderboard-card";
+      const durationInFrames = animated
+        ? composition.durationInFrames
+        : Math.max(1, Math.round(composition.fps * flags.seconds));
       const mp4Out = path.join(flags.out, `${job.slug}.mp4`);
       await renderMedia({
         composition: { ...composition, durationInFrames },
