@@ -25,11 +25,40 @@ export const MODEL_LOGOS: Record<string, string> = {
   MISTRAL: "mistral",
 };
 
-/** "BACK Yes @ 0.38" → { label: "BACK Yes at:", value: "0.38" } */
-export function toPickRow(side: string): { label: string; value: string } {
-  const at = side.lastIndexOf(" @ ");
-  if (at === -1) return { label: side, value: "—" };
-  return { label: `${side.slice(0, at)} at:`, value: side.slice(at + 3) };
+/**
+ * Build a self-explanatory one-line bet sentence from a position's game + side.
+ * The agent feed puts the fixture in `market` ("Germany v Curacao") and the bet
+ * in `side` ("BACK Yes @ 0.33"); on its own "BACK Yes" doesn't say what "Yes"
+ * means, so we name the game and humanize the selection:
+ *   "Germany v Curacao" + "BACK Yes @ 0.33"      → { text: "Germany vs Curacao, back both teams to score at:", price: "0.33" }
+ *   "Germany v Curacao" + "BACK Germany @ 0.30"  → { text: "Germany vs Curacao, back Germany at:",            price: "0.30" }
+ *   "Germany v Curacao" + "BACK Over 2.5 @ 0.30" → { text: "Germany vs Curacao, back more than 2.5 goals at:", price: "0.30" }
+ * The sentence is left-aligned, the price right-aligned in its own column.
+ * Market type is inferred from the selection (Yes/No = both-teams-to-score,
+ * Over/Under = totals, anything else = a team/moneyline name printed as-is).
+ * Returns null when there's no real pick.
+ */
+export function toPick(game: string | undefined, side: string | undefined): { text: string; price: string } | null {
+  if (!side || side === "—") return null;
+  const m = side.match(/^\s*(BACK|LAY)\s+(.+?)\s+@\s+([\d.]+)\s*$/i);
+  if (!m) return { text: side, price: "—" }; // unknown shape — print verbatim
+  const dir = m[1].toLowerCase();
+  const sel = m[2].trim();
+  const price = m[3];
+  const over = sel.match(/^over\s+([\d.]+)/i);
+  const under = sel.match(/^under\s+([\d.]+)/i);
+  let bet: string;
+  if (/^yes$/i.test(sel)) bet = "both teams to score";
+  else if (/^no$/i.test(sel)) bet = "both teams not to score";
+  else if (over) bet = `more than ${over[1]} goals`;
+  else if (under) bet = `fewer than ${under[1]} goals`;
+  else bet = sel.toUpperCase(); // team / moneyline selection — capitalize the team name
+  // The feed (mis)uses `market` for the fixture; only prepend it when it reads
+  // like a matchup. Team names are uppercased; "vs" stays lowercase.
+  const raw = (game ?? "").trim();
+  const teams = raw.split(/\s+vs?\s+/i);
+  const lead = teams.length === 2 ? `${teams[0].toUpperCase()} vs ${teams[1].toUpperCase()}, ` : "";
+  return { text: `${lead}${dir} ${bet} at:`, price };
 }
 
 export function toCardData(
@@ -58,8 +87,11 @@ export function toCardData(
     record: a.record ?? `${wins}-${Math.max(0, a.signals - wins)}`,
     rank,
     rankOf,
-    topPick: hasPick ? toPickRow(a.pick.side) : undefined,
-    latestPicks: (a.recent ?? []).slice(0, 3).map((r) => toPickRow(r.side)),
+    topPick: hasPick ? (toPick(a.pick.market, a.pick.side) ?? undefined) : undefined,
+    latestPicks: (a.recent ?? [])
+      .slice(0, 3)
+      .map((r) => toPick(r.market, r.side))
+      .filter((p): p is { text: string; price: string } => !!p),
     // Equity curve for the background chart.
     spark: a.spark,
   };

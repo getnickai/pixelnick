@@ -20,7 +20,9 @@ const MODELS_ASSET = `${ASSET}/models`;
  * Bundling constraint: this module is pulled into Remotion's webpack via the
  * composition — keep it free of "@/" alias imports and Next-only APIs.
  */
-export type ModelCardPick = { label: string; value: string };
+/** A pick: the bet sentence (left, ends "at:") + the price (right-aligned).
+ *  e.g. text "Germany vs Curacao, back both teams to score at:", price "0.33". */
+export type ModelCardPick = { text: string; price: string };
 
 export type SwarmArenaModelCardData = {
   /** Display name, e.g. "GPT 5.5" / "Kimi K2". */
@@ -56,11 +58,11 @@ export const SAMPLE_MODEL_CARD: SwarmArenaModelCardData = {
   record: "17-7",
   rank: 1,
   rankOf: 11,
-  topPick: { label: "BACK Yes at:", value: "0.58" },
+  topPick: { text: "PSG vs INTER, back both teams to score at:", price: "0.58" },
   latestPicks: [
-    { label: "BACK PSG at:", value: "0.44" },
-    { label: "Dembélé at:", value: "0.44" },
-    { label: "Over 2.5 at:", value: "0.44" },
+    { text: "PSG vs INTER, back PSG at:", price: "0.44" },
+    { text: "PSG vs INTER, back more than 2.5 goals at:", price: "0.44" },
+    { text: "ARSENAL vs MADRID, back ARSENAL at:", price: "0.51" },
   ],
   // Stepped equity curve (plateaus + ramps) for the background chart.
   spark: [1004, 1004, 1188, 1188, 1092, 1092, 1002, 1002, 1190, 1190, 1096, 1184],
@@ -530,17 +532,14 @@ export function SwarmArenaModelCardView({
             </div>
 
             <div className="flex w-full flex-col gap-[11px]">
-              {/* Top pick */}
-              <div
-                className="flex w-full items-center justify-between"
-                style={{ opacity: anim.topPickOpacity }}
-              >
+              {/* Top pick — bet sentence left, price right-aligned */}
+              <div className="flex w-full flex-col gap-1.5" style={{ opacity: anim.topPickOpacity }}>
                 <p className="text-xs font-semibold uppercase leading-none text-[#8a8174]">
                   Top Pick
                 </p>
-                <div className="flex w-[206px] justify-between text-[17px] font-bold text-[#8bce6c]">
-                  <span>{data.topPick?.label ?? "No open picks"}</span>
-                  <span className="w-[75px] text-right">{data.topPick?.value ?? "—"}</span>
+                <div className="flex w-full items-baseline justify-between gap-3 text-[15px] font-bold leading-snug text-[#8bce6c]">
+                  <span className="flex-1">{data.topPick?.text ?? "No open picks"}</span>
+                  <span className="shrink-0 text-right tabular-nums">{data.topPick?.price ?? "—"}</span>
                 </div>
               </div>
 
@@ -549,34 +548,33 @@ export function SwarmArenaModelCardView({
                 <div className="h-[0.97px] w-full bg-[#2e2c26]" />
               </div>
 
-              {/* Latest picks */}
-              <div className="flex w-full items-start justify-between">
+              {/* Latest picks — one full bet sentence per line */}
+              <div className="flex w-full flex-col gap-1.5">
                 <p
                   className="text-xs font-semibold uppercase leading-none text-[#8a8174]"
                   style={{ opacity: anim.picksLabelOpacity }}
                 >
                   Latest Picks
                 </p>
-                <div className="flex w-[206px] flex-col gap-2.5 text-[17px] font-bold text-[#fff8ea]">
+                <div className="flex w-full flex-col gap-2 text-[14px] font-semibold leading-snug text-[#fff8ea]">
                   {data.latestPicks.length ? (
                     data.latestPicks.map((pick, i) => (
                       <div
-                        key={`${pick.label}-${i}`}
-                        className="flex w-full items-start justify-between"
+                        key={`${pick.text}-${i}`}
+                        className="flex w-full items-baseline justify-between gap-3"
                         style={{ opacity: anim.pickRowOpacities[i] ?? 1 }}
                       >
-                        <span className="whitespace-nowrap">{pick.label}</span>
-                        <span className="w-[75px] text-right">{pick.value}</span>
+                        <span className="flex-1">{pick.text}</span>
+                        <span className="shrink-0 text-right tabular-nums">{pick.price}</span>
                       </div>
                     ))
                   ) : (
-                    <div
-                      className="flex w-full items-start justify-between"
+                    <p
+                      className="text-[#8a8174]"
                       style={{ opacity: anim.pickRowOpacities[0] ?? 1 }}
                     >
-                      <span className="whitespace-nowrap text-[#8a8174]">No picks yet</span>
-                      <span className="w-[75px] text-right text-[#8a8174]">—</span>
-                    </div>
+                      No picks yet
+                    </p>
                   )}
                 </div>
               </div>
