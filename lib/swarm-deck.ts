@@ -9,6 +9,7 @@
  */
 import { S3Client, ListObjectsV2Command, GetObjectCommand } from "@aws-sdk/client-s3";
 import { canonicalHandle, identityFor } from "../data/swarm-identity";
+import { buildUpcoming } from "./swarm-upcoming";
 
 const BUCKET = "nickai-swarmarena-internal";
 
@@ -53,6 +54,35 @@ const MARKET_LABEL: Record<string, string> = {
   btts: "Both teams to score",
   moneyline: "Match winner",
 };
+/** Normalize a team name for matching: strip accents/punctuation, lowercase. */
+const normTeam = (s: string) =>
+  String(s).toLowerCase().normalize("NFD").replace(/[̀-ͯ]/g, "").replace(/[^a-z0-9]+/g, "");
+/** Order-insensitive key for a fixture: "Germany v Curacao" → "curacaogermany". */
+function gameKey(game: string): string | null {
+  const parts = String(game).split(/\s+vs?\s+/i);
+  if (parts.length !== 2) return null;
+  return [normTeam(parts[0]), normTeam(parts[1])].sort().join("|");
+}
+/**
+ * Map each upcoming fixture to its kickoff (epoch ms), keyed order-insensitively
+ * by team pair. Used to order an agent's open picks by soonest kickoff. Reads
+ * the mirror via buildUpcoming; degrades to an empty map (→ keep edge order) if
+ * SWARM_DB_URL is absent or the query fails, so the deck never breaks on it.
+ */
+async function buildKickoffMap(): Promise<Map<string, number>> {
+  try {
+    const { games } = await buildUpcoming({ limit: 200 });
+    const m = new Map<string, number>();
+    for (const g of games) {
+      const t = new Date(g.kickoffISO).getTime();
+      if (!Number.isNaN(t)) m.set([normTeam(g.home.name), normTeam(g.away.name)].sort().join("|"), t);
+    }
+    return m;
+  } catch {
+    return new Map();
+  }
+}
+
 function marketOf(p: any): string {
   return String(p.market ?? p.match ?? MARKET_LABEL[p.market_type] ?? "").replace(" vs ", " v ");
 }
@@ -64,7 +94,13 @@ function sideOf(p: any): string {
   const raw = String(p.selection ?? p.direction ?? "").trim();
   if (!raw) return "";
   const hasDir = /^(back|lay)\b/i.test(raw);
-  let sel = p.market_type === "totals" && p.line != null ? `${cap(raw)} ${p.line}` : cap(raw);
+  // Append the line for totals only when the selection doesn't already carry a
+  // number (feed sometimes sends "Under 2.5" already, sometimes bare "Under") —
+  // avoids the doubled "Under 2.5 2.5".
+  let sel =
+    p.market_type === "totals" && p.line != null && !/\d/.test(raw)
+      ? `${cap(raw)} ${p.line}`
+      : cap(raw);
   if (!hasDir) sel = `BACK ${sel}`;
   if (p.price != null && Number.isFinite(Number(p.price))) sel += ` @ ${Number(p.price).toFixed(2)}`;
   return sel;
@@ -113,7 +149,7 @@ function fmtDate(iso?: string): string {
     : d.toLocaleDateString("en-US", { month: "short", day: "2-digit", year: "numeric" });
 }
 
-export function toEngineAgent(profile: any, snap: any, runs: any[]): any {
+export function toEngineAgent(profile: any, snap: any, runs: any[], kickoff?: Map<string, number>): any {
   const perf = snap.performance ?? {};
   const startCap = profile.starting_capital ?? perf.starting_capital ?? snap.bankrollRefUsd ?? 1000;
   const equity = perf.current_value ?? startCap + (snap.pnlUsd ?? 0);
@@ -181,11 +217,20 @@ export function toEngineAgent(profile: any, snap: any, runs: any[]): any {
     pick: top
       ? { market: marketOf(top), side: sideOf(top), edgePp: Number((top.edge_pp ?? 0).toFixed(1)) }
       : { market: "No open picks", side: "—", edgePp: 0 },
-    recent: positions.slice(0, 3).map((p) => ({
-      market: marketOf(p),
-      side: sideOf(p),
-      pnl: Number((p.mtm_pnl_usd ?? p.pnl_usd ?? 0).toFixed(2)),
-    })),
+    // Top Pick is the highest-edge open position (the flagship bet). The Latest
+    // Picks list shows the agent's OTHER open positions ordered by soonest
+    // kickoff (most imminent game first), so it reads as a fixtures-style queue
+    // rather than repeating the top pick. Unknown kickoffs sort last.
+    recent: positions
+      .filter((p) => p !== top)
+      .map((p) => ({ p, ko: kickoff?.get(gameKey(marketOf(p)) ?? "") ?? Infinity }))
+      .sort((a, b) => a.ko - b.ko)
+      .slice(0, 3)
+      .map(({ p }) => ({
+        market: marketOf(p),
+        side: sideOf(p),
+        pnl: Number((p.mtm_pnl_usd ?? p.pnl_usd ?? 0).toFixed(2)),
+      })),
     ...(lastTrade ? { lastTrade } : {}),
     streak,
   };
@@ -219,6 +264,10 @@ export async function buildSwarmDeck(opts: { prefix?: string; at?: string } = {}
     ...new Set(all.map((o) => o.key.slice(BASE.length).split("/")[0]).filter(Boolean)),
   ].filter((id) => all.some((o) => o.key === `${BASE}${id}/snapshot.json`));
 
+  // Fixture kickoffs (once) so each agent's Latest Picks can be ordered by
+  // soonest game. Empty map if the mirror is unavailable → keeps edge order.
+  const kickoff = await buildKickoffMap();
+
   const dates = new Set<string>();
   const agents: any[] = [];
   for (const id of agentIds) {
@@ -239,11 +288,11 @@ export async function buildSwarmDeck(opts: { prefix?: string; at?: string } = {}
     if (opts.at) {
       const upto = allRuns.filter((r: any) => new Date(r.timestamp ?? 0).getTime() <= atMs);
       if (!upto.length) continue; // agent didn't exist yet at this point
-      agents.push(toEngineAgent(profile, upto[upto.length - 1], upto));
+      agents.push(toEngineAgent(profile, upto[upto.length - 1], upto, kickoff));
     } else {
       const snap = await getJson<any>(c, `${prefix}snapshot.json`);
       if (!snap) continue;
-      agents.push(toEngineAgent(profile, snap, allRuns));
+      agents.push(toEngineAgent(profile, snap, allRuns, kickoff));
     }
   }
   agents.sort((a, b) => b.roiPct - a.roiPct);
