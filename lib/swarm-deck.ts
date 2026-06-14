@@ -10,7 +10,7 @@
 import { S3Client, ListObjectsV2Command, GetObjectCommand } from "@aws-sdk/client-s3";
 import { canonicalHandle, identityFor } from "../data/swarm-identity";
 import { buildUpcoming } from "./swarm-upcoming";
-import { closedPnl, isStubSnap, tradeResult } from "./swarm-agent-shape";
+import { closedPnl, isStubSnap, pickEffectiveSnapshot, tradeResult } from "./swarm-agent-shape";
 
 const BUCKET = "nickai-swarmarena-internal";
 
@@ -159,7 +159,11 @@ export function toEngineAgent(profile: any, snap: any, runs: any[], kickoff?: Ma
   const roiPct = perf.roi_pct ?? snap.profitPercent ?? (startCap ? ((equity - startCap) / startCap) * 100 : 0);
   const curve = runs.map((r) => r.performance?.current_value ?? startCap + (r.pnlUsd ?? 0));
   const spark = curve.length >= 1 ? [startCap, ...curve] : [startCap, equity];
-  const latest = runs.at(-1) ?? snap;
+  // `snap` is the effective (most-complete) doc chosen by the caller, so its open
+  // positions are the trusted current book; only fall back to the latest run if it
+  // carries no positions field. Keeps the pick/positions consistent with the
+  // headline ROI when the live snapshot was a stub or a regression.
+  const latest = (snap.open_positions ?? snap.positions) != null ? snap : (runs.at(-1) ?? snap);
   const positions = [...(latest.open_positions ?? latest.positions ?? snap.open_positions ?? [])].sort(
     (a, b) => (b.edge_pp ?? 0) - (a.edge_pp ?? 0),
   );
@@ -288,21 +292,30 @@ export async function buildSwarmDeck(opts: { prefix?: string; at?: string } = {}
       .filter(Boolean)
       .sort((a: any, b: any) => new Date(a.timestamp ?? 0).getTime() - new Date(b.timestamp ?? 0).getTime());
 
-    // Bug B: the writer intermittently overwrites snapshot.json (and can write a
-    // stub run file) with an empty stub, then self-heals next run. Drop stub runs
-    // so they never dip the equity curve or become the "latest run", and when the
-    // snapshot itself is a stub fall back to the most recent non-stub run — so an
-    // agent never renders flat at its starting book mid-hiccup.
-    const realRuns = allRuns.filter((r: any) => !isStubSnap(r));
+    // Bug B: the writer intermittently overwrites snapshot.json (and writes
+    // stub/regressed run files), then self-heals next run. Keep only runs whose
+    // settled-trade count never goes backwards — a settled win/loss can't
+    // un-settle, so this drops both empty stubs and partial regressions while
+    // preserving the agent's true monotonic history. The equity curve and "latest
+    // run" then never dip on a writer hiccup, and pickEffectiveSnapshot below
+    // chooses the most-complete of {snapshot, runs} for the headline. Healthy
+    // agents are monotonic already, so this is a no-op for them.
+    let maxClosed = -1;
+    const realRuns = allRuns.filter((r: any) => {
+      if (isStubSnap(r)) return false;
+      const c = (r.closed_trades ?? []).length;
+      if (c < maxClosed) return false;
+      maxClosed = c;
+      return true;
+    });
     if (opts.at) {
       const upto = realRuns.filter((r: any) => new Date(r.timestamp ?? 0).getTime() <= atMs);
       if (!upto.length) continue; // agent had no real run at/at-or-before this point
-      agents.push(toEngineAgent(profile, upto[upto.length - 1], upto, kickoff));
+      agents.push(toEngineAgent(profile, pickEffectiveSnapshot(upto[upto.length - 1], upto), upto, kickoff));
     } else {
       const snap = await getJson<any>(c, `${prefix}snapshot.json`);
       if (!snap) continue;
-      const effSnap = isStubSnap(snap) ? (realRuns[realRuns.length - 1] ?? snap) : snap;
-      agents.push(toEngineAgent(profile, effSnap, realRuns, kickoff));
+      agents.push(toEngineAgent(profile, pickEffectiveSnapshot(snap, realRuns), realRuns, kickoff));
     }
   }
   agents.sort((a, b) => b.roiPct - a.roiPct);

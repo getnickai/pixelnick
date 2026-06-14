@@ -63,3 +63,45 @@ export function isStubSnap(doc: any): boolean {
   const runCount = perf.run_count ?? doc.runsTotal ?? 0;
   return open === 0 && closed === 0 && value === start && runCount === 0;
 }
+
+/**
+ * How complete an agent doc is: [#settled trades, run_count]. `closed_trades`
+ * count is the honest monotonic signal — a settled win/loss never un-settles —
+ * with run_count as the tie-breaker among equally-settled docs (later rollup).
+ */
+function completeness(doc: any): [number, number] {
+  return [(doc?.closed_trades ?? []).length, doc?.performance?.run_count ?? doc?.runsTotal ?? 0];
+}
+
+/**
+ * Pick the doc that best represents the agent's CURRENT state, defending against
+ * the writer's transient regressions. Beyond the empty stub (isStubSnap), the
+ * writer also intermittently writes a PARTIAL rewrite where run_count and
+ * closed_trades go BACKWARDS (e.g. KIMI: run_count 24→20, $1437→$1012, 11→2
+ * settled) before self-healing on the next run — so the live snapshot can briefly
+ * understate a +43% book as +1%.
+ *
+ * Strategy: trust the snapshot (the writer's authoritative rollup) UNLESS it is a
+ * stub, or a run still carries MORE settled trades than the snapshot — i.e. the
+ * snapshot dropped ledger history it can't honestly have lost. Then fall back to
+ * that fuller run. A healthy snapshot has the most settled trades, so this is a
+ * no-op for agents the writer isn't currently glitching. (It does NOT mask a real
+ * loss: losing money lowers current_value, not the settled-trade count.)
+ *
+ * Pass snapshot=null to just choose the most-complete run (used by the consensus
+ * builder, which has no snapshot — only runs/).
+ */
+export function pickEffectiveSnapshot(snapshot: any, runs: any[]): any {
+  // Most-complete run; ties resolve to the later one (runs are timestamp-sorted).
+  const best = (runs ?? []).reduce<any>((b, r) => {
+    if (!r) return b;
+    if (!b) return r;
+    const [rClosed, rRuns] = completeness(r);
+    const [bClosed, bRuns] = completeness(b);
+    return rClosed > bClosed || (rClosed === bClosed && rRuns >= bRuns) ? r : b;
+  }, null);
+  if (!snapshot) return best;
+  if (!best) return snapshot;
+  if (isStubSnap(snapshot)) return best;
+  return completeness(best)[0] > completeness(snapshot)[0] ? best : snapshot;
+}

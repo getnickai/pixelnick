@@ -29,7 +29,7 @@ import { ListObjectsV2Command, GetObjectCommand } from "@aws-sdk/client-s3";
 import { Pool } from "pg";
 import { s3Client } from "./feed";
 import { canonicalHandle } from "../data/swarm-identity";
-import { isStubSnap } from "../lib/swarm-agent-shape";
+import { pickEffectiveSnapshot } from "../lib/swarm-agent-shape";
 
 const BUCKET = "nickai-swarmarena-internal";
 const BASE = (process.env.SWARM_AGENTS_PREFIX ?? "swarm-arena/agents/").replace(/\/?$/, "/");
@@ -134,18 +134,16 @@ async function discoverAgents(): Promise<string[]> {
     .sort();
 }
 
-async function newestRun(agent: string): Promise<any | null> {
-  const runs = (await listKeys(`${BASE}${agent}/runs/`)).filter((k) => /exe_.*\.json$/.test(k.key));
-  if (!runs.length) return null;
-  runs.sort((a, b) => b.mod.getTime() - a.mod.getTime());
-  // Bug B: the writer intermittently emits an empty stub run; walk newest →
-  // oldest and return the most recent NON-stub run so a hiccup doesn't drop the
-  // agent (and its positions) out of the consensus.
-  for (const r of runs) {
-    const doc = await getJson<any>(r.key);
-    if (doc && !isStubSnap(doc)) return doc;
-  }
-  return null;
+async function currentRun(agent: string): Promise<any | null> {
+  const runKeys = (await listKeys(`${BASE}${agent}/runs/`)).filter((k) => /exe_.*\.json$/.test(k.key));
+  if (!runKeys.length) return null;
+  runKeys.sort((a, b) => a.mod.getTime() - b.mod.getTime()); // oldest → newest
+  const docs = (await Promise.all(runKeys.map((r) => getJson<any>(r.key)))).filter(Boolean);
+  // Bug B: the writer intermittently emits a stub or a partial-regression run
+  // (run_count/settled going backwards) before self-healing. Use the MOST-COMPLETE
+  // recent run, not blindly the newest, so a hiccup doesn't drop the agent — or its
+  // full book of positions — out of the consensus.
+  return pickEffectiveSnapshot(null, docs);
 }
 
 async function main() {
@@ -159,7 +157,7 @@ async function main() {
   console.log(`Agents discovered: ${AGENTS.length} (${AGENTS.map((a) => a.replace("s1-match-reader-", "")).join(", ")})`);
   const positions: Pos[] = [];
   for (const agent of AGENTS) {
-    const doc = await newestRun(agent);
+    const doc = await currentRun(agent);
     // Normalize the backend agent name to its brand handle (minimax → MISTRAL)
     // via the one shared alias in data/swarm-identity.ts.
     const handle = canonicalHandle(agent.replace("s1-match-reader-", ""));
