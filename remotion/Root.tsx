@@ -24,6 +24,8 @@ import { SwarmArenaModelCardComposition } from "./compositions/swarm-arena-model
 import { swarmArenaModelCardDefaultProps } from "./compositions/swarm-arena-model-card/props";
 import { ConsensusCardComposition } from "./compositions/consensus-card/composition";
 import { consensusCardDefaultProps } from "./compositions/consensus-card/props";
+import { ResultCardComposition } from "./compositions/result-card/composition";
+import { resultCardDefaultProps } from "./compositions/result-card/props";
 import { SwarmArenaLeaderboardCardComposition } from "./compositions/swarm-arena-leaderboard-card/composition";
 import { swarmArenaLeaderboardCardDefaultProps } from "./compositions/swarm-arena-leaderboard-card/props";
 import { getMotionEntryMeta } from "./manifest";
@@ -33,6 +35,7 @@ const swarm = getMotionEntryMeta("swarm-card")!;
 const intro = getMotionEntryMeta("swarm-intro")!;
 const modelAnim = getMotionEntryMeta("swarm-arena-model-card")!;
 const consensus = getMotionEntryMeta("consensus-card")!;
+const result = getMotionEntryMeta("result-card")!;
 const leaderboardAnim = getMotionEntryMeta("swarm-arena-leaderboard-card")!;
 
 export const RemotionRoot: React.FC = () => {
@@ -87,6 +90,17 @@ export const RemotionRoot: React.FC = () => {
         width={consensus.width}
         height={consensus.height}
         defaultProps={consensusCardDefaultProps}
+      />
+      {/* Animated settled "won pick" result card — sibling of the consensus
+          card; final score + HIT chip + banked-$ payout + per-agent bars. */}
+      <Composition
+        id="result-card"
+        component={ResultCardComposition}
+        durationInFrames={result.durationInFrames}
+        fps={result.fps}
+        width={result.width}
+        height={result.height}
+        defaultProps={resultCardDefaultProps}
       />
       {/* Animated leaderboard in the model-card design (PR #30). Registered
           here so it renders to PNG (settled frame) + MP4 via the CLI, fed the

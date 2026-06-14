@@ -71,6 +71,18 @@ export const motionManifest: MotionEntryMeta[] = [
     durationInFrames: 240,
   },
   {
+    // Animated settled "won pick" result card — the after-the-whistle sibling
+    // of the consensus card. Same shell; swaps Market-vs-Swarm for the final
+    // score (in the teams row), a HIT/MISS chip, and a "banked +$X" payout
+    // hero (blurred slot-spin → blur lifts → reels land) + per-agent $ bars. 8s.
+    id: "result-card",
+    label: "Result Card",
+    width: 650,
+    height: 1110,
+    fps: 30,
+    durationInFrames: 240,
+  },
+  {
     // Animated leaderboard — frame chrome cascades in, then the ranking reveals
     // bottom-up (last place first → #1 winner last), footer + spark after.
     // ~7s @ 30fps: ~5.7s reveal + hold on the champion.
