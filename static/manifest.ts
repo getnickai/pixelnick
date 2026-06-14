@@ -31,6 +31,12 @@ export const staticManifest: StaticEntryMeta[] = [
     height: 1110,
   },
   {
+    id: "result-card",
+    label: "Result Card",
+    width: 650,
+    height: 1110,
+  },
+  {
     id: "swarm-arena-leaderboard-card",
     label: "SwarmArena Leaderboard",
     width: 650,

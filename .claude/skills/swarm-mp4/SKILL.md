@@ -4,11 +4,14 @@ description: >-
   On-demand render of Swarm Arena share cards to MP4 (and PNG) from the live R2
   agent output, for download — NOT posted to Slack. Covers every Swarm Arena
   card design: agent cards (classic + the model-card design), the leaderboard
-  (classic + the model-design leaderboard), and the "Market vs Agents"
-  consensus/games card (the design for game/match cards). Use whenever Badi asks to "generate
-  an mp4", "make a video of the leaderboard", "render the consensus card for
-  <game>", "render GROK as an mp4", "swarm arena card video", "do the games for
-  today as mp4", or wants a downloadable clip of any Swarm Arena card. This is
+  (classic + the model-design leaderboard), the "Market vs Agents"
+  consensus/games card (the design for UPCOMING game/match cards), and the
+  settled "won pick" result card (the consensus design after the whistle: final
+  score + the swarm's pick + how much the agents made). Use whenever Badi asks to
+  "generate an mp4", "make a video of the leaderboard", "render the consensus card
+  for <game>", "render the won pick / result card for <game>", "card for a game
+  the agents won", "render GROK as an mp4", "swarm arena card video", "do the games
+  for today as mp4", or wants a downloadable clip of any Swarm Arena card. This is
   the swarm-arena card pipeline in the `pixelnick` repo — distinct from the
   performance-card / trading-card pipeline (see nickai-performance-cards).
   Reach for this even if Badi doesn't say "pixelnick".
@@ -53,8 +56,10 @@ rendering** — a stale file silently renders old numbers.
 
 - **Deck-based cards** (agent cards, both leaderboards, match): refresh the
   live deck → `bun scripts/swarm-adapter.ts` (writes `public/swarm-arena-cards/live-deck.json`).
-- **Consensus / games card**: refresh the feed → `bun scripts/swarm-consensus.ts`
-  (writes `public/swarm-arena-cards/consensus.json`).
+- **Consensus / games card** (upcoming fixtures): refresh the feed →
+  `bun scripts/swarm-consensus.ts` (writes `public/swarm-arena-cards/consensus.json`).
+- **Result / "won pick" card** (settled fixtures): refresh the feed →
+  `bun scripts/swarm-results.ts` (writes `public/swarm-arena-cards/results.json`).
 
 Output lands in `out/…`. `out/` is gitignored. After rendering, report the
 absolute path(s) and offer to reveal (`open out/<dir>`).
@@ -68,7 +73,8 @@ committed `history/` dir — **use it for on-demand downloads.**
 |---|---|---|
 | **Agent — model card** (Onur's design, animated) | per-agent card, the `/motion/swarm-arena-model-card` choreography | `bun scripts/swarm-adapter.ts` then `bun scripts/generate-swarm-cards.ts --deck=public/swarm-arena-cards/live-deck.json --card=model --mp4 --no-archive [--slug=model-<handle>] --out=out/swarm-model` |
 | **Leaderboard — model design** (animated) | the ranking in the model-card design language; bottom-up reveal | `bun scripts/swarm-adapter.ts` then `bun scripts/generate-swarm-cards.ts --deck=public/swarm-arena-cards/live-deck.json --card=leaderboard --mp4 --no-archive --out=out/swarm-model` → `leaderboard-model.{png,mp4}` |
-| **Games — consensus "Market vs Agents"** (animated) | per-fixture/market; slot-machine + blur-edge reveal | `bun scripts/swarm-consensus.ts` then `bun scripts/render-consensus.ts --game="<substr>" [--market=btts\|totals\|moneyline] [--all] [--no-mp4] --out=out/consensus` |
+| **Games — consensus "Market vs Agents"** (animated) | per-fixture/market, UPCOMING; slot-machine + blur-edge reveal | `bun scripts/swarm-consensus.ts` then `bun scripts/render-consensus.ts --game="<substr>" [--market=btts\|totals\|moneyline] [--all] [--no-mp4] --out=out/consensus` |
+| **Result — "won pick"** (animated) | the consensus design after the whistle, SETTLED: final score in the teams row, HIT/MISS chip, "agents banked +$X" payout (slot reveal) + per-agent $ bars | `bun scripts/swarm-results.ts` then `bun scripts/render-results.ts --game="<substr>" [--market=btts\|totals\|moneyline] [--all] [--no-top] [--no-mp4] --out=out/results` |
 | **Agent — classic editorial** (broadcast still) | the original `swarm-card` engine agent card | `bun scripts/generate-swarm-cards.ts --slug=agent-<handle> --mp4 --no-archive` |
 | **Leaderboard — classic** (still) | the original engine leaderboard | `bun scripts/generate-swarm-cards.ts --slug=leaderboard --mp4 --no-archive` |
 
@@ -116,6 +122,33 @@ by default (`--no-top` to render all markets; `--market=` to force one). `--all`
 renders every record in the feed. If unsure which game maps to a record, read
 the freshly built `public/swarm-arena-cards/consensus.json`.
 
+## The won-pick / result card (the consensus design, settled)
+For a game that has **already finished**, render the **result card** — the same
+shell/crests/footer as the consensus card, but the center Market-vs-Agents block
+is replaced with the after-the-whistle story:
+- the **final score** sits in the teams row (where "VS" was), with an `FT` badge
+  and the winner emphasized,
+- a **HIT/MISS chip** for the swarm's pick (green hit / red miss), and
+- the **payout** — an "agents banked +$X" hero (slot-machine reveal) + a
+  per-agent `$` PnL breakdown ("how much they made").
+
+`swarm-results.ts` reads the 8 agents' settled `closed_trades` from R2, groups
+them by (game × market × selection), and joins each to its **final score** in
+the `matches` mirror (`status=FT`). **Honest-data rule:** a pick is only emitted
+when (a) agents actually held a settled position on it and (b) the fixture has a
+real final score — no score → no card. Voids and malformed rows are skipped, so
+`agentsN/8` reflects only the agents that genuinely settled win/loss on the pick.
+
+`render-results.ts` selection mirrors `render-consensus.ts`: `--game=<substr>`
+(repeatable) matches the record's `game`; with several markets per game it keeps
+the **biggest-payout** one by default (`--no-top` for all markets; `--market=` to
+force one); `--all` renders every settled pick. By default only the swarm's
+**winning** picks are in the feed — pass `--include-losses` to `swarm-results.ts`
+to also build cards for picks they got wrong. Slug:
+`result-<market>-<homeCode>-<awayCode>`. Read `public/swarm-arena-cards/results.json`
+to see which games/markets settled. Example 2026-06-14: USA 4–1 Paraguay, the
+swarm's Over 2.5 hit and 5/8 agents banked +$564.
+
 ## Slug / handle notes
 - Handles come from `data/swarm-identity.ts` / the deck's `agents[].handle`
   (e.g. `GROK`, `GPT`, `CLAUDE`, `GEMINI`, `KIMI`, `DEEPSEEK`, `QWEN`, `MISTRAL`).
@@ -148,4 +181,7 @@ bun scripts/generate-swarm-cards.ts --deck=public/swarm-arena-cards/live-deck.js
   --card=leaderboard --mp4 --no-archive --out=out/swarm-model
 bun scripts/swarm-consensus.ts
 bun scripts/render-consensus.ts --game="usa vs paraguay" --out=out/consensus
+# a settled "won pick" result card for a finished game
+bun scripts/swarm-results.ts
+bun scripts/render-results.ts --game="usa vs paraguay" --out=out/results
 ```

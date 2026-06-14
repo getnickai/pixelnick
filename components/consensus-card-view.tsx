@@ -151,15 +151,16 @@ export const SETTLED_CONSENSUS_ANIM: ConsensusCardAnim = {
 };
 
 // Palette (Onur's model card tokens) + the consensus bar/line colors.
-const CREAM = "#fff8ea";
-const DIM = "#8a8174";
-const FAINT = "#7e7568";
-const BAR = "#9ec46a"; // swarm bars (lighter green, max contrast)
-const LINE = "#db5a1e"; // market reference line (saturated orange)
-const INSET = "rgba(255,248,234,0.08)"; // track / ghost bars
+// Exported so sibling cards (e.g. the settled Result card) share one palette.
+export const CREAM = "#fff8ea";
+export const DIM = "#8a8174";
+export const FAINT = "#7e7568";
+export const BAR = "#9ec46a"; // swarm bars (lighter green, max contrast)
+export const LINE = "#db5a1e"; // market reference line (saturated orange)
+export const INSET = "rgba(255,248,234,0.08)"; // track / ghost bars
 
 // Fixed agent order + branding (inlined so the View stays Remotion-bundle-safe).
-const AGENT_META: Record<string, { code: string; short: string; color: string }> = {
+export const AGENT_META: Record<string, { code: string; short: string; color: string }> = {
   GPT: { code: "GPT", short: "GPT", color: "#a89a86" },
   CLAUDE: { code: "CL", short: "Claude", color: "#cc785c" },
   GEMINI: { code: "GEM", short: "Gemini", color: "#6f8fd6" },
@@ -169,10 +170,10 @@ const AGENT_META: Record<string, { code: string; short: string; color: string }>
   KIMI: { code: "KMI", short: "Kimi", color: "#9b7bd4" },
   MISTRAL: { code: "MST", short: "Mistral", color: "#d9772f" },
 };
-const ALL_HANDLES = ["GPT", "CLAUDE", "GEMINI", "GROK", "DEEPSEEK", "QWEN", "KIMI", "MISTRAL"];
-const metaOf = (h: string) => AGENT_META[h] ?? { code: h.slice(0, 3), short: h, color: "#9a8f7e" };
+export const ALL_HANDLES = ["GPT", "CLAUDE", "GEMINI", "GROK", "DEEPSEEK", "QWEN", "KIMI", "MISTRAL"];
+export const metaOf = (h: string) => AGENT_META[h] ?? { code: h.slice(0, 3), short: h, color: "#9a8f7e" };
 
-const pct = (x: number) => Math.round(x * 100);
+export const pct = (x: number) => Math.round(x * 100);
 
 const MARKET_PILL: Record<string, string> = {
   moneyline: "Who Wins",
@@ -277,7 +278,7 @@ function ShieldCrest({ code }: { code: string }) {
 }
 
 /** Team badge: real flag in Onur's hexagon when we have one, else the shield. */
-function Crest({ code, assetBase }: { code: string; assetBase: string }) {
+export function Crest({ code, assetBase }: { code: string; assetBase: string }) {
   const slug = flagSlug(code);
   if (!slug) return <ShieldCrest code={code} />;
   const w = 68;

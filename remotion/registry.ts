@@ -31,6 +31,11 @@ import {
   consensusCardDefaultProps,
   type ConsensusCardProps,
 } from "./compositions/consensus-card/props";
+import { ResultCardComposition } from "./compositions/result-card/composition";
+import {
+  resultCardDefaultProps,
+  type ResultCardProps,
+} from "./compositions/result-card/props";
 import {
   motionManifest,
   type MotionEntryMeta,
@@ -88,6 +93,10 @@ const componentBindings: Record<string, ComponentBinding> = {
     component: ConsensusCardComposition,
     defaultProps: consensusCardDefaultProps,
   } as ComponentBinding<ConsensusCardProps> as ComponentBinding,
+  "result-card": {
+    component: ResultCardComposition,
+    defaultProps: resultCardDefaultProps,
+  } as ComponentBinding<ResultCardProps> as ComponentBinding,
 };
 
 export const motionRegistry: MotionEntry[] = motionManifest

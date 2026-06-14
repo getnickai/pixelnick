@@ -2,6 +2,7 @@ import { notFound } from "next/navigation";
 import AiReadyCard from "@/components/ai-ready-card";
 import SwarmArenaModelCard from "@/components/swarm-arena-model-card";
 import ConsensusCard from "@/components/consensus-card-view";
+import ResultCard from "@/components/result-card-view";
 import SwarmArenaLeaderboardCard from "@/components/swarm-arena-leaderboard-card";
 import { StaticVisualHost } from "@/components/static-visual-host";
 import { getStaticEntryMeta } from "@/static/manifest";
@@ -35,6 +36,14 @@ export default async function StaticVisualPage({
     return (
       <StaticVisualHost entry={entry}>
         <ConsensusCard />
+      </StaticVisualHost>
+    );
+  }
+
+  if (id === "result-card") {
+    return (
+      <StaticVisualHost entry={entry}>
+        <ResultCard />
       </StaticVisualHost>
     );
   }
