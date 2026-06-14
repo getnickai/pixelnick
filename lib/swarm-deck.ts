@@ -10,6 +10,7 @@
 import { S3Client, ListObjectsV2Command, GetObjectCommand } from "@aws-sdk/client-s3";
 import { canonicalHandle, identityFor } from "../data/swarm-identity";
 import { buildUpcoming } from "./swarm-upcoming";
+import { closedPnl, isStubSnap, pickEffectiveSnapshot, tradeResult } from "./swarm-agent-shape";
 
 const BUCKET = "nickai-swarmarena-internal";
 
@@ -126,7 +127,9 @@ function relTime(iso?: string): string {
   return h < 24 ? `${h}h ago` : `${Math.floor(h / 24)}d ago`;
 }
 function streakOf(closed: any[]): string {
-  const wl = closed.map((t) => String(t.result ?? "").toLowerCase()).filter((r) => r === "win" || r === "loss");
+  // Bug A: derive win/loss via tradeResult (handles the realized_pnl_usd writers
+  // that omit `result` — infers from last_price) so the streak isn't blank.
+  const wl = closed.map(tradeResult).filter((r) => r === "win" || r === "loss");
   if (!wl.length) return "—";
   const last = wl[wl.length - 1];
   let n = 0;
@@ -156,14 +159,18 @@ export function toEngineAgent(profile: any, snap: any, runs: any[], kickoff?: Ma
   const roiPct = perf.roi_pct ?? snap.profitPercent ?? (startCap ? ((equity - startCap) / startCap) * 100 : 0);
   const curve = runs.map((r) => r.performance?.current_value ?? startCap + (r.pnlUsd ?? 0));
   const spark = curve.length >= 1 ? [startCap, ...curve] : [startCap, equity];
-  const latest = runs.at(-1) ?? snap;
+  // `snap` is the effective (most-complete) doc chosen by the caller, so its open
+  // positions are the trusted current book; only fall back to the latest run if it
+  // carries no positions field. Keeps the pick/positions consistent with the
+  // headline ROI when the live snapshot was a stub or a regression.
+  const latest = (snap.open_positions ?? snap.positions) != null ? snap : (runs.at(-1) ?? snap);
   const positions = [...(latest.open_positions ?? latest.positions ?? snap.open_positions ?? [])].sort(
     (a, b) => (b.edge_pp ?? 0) - (a.edge_pp ?? 0),
   );
   const top = positions[0];
   const closed = collectClosedTrades(runs, snap);
-  const cWins = closed.filter((t) => String(t.result).toLowerCase() === "win").length;
-  const cLosses = closed.filter((t) => String(t.result).toLowerCase() === "loss").length;
+  const cWins = closed.filter((t) => tradeResult(t) === "win").length;
+  const cLosses = closed.filter((t) => tradeResult(t) === "loss").length;
   const wins = perf.wins ?? (closed.length ? cWins : null);
   const losses = perf.losses ?? (closed.length ? cLosses : null);
   const pickPct =
@@ -175,7 +182,7 @@ export function toEngineAgent(profile: any, snap: any, runs: any[], kickoff?: Ma
   const record = wins != null && losses != null ? `${wins}-${losses}` : undefined;
   const lastClosed = closed.at(-1);
   const lastTrade = lastClosed
-    ? { pnl: Number((lastClosed.pnl_usd ?? 0).toFixed(2)), ago: relTime(lastClosed.closed_iso) }
+    ? { pnl: Number(closedPnl(lastClosed).toFixed(2)), ago: relTime(lastClosed.closed_iso) }
     : undefined;
   const streak = streakOf(closed);
   const nextIso = perf.next_run_iso ?? snap.nextRunISO;
@@ -285,14 +292,30 @@ export async function buildSwarmDeck(opts: { prefix?: string; at?: string } = {}
       .filter(Boolean)
       .sort((a: any, b: any) => new Date(a.timestamp ?? 0).getTime() - new Date(b.timestamp ?? 0).getTime());
 
+    // Bug B: the writer intermittently overwrites snapshot.json (and writes
+    // stub/regressed run files), then self-heals next run. Keep only runs whose
+    // settled-trade count never goes backwards — a settled win/loss can't
+    // un-settle, so this drops both empty stubs and partial regressions while
+    // preserving the agent's true monotonic history. The equity curve and "latest
+    // run" then never dip on a writer hiccup, and pickEffectiveSnapshot below
+    // chooses the most-complete of {snapshot, runs} for the headline. Healthy
+    // agents are monotonic already, so this is a no-op for them.
+    let maxClosed = -1;
+    const realRuns = allRuns.filter((r: any) => {
+      if (isStubSnap(r)) return false;
+      const c = (r.closed_trades ?? []).length;
+      if (c < maxClosed) return false;
+      maxClosed = c;
+      return true;
+    });
     if (opts.at) {
-      const upto = allRuns.filter((r: any) => new Date(r.timestamp ?? 0).getTime() <= atMs);
-      if (!upto.length) continue; // agent didn't exist yet at this point
-      agents.push(toEngineAgent(profile, upto[upto.length - 1], upto, kickoff));
+      const upto = realRuns.filter((r: any) => new Date(r.timestamp ?? 0).getTime() <= atMs);
+      if (!upto.length) continue; // agent had no real run at/at-or-before this point
+      agents.push(toEngineAgent(profile, pickEffectiveSnapshot(upto[upto.length - 1], upto), upto, kickoff));
     } else {
       const snap = await getJson<any>(c, `${prefix}snapshot.json`);
       if (!snap) continue;
-      agents.push(toEngineAgent(profile, snap, allRuns, kickoff));
+      agents.push(toEngineAgent(profile, pickEffectiveSnapshot(snap, realRuns), realRuns, kickoff));
     }
   }
   agents.sort((a, b) => b.roiPct - a.roiPct);

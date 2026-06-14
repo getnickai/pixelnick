@@ -29,13 +29,11 @@ import { ListObjectsV2Command, GetObjectCommand } from "@aws-sdk/client-s3";
 import { Pool } from "pg";
 import { s3Client } from "./feed";
 import { canonicalHandle } from "../data/swarm-identity";
+import { pickEffectiveSnapshot } from "../lib/swarm-agent-shape";
 
 const BUCKET = "nickai-swarmarena-internal";
 const BASE = (process.env.SWARM_AGENTS_PREFIX ?? "swarm-arena/agents/").replace(/\/?$/, "/");
 const OUT = path.join(process.cwd(), "public", "swarm-arena-cards", "consensus.json");
-const AGENTS = ["claude", "gpt", "gemini", "grok", "deepseek", "kimi", "minimax", "qwen"].map(
-  (m) => `s1-match-reader-${m}`,
-);
 
 const client = s3Client();
 async function getJson<T>(key: string): Promise<T | null> {
@@ -120,11 +118,32 @@ type Pos = {
   edgePp: number;
 };
 
-async function newestRun(agent: string): Promise<any | null> {
-  const runs = (await listKeys(`${BASE}${agent}/runs/`)).filter((k) => /exe_.*\.json$/.test(k.key));
-  if (!runs.length) return null;
-  runs.sort((a, b) => b.mod.getTime() - a.mod.getTime());
-  return getJson<any>(runs[0].key);
+/**
+ * Discover the match-reader agent dirs under the prefix instead of hardcoding a
+ * roster. A hardcoded list silently drops an agent when the backend renames a
+ * slot — e.g. the list said `s1-match-reader-minimax` while the live slot is
+ * `s1-match-reader-mistral`, so Mistral (a full book of positions) never made
+ * the consensus and "N of 8" was off. Discovery + canonicalHandle handles
+ * either slot name. Keeps only dirs that actually have a snapshot.json.
+ */
+async function discoverAgents(): Promise<string[]> {
+  const all = await listKeys(BASE);
+  return [...new Set(all.map((o) => o.key.slice(BASE.length).split("/")[0]).filter(Boolean))]
+    .filter((id) => id.startsWith("s1-match-reader-"))
+    .filter((id) => all.some((o) => o.key === `${BASE}${id}/snapshot.json`))
+    .sort();
+}
+
+async function currentRun(agent: string): Promise<any | null> {
+  const runKeys = (await listKeys(`${BASE}${agent}/runs/`)).filter((k) => /exe_.*\.json$/.test(k.key));
+  if (!runKeys.length) return null;
+  runKeys.sort((a, b) => a.mod.getTime() - b.mod.getTime()); // oldest → newest
+  const docs = (await Promise.all(runKeys.map((r) => getJson<any>(r.key)))).filter(Boolean);
+  // Bug B: the writer intermittently emits a stub or a partial-regression run
+  // (run_count/settled going backwards) before self-healing. Use the MOST-COMPLETE
+  // recent run, not blindly the newest, so a hiccup doesn't drop the agent — or its
+  // full book of positions — out of the consensus.
+  return pickEffectiveSnapshot(null, docs);
 }
 
 async function main() {
@@ -132,10 +151,13 @@ async function main() {
   const limitArg = process.argv.find((a) => a.startsWith("--limit="));
   const limit = limitArg ? Number(limitArg.slice(8)) || 50 : 50;
 
-  // 1. Pull every agent's latest open positions.
+  // 1. Pull every agent's latest open positions. Roster is discovered from R2
+  //    (not hardcoded) so a backend slot rename never silently drops an agent.
+  const AGENTS = await discoverAgents();
+  console.log(`Agents discovered: ${AGENTS.length} (${AGENTS.map((a) => a.replace("s1-match-reader-", "")).join(", ")})`);
   const positions: Pos[] = [];
   for (const agent of AGENTS) {
-    const doc = await newestRun(agent);
+    const doc = await currentRun(agent);
     // Normalize the backend agent name to its brand handle (minimax → MISTRAL)
     // via the one shared alias in data/swarm-identity.ts.
     const handle = canonicalHandle(agent.replace("s1-match-reader-", ""));
