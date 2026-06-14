@@ -10,6 +10,7 @@
 import { S3Client, ListObjectsV2Command, GetObjectCommand } from "@aws-sdk/client-s3";
 import { canonicalHandle, identityFor } from "../data/swarm-identity";
 import { buildUpcoming } from "./swarm-upcoming";
+import { closedPnl, isStubSnap, tradeResult } from "./swarm-agent-shape";
 
 const BUCKET = "nickai-swarmarena-internal";
 
@@ -126,7 +127,9 @@ function relTime(iso?: string): string {
   return h < 24 ? `${h}h ago` : `${Math.floor(h / 24)}d ago`;
 }
 function streakOf(closed: any[]): string {
-  const wl = closed.map((t) => String(t.result ?? "").toLowerCase()).filter((r) => r === "win" || r === "loss");
+  // Bug A: derive win/loss via tradeResult (handles the realized_pnl_usd writers
+  // that omit `result` — infers from last_price) so the streak isn't blank.
+  const wl = closed.map(tradeResult).filter((r) => r === "win" || r === "loss");
   if (!wl.length) return "—";
   const last = wl[wl.length - 1];
   let n = 0;
@@ -162,8 +165,8 @@ export function toEngineAgent(profile: any, snap: any, runs: any[], kickoff?: Ma
   );
   const top = positions[0];
   const closed = collectClosedTrades(runs, snap);
-  const cWins = closed.filter((t) => String(t.result).toLowerCase() === "win").length;
-  const cLosses = closed.filter((t) => String(t.result).toLowerCase() === "loss").length;
+  const cWins = closed.filter((t) => tradeResult(t) === "win").length;
+  const cLosses = closed.filter((t) => tradeResult(t) === "loss").length;
   const wins = perf.wins ?? (closed.length ? cWins : null);
   const losses = perf.losses ?? (closed.length ? cLosses : null);
   const pickPct =
@@ -175,7 +178,7 @@ export function toEngineAgent(profile: any, snap: any, runs: any[], kickoff?: Ma
   const record = wins != null && losses != null ? `${wins}-${losses}` : undefined;
   const lastClosed = closed.at(-1);
   const lastTrade = lastClosed
-    ? { pnl: Number((lastClosed.pnl_usd ?? 0).toFixed(2)), ago: relTime(lastClosed.closed_iso) }
+    ? { pnl: Number(closedPnl(lastClosed).toFixed(2)), ago: relTime(lastClosed.closed_iso) }
     : undefined;
   const streak = streakOf(closed);
   const nextIso = perf.next_run_iso ?? snap.nextRunISO;
@@ -285,14 +288,21 @@ export async function buildSwarmDeck(opts: { prefix?: string; at?: string } = {}
       .filter(Boolean)
       .sort((a: any, b: any) => new Date(a.timestamp ?? 0).getTime() - new Date(b.timestamp ?? 0).getTime());
 
+    // Bug B: the writer intermittently overwrites snapshot.json (and can write a
+    // stub run file) with an empty stub, then self-heals next run. Drop stub runs
+    // so they never dip the equity curve or become the "latest run", and when the
+    // snapshot itself is a stub fall back to the most recent non-stub run — so an
+    // agent never renders flat at its starting book mid-hiccup.
+    const realRuns = allRuns.filter((r: any) => !isStubSnap(r));
     if (opts.at) {
-      const upto = allRuns.filter((r: any) => new Date(r.timestamp ?? 0).getTime() <= atMs);
-      if (!upto.length) continue; // agent didn't exist yet at this point
+      const upto = realRuns.filter((r: any) => new Date(r.timestamp ?? 0).getTime() <= atMs);
+      if (!upto.length) continue; // agent had no real run at/at-or-before this point
       agents.push(toEngineAgent(profile, upto[upto.length - 1], upto, kickoff));
     } else {
       const snap = await getJson<any>(c, `${prefix}snapshot.json`);
       if (!snap) continue;
-      agents.push(toEngineAgent(profile, snap, allRuns, kickoff));
+      const effSnap = isStubSnap(snap) ? (realRuns[realRuns.length - 1] ?? snap) : snap;
+      agents.push(toEngineAgent(profile, effSnap, realRuns, kickoff));
     }
   }
   agents.sort((a, b) => b.roiPct - a.roiPct);
