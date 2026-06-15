@@ -103,10 +103,11 @@ const done = (l: Ledger, key: string) => key in l.actions;
 
 // ── Time helpers ────────────────────────────────────────────────────────────
 const MIN = 60_000;
-// Slate "day" boundary in Badi's timezone (Dubai, UTC+4), so "the day's first
-// game" matches when he posts rather than cutting at UTC midnight.
-const DUBAI_OFFSET_MIN = 4 * 60;
-const slateDay = (ms: number) => new Date(ms + DUBAI_OFFSET_MIN * MIN).toISOString().slice(0, 10);
+// Slate "day" = the US matchday in US Eastern, which is how the World Cup
+// schedule is grouped. A late US-evening kickoff that lands after 00:00 UTC is
+// still the same matchday, so group by ET date (not UTC, not Dubai) to fire one
+// leaderboard per matchday.
+const slateDay = (ms: number) => new Date(ms).toLocaleDateString("en-CA", { timeZone: "America/New_York" });
 const kickoffMs = (m: Match) => new Date(m.scheduled_at).getTime();
 
 // ── DB ────────────────────────────────────────────────────────────────────--
