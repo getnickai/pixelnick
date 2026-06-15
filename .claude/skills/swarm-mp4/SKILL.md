@@ -61,8 +61,13 @@ rendering** — a stale file silently renders old numbers.
 - **Result / "won pick" card** (settled fixtures): refresh the feed →
   `bun scripts/swarm-results.ts` (writes `public/swarm-arena-cards/results.json`).
 
-Output lands in `out/…`. `out/` is gitignored. After rendering, report the
-absolute path(s) and offer to reveal (`open out/<dir>`).
+**All renders land in one folder: `out/mp4/`** (the default `--out` for every
+script — agent, leaderboard, consensus, preview, result). `out/` is gitignored.
+Game/result files use **full team names**, not codes, so they're easy to find:
+`consensus-germany-vs-curacao-btts.mp4`, `result-germany-vs-curacao-totals.mp4`,
+`consensus-preview-canada-vs-bosnia-herzegovina.mp4`; agents `model-<handle>.mp4`,
+leaderboard `leaderboard-model.mp4`. Don't pass `--out` unless you want a
+different folder. After rendering, report the path(s) and offer `open out/mp4`.
 
 ## The design → command matrix
 All commands run from the render workspace above. Add `--mp4` for video
@@ -71,10 +76,10 @@ committed `history/` dir — **use it for on-demand downloads.**
 
 | Design | What it is | Command |
 |---|---|---|
-| **Agent — model card** (Onur's design, animated) | per-agent card, the `/motion/swarm-arena-model-card` choreography | `bun scripts/swarm-adapter.ts` then `bun scripts/generate-swarm-cards.ts --deck=public/swarm-arena-cards/live-deck.json --card=model --mp4 --no-archive [--slug=model-<handle>] --out=out/swarm-model` |
-| **Leaderboard — model design** (animated) | the ranking in the model-card design language; bottom-up reveal | `bun scripts/swarm-adapter.ts` then `bun scripts/generate-swarm-cards.ts --deck=public/swarm-arena-cards/live-deck.json --card=leaderboard --mp4 --no-archive --out=out/swarm-model` → `leaderboard-model.{png,mp4}` |
-| **Games — consensus "Market vs Agents"** (animated) | per-fixture/market, UPCOMING; slot-machine + blur-edge reveal | `bun scripts/swarm-consensus.ts` then `bun scripts/render-consensus.ts --game="<substr>" [--market=btts\|totals\|moneyline] [--all] [--no-mp4] --out=out/consensus` |
-| **Result — "won pick"** (animated) | the consensus design after the whistle, SETTLED: final score in the teams row, HIT/MISS chip, "agents banked +$X" payout (slot reveal) + per-agent $ bars | `bun scripts/swarm-results.ts` then `bun scripts/render-results.ts --game="<substr>" [--market=btts\|totals\|moneyline] [--all] [--no-top] [--no-mp4] --out=out/results` |
+| **Agent — model card** (Onur's design, animated) | per-agent card, the `/motion/swarm-arena-model-card` choreography | `bun scripts/swarm-adapter.ts` then `bun scripts/generate-swarm-cards.ts --deck=public/swarm-arena-cards/live-deck.json --card=model --mp4 --no-archive [--slug=model-<handle>]` |
+| **Leaderboard — model design** (animated) | the ranking in the model-card design language; bottom-up reveal | `bun scripts/swarm-adapter.ts` then `bun scripts/generate-swarm-cards.ts --deck=public/swarm-arena-cards/live-deck.json --card=leaderboard --mp4 --no-archive` → `leaderboard-model.{png,mp4}` |
+| **Games — consensus "Market vs Agents"** (animated) | per-fixture/market, UPCOMING; slot-machine + blur-edge reveal | `bun scripts/swarm-consensus.ts` then `bun scripts/render-consensus.ts --game="<substr>" [--market=btts\|totals\|moneyline] [--all] [--no-mp4]` |
+| **Result — "won pick"** (animated) | the consensus design after the whistle, SETTLED: final score in the teams row, HIT/MISS chip, "agents banked +$X" payout (slot reveal) + per-agent $ bars | `bun scripts/swarm-results.ts` then `bun scripts/render-results.ts --game="<substr>" [--market=btts\|totals\|moneyline] [--all] [--no-top] [--no-mp4]` |
 | **Agent — classic editorial** (broadcast still) | the original `swarm-card` engine agent card | `bun scripts/generate-swarm-cards.ts --slug=agent-<handle> --mp4 --no-archive` |
 | **Leaderboard — classic** (still) | the original engine leaderboard | `bun scripts/generate-swarm-cards.ts --slug=leaderboard --mp4 --no-archive` |
 
@@ -85,7 +90,8 @@ committed `history/` dir — **use it for on-demand downloads.**
 - The model card + model leaderboard are **agent/ranking only**; game/match
   cards are the consensus design (see below). Slugs: model agent =
   `model-<handle>`, model leaderboard = `leaderboard-model`, consensus =
-  `consensus-<market>-<homeCode>-<awayCode>`.
+  `consensus-<home>-vs-<away>-<market>`, result = `result-<home>-vs-<away>-<market>`
+  (full team names).
 
 ## The games/match card IS the consensus card
 **For any game/match, always render the consensus "Market vs Agents" design**
@@ -104,7 +110,7 @@ agent positions produces no consensus record**.
 mode** — never fabricate an agents side, and never fall back to the old card:
 
 ```bash
-bun scripts/render-consensus.ts --preview-game="<substr>" --out=out/consensus
+bun scripts/render-consensus.ts --preview-game="<substr>"
 ```
 
 This pulls the fixture + Elo from `/api/swarm-upcoming` and renders the
@@ -178,10 +184,10 @@ swarm's Over 2.5 hit and 5/8 agents banked +$564.
 cd "${PIXELNICK_DIR:-$HOME/claude/pixelnick}"   # any up-to-date `main` checkout
 bun scripts/swarm-adapter.ts
 bun scripts/generate-swarm-cards.ts --deck=public/swarm-arena-cards/live-deck.json \
-  --card=leaderboard --mp4 --no-archive --out=out/swarm-model
+  --card=leaderboard --mp4 --no-archive
 bun scripts/swarm-consensus.ts
-bun scripts/render-consensus.ts --game="usa vs paraguay" --out=out/consensus
+bun scripts/render-consensus.ts --game="usa vs paraguay"
 # a settled "won pick" result card for a finished game
 bun scripts/swarm-results.ts
-bun scripts/render-results.ts --game="usa vs paraguay" --out=out/results
+bun scripts/render-results.ts --game="usa vs paraguay"
 ```
