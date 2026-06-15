@@ -15,6 +15,7 @@ import { Check, ChevronDown, Download, RefreshCw } from "lucide-react";
 import SwarmArenaModelCard from "@/components/swarm-arena-model-card";
 import SwarmArenaLeaderboardCard from "@/components/swarm-arena-leaderboard-card";
 import ConsensusCard, { type ConsensusCardData } from "@/components/consensus-card-view";
+import ResultCard, { type ResultCardData } from "@/components/result-card-view";
 import { Button } from "@/components/ui/button";
 import {
   DropdownMenu,
@@ -306,6 +307,7 @@ export function SwarmArenaHistory() {
   // otherwise the same design in Elo preview mode.
   const [upcoming, setUpcoming] = useState<UpcomingGame[]>([]);
   const [consensus, setConsensus] = useState<ConsensusCardData[]>([]);
+  const [results, setResults] = useState<ResultCardData[]>([]);
   useEffect(() => {
     const ctrl = new AbortController();
     fetch("/api/swarm-upcoming", { cache: "no-store", signal: ctrl.signal })
@@ -315,6 +317,10 @@ export function SwarmArenaHistory() {
     fetch("/swarm-arena-cards/consensus.json", { cache: "no-store", signal: ctrl.signal })
       .then((r) => (r.ok ? r.json() : Promise.reject(`consensus ${r.status}`)))
       .then((d: { records?: ConsensusCardData[] }) => setConsensus(d.records ?? []))
+      .catch(() => {});
+    fetch("/swarm-arena-cards/results.json", { cache: "no-store", signal: ctrl.signal })
+      .then((r) => (r.ok ? r.json() : Promise.reject(`results ${r.status}`)))
+      .then((d: { records?: ResultCardData[] }) => setResults(d.records ?? []))
       .catch(() => {});
     return () => ctrl.abort();
   }, [tick]);
@@ -331,6 +337,12 @@ export function SwarmArenaHistory() {
       return null;
     })
     .filter((x): x is { slug: string; caption: string; data: ConsensusCardData } => x !== null);
+  // Settled "won pick" result cards (static results.json snapshot, like consensus).
+  const resultCards = results.map((r) => ({
+    slug: `result-${r.marketType}-${r.homeCode}-${r.awayCode}`.toLowerCase(),
+    caption: `${r.home} ${r.homeScore}–${r.awayScore} ${r.away}`,
+    data: r,
+  }));
   const leaderboardData = agents.length ? toLeaderboardData(agents) : null;
   const timelineOptions = useMemo(
     () => [
@@ -452,6 +464,28 @@ export function SwarmArenaHistory() {
                       height={MODEL_CARD_H}
                     >
                       <ConsensusCard data={c.data} />
+                    </CardCell>
+                  ))}
+                </div>
+              </section>
+            ) : null}
+
+            {/* Results — settled "won pick" cards (static results.json) */}
+            {resultCards.length ? (
+              <section className="flex flex-col gap-3">
+                <h2 className="font-mono text-[11px] font-semibold uppercase tracking-[0.14em] text-muted-foreground">
+                  Results
+                </h2>
+                <div className="grid gap-7 [grid-template-columns:repeat(auto-fill,minmax(286px,1fr))]">
+                  {resultCards.map((c) => (
+                    <CardCell
+                      key={c.slug}
+                      slug={c.slug}
+                      caption={c.caption}
+                      width={MODEL_CARD_W}
+                      height={MODEL_CARD_H}
+                    >
+                      <ResultCard data={c.data} />
                     </CardCell>
                   ))}
                 </div>
