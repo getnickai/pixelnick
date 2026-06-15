@@ -21,6 +21,8 @@
 /public/figma/avatars/
 # live data inputs (the .example template stays committed)
 /data/incoming/
+# swarm-auto cron idempotency ledger (runtime state; carried via Actions cache)
+/data/swarm-auto-ledger.json
 
 # production
 /build
