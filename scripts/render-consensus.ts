@@ -51,7 +51,7 @@ function parse(argv: string[]) {
   const previewGames: string[] = [];
   const f = { market: "", all: false, top: true, mp4: true, src: DEFAULT_SRC,
     feed: path.join(PUBLIC_DIR, "swarm-arena-cards", "consensus.json"),
-    out: path.join(process.cwd(), "out", "consensus") };
+    out: path.join(process.cwd(), "out", "mp4") };
   for (const a of argv) {
     if (a.startsWith("--game=")) games.push(a.slice(7).toLowerCase());
     else if (a.startsWith("--preview-game=")) previewGames.push(a.slice(15).toLowerCase());
@@ -67,7 +67,8 @@ function parse(argv: string[]) {
   return { ...f, games, previewGames };
 }
 
-const slugify = (s: string) => s.toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/^-|-$/g, "");
+const slugify = (s: string) =>
+  s.toLowerCase().normalize("NFD").replace(/[̀-ͯ]/g, "").replace(/[^a-z0-9]+/g, "-").replace(/^-|-$/g, "");
 
 /** Consensus mode: select records from consensus.json. */
 function pickConsensus(records: Rec[], o: ReturnType<typeof parse>): Job[] {
@@ -81,7 +82,7 @@ function pickConsensus(records: Rec[], o: ReturnType<typeof parse>): Job[] {
         return o.top ? [[...matched].sort((a, b) => b.edgePp - a.edgePp)[0]] : matched;
       });
   return chosen.map((r) => ({
-    slug: `consensus-${r.marketType}-${slugify(r.homeCode)}-${slugify(r.awayCode)}`,
+    slug: `consensus-${slugify(r.home)}-vs-${slugify(r.away)}-${r.marketType}`,
     desc: `${r.game} [${r.marketType}/${r.selection}${r.line != null ? " " + r.line : ""}] swarm ${Math.round(r.consensus * 100)}% vs mkt ${Math.round(r.marketPrice * 100)}% edge ${r.edgePp >= 0 ? "+" : ""}${r.edgePp}pp (${r.agentsN}/${r.agentsTotal})`,
     data: { ...r, slide: undefined } as unknown as Record<string, unknown>,
   }));
@@ -124,7 +125,7 @@ async function pickPreview(o: ReturnType<typeof parse>): Promise<Job[]> {
       modelRead: modelRead(g),
     };
     return [{
-      slug: `consensus-preview-${slugify(g.home.code)}-${slugify(g.away.code)}`,
+      slug: `consensus-preview-${slugify(g.home.name)}-vs-${slugify(g.away.name)}`,
       desc: `${g.home.name} vs ${g.away.name} [Elo preview] win% ${g.odds.homePct}/${g.odds.drawPct}/${g.odds.awayPct}${g.elo ? ` · elo ${g.elo.home}/${g.elo.away}` : ""}`,
       data,
     }];

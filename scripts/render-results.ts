@@ -41,7 +41,7 @@ function parse(argv: string[]) {
   const f = {
     market: "", all: false, top: true, mp4: true,
     feed: path.join(PUBLIC_DIR, "swarm-arena-cards", "results.json"),
-    out: path.join(process.cwd(), "out", "results"),
+    out: path.join(process.cwd(), "out", "mp4"),
   };
   for (const a of argv) {
     if (a.startsWith("--game=")) games.push(a.slice(7).toLowerCase());
@@ -56,7 +56,8 @@ function parse(argv: string[]) {
   return { ...f, games };
 }
 
-const slugify = (s: string) => s.toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/^-|-$/g, "");
+const slugify = (s: string) =>
+  s.toLowerCase().normalize("NFD").replace(/[̀-ͯ]/g, "").replace(/[^a-z0-9]+/g, "-").replace(/^-|-$/g, "");
 
 function pick(records: Rec[], o: ReturnType<typeof parse>): Job[] {
   let recs = records;
@@ -69,7 +70,7 @@ function pick(records: Rec[], o: ReturnType<typeof parse>): Job[] {
         return o.top ? [[...matched].sort((a, b) => b.totalPnl - a.totalPnl)[0]] : matched;
       });
   return chosen.map((r) => ({
-    slug: `result-${r.marketType}-${slugify(r.homeCode)}-${slugify(r.awayCode)}`,
+    slug: `result-${slugify(r.home)}-vs-${slugify(r.away)}-${r.marketType}`,
     desc: `${r.home} ${r.homeScore}-${r.awayScore} ${r.away} [${r.marketType}/${r.selection}${r.line != null ? " " + r.line : ""}] ${r.hit ? "HIT" : "MISS"} ${r.totalPnl >= 0 ? "+" : ""}$${r.totalPnl} (${r.agentsN}/${r.agentsTotal})`,
     data: r as unknown as Record<string, unknown>,
   }));

@@ -58,7 +58,7 @@ function parseFlags(argv: string[]): Flags {
     size: "portrait",
     layout: "editorial",
     design: "classic",
-    out: path.join(process.cwd(), "out", "swarm-arena"),
+    out: path.join(process.cwd(), "out", "mp4"),
     mp4: false,
     seconds: 5,
   };
