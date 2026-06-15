@@ -112,9 +112,9 @@ function team(name: string) {
 // "Thu, Jun 11 · 19:00 UTC" — stable display string.
 function fmtKickoff(iso: string): string {
   const d = new Date(iso);
-  const date = d.toLocaleDateString("en-US", { weekday: "short", month: "short", day: "numeric", timeZone: "UTC" });
-  const time = d.toLocaleTimeString("en-US", { hour: "2-digit", minute: "2-digit", hour12: false, timeZone: "UTC" });
-  return `${date} · ${time} UTC`;
+  const date = d.toLocaleDateString("en-US", { weekday: "short", month: "short", day: "numeric", timeZone: "America/New_York" });
+  const time = d.toLocaleTimeString("en-US", { hour: "numeric", minute: "2-digit", timeZone: "America/New_York", timeZoneName: "short" });
+  return `${date} · ${time}`;
 }
 
 export type UpcomingGame = {

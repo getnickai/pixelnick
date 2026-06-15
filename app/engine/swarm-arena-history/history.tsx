@@ -16,6 +16,7 @@ import SwarmArenaModelCard from "@/components/swarm-arena-model-card";
 import SwarmArenaLeaderboardCard from "@/components/swarm-arena-leaderboard-card";
 import ConsensusCard, { type ConsensusCardData } from "@/components/consensus-card-view";
 import ResultCard, { type ResultCardData } from "@/components/result-card-view";
+import FixtureCard, { type FixtureCardData } from "@/components/fixture-card";
 import { Button } from "@/components/ui/button";
 import {
   DropdownMenu,
@@ -36,6 +37,36 @@ import { cn } from "@/lib/utils";
 
 const LEADERBOARD_W = 650;
 const LEADERBOARD_H = 1150;
+
+/** A fixture from the schedule feed (public/swarm-arena-cards/fixtures.json). */
+type Fixture = {
+  matchUid: string;
+  day: string; // YYYY-MM-DD (UTC)
+  kickoffISO: string;
+  kickoff?: string;
+  competition?: string;
+  stage?: string;
+  venue?: string;
+  home: { name: string; code: string };
+  away: { name: string; code: string };
+  status?: string | null;
+  settled: boolean;
+  homeScore?: number | null;
+  awayScore?: number | null;
+  winner?: string | null;
+};
+
+/** A result record (results.json) — ResultCardData plus the day stamp added by swarm-results.ts. */
+type DatedResult = ResultCardData & { day?: string; kickoffISO?: string };
+
+/** Day label for the timeline dropdown, e.g. "Sun, Jun 14". */
+const dayLabel = (d: string) =>
+  new Date(`${d}T12:00:00Z`).toLocaleDateString("en-US", {
+    weekday: "short",
+    month: "short",
+    day: "numeric",
+    timeZone: "UTC",
+  });
 
 /** Sub-nav categories — one card design each. Synced to ?view= for sharable links. */
 type HistoryView = "leaderboard" | "agents" | "games" | "results";
@@ -92,20 +123,6 @@ function previewFromGame(g: UpcomingGame): ConsensusCardData {
         : undefined,
     modelRead,
   };
-}
-
-/** Highest-edge consensus record matching a fixture (by team codes), else null. */
-function matchConsensus(
-  records: ConsensusCardData[],
-  g: UpcomingGame,
-): ConsensusCardData | null {
-  const hits = records.filter(
-    (r) =>
-      r.homeCode?.toUpperCase() === g.home.code.toUpperCase() &&
-      r.awayCode?.toUpperCase() === g.away.code.toUpperCase(),
-  );
-  if (!hits.length) return null;
-  return [...hits].sort((x, y) => (y.edgePp ?? 0) - (x.edgePp ?? 0))[0];
 }
 
 const THUMB_SCALE = 0.44;
@@ -238,11 +255,16 @@ export function SwarmArenaHistory() {
   /** Background refresh in flight while a deck is already on screen (non-blocking). */
   const [revalidating, setRevalidating] = useState(false);
   const [error, setError] = useState<string | null>(null);
-  /** "" = live (now); otherwise a YYYY-MM-DD run date from the timeline. */
-  const [when, setWhen] = useState("");
-  const [dates, setDates] = useState<string[]>(() => {
-    const live = deckCache.get("live")?.deck;
-    return live?.availableDates ? [...live.availableDates].reverse() : [];
+  // Selected MATCH DAY (YYYY-MM-DD), from the timeline. Drives Games/Results
+  // filtering and the deck snapshot. Future days have no deck snapshot, so the
+  // deck key (`when`) falls back to live for them.
+  const todayStr = new Date().toLocaleDateString("en-CA", { timeZone: "America/New_York" });
+  const [day, setDay] = useState<string>("");
+  const when = day && day <= todayStr ? day : "";
+  /** The WC schedule (all fixtures by day) — drives the timeline + Games tab. */
+  const [schedule, setSchedule] = useState<{ days: string[]; fixtures: Fixture[] }>({
+    days: [],
+    fixtures: [],
   });
   const [updatedAt, setUpdatedAt] = useState<string | null>(() => {
     const live = deckCache.get("live");
@@ -273,9 +295,6 @@ export function SwarmArenaHistory() {
       setDeck(cached.deck);
       setError(null);
       setFetching(false);
-      setDates((cur) =>
-        cur.length ? cur : [...(cached.deck.availableDates ?? [])].reverse(),
-      );
       // Historical = immutable; live = revalidate only once stale.
       const stale = !when && Date.now() - cached.fetchedAt > LIVE_STALE_MS;
       if (!stale) {
@@ -308,10 +327,6 @@ export function SwarmArenaHistory() {
         setFetching(false);
         setRevalidating(false);
         setUpdatedAt(new Date().toLocaleTimeString());
-        // Populate the timeline once: each available run date, newest first.
-        setDates((cur) =>
-          cur.length ? cur : [...(d.availableDates ?? [])].reverse(),
-        );
       })
       .catch((err) => {
         // On abort a newer effect run owns inFlight — leave it alone.
@@ -347,6 +362,25 @@ export function SwarmArenaHistory() {
     window.history.replaceState(null, "", url.toString());
   }, []);
 
+  // Match day: seed from ?day= on mount, write back on change.
+  useEffect(() => {
+    const p = new URLSearchParams(window.location.search).get("day");
+    if (p) setDay(p);
+  }, []);
+  const selectDay = useCallback((d: string) => {
+    setDay(d);
+    const url = new URL(window.location.href);
+    url.searchParams.set("day", d);
+    window.history.replaceState(null, "", url.toString());
+  }, []);
+  // Default to today (or the latest match day on/before today) once the schedule
+  // loads — unless ?day= already picked one.
+  useEffect(() => {
+    if (day || !schedule.days.length) return;
+    const past = schedule.days.filter((d) => d <= todayStr);
+    setDay(past.length ? past[past.length - 1] : schedule.days[0]);
+  }, [schedule.days, day, todayStr]);
+
   // Auto-refresh only in live mode; a historical point is fixed. Skip the
   // tick while a request is in flight rather than aborting it.
   useEffect(() => {
@@ -363,7 +397,7 @@ export function SwarmArenaHistory() {
   // otherwise the same design in Elo preview mode.
   const [upcoming, setUpcoming] = useState<UpcomingGame[]>([]);
   const [consensus, setConsensus] = useState<ConsensusCardData[]>([]);
-  const [results, setResults] = useState<ResultCardData[]>([]);
+  const [results, setResults] = useState<DatedResult[]>([]);
   useEffect(() => {
     const ctrl = new AbortController();
     fetch("/api/swarm-upcoming", { cache: "no-store", signal: ctrl.signal })
@@ -376,40 +410,69 @@ export function SwarmArenaHistory() {
       .catch(() => {});
     fetch("/swarm-arena-cards/results.json", { cache: "no-store", signal: ctrl.signal })
       .then((r) => (r.ok ? r.json() : Promise.reject(`results ${r.status}`)))
-      .then((d: { records?: ResultCardData[] }) => setResults(d.records ?? []))
+      .then((d: { records?: DatedResult[] }) => setResults(d.records ?? []))
+      .catch(() => {});
+    fetch("/swarm-arena-cards/fixtures.json", { cache: "no-store", signal: ctrl.signal })
+      .then((r) => (r.ok ? r.json() : Promise.reject(`fixtures ${r.status}`)))
+      .then((d: { days?: string[]; fixtures?: Fixture[] }) =>
+        setSchedule({ days: d.days ?? [], fixtures: d.fixtures ?? [] }),
+      )
       .catch(() => {});
     return () => ctrl.abort();
   }, [tick]);
 
   const agents = deck ? dedupeByHandle(deck.agents) : [];
   const period = deck?.at ? deck.at.slice(0, 10) : "live";
-  // One card per upcoming fixture: full consensus where covered, else Elo preview.
-  // Skip fixtures with neither agent coverage nor Elo (nothing real to show).
-  const upcomingCards = upcoming
-    .map((g) => {
-      const rec = matchConsensus(consensus, g);
-      if (rec) return { slug: `consensus-${g.home.code}-${g.away.code}`.toLowerCase(), caption: `${g.home.name} vs ${g.away.name}`, data: rec };
-      if (g.odds.hasElo) return { slug: `preview-${g.home.code}-${g.away.code}`.toLowerCase(), caption: `${g.home.name} vs ${g.away.name}`, data: previewFromGame(g) };
-      return null;
-    })
-    .filter((x): x is { slug: string; caption: string; data: ConsensusCardData } => x !== null);
-  // Settled "won pick" result cards (static results.json snapshot, like consensus).
-  const resultCards = results.map((r) => ({
-    slug: `result-${r.marketType}-${r.homeCode}-${r.awayCode}`.toLowerCase(),
-    caption: `${r.home} ${r.homeScore}–${r.awayScore} ${r.away}`,
-    data: r,
-  }));
+  // Index the agents' game bets + the Elo feed by team-code pair, so each of the
+  // day's fixtures can find its richest card.
+  const consensusByPair = useMemo(() => {
+    const m = new Map<string, ConsensusCardData>();
+    for (const r of consensus)
+      if (r.homeCode && r.awayCode) m.set(`${r.homeCode}-${r.awayCode}`.toUpperCase(), r);
+    return m;
+  }, [consensus]);
+  const upcomingByPair = useMemo(() => {
+    const m = new Map<string, UpcomingGame>();
+    for (const g of upcoming) m.set(`${g.home.code}-${g.away.code}`.toUpperCase(), g);
+    return m;
+  }, [upcoming]);
+  type GameCard =
+    | { kind: "consensus"; slug: string; caption: string; data: ConsensusCardData }
+    | { kind: "fixture"; slug: string; caption: string; data: FixtureCardData };
+  // Games for the selected day: full Market-vs-Agents consensus where the agents
+  // cover an upcoming fixture, an Elo preview where we have odds, else a neutral
+  // fixture card (final score once settled, or matchup + kickoff if no coverage).
+  const gameCards: GameCard[] = schedule.fixtures
+    .filter((f) => f.day === day)
+    .map((f) => {
+      const pair = `${f.home.code}-${f.away.code}`.toUpperCase();
+      const caption = `${f.home.name} ${f.settled ? `${f.homeScore}–${f.awayScore}` : "vs"} ${f.away.name}`;
+      const cons = !f.settled ? consensusByPair.get(pair) : undefined;
+      if (cons) return { kind: "consensus", slug: `consensus-${pair}`.toLowerCase(), caption, data: cons };
+      const up = !f.settled ? upcomingByPair.get(pair) : undefined;
+      if (up && up.odds?.hasElo)
+        return { kind: "consensus", slug: `preview-${pair}`.toLowerCase(), caption, data: previewFromGame(up) };
+      const fc: FixtureCardData = {
+        home: f.home.name, away: f.away.name, homeCode: f.home.code, awayCode: f.away.code,
+        competition: f.competition, stage: f.stage, venue: f.venue, kickoff: f.kickoff,
+        settled: f.settled, homeScore: f.homeScore, awayScore: f.awayScore, winner: f.winner,
+      };
+      return { kind: "fixture", slug: `fixture-${pair}`.toLowerCase(), caption, data: fc };
+    });
+  // Won-pick result cards for the selected day (results.json, day-stamped).
+  const resultCards = results
+    .filter((r) => r.day === day)
+    .map((r) => ({
+      slug: `result-${r.marketType}-${r.homeCode}-${r.awayCode}`.toLowerCase(),
+      caption: `${r.home} ${r.homeScore}–${r.awayScore} ${r.away}`,
+      data: r as ResultCardData,
+    }));
   const leaderboardData = agents.length ? toLeaderboardData(agents) : null;
   const timelineOptions = useMemo(
-    () => [
-      { value: "", label: "Live (now)" },
-      ...dates.map((d) => ({ value: d, label: d })),
-    ],
-    [dates],
+    () => schedule.days.map((d) => ({ value: d, label: dayLabel(d) })),
+    [schedule.days],
   );
-  const timelineLabel =
-    timelineOptions.find((option) => option.value === when)?.label ??
-    "Live (now)";
+  const timelineLabel = day ? dayLabel(day) : "Select day";
   const status = fetching
     ? "fetching deck…"
     : error
@@ -444,18 +507,15 @@ export function SwarmArenaHistory() {
                 </Button>
               }
             />
-            <DropdownMenuContent align="end" className="min-w-[8.5rem]">
+            <DropdownMenuContent align="end" className="max-h-[60vh] min-w-[8.5rem] overflow-y-auto">
               {timelineOptions.map(({ value, label }) => (
                 <DropdownMenuItem
-                  key={value || "live"}
+                  key={value}
                   className="cursor-pointer text-xs"
-                  onClick={() => {
-                    setFetching(true);
-                    setWhen(value);
-                  }}
+                  onClick={() => selectDay(value)}
                 >
                   {label}
-                  {when === value ? (
+                  {day === value ? (
                     <Check className="ml-auto size-3.5 text-primary-500" />
                   ) : null}
                 </DropdownMenuItem>
@@ -544,9 +604,9 @@ export function SwarmArenaHistory() {
             ))}
 
           {view === "games" &&
-            (upcomingCards.length ? (
+            (gameCards.length ? (
               <div className="grid gap-7 [grid-template-columns:repeat(auto-fill,minmax(286px,1fr))]">
-                {upcomingCards.map((c) => (
+                {gameCards.map((c) => (
                   <CardCell
                     key={c.slug}
                     slug={c.slug}
@@ -554,13 +614,17 @@ export function SwarmArenaHistory() {
                     width={MODEL_CARD_W}
                     height={MODEL_CARD_H}
                   >
-                    <ConsensusCard data={c.data} />
+                    {c.kind === "consensus" ? (
+                      <ConsensusCard data={c.data} />
+                    ) : (
+                      <FixtureCard data={c.data} />
+                    )}
                   </CardCell>
                 ))}
               </div>
             ) : (
               <p className="font-mono text-xs text-muted-foreground">
-                No upcoming games right now.
+                {schedule.days.length ? "No games scheduled for this day." : "Loading schedule…"}
               </p>
             ))}
 
@@ -581,7 +645,7 @@ export function SwarmArenaHistory() {
               </div>
             ) : (
               <p className="font-mono text-xs text-muted-foreground">
-                No settled results yet.
+                No settled results for this day{day && day > todayStr ? " — games haven't kicked off." : " yet."}
               </p>
             ))}
         </div>
