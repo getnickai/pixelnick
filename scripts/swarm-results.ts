@@ -85,9 +85,12 @@ const CODE: Record<string, string> = {
 };
 const codeFor = (name: string) => CODE[name] ?? name.slice(0, 3).toUpperCase();
 
+// US Eastern time — canonical "US time" for the day bucket + display.
+const TZ = "America/New_York";
+const etDay = (iso: string) => new Date(iso).toLocaleDateString("en-CA", { timeZone: TZ });
 function fmtDate(iso: string): string {
   return new Date(iso).toLocaleDateString("en-US", {
-    weekday: "short", month: "short", day: "numeric", timeZone: "UTC",
+    weekday: "short", month: "short", day: "numeric", timeZone: TZ,
   });
 }
 /** "United States vs Paraguay" → ["usa","paraguay"] (canon). */
@@ -240,6 +243,8 @@ async function main() {
       stage: String(fix.stage ?? "Group Stage").replace(/\s*-\s*/g, " · "),
       venue: fix.venue ?? null,
       kickoff: fmtDate(new Date(fix.scheduled_at).toISOString()),
+      kickoffISO: new Date(fix.scheduled_at).toISOString(),
+      day: etDay(new Date(fix.scheduled_at).toISOString()), // YYYY-MM-DD in US Eastern, for per-day filtering
       homeScore: Number(fix.home_score),
       awayScore: Number(fix.away_score),
       winner: fix.winner ?? null,
