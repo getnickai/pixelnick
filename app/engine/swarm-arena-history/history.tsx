@@ -68,6 +68,36 @@ const dayLabel = (d: string) =>
     timeZone: "UTC",
   });
 
+/** Short market tag for a consensus-card caption (one game can have several). */
+function marketTag(r: ConsensusCardData): string {
+  if (r.marketType === "btts") return "BTTS";
+  if (r.marketType === "totals")
+    return `${String(r.selection).toLowerCase() === "under" ? "Under" : "Over"} ${r.line}`;
+  const team = r.selection === "Away" ? r.away : r.selection === "Home" ? r.home : null;
+  return team ? `${team} ML` : "Moneyline";
+}
+
+/** One consensus record per market (marketType + line) — the swarm's dominant
+ *  side (most agents, then biggest edge), so a game shows each market once
+ *  rather than contradictory Yes/No cards. Sorted by conviction. */
+function topPerMarket(recs: ConsensusCardData[]): ConsensusCardData[] {
+  const best = new Map<string, ConsensusCardData>();
+  for (const r of recs) {
+    const k = `${r.marketType}|${r.line ?? ""}`;
+    const cur = best.get(k);
+    const better =
+      !cur ||
+      (r.agentsN ?? 0) > (cur.agentsN ?? 0) ||
+      ((r.agentsN ?? 0) === (cur.agentsN ?? 0) && (r.edgePp ?? 0) > (cur.edgePp ?? 0));
+    if (better) best.set(k, r);
+  }
+  return [...best.values()].sort(
+    (a, b) =>
+      (b.agentsN ?? 0) - (a.agentsN ?? 0) ||
+      Math.abs(b.edgePp ?? 0) - Math.abs(a.edgePp ?? 0),
+  );
+}
+
 /** Sub-nav categories — one card design each. Synced to ?view= for sharable links. */
 type HistoryView = "leaderboard" | "agents" | "games" | "results";
 const VIEW_TABS: { key: HistoryView; label: string }[] = [
@@ -426,9 +456,14 @@ export function SwarmArenaHistory() {
   // Index the agents' game bets + the Elo feed by team-code pair, so each of the
   // day's fixtures can find its richest card.
   const consensusByPair = useMemo(() => {
-    const m = new Map<string, ConsensusCardData>();
-    for (const r of consensus)
-      if (r.homeCode && r.awayCode) m.set(`${r.homeCode}-${r.awayCode}`.toUpperCase(), r);
+    const m = new Map<string, ConsensusCardData[]>();
+    for (const r of consensus) {
+      if (!r.homeCode || !r.awayCode) continue;
+      const k = `${r.homeCode}-${r.awayCode}`.toUpperCase();
+      const arr = m.get(k);
+      if (arr) arr.push(r);
+      else m.set(k, [r]);
+    }
     return m;
   }, [consensus]);
   const upcomingByPair = useMemo(() => {
@@ -444,20 +479,44 @@ export function SwarmArenaHistory() {
   // fixture card (final score once settled, or matchup + kickoff if no coverage).
   const gameCards: GameCard[] = schedule.fixtures
     .filter((f) => f.day === day)
-    .map((f) => {
+    .flatMap((f): GameCard[] => {
       const pair = `${f.home.code}-${f.away.code}`.toUpperCase();
-      const caption = `${f.home.name} ${f.settled ? `${f.homeScore}–${f.awayScore}` : "vs"} ${f.away.name}`;
-      const cons = !f.settled ? consensusByPair.get(pair) : undefined;
-      if (cons) return { kind: "consensus", slug: `consensus-${pair}`.toLowerCase(), caption, data: cons };
+      const recs = !f.settled ? consensusByPair.get(pair) : undefined;
+      if (recs && recs.length) {
+        // One consensus card per market the agents cover for this game.
+        return topPerMarket(recs).map((rec) => ({
+          kind: "consensus" as const,
+          slug: `consensus-${pair}-${rec.marketType}-${rec.line ?? ""}-${rec.selection}`
+            .toLowerCase()
+            .replace(/[^a-z0-9]+/g, "-")
+            .replace(/-+$/g, ""),
+          caption: `${f.home.name} v ${f.away.name} · ${marketTag(rec)}`,
+          data: rec,
+        }));
+      }
       const up = !f.settled ? upcomingByPair.get(pair) : undefined;
       if (up && up.odds?.hasElo)
-        return { kind: "consensus", slug: `preview-${pair}`.toLowerCase(), caption, data: previewFromGame(up) };
+        return [
+          {
+            kind: "consensus" as const,
+            slug: `preview-${pair}`.toLowerCase(),
+            caption: `${f.home.name} v ${f.away.name}`,
+            data: previewFromGame(up),
+          },
+        ];
       const fc: FixtureCardData = {
         home: f.home.name, away: f.away.name, homeCode: f.home.code, awayCode: f.away.code,
         competition: f.competition, stage: f.stage, venue: f.venue, kickoff: f.kickoff,
         settled: f.settled, homeScore: f.homeScore, awayScore: f.awayScore, winner: f.winner,
       };
-      return { kind: "fixture", slug: `fixture-${pair}`.toLowerCase(), caption, data: fc };
+      return [
+        {
+          kind: "fixture" as const,
+          slug: `fixture-${pair}`.toLowerCase(),
+          caption: `${f.home.name} ${f.settled ? `${f.homeScore}–${f.awayScore}` : "vs"} ${f.away.name}`,
+          data: fc,
+        },
+      ];
     });
   // Won-pick result cards for the selected day (results.json, day-stamped).
   const resultCards = results
