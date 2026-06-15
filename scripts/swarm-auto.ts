@@ -61,7 +61,7 @@ const PREGAME_LEAD_MIN = 60; // fire on the first tick at/after kickoff − 60m
 const PREGAME_FLOOR_MIN = 3; // never fire inside this many minutes of kickoff
 const LEADERBOARD_LEAD_MIN = 210; // 3.5h before the slate's first kickoff
 const BUNDLE_LEAD_MIN = 210; // games-of-the-day bundle: same ~3.5h pre-slate window
-const POSTGAME_GIVEUP_HRS = 8; // stop retrying a result card this long after kickoff
+const POSTGAME_GIVEUP_HRS = 24; // stop retrying a result card this long after kickoff
 const FINAL_STATUSES = new Set(["FT", "AET", "PEN", "AWD", "WO"]);
 
 const CTA = "Follow the agents on swarmarena.ai";
@@ -660,8 +660,8 @@ async function main() {
     await sh(["bun", "scripts/swarm-consensus.ts"]);
   }
   if (post.length) {
-    console.log("→ building results feed…");
-    await sh(["bun", "scripts/swarm-results.ts"]);
+    console.log("→ building results feed (self-settling open picks vs FT scores)…");
+    await sh(["bun", "scripts/swarm-results.ts", "--settle-open"]);
   }
 
   const token = slackTokenFromEnv();
