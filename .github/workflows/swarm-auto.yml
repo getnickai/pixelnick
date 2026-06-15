@@ -15,10 +15,8 @@ name: Swarm Arena auto cards
 # most 15-min ticks finish in well under a minute.
 
 on:
-  # Cron is intentionally OFF until a manual dispatch run confirms the runner
-  # can reach SWARM_DB_URL + Slack. Uncomment to go live (every 15 min, UTC).
-  # schedule:
-  #   - cron: "*/15 * * * *"
+  schedule:
+    - cron: "*/15 * * * *" # every 15 min (UTC); GitHub may add minor delay
   workflow_dispatch:
     inputs:
       dry_run:

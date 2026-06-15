@@ -52,6 +52,7 @@ const OUT_ROOT = path.join(process.cwd(), "out", "auto");
 const CHANNEL = process.env.SLACK_CHANNEL_SWARM_ARENA ?? process.env.SLACK_CHANNEL_ID ?? "";
 const CONSENSUS_FEED = path.join(process.cwd(), "public", "swarm-arena-cards", "consensus.json");
 const RESULTS_FEED = path.join(process.cwd(), "public", "swarm-arena-cards", "results.json");
+const LIVE_DECK = path.join(process.cwd(), "public", "swarm-arena-cards", "live-deck.json");
 
 const PREGAME_LEAD_MIN = 60; // fire on the first tick at/after kickoff − 60m
 const PREGAME_FLOOR_MIN = 3; // never fire inside this many minutes of kickoff
@@ -102,7 +103,10 @@ const done = (l: Ledger, key: string) => key in l.actions;
 
 // ── Time helpers ────────────────────────────────────────────────────────────
 const MIN = 60_000;
-const utcDate = (ms: number) => new Date(ms).toISOString().slice(0, 10); // YYYY-MM-DD (UTC)
+// Slate "day" boundary in Badi's timezone (Dubai, UTC+4), so "the day's first
+// game" matches when he posts rather than cutting at UTC midnight.
+const DUBAI_OFFSET_MIN = 4 * 60;
+const slateDay = (ms: number) => new Date(ms + DUBAI_OFFSET_MIN * MIN).toISOString().slice(0, 10);
 const kickoffMs = (m: Match) => new Date(m.scheduled_at).getTime();
 
 // ── DB ────────────────────────────────────────────────────────────────────--
@@ -148,8 +152,8 @@ function postgameDue(m: Match, now: number, l: Ledger): boolean {
 function leaderboardDue(matches: Match[], now: number, l: Ledger): { key: string; firstKickoff: number } | null {
   const future = matches.filter((m) => kickoffMs(m) > now).sort((a, b) => kickoffMs(a) - kickoffMs(b));
   if (!future.length) return null;
-  const slateDate = utcDate(kickoffMs(future[0]));
-  const firstKickoff = Math.min(...future.filter((m) => utcDate(kickoffMs(m)) === slateDate).map(kickoffMs));
+  const slateDate = slateDay(kickoffMs(future[0]));
+  const firstKickoff = Math.min(...future.filter((m) => slateDay(kickoffMs(m)) === slateDate).map(kickoffMs));
   const key = `lb:${slateDate}`;
   if (done(l, key)) return null;
   if (now >= firstKickoff - LEADERBOARD_LEAD_MIN * MIN && now < firstKickoff) return { key, firstKickoff };
@@ -291,8 +295,18 @@ async function fireGameCard(
 async function fireLeaderboard(key: string, cfg: SlackConfig | null, l: Ledger): Promise<boolean> {
   const outDir = path.join(OUT_ROOT, "leaderboard");
   fs.rmSync(outDir, { recursive: true, force: true });
-  console.log("  → rendering leaderboard card");
-  const ok = await sh(["bun", "scripts/generate-swarm-cards.ts", "--card=leaderboard", "--mp4", `--out=${outDir}`]);
+  // Refresh the live deck from R2 first. generate-swarm-cards reads it via
+  // --deck; without this it falls back to the sample fixtures (the USA/China
+  // demo roster) — exactly the stale-data bug we hit on the first post.
+  console.log("  → refreshing live deck from R2…");
+  await sh(["bun", "scripts/swarm-adapter.ts"]);
+  const deck = fs.existsSync(LIVE_DECK) ? JSON.parse(fs.readFileSync(LIVE_DECK, "utf8")) : null;
+  if (!deck?.agents?.length) {
+    console.error("  ✗ leaderboard: live deck has no agents — skipping (refusing to post sample data).");
+    return false;
+  }
+  console.log(`  → rendering leaderboard card (${deck.agents.length} live agents)`);
+  const ok = await sh(["bun", "scripts/generate-swarm-cards.ts", "--card=leaderboard", "--mp4", `--deck=${LIVE_DECK}`, `--out=${outDir}`]);
   if (!ok) return false;
   const { png, mp4 } = collectOutputs(outDir);
   if (!png && !mp4) {
@@ -329,7 +343,7 @@ async function main() {
       ? matches.filter((m) => `${m.home_team} vs ${m.away_team}`.toLowerCase().includes(FORCE_POST.toLowerCase()))
       : []
     : matches.filter((m) => postgameDue(m, now, ledger));
-  const lb = forced ? (FORCE_LB ? { key: `lb:${utcDate(now)}`, firstKickoff: now } : null) : leaderboardDue(matches, now, ledger);
+  const lb = forced ? (FORCE_LB ? { key: `lb:${slateDay(now)}`, firstKickoff: now } : null) : leaderboardDue(matches, now, ledger);
 
   console.log(
     `[swarm-auto] ${new Date(now).toISOString()} · ${matches.length} matches in window · ` +
@@ -367,9 +381,18 @@ async function main() {
   const cfg: SlackConfig | null = token && CHANNEL && !NO_SLACK ? { token, channelId: CHANNEL } : null;
   if (!cfg) console.log("(Slack token/channel not set or --no-slack — rendering only, not posting.)");
 
-  for (const m of pre) await fireGameCard("pregame", m, cfg, ledger);
-  for (const m of post) await fireGameCard("postgame", m, cfg, ledger);
-  if (lb) await fireLeaderboard(lb.key, cfg, ledger);
+  // Guard each fire so one card's failure (a bad render, a Slack hiccup) is
+  // logged but never aborts the rest of the tick or the ledger save.
+  const guard = async (label: string, fn: () => Promise<unknown>) => {
+    try {
+      await fn();
+    } catch (e) {
+      console.error(`  ✗ ${label}: ${(e as Error).message}`);
+    }
+  };
+  for (const m of pre) await guard(`pregame ${m.home_team} v ${m.away_team}`, () => fireGameCard("pregame", m, cfg, ledger));
+  for (const m of post) await guard(`postgame ${m.home_team} v ${m.away_team}`, () => fireGameCard("postgame", m, cfg, ledger));
+  if (lb) await guard("leaderboard", () => fireLeaderboard(lb.key, cfg, ledger));
 
   saveLedger(ledger);
   console.log("Done.");
