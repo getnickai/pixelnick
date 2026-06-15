@@ -57,6 +57,7 @@ const LIVE_DECK = path.join(process.cwd(), "public", "swarm-arena-cards", "live-
 const PREGAME_LEAD_MIN = 60; // fire on the first tick at/after kickoff − 60m
 const PREGAME_FLOOR_MIN = 3; // never fire inside this many minutes of kickoff
 const LEADERBOARD_LEAD_MIN = 210; // 3.5h before the slate's first kickoff
+const BUNDLE_LEAD_MIN = 210; // games-of-the-day bundle: same ~3.5h pre-slate window
 const POSTGAME_GIVEUP_HRS = 8; // stop retrying a result card this long after kickoff
 const FINAL_STATUSES = new Set(["FT", "AET", "PEN", "AWD", "WO"]);
 
@@ -70,6 +71,7 @@ const forceFlag = (p: string) => argv.find((a) => a.startsWith(p))?.slice(p.leng
 const FORCE_PRE = forceFlag("--force-pregame=");
 const FORCE_POST = forceFlag("--force-postgame=");
 const FORCE_LB = argv.includes("--force-leaderboard");
+const BUNDLE_TODAY = argv.includes("--bundle-today");
 
 // ── Types ─────────────────────────────────────────────────────────────────--
 type Match = {
@@ -103,10 +105,11 @@ const done = (l: Ledger, key: string) => key in l.actions;
 
 // ── Time helpers ────────────────────────────────────────────────────────────
 const MIN = 60_000;
-// Slate "day" boundary in Badi's timezone (Dubai, UTC+4), so "the day's first
-// game" matches when he posts rather than cutting at UTC midnight.
-const DUBAI_OFFSET_MIN = 4 * 60;
-const slateDay = (ms: number) => new Date(ms + DUBAI_OFFSET_MIN * MIN).toISOString().slice(0, 10);
+// Slate "day" = the US matchday in US Eastern, which is how the World Cup
+// schedule is grouped. A late US-evening kickoff that lands after 00:00 UTC is
+// still the same matchday, so group by ET date (not UTC, not Dubai) to fire one
+// leaderboard per matchday.
+const slateDay = (ms: number) => new Date(ms).toLocaleDateString("en-CA", { timeZone: "America/New_York" });
 const kickoffMs = (m: Match) => new Date(m.scheduled_at).getTime();
 
 // ── DB ────────────────────────────────────────────────────────────────────--
@@ -157,6 +160,21 @@ function leaderboardDue(matches: Match[], now: number, l: Ledger): { key: string
   const key = `lb:${slateDate}`;
   if (done(l, key)) return null;
   if (now >= firstKickoff - LEADERBOARD_LEAD_MIN * MIN && now < firstKickoff) return { key, firstKickoff };
+  return null;
+}
+/** The games-of-the-day bundle: due once per matchday, ~3.5h before its first
+ *  kickoff. Returns that matchday's not-yet-kicked-off games, or null. */
+function bundleDue(matches: Match[], now: number, l: Ledger): { key: string; games: Match[] } | null {
+  const future = matches.filter((m) => kickoffMs(m) > now).sort((a, b) => kickoffMs(a) - kickoffMs(b));
+  if (!future.length) return null;
+  const today = slateDay(kickoffMs(future[0]));
+  const firstKickoff = Math.min(...future.filter((m) => slateDay(kickoffMs(m)) === today).map(kickoffMs));
+  const key = `bundle:${today}`;
+  if (done(l, key)) return null;
+  if (now >= firstKickoff - BUNDLE_LEAD_MIN * MIN && now < firstKickoff) {
+    const games = matches.filter((m) => m.status === "NS" && kickoffMs(m) > now && slateDay(kickoffMs(m)) === today);
+    return { key, games };
+  }
   return null;
 }
 
@@ -324,8 +342,104 @@ async function fireLeaderboard(key: string, cfg: SlackConfig | null, l: Ledger):
   return true;
 }
 
+// ── Games-of-the-day bundle ─────────────────────────────────────────────────
+/** Upload one file via Slack's external-upload flow; returns {id,title}. */
+async function uploadFile(token: string, filePath: string): Promise<{ id: string; title: string }> {
+  const bytes = fs.readFileSync(filePath);
+  const filename = path.basename(filePath);
+  const reserve: any = await (
+    await fetch(`https://slack.com/api/files.getUploadURLExternal?${new URLSearchParams({ filename, length: String(bytes.byteLength) })}`, {
+      headers: { Authorization: `Bearer ${token}` },
+    })
+  ).json();
+  if (!reserve.ok) throw new Error(`getUploadURLExternal: ${reserve.error}`);
+  const put = await fetch(reserve.upload_url, { method: "POST", body: bytes });
+  if (!put.ok) throw new Error(`upload PUT ${filename}: HTTP ${put.status}`);
+  return { id: reserve.file_id, title: filename };
+}
+
+/** Share many files into the channel as ONE message with a single caption. */
+async function postBundle(token: string, channel: string, filePaths: string[], caption: string): Promise<void> {
+  const files: { id: string; title: string }[] = [];
+  for (const p of filePaths) if (fs.existsSync(p)) files.push(await uploadFile(token, p));
+  if (!files.length) throw new Error("no files to bundle");
+  const res: any = await (
+    await fetch("https://slack.com/api/files.completeUploadExternal", {
+      method: "POST",
+      headers: { Authorization: `Bearer ${token}`, "Content-Type": "application/x-www-form-urlencoded" },
+      body: new URLSearchParams({ files: JSON.stringify(files), channel_id: channel, initial_comment: caption }),
+    })
+  ).json();
+  if (!res.ok) throw new Error(`completeUploadExternal: ${res.error}`);
+}
+
+/** Render every covered game in `games` and post all their MP4s as ONE Slack
+ *  message. Returns the count of games actually bundled. */
+async function renderBundle(games: Match[], cfg: SlackConfig | null): Promise<number> {
+  console.log("→ building consensus feed…");
+  await sh(["bun", "scripts/swarm-consensus.ts"]);
+
+  const mp4s: string[] = [];
+  const lines: string[] = [];
+  for (const m of games) {
+    const game = `${m.home_team} vs ${m.away_team}`;
+    const rec = topRecord(CONSENSUS_FEED, m, "consensus");
+    if (!rec) {
+      console.log(`  · ${game}: no agent coverage — skipping`);
+      continue;
+    }
+    const outDir = path.join(OUT_ROOT, `bundle-${uidSlug(m.match_uid)}`);
+    fs.rmSync(outDir, { recursive: true, force: true });
+    console.log(`  → rendering ${game}`);
+    if (!(await sh(["bun", "scripts/render-consensus.ts", `--game=${game}`, `--out=${outDir}`]))) continue;
+    const { mp4 } = collectOutputs(outDir);
+    if (!mp4) continue;
+    mp4s.push(mp4);
+    lines.push(`• ${m.home_team} v ${m.away_team}: ${selectionPhrase(rec)} (swarm ${pct(rec.consensus)} vs market ${pct(rec.marketPrice)}, ${sign(rec.edgePp)}${rec.edgePp}pp)`);
+  }
+
+  if (!mp4s.length) {
+    console.log("No covered games to bundle.");
+    return 0;
+  }
+  const caption = [`*Today's games · Swarm Arena · Market vs Agents*`, `The 8 AI models' picks for today's World Cup slate:`, ...lines, CTA].join("\n");
+  if (!cfg) {
+    console.log(`Rendered ${mp4s.length} game(s), not posting:\n${caption}`);
+    return mp4s.length;
+  }
+  await postBundle(cfg.token, cfg.channelId, mp4s, caption);
+  console.log(`  ⤴ posted ${mp4s.length} game MP4(s) in one message`);
+  return mp4s.length;
+}
+
+/** Scheduled games-of-the-day: render+post the bundle, then record it so it
+ *  fires once per matchday. */
+async function fireBundle(key: string, games: Match[], cfg: SlackConfig | null, l: Ledger): Promise<void> {
+  const n = await renderBundle(games, cfg);
+  if (n > 0 && cfg) l.actions[key] = { postedAt: new Date().toISOString(), note: `${n} games` };
+}
+
+/** Manual (--bundle-today): bundle today's covered upcoming games, ignore timing. */
+async function bundleToday(): Promise<void> {
+  const now = Date.now();
+  const matches = await fetchMatches();
+  const today = slateDay(now);
+  const games = matches.filter((m) => m.status === "NS" && kickoffMs(m) > now && slateDay(kickoffMs(m)) === today);
+  console.log(`[bundle] ${today} matchday · ${games.length} upcoming game(s)`);
+  if (!games.length) {
+    console.log("No upcoming games in today's matchday. Nothing to bundle.");
+    return;
+  }
+  const token = slackTokenFromEnv();
+  const cfg: SlackConfig | null = token && CHANNEL && !NO_SLACK ? { token, channelId: CHANNEL } : null;
+  if (!cfg) console.log("(Slack token/channel not set or --no-slack — rendering only, not posting.)");
+  await renderBundle(games, cfg);
+}
+
 // ── Main tick ───────────────────────────────────────────────────────────────
 async function main() {
+  if (BUNDLE_TODAY) return bundleToday();
+
   const now = Date.now();
   const matches = await fetchMatches();
   const ledger = loadLedger();
@@ -333,32 +447,34 @@ async function main() {
   // Forced paths (manual testing) bypass timing + ledger entirely.
   const forced = FORCE_PRE || FORCE_POST || FORCE_LB;
 
-  const pre = forced
-    ? FORCE_PRE
-      ? matches.filter((m) => `${m.home_team} vs ${m.away_team}`.toLowerCase().includes(FORCE_PRE.toLowerCase()))
-      : []
-    : matches.filter((m) => pregameDue(m, now, ledger));
+  // Pre-game is now a single daily "games of the day" bundle (bundleDue), not
+  // one post per game. --force-pregame still renders ONE consensus card for testing.
+  const pre = FORCE_PRE
+    ? matches.filter((m) => `${m.home_team} vs ${m.away_team}`.toLowerCase().includes(FORCE_PRE.toLowerCase()))
+    : [];
   const post = forced
     ? FORCE_POST
       ? matches.filter((m) => `${m.home_team} vs ${m.away_team}`.toLowerCase().includes(FORCE_POST.toLowerCase()))
       : []
     : matches.filter((m) => postgameDue(m, now, ledger));
   const lb = forced ? (FORCE_LB ? { key: `lb:${slateDay(now)}`, firstKickoff: now } : null) : leaderboardDue(matches, now, ledger);
+  const bundle = forced ? null : bundleDue(matches, now, ledger);
 
   console.log(
     `[swarm-auto] ${new Date(now).toISOString()} · ${matches.length} matches in window · ` +
-      `due: ${pre.length} pregame, ${post.length} postgame, ${lb ? 1 : 0} leaderboard${forced ? " (FORCED)" : ""}`,
+      `due: ${bundle ? bundle.games.length : 0}-game bundle, ${pre.length} pregame, ${post.length} postgame, ${lb ? 1 : 0} leaderboard${forced ? " (FORCED)" : ""}`,
   );
-  for (const m of pre) console.log(`   pregame  → ${m.home_team} vs ${m.away_team}  (kickoff ${m.scheduled_at})`);
+  if (bundle) console.log(`   games-of-the-day bundle (${bundle.key}, ${bundle.games.length} games)`);
+  for (const m of pre) console.log(`   pregame  → ${m.home_team} vs ${m.away_team}`);
   for (const m of post) console.log(`   postgame → ${m.home_team} ${m.home_score}-${m.away_score} ${m.away_team}  (${m.status})`);
   if (lb) console.log(`   leaderboard (${lb.key})`);
 
   // Machine-readable signal for the CI gate (lets no-op ticks skip the heavy
   // apt + Chromium + render steps). Printed on every run; parsed only by the
   // workflow's --dry-run gate step.
-  console.log(`gate-due=${pre.length + post.length + (lb ? 1 : 0)}`);
+  console.log(`gate-due=${(bundle ? 1 : 0) + pre.length + post.length + (lb ? 1 : 0)}`);
 
-  if (!pre.length && !post.length && !lb) {
+  if (!bundle && !pre.length && !post.length && !lb) {
     console.log("Nothing due. Exiting.");
     return;
   }
@@ -367,7 +483,8 @@ async function main() {
     return;
   }
 
-  // Build feeds once per tick (cheap: R2 + DB reads, no Remotion bundle).
+  // Build feeds once per tick (cheap: R2 + DB reads, no Remotion bundle). The
+  // bundle builds the consensus feed itself; this covers --force-pregame.
   if (pre.length) {
     console.log("→ building consensus feed…");
     await sh(["bun", "scripts/swarm-consensus.ts"]);
@@ -390,6 +507,7 @@ async function main() {
       console.error(`  ✗ ${label}: ${(e as Error).message}`);
     }
   };
+  if (bundle) await guard("games-of-the-day bundle", () => fireBundle(bundle.key, bundle.games, cfg, ledger));
   for (const m of pre) await guard(`pregame ${m.home_team} v ${m.away_team}`, () => fireGameCard("pregame", m, cfg, ledger));
   for (const m of post) await guard(`postgame ${m.home_team} v ${m.away_team}`, () => fireGameCard("postgame", m, cfg, ledger));
   if (lb) await guard("leaderboard", () => fireLeaderboard(lb.key, cfg, ledger));
