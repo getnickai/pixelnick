@@ -37,6 +37,15 @@ import { cn } from "@/lib/utils";
 const LEADERBOARD_W = 650;
 const LEADERBOARD_H = 1150;
 
+/** Sub-nav categories — one card design each. Synced to ?view= for sharable links. */
+type HistoryView = "leaderboard" | "agents" | "games" | "results";
+const VIEW_TABS: { key: HistoryView; label: string }[] = [
+  { key: "leaderboard", label: "Leaderboard" },
+  { key: "agents", label: "Agents" },
+  { key: "games", label: "Games" },
+  { key: "results", label: "Results" },
+];
+
 /** /api/swarm-upcoming fixture shape (the fields the card needs). */
 type UpcomingGame = {
   home: { name: string; code: string };
@@ -186,6 +195,39 @@ function CardCell({
   );
 }
 
+/** Deck loading / error / empty placeholder — shared by the deck-backed tabs. */
+function DeckState({
+  fetching,
+  error,
+  onRetry,
+}: {
+  fetching: boolean;
+  error: string | null;
+  onRetry: () => void;
+}) {
+  return (
+    <div className="flex min-h-[40vh] items-center justify-center">
+      {error ? (
+        <div className="flex flex-col items-center gap-3">
+          <p className="font-mono text-xs text-destructive">
+            Could not load deck ({error}).
+          </p>
+          <button
+            onClick={onRetry}
+            className="cursor-pointer rounded-md border border-input px-3 py-1.5 text-xs font-medium text-muted-foreground transition-colors hover:bg-accent hover:text-accent-foreground"
+          >
+            Retry
+          </button>
+        </div>
+      ) : (
+        <p className="font-mono text-xs text-muted-foreground">
+          {fetching ? "Fetching deck…" : "No agents in the deck."}
+        </p>
+      )}
+    </div>
+  );
+}
+
 export function SwarmArenaHistory() {
   // Seed from the session cache so a revisit's first render already shows the
   // live deck — no one-frame "Fetching deck…" flash. (`when` starts "" → live.)
@@ -289,6 +331,20 @@ export function SwarmArenaHistory() {
   // Force a fresh fetch (bypasses the serve-from-cache branch via the tick).
   const refetch = useCallback(() => {
     setTick((t) => t + 1);
+  }, []);
+
+  // Sub-nav: which card category is shown. Seeded from ?view= on mount and
+  // written back on change, so each tab (per selected day) is a sharable link.
+  const [view, setView] = useState<HistoryView>("leaderboard");
+  useEffect(() => {
+    const p = new URLSearchParams(window.location.search).get("view");
+    if (p && VIEW_TABS.some((t) => t.key === p)) setView(p as HistoryView);
+  }, []);
+  const selectView = useCallback((v: HistoryView) => {
+    setView(v);
+    const url = new URL(window.location.href);
+    url.searchParams.set("view", v);
+    window.history.replaceState(null, "", url.toString());
   }, []);
 
   // Auto-refresh only in live mode; a historical point is fixed. Skip the
@@ -425,78 +481,48 @@ export function SwarmArenaHistory() {
         </span>
       </div>
 
-      {/* Gallery */}
+      {/* Sub-nav: one card category at a time */}
+      <div className="flex shrink-0 items-center gap-1 border-b border-sidebar-border px-5 py-2">
+        {VIEW_TABS.map((t) => (
+          <button
+            key={t.key}
+            onClick={() => selectView(t.key)}
+            aria-current={view === t.key ? "page" : undefined}
+            className={cn(
+              "cursor-pointer rounded-md px-3 py-1.5 text-xs font-medium transition-colors",
+              view === t.key
+                ? "bg-sidebar-accent text-sidebar-accent-foreground"
+                : "text-muted-foreground hover:bg-accent hover:text-accent-foreground",
+            )}
+          >
+            {t.label}
+          </button>
+        ))}
+      </div>
+
+      {/* Gallery — the selected category. Leaderboard/Agents come from the deck
+          (timeline-aware); Games/Results are static snapshots, so they render
+          independently of the deck load. */}
       <div className="min-h-0 flex-1 overflow-y-auto">
-        {agents.length ? (
-          <div className="flex flex-col gap-8 p-6">
-            {/* Leaderboard */}
-            {leaderboardData ? (
-              <section className="flex flex-col gap-3">
-                <h2 className="font-mono text-[11px] font-semibold uppercase tracking-[0.14em] text-muted-foreground">
-                  Leaderboard
-                </h2>
-                <div className="grid gap-7 [grid-template-columns:repeat(auto-fill,minmax(286px,1fr))]">
-                  <CardCell
-                    slug={`leaderboard-${period}`}
-                    caption="Leaderboard"
-                    width={LEADERBOARD_W}
-                    height={LEADERBOARD_H}
-                  >
-                    <SwarmArenaLeaderboardCard data={leaderboardData} />
-                  </CardCell>
-                </div>
-              </section>
-            ) : null}
+        <div className="p-6">
+          {view === "leaderboard" &&
+            (leaderboardData ? (
+              <div className="grid gap-7 [grid-template-columns:repeat(auto-fill,minmax(286px,1fr))]">
+                <CardCell
+                  slug={`leaderboard-${period}`}
+                  caption="Leaderboard"
+                  width={LEADERBOARD_W}
+                  height={LEADERBOARD_H}
+                >
+                  <SwarmArenaLeaderboardCard data={leaderboardData} />
+                </CardCell>
+              </div>
+            ) : (
+              <DeckState fetching={fetching} error={error} onRetry={refetch} />
+            ))}
 
-            {/* Upcoming games — full consensus where agents cover it, else Elo preview */}
-            {upcomingCards.length ? (
-              <section className="flex flex-col gap-3">
-                <h2 className="font-mono text-[11px] font-semibold uppercase tracking-[0.14em] text-muted-foreground">
-                  Upcoming games
-                </h2>
-                <div className="grid gap-7 [grid-template-columns:repeat(auto-fill,minmax(286px,1fr))]">
-                  {upcomingCards.map((c) => (
-                    <CardCell
-                      key={c.slug}
-                      slug={c.slug}
-                      caption={c.caption}
-                      width={MODEL_CARD_W}
-                      height={MODEL_CARD_H}
-                    >
-                      <ConsensusCard data={c.data} />
-                    </CardCell>
-                  ))}
-                </div>
-              </section>
-            ) : null}
-
-            {/* Results — settled "won pick" cards (static results.json) */}
-            {resultCards.length ? (
-              <section className="flex flex-col gap-3">
-                <h2 className="font-mono text-[11px] font-semibold uppercase tracking-[0.14em] text-muted-foreground">
-                  Results
-                </h2>
-                <div className="grid gap-7 [grid-template-columns:repeat(auto-fill,minmax(286px,1fr))]">
-                  {resultCards.map((c) => (
-                    <CardCell
-                      key={c.slug}
-                      slug={c.slug}
-                      caption={c.caption}
-                      width={MODEL_CARD_W}
-                      height={MODEL_CARD_H}
-                    >
-                      <ResultCard data={c.data} />
-                    </CardCell>
-                  ))}
-                </div>
-              </section>
-            ) : null}
-
-            {/* Agents */}
-            <section className="flex flex-col gap-3">
-              <h2 className="font-mono text-[11px] font-semibold uppercase tracking-[0.14em] text-muted-foreground">
-                Agents
-              </h2>
+          {view === "agents" &&
+            (agents.length ? (
               <div className="grid gap-7 [grid-template-columns:repeat(auto-fill,minmax(286px,1fr))]">
                 {agents.map((a, i) => {
                   const card = toCardData(a, i + 1, agents.length);
@@ -513,29 +539,52 @@ export function SwarmArenaHistory() {
                   );
                 })}
               </div>
-            </section>
-          </div>
-        ) : (
-          <div className="flex h-full items-center justify-center">
-            {error ? (
-              <div className="flex flex-col items-center gap-3">
-                <p className="font-mono text-xs text-destructive">
-                  Could not load deck ({error}).
-                </p>
-                <button
-                  onClick={refetch}
-                  className="cursor-pointer rounded-md border border-input px-3 py-1.5 text-xs font-medium text-muted-foreground transition-colors hover:bg-accent hover:text-accent-foreground"
-                >
-                  Retry
-                </button>
+            ) : (
+              <DeckState fetching={fetching} error={error} onRetry={refetch} />
+            ))}
+
+          {view === "games" &&
+            (upcomingCards.length ? (
+              <div className="grid gap-7 [grid-template-columns:repeat(auto-fill,minmax(286px,1fr))]">
+                {upcomingCards.map((c) => (
+                  <CardCell
+                    key={c.slug}
+                    slug={c.slug}
+                    caption={c.caption}
+                    width={MODEL_CARD_W}
+                    height={MODEL_CARD_H}
+                  >
+                    <ConsensusCard data={c.data} />
+                  </CardCell>
+                ))}
               </div>
             ) : (
               <p className="font-mono text-xs text-muted-foreground">
-                {fetching ? "Fetching deck…" : "No agents in the deck."}
+                No upcoming games right now.
               </p>
-            )}
-          </div>
-        )}
+            ))}
+
+          {view === "results" &&
+            (resultCards.length ? (
+              <div className="grid gap-7 [grid-template-columns:repeat(auto-fill,minmax(286px,1fr))]">
+                {resultCards.map((c) => (
+                  <CardCell
+                    key={c.slug}
+                    slug={c.slug}
+                    caption={c.caption}
+                    width={MODEL_CARD_W}
+                    height={MODEL_CARD_H}
+                  >
+                    <ResultCard data={c.data} />
+                  </CardCell>
+                ))}
+              </div>
+            ) : (
+              <p className="font-mono text-xs text-muted-foreground">
+                No settled results yet.
+              </p>
+            ))}
+        </div>
       </div>
     </div>
   );
