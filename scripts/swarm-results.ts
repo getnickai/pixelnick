@@ -107,6 +107,35 @@ function canonSelection(sel: string): string {
   return m ? m[1][0].toUpperCase() + m[1].slice(1).toLowerCase() : s;
 }
 
+/** Settle a selection against a final score ourselves (no waiting for the agent
+ *  backend). Returns win/loss, or null for market types we don't settle. .5
+ *  totals lines never push. */
+function settleResult(marketType: string, selection: string, line: number | null, hs: number, as: number): "win" | "loss" | null {
+  const mt = String(marketType).toLowerCase();
+  const sel = String(selection).toLowerCase();
+  const total = hs + as;
+  if (mt === "btts") {
+    const both = hs > 0 && as > 0;
+    if (sel.startsWith("yes")) return both ? "win" : "loss";
+    if (sel.startsWith("no")) return both ? "loss" : "win";
+  } else if (mt === "totals" && line != null) {
+    if (sel.startsWith("over")) return total > line ? "win" : "loss";
+    if (sel.startsWith("under")) return total < line ? "win" : "loss";
+  } else if (mt === "moneyline") {
+    if (sel.startsWith("home")) return hs > as ? "win" : "loss";
+    if (sel.startsWith("away")) return as > hs ? "win" : "loss";
+    if (sel.startsWith("draw")) return hs === as ? "win" : "loss";
+  }
+  return null;
+}
+/** Realized P&L for a prediction-market position bought at `price` for
+ *  `size_usd` cash: a win pays size*(1/price - 1); a loss is -size. Same math
+ *  the agent backend uses, so our computed number matches their eventual settle. */
+function pnlOf(result: "win" | "loss", size: number, price: number): number {
+  if (!Number.isFinite(size) || !Number.isFinite(price) || price <= 0) return 0;
+  return result === "win" ? size * (1 / price - 1) : -size;
+}
+
 type Closed = {
   market: string;
   market_type?: string;
@@ -140,10 +169,29 @@ async function closedTradesFor(agent: string, nRuns: number): Promise<Closed[]> 
   return out;
 }
 
+/** Current open positions for one agent (newest run + snapshot), deduped. */
+async function openPositionsFor(agent: string): Promise<any[]> {
+  const runKeys = (await listKeys(`${BASE}${agent}/runs/`)).filter((k) => /exe_.*\.json$/.test(k.key));
+  runKeys.sort((a, b) => b.mod.getTime() - a.mod.getTime());
+  const newest = runKeys[0] ? await getJson<any>(runKeys[0].key) : null;
+  const snap = await getJson<any>(`${BASE}${agent}/snapshot.json`);
+  const all = [...(newest?.open_positions ?? []), ...(snap?.open_positions ?? [])];
+  const seen = new Set<string>();
+  const out: any[] = [];
+  for (const p of all) {
+    const k = `${p.market}|${p.market_type}|${p.line ?? ""}|${p.selection}`;
+    if (seen.has(k)) continue;
+    seen.add(k);
+    out.push(p);
+  }
+  return out;
+}
+
 type AgentPick = { handle: string; teams: [string, string]; marketType: string; line: number | null; selection: string; price: number; pnl: number; result: "win" | "loss" };
 
 async function main() {
   const includeLosses = process.argv.includes("--include-losses");
+  const settleOpen = process.argv.includes("--settle-open");
   const limit = Number(process.argv.find((a) => a.startsWith("--limit="))?.slice(8)) || 50;
   const nRuns = Number(process.argv.find((a) => a.startsWith("--runs="))?.slice(7)) || 8;
 
@@ -192,6 +240,33 @@ async function main() {
     const h = canonTeam(f.home_team), a = canonTeam(f.away_team);
     fixByPair.set(`${h}|${a}`, { ...f, _flip: false });
     fixByPair.set(`${a}|${h}`, { ...f, _flip: true });
+  }
+
+  // 2b. Self-settle still-open picks against the final score (don't wait for the
+  //     agents to write closed_trades). Skips any pick an actual closed_trade
+  //     already covers (prefer the agent's realized number).
+  if (settleOpen) {
+    const seenKey = new Set(picks.map((p) => `${p.handle}|${p.teams[0]}|${p.teams[1]}|${p.marketType}|${p.line ?? ""}|${p.selection}`));
+    let added = 0;
+    for (const agent of AGENTS) {
+      const handle = canonicalHandle(agent.replace("s1-match-reader-", ""));
+      for (const pos of await openPositionsFor(agent)) {
+        const teams = teamsOf(String(pos.market ?? ""));
+        if (!teams) continue;
+        const fix = fixByPair.get(`${teams[0]}|${teams[1]}`);
+        if (!fix) continue; // not FT in the mirror → no score to settle against
+        const line = pos.line ?? null;
+        const result = settleResult(String(pos.market_type ?? ""), String(pos.selection ?? ""), line, Number(fix.home_score), Number(fix.away_score));
+        if (!result) continue;
+        const selection = canonSelection(pos.selection);
+        const key = `${handle}|${teams[0]}|${teams[1]}|${String(pos.market_type ?? "")}|${line ?? ""}|${selection}`;
+        if (seenKey.has(key)) continue;
+        seenKey.add(key);
+        picks.push({ handle, teams, marketType: String(pos.market_type ?? ""), line, selection, price: Number(pos.price ?? 0), pnl: pnlOf(result, Number(pos.size_usd), Number(pos.price)), result });
+        added++;
+      }
+    }
+    console.log(`  self-settled ${added} still-open pick(s) against FT scores`);
   }
 
   // 3. Group winning (or all, with --include-losses) picks by game x market x selection.
