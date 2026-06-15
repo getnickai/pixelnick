@@ -1,0 +1,132 @@
+name: Swarm Arena auto cards
+
+# Fires Swarm Arena share cards on the World Cup clock:
+#   - pre-game consensus card ~1h before kickoff
+#   - post-game result card when a match goes Full Time
+#   - leaderboard ~3.5h before the slate's first kickoff (once/day)
+# Each card's MP4 + PNG is posted to Slack, with a ready-to-paste X draft.
+#
+# The orchestrator (scripts/swarm-auto.ts) is idempotent via a small ledger.
+# Because each Actions run is ephemeral, the ledger is carried across runs in a
+# rolling cache (restore newest, save under a fresh key each run).
+#
+# Cost control: a cheap "gate" runs the classifier in --dry-run first; the
+# heavy steps (system libs + Chromium + render) only run when a card is due, so
+# most 15-min ticks finish in well under a minute.
+
+on:
+  # Cron is intentionally OFF until a manual dispatch run confirms the runner
+  # can reach SWARM_DB_URL + Slack. Uncomment to go live (every 15 min, UTC).
+  # schedule:
+  #   - cron: "*/15 * * * *"
+  workflow_dispatch:
+    inputs:
+      dry_run:
+        description: "Classify only, do not render or post"
+        type: boolean
+        default: false
+      no_slack:
+        description: "Render but do not post to Slack"
+        type: boolean
+        default: false
+      force_pregame:
+        description: "Force a pre-game card for games matching this substring (single word)"
+        type: string
+        default: ""
+      force_postgame:
+        description: "Force a result card for games matching this substring (single word)"
+        type: string
+        default: ""
+      force_leaderboard:
+        description: "Force the leaderboard card"
+        type: boolean
+        default: false
+
+# Never let two ticks render at once (would race the ledger). Queue instead.
+concurrency:
+  group: swarm-auto
+  cancel-in-progress: false
+
+permissions:
+  contents: read
+
+jobs:
+  tick:
+    runs-on: ubuntu-22.04
+    timeout-minutes: 20
+    env:
+      SWARM_DB_URL: ${{ secrets.SWARM_DB_URL }}
+      S3_ENDPOINT: ${{ secrets.S3_ENDPOINT }}
+      AWS_REGION: ${{ secrets.AWS_REGION }}
+      AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
+      AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+      R2_FEED_SWARM_ARENA: ${{ secrets.R2_FEED_SWARM_ARENA }}
+      SLACK_BOT_TOKEN: ${{ secrets.SLACK_BOT_TOKEN }}
+      SLACK_CHANNEL_SWARM_ARENA: ${{ secrets.SLACK_CHANNEL_SWARM_ARENA }}
+      SLACK_CHANNEL_ID: ${{ secrets.SLACK_CHANNEL_ID }}
+      # workflow_dispatch inputs (empty on scheduled runs)
+      IN_DRY: ${{ inputs.dry_run }}
+      IN_NOSLACK: ${{ inputs.no_slack }}
+      IN_FPRE: ${{ inputs.force_pregame }}
+      IN_FPOST: ${{ inputs.force_postgame }}
+      IN_FLB: ${{ inputs.force_leaderboard }}
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: oven-sh/setup-bun@v2
+        with:
+          bun-version: latest
+
+      - name: Cache dependencies
+        uses: actions/cache@v4
+        with:
+          path: |
+            ~/.bun/install/cache
+            node_modules
+          key: bun-${{ runner.os }}-${{ hashFiles('bun.lock') }}
+          restore-keys: bun-${{ runner.os }}-
+
+      - name: Install dependencies
+        run: bun install --frozen-lockfile
+
+      # Carry the idempotency ledger across runs. restore-keys grabs the newest
+      # prior cache; the unique key means this run always saves a fresh copy.
+      - name: Restore ledger
+        uses: actions/cache@v4
+        with:
+          path: data/swarm-auto-ledger.json
+          key: swarm-ledger-${{ github.run_id }}-${{ github.run_attempt }}
+          restore-keys: swarm-ledger-
+
+      # Cheap classify. Sets due=<n>; heavy steps below are skipped when due=0.
+      - name: Gate (classify)
+        id: gate
+        run: |
+          ARGS=()
+          [ -n "$IN_FPRE" ] && ARGS+=("--force-pregame=$IN_FPRE")
+          [ -n "$IN_FPOST" ] && ARGS+=("--force-postgame=$IN_FPOST")
+          [ "$IN_FLB" = "true" ] && ARGS+=("--force-leaderboard")
+          OUT=$(bun scripts/swarm-auto.ts --dry-run "${ARGS[@]}")
+          echo "$OUT"
+          DUE=$(echo "$OUT" | grep -oE 'gate-due=[0-9]+' | tail -1 | cut -d= -f2)
+          echo "due=${DUE:-0}" >> "$GITHUB_OUTPUT"
+
+      # Remotion's headless Chromium needs these shared libs on Linux.
+      - name: System libraries for Chromium
+        if: steps.gate.outputs.due != '0' && (github.event_name != 'workflow_dispatch' || inputs.dry_run != true)
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y --no-install-recommends \
+            libnss3 libdbus-1-3 libatk1.0-0 libatk-bridge2.0-0 libgbm1 \
+            libasound2 libxrandr2 libxkbcommon0 libxfixes3 libxcomposite1 \
+            libxdamage1 libxext6 libxcb1 libcups2 libpango-1.0-0 libcairo2
+
+      - name: Render + post
+        if: steps.gate.outputs.due != '0' && (github.event_name != 'workflow_dispatch' || inputs.dry_run != true)
+        run: |
+          ARGS=()
+          [ -n "$IN_FPRE" ] && ARGS+=("--force-pregame=$IN_FPRE")
+          [ -n "$IN_FPOST" ] && ARGS+=("--force-postgame=$IN_FPOST")
+          [ "$IN_FLB" = "true" ] && ARGS+=("--force-leaderboard")
+          [ "$IN_NOSLACK" = "true" ] && ARGS+=("--no-slack")
+          bun scripts/swarm-auto.ts "${ARGS[@]}"
