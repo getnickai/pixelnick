@@ -61,7 +61,7 @@ const BUNDLE_LEAD_MIN = 210; // games-of-the-day bundle: same ~3.5h pre-slate wi
 const POSTGAME_GIVEUP_HRS = 8; // stop retrying a result card this long after kickoff
 const FINAL_STATUSES = new Set(["FT", "AET", "PEN", "AWD", "WO"]);
 
-const CTA = "Try it for free now: getnick.ai";
+const CTA = "Follow the agents on swarmarena.ai";
 
 // ── Flags ─────────────────────────────────────────────────────────────────--
 const argv = process.argv.slice(2);
@@ -218,6 +218,84 @@ function leaderboardCaption(): string {
   ].join("\n");
 }
 
+// ISO-2 country code → flag emoji. Flags are the ONLY emoji used in X drafts.
+function flagFor(code: string): string {
+  const c = String(code ?? "").toUpperCase();
+  if (c === "GB" || c === "EN") return "🏴󠁧󠁢󠁥󠁮󠁧󠁿";
+  if (c === "GB-SCT") return "🏴󠁧󠁢󠁳󠁣󠁴󠁿";
+  if (!/^[A-Z]{2}$/.test(c)) return "";
+  return String.fromCodePoint(...[...c].map((ch) => 0x1f1e6 + (ch.charCodeAt(0) - 65)));
+}
+// X-draft call-to-action, varied per game so a bundle doesn't read repetitively.
+const SWARM_CTAS = [
+  "Follow the agents on swarmarena.ai",
+  "See how the agents are trading on swarmarena.ai",
+  "Track the agents live on swarmarena.ai",
+  "Watch it play out on swarmarena.ai",
+];
+
+type Agreement = { top: any; n: number; others: number; total: number };
+/** For one game: the top pick, plus how the agents lined up on that market —
+ *  `n` took the pick, `others` took a different side of the same market/line. */
+function gameAgreement(records: any[], m: Match): Agreement | null {
+  const h = m.home_team.toLowerCase();
+  const a = m.away_team.toLowerCase();
+  const mine = records.filter((r) => {
+    const g = String(r.game ?? "").toLowerCase();
+    return g.includes(h) && g.includes(a);
+  });
+  if (!mine.length) return null;
+  const top = [...mine].sort((x, y) => y.edgePp - x.edgePp)[0];
+  const others = mine
+    .filter((r) => r.marketType === top.marketType && (r.line ?? null) === (top.line ?? null) && r.selection !== top.selection)
+    .reduce((s, r) => s + (Number(r.agentsN) || 0), 0);
+  return { top, n: Number(top.agentsN) || 0, others, total: Number(top.agentsTotal) || 8 };
+}
+
+/** One game's X post: flag + teams, an agreement-aware line, a varied CTA.
+ *  No em-dash, no emoji except the country flags, no filler. */
+function gameTweet(ag: Agreement, ctaIdx: number): string {
+  const { top, n, others, total } = ag;
+  const pick = selectionPhrase(top);
+  const cons = pct(top.consensus);
+  const mkt = pct(top.marketPrice);
+  let body: string;
+  if (n >= total) {
+    body = `All ${total} AI models agree on ${pick}: ${cons} vs the market's ${mkt}.`;
+  } else if (Math.min(n, others) >= 3) {
+    body = `The models are split, ${n} on ${pick} and ${others} the other way: ${cons} vs the market's ${mkt}.`;
+  } else if (n === 1) {
+    body = `Just 1 of ${total} models is on ${pick}, at ${cons} vs the market's ${mkt}.`;
+  } else {
+    body = `${n} of ${total} models back ${pick}, ${cons} vs the market's ${mkt} (${sign(top.edgePp)}${top.edgePp}pp edge).`;
+  }
+  const title = `${flagFor(top.homeCode)} ${top.home} vs ${flagFor(top.awayCode)} ${top.away}`.replace(/\s{2,}/g, " ").trim();
+  return [title, body, SWARM_CTAS[ctaIdx % SWARM_CTAS.length]].join("\n");
+}
+
+// Team name → ISO-2 code (mirrors the card engine / swarm-consensus map), so we
+// can flag the games the agents sit out (those have no consensus record/code).
+const TEAM_CODE: Record<string, string> = {
+  Mexico: "MX", "South Africa": "ZA", "South Korea": "KR", "Czech Republic": "CZ",
+  Canada: "CA", "Bosnia-Herzegovina": "BA", USA: "US", "United States": "US",
+  Paraguay: "PY", Qatar: "QA", Switzerland: "CH", Brazil: "BR", France: "FR",
+  Argentina: "AR", England: "GB", Spain: "ES", Germany: "DE", Portugal: "PT",
+  Netherlands: "NL", Belgium: "BE", Croatia: "HR", Morocco: "MA", Japan: "JP",
+  Uruguay: "UY", Colombia: "CO", Senegal: "SN", Denmark: "DK", Australia: "AU",
+  Ecuador: "EC", Ghana: "GH", Norway: "NO", Iran: "IR", "New Zealand": "NZ",
+  "Saudi Arabia": "SA", "Cape Verde": "CV", Iraq: "IQ", Algeria: "DZ", Jordan: "JO",
+  Austria: "AT", Uzbekistan: "UZ", "Congo DR": "CD", "DR Congo": "CD", Panama: "PA",
+  Haiti: "HT", Scotland: "GB-SCT", Tunisia: "TN", Sweden: "SE", Turkey: "TR",
+  "Ivory Coast": "CI", "Curaçao": "CW", Curacao: "CW", Egypt: "EG", Poland: "PL", Bahrain: "BH",
+};
+const nameFlag = (name: string) => flagFor(TEAM_CODE[name] ?? "");
+
+/** A 'no model is on this' draft for a game the agents took zero position on. */
+function sittingOutTweet(m: Match, ctaIdx: number): string {
+  const title = `${nameFlag(m.home_team)} ${m.home_team} vs ${nameFlag(m.away_team)} ${m.away_team}`.replace(/\s{2,}/g, " ").trim();
+  return [title, "None of the 8 AI models are positioned on this game, the swarm is staying out.", SWARM_CTAS[ctaIdx % SWARM_CTAS.length]].join("\n");
+}
+
 // ── Feed lookup (mirror the render scripts' --top pick so caption == card) ───--
 function topRecord(feedFile: string, m: Match, kind: "consensus" | "result"): any | null {
   if (!fs.existsSync(feedFile)) return null;
@@ -251,15 +329,18 @@ function collectOutputs(dir: string): { png?: string; mp4?: string } {
 }
 
 // ── Slack ─────────────────────────────────────────────────────────────────--
-async function postXDraft(token: string, caption: string) {
-  const text = `X draft (copy):\n\`\`\`\n${caption}\n\`\`\``;
-  const res = await fetch("https://slack.com/api/chat.postMessage", {
-    method: "POST",
-    headers: { Authorization: `Bearer ${token}`, "Content-Type": "application/json; charset=utf-8" },
-    body: JSON.stringify({ channel: CHANNEL, text, unfurl_links: false, unfurl_media: false }),
-  });
-  const j: any = await res.json();
+async function slackMessage(token: string, channel: string, text: string): Promise<void> {
+  const j: any = await (
+    await fetch("https://slack.com/api/chat.postMessage", {
+      method: "POST",
+      headers: { Authorization: `Bearer ${token}`, "Content-Type": "application/json; charset=utf-8" },
+      body: JSON.stringify({ channel, text, unfurl_links: false, unfurl_media: false }),
+    })
+  ).json();
   if (!j.ok) throw new Error(`chat.postMessage failed: ${j.error}`);
+}
+async function postXDraft(token: string, caption: string) {
+  await slackMessage(token, CHANNEL, `X draft (copy):\n\`\`\`\n${caption}\n\`\`\``);
 }
 
 // ── Card pipeline ───────────────────────────────────────────────────────────
@@ -358,57 +439,101 @@ async function uploadFile(token: string, filePath: string): Promise<{ id: string
   return { id: reserve.file_id, title: filename };
 }
 
-/** Share many files into the channel as ONE message with a single caption. */
+/** Share files into the channel. Slack caps completeUploadExternal at 10 files
+ *  per message, so chunk into batches; the caption rides the first batch. */
 async function postBundle(token: string, channel: string, filePaths: string[], caption: string): Promise<void> {
-  const files: { id: string; title: string }[] = [];
-  for (const p of filePaths) if (fs.existsSync(p)) files.push(await uploadFile(token, p));
-  if (!files.length) throw new Error("no files to bundle");
-  const res: any = await (
-    await fetch("https://slack.com/api/files.completeUploadExternal", {
-      method: "POST",
-      headers: { Authorization: `Bearer ${token}`, "Content-Type": "application/x-www-form-urlencoded" },
-      body: new URLSearchParams({ files: JSON.stringify(files), channel_id: channel, initial_comment: caption }),
-    })
-  ).json();
-  if (!res.ok) throw new Error(`completeUploadExternal: ${res.error}`);
+  const existing = filePaths.filter((p) => fs.existsSync(p));
+  if (!existing.length) throw new Error("no files to bundle");
+  const CHUNK = 10;
+  for (let i = 0; i < existing.length; i += CHUNK) {
+    const files: { id: string; title: string }[] = [];
+    for (const p of existing.slice(i, i + CHUNK)) files.push(await uploadFile(token, p));
+    const res: any = await (
+      await fetch("https://slack.com/api/files.completeUploadExternal", {
+        method: "POST",
+        headers: { Authorization: `Bearer ${token}`, "Content-Type": "application/x-www-form-urlencoded" },
+        body: new URLSearchParams({
+          files: JSON.stringify(files),
+          channel_id: channel,
+          initial_comment: i === 0 ? caption : "Today's games, continued.",
+        }),
+      })
+    ).json();
+    if (!res.ok) throw new Error(`completeUploadExternal: ${res.error}`);
+  }
 }
 
-/** Render every covered game in `games` and post all their MP4s as ONE Slack
- *  message. Returns the count of games actually bundled. */
+/** Render a card for EVERY market the agents touched on each covered game (top
+ *  selection of each market type), post all MP4s, then the X drafts. One game
+ *  with btts + totals consensus yields two cards. Returns the card count. */
 async function renderBundle(games: Match[], cfg: SlackConfig | null): Promise<number> {
   console.log("→ building consensus feed…");
   await sh(["bun", "scripts/swarm-consensus.ts"]);
+  const records: any[] = fs.existsSync(CONSENSUS_FEED) ? JSON.parse(fs.readFileSync(CONSENSUS_FEED, "utf8")).records ?? [] : [];
 
-  const mp4s: string[] = [];
   const lines: string[] = [];
+  const tweets: string[] = [];
+  const selected: any[] = []; // one record per (covered game x market type), in game order
+  const sittingOut: Match[] = [];
   for (const m of games) {
-    const game = `${m.home_team} vs ${m.away_team}`;
-    const rec = topRecord(CONSENSUS_FEED, m, "consensus");
-    if (!rec) {
-      console.log(`  · ${game}: no agent coverage — skipping`);
+    const ag = gameAgreement(records, m);
+    if (!ag) {
+      console.log(`  · ${m.home_team} vs ${m.away_team}: no agent position — drafting a 'staying out' post`);
+      sittingOut.push(m);
       continue;
     }
-    const outDir = path.join(OUT_ROOT, `bundle-${uidSlug(m.match_uid)}`);
-    fs.rmSync(outDir, { recursive: true, force: true });
-    console.log(`  → rendering ${game}`);
-    if (!(await sh(["bun", "scripts/render-consensus.ts", `--game=${game}`, `--out=${outDir}`]))) continue;
-    const { mp4 } = collectOutputs(outDir);
-    if (!mp4) continue;
-    mp4s.push(mp4);
-    lines.push(`• ${m.home_team} v ${m.away_team}: ${selectionPhrase(rec)} (swarm ${pct(rec.consensus)} vs market ${pct(rec.marketPrice)}, ${sign(rec.edgePp)}${rec.edgePp}pp)`);
+    // Every market type the agents touched, top-edge selection of each.
+    const mine = records.filter((r) => {
+      const g = String(r.game ?? "").toLowerCase();
+      return g.includes(m.home_team.toLowerCase()) && g.includes(m.away_team.toLowerCase());
+    });
+    const byMkt = new Map<string, any>();
+    for (const r of mine) {
+      const cur = byMkt.get(r.marketType);
+      if (!cur || r.edgePp > cur.edgePp) byMkt.set(r.marketType, r);
+    }
+    const picks = [...byMkt.values()];
+    selected.push(...picks);
+    console.log(`  • ${m.home_team} v ${m.away_team}: ${picks.length} market(s) (${picks.map((p) => p.marketType).join(", ")})`);
+    lines.push(`• ${m.home_team} v ${m.away_team}: ${selectionPhrase(ag.top)} (swarm ${pct(ag.top.consensus)} vs market ${pct(ag.top.marketPrice)}, ${sign(ag.top.edgePp)}${ag.top.edgePp}pp)`);
+    tweets.push(gameTweet(ag, tweets.length));
   }
 
-  if (!mp4s.length) {
+  if (!selected.length) {
     console.log("No covered games to bundle.");
     return 0;
   }
-  const caption = [`*Today's games · Swarm Arena · Market vs Agents*`, `The 8 AI models' picks for today's World Cup slate:`, ...lines, CTA].join("\n");
+
+  // Render every selected market card in ONE Remotion bundle, via a curated feed.
+  const outDir = path.join(OUT_ROOT, "bundle");
+  fs.rmSync(outDir, { recursive: true, force: true });
+  fs.mkdirSync(OUT_ROOT, { recursive: true });
+  const feedPath = path.join(OUT_ROOT, "bundle-feed.json");
+  fs.writeFileSync(feedPath, JSON.stringify({ records: selected }));
+  console.log(`→ rendering ${selected.length} market card(s) across ${tweets.length} game(s)…`);
+  await sh(["bun", "scripts/render-consensus.ts", "--all", `--feed=${feedPath}`, `--out=${outDir}`]);
+
+  // Collect every rendered MP4 (sorted = grouped by game slug). Robust to
+  // whatever slug render-consensus uses.
+  const mp4s = fs.readdirSync(outDir).filter((f) => f.endsWith(".mp4")).sort().map((f) => path.join(outDir, f));
+  if (!mp4s.length) {
+    console.log("Render produced no MP4s.");
+    return 0;
+  }
+
+  // A 'staying out' draft for each game the agents took no position on.
+  for (const m of sittingOut) tweets.push(sittingOutTweet(m, tweets.length));
+
+  const caption = [`*Today's games · Swarm Arena · Market vs Agents*`, `${mp4s.length} cards across today's slate, every market the agents are trading:`, ...lines, CTA].join("\n");
+  // Second message: one X-draft per game (top market), stacked in copy blocks.
+  const xText = "Today's games, X drafts (one per game):\n\n" + tweets.map((t) => "```\n" + t + "\n```").join("\n\n");
   if (!cfg) {
-    console.log(`Rendered ${mp4s.length} game(s), not posting:\n${caption}`);
+    console.log(`Rendered ${mp4s.length} card(s), not posting.\n\nBUNDLE CAPTION:\n${caption}\n\nX DRAFTS:\n${xText}`);
     return mp4s.length;
   }
   await postBundle(cfg.token, cfg.channelId, mp4s, caption);
-  console.log(`  ⤴ posted ${mp4s.length} game MP4(s) in one message`);
+  await slackMessage(cfg.token, cfg.channelId, xText);
+  console.log(`  ⤴ posted bundle (${mp4s.length} MP4s) + X-draft message (${tweets.length} posts)`);
   return mp4s.length;
 }
 
