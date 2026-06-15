@@ -200,7 +200,7 @@ const pct = (x: number) => `${Math.round(x * 100)}%`;
 
 function consensusCaption(rec: any): string {
   return [
-    `*Market vs Agents · ${rec.home} v ${rec.away}*`,
+    `*Market vs Agents · ${flagFor(rec.homeCode)} ${rec.home} v ${rec.away} ${flagFor(rec.awayCode)}*`,
     `The swarm of ${rec.agentsTotal} AI models prices ${selectionPhrase(rec)} at ${pct(rec.consensus)} vs the market's ${pct(rec.marketPrice)} (${sign(rec.edgePp)}${rec.edgePp}pp edge).`,
     `${rec.agentsN} of ${rec.agentsTotal} agents are positioned on it.${rec.kickoff ? ` Kickoff ${rec.kickoff}.` : ""}`,
     CTA,
@@ -208,7 +208,7 @@ function consensusCaption(rec: any): string {
 }
 function resultCaption(rec: any): string {
   return [
-    `*${rec.home} ${rec.homeScore}-${rec.awayScore} ${rec.away} · full time*`,
+    `*${flagFor(rec.homeCode)} ${rec.home} ${rec.homeScore}-${rec.awayScore} ${rec.away} ${flagFor(rec.awayCode)} · full time*`,
     `The swarm backed ${selectionPhrase(rec)} and it ${rec.hit ? "hit" : "missed"}: ${sign(rec.totalPnl)}$${Math.round(Math.abs(rec.totalPnl))} across ${rec.agentsN} of ${rec.agentsTotal} agents.`,
     CTA,
   ].join("\n");
@@ -398,7 +398,7 @@ async function fireGameCard(
   const feed = phase === "pregame" ? CONSENSUS_FEED : RESULTS_FEED;
   const renderScript = phase === "pregame" ? "render-consensus.ts" : "render-results.ts";
   const game = `${m.home_team} vs ${m.away_team}`;
-  const label = `${phase === "pregame" ? "Pre-game" : "Result"} card · ${game}`;
+  const label = `${phase === "pregame" ? "Pre-game" : "Result"} card · ${nameFlag(m.home_team)} ${m.home_team} vs ${m.away_team} ${nameFlag(m.away_team)}`;
 
   const rec = topRecord(feed, m, kind);
   if (!rec) {
@@ -538,7 +538,7 @@ async function renderBundle(games: Match[], cfg: SlackConfig | null): Promise<nu
     const picks = [...byMkt.values()];
     selected.push(...picks);
     console.log(`  • ${m.home_team} v ${m.away_team}: ${picks.length} market(s) (${picks.map((p) => p.marketType).join(", ")})`);
-    lines.push(`• ${m.home_team} v ${m.away_team}: ${selectionPhrase(ag.top)} (swarm ${pct(ag.top.consensus)} vs market ${pct(ag.top.marketPrice)}, ${sign(ag.top.edgePp)}${ag.top.edgePp}pp)`);
+    lines.push(`• ${flagFor(ag.top.homeCode)} ${m.home_team} v ${m.away_team} ${flagFor(ag.top.awayCode)}: ${selectionPhrase(ag.top)} (swarm ${pct(ag.top.consensus)} vs market ${pct(ag.top.marketPrice)}, ${sign(ag.top.edgePp)}${ag.top.edgePp}pp)`);
     tweets.push(gameTweet(ag, tweets.length));
   }
 
