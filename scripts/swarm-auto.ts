@@ -53,6 +53,9 @@ const CHANNEL = process.env.SLACK_CHANNEL_SWARM_ARENA ?? process.env.SLACK_CHANN
 const CONSENSUS_FEED = path.join(process.cwd(), "public", "swarm-arena-cards", "consensus.json");
 const RESULTS_FEED = path.join(process.cwd(), "public", "swarm-arena-cards", "results.json");
 const LIVE_DECK = path.join(process.cwd(), "public", "swarm-arena-cards", "live-deck.json");
+const AUDIO_GAME = path.join(process.cwd(), "public", "audio", "stadium-groove.mp3"); // pre-game game cards
+const AUDIO_RESULT = path.join(process.cwd(), "public", "audio", "decisive-moment.mp3"); // post-game result cards
+const AUDIO_LEADERBOARD = path.join(process.cwd(), "public", "audio", "victory-jingle.mp3"); // leaderboard
 
 const PREGAME_LEAD_MIN = 60; // fire on the first tick at/after kickoff − 60m
 const PREGAME_FLOOR_MIN = 3; // never fire inside this many minutes of kickoff
@@ -328,6 +331,44 @@ function collectOutputs(dir: string): { png?: string; mp4?: string } {
   return { png: png && path.join(dir, png), mp4: mp4 && path.join(dir, mp4) };
 }
 
+// ── Audio mux ───────────────────────────────────────────────────────────────
+// Add a music track to a rendered (silent) MP4: copy the video, encode the
+// audio to aac, cut to the video length. Isolated to the cron — the shared
+// compositions and render scripts stay muted and untouched.
+let _ffmpeg: { bin: string; env: Record<string, string> } | null | undefined;
+function resolveFfmpeg(): { bin: string; env: Record<string, string> } | null {
+  if (_ffmpeg !== undefined) return _ffmpeg;
+  const sys = Bun.which("ffmpeg");
+  if (sys) return (_ffmpeg = { bin: sys, env: {} });
+  // Fall back to the ffmpeg bundled in Remotion's compositor (needs its sibling
+  // shared libs on the loader path).
+  const base = path.join(process.cwd(), "node_modules", "@remotion");
+  const dir = fs.existsSync(base)
+    ? fs.readdirSync(base).find((d) => d.startsWith("compositor-") && fs.existsSync(path.join(base, d, "ffmpeg")))
+    : undefined;
+  if (!dir) return (_ffmpeg = null);
+  const full = path.join(base, dir);
+  const key = process.platform === "darwin" ? "DYLD_FALLBACK_LIBRARY_PATH" : "LD_LIBRARY_PATH";
+  return (_ffmpeg = { bin: path.join(full, "ffmpeg"), env: { [key]: full } });
+}
+async function muxAudio(mp4: string, audio: string): Promise<void> {
+  if (!fs.existsSync(mp4) || !fs.existsSync(audio)) return;
+  const ff = resolveFfmpeg();
+  if (!ff) {
+    console.warn("  ! no ffmpeg available — leaving card silent");
+    return;
+  }
+  const tmp = mp4.replace(/\.mp4$/, ".aud.mp4");
+  const r = await $`${ff.bin} -y -hide_banner -loglevel error -i ${mp4} -i ${audio} -map 0:v:0 -map 1:a:0 -c:v copy -c:a aac -shortest ${tmp}`
+    .env({ ...process.env, ...ff.env })
+    .nothrow();
+  if (r.exitCode !== 0) {
+    console.error(`  ! audio mux failed for ${path.basename(mp4)} (exit ${r.exitCode})`);
+    return;
+  }
+  fs.renameSync(tmp, mp4);
+}
+
 // ── Slack ─────────────────────────────────────────────────────────────────--
 async function slackMessage(token: string, channel: string, text: string): Promise<void> {
   const j: any = await (
@@ -376,6 +417,7 @@ async function fireGameCard(
     console.error(`  ✗ ${game}: render produced no files.`);
     return false;
   }
+  if (mp4) await muxAudio(mp4, phase === "postgame" ? AUDIO_RESULT : AUDIO_GAME);
   const caption = phase === "pregame" ? consensusCaption(rec) : resultCaption(rec);
 
   if (!cfg) {
@@ -412,6 +454,7 @@ async function fireLeaderboard(key: string, cfg: SlackConfig | null, l: Ledger):
     console.error("  ✗ leaderboard: render produced no files.");
     return false;
   }
+  if (mp4) await muxAudio(mp4, AUDIO_LEADERBOARD);
   if (!cfg) {
     console.log(`  ✓ leaderboard: rendered (no Slack post). ${mp4 ?? png}`);
     return true;
@@ -520,6 +563,8 @@ async function renderBundle(games: Match[], cfg: SlackConfig | null): Promise<nu
     console.log("Render produced no MP4s.");
     return 0;
   }
+  // Every bundle card is a pre-game game card → the 'decisive moment' track.
+  for (const mp4 of mp4s) await muxAudio(mp4, AUDIO_GAME);
 
   // A 'staying out' draft for each game the agents took no position on.
   for (const m of sittingOut) tweets.push(sittingOutTweet(m, tweets.length));
