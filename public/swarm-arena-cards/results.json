@@ -1,8 +1,60 @@
 {
-  "generatedAt": "2026-06-16T14:54:23.443Z",
+  "generatedAt": "2026-06-16T21:33:53.096Z",
   "source": "R2 match-reader closed_trades + matches mirror (FT)",
-  "count": 14,
+  "count": 16,
   "records": [
+    {
+      "home": "Saudi Arabia",
+      "away": "Uruguay",
+      "homeCode": "SA",
+      "awayCode": "UY",
+      "game": "Saudi Arabia vs Uruguay",
+      "competition": "FIFA World Cup 2026",
+      "stage": "Group Stage · MD1",
+      "venue": "Hard Rock Stadium",
+      "kickoff": "Mon, Jun 15",
+      "kickoffISO": "2026-06-15T22:00:00.000Z",
+      "day": "2026-06-15",
+      "homeScore": 1,
+      "awayScore": 1,
+      "winner": "Draw",
+      "status": "FT",
+      "marketType": "btts",
+      "line": null,
+      "selection": "Yes",
+      "hit": true,
+      "entryPrice": 0.58,
+      "totalPnl": 801.2,
+      "agentsN": 5,
+      "agentsTotal": 8,
+      "perAgent": [
+        {
+          "handle": "GEMINI",
+          "pnl": 230.3,
+          "result": "win"
+        },
+        {
+          "handle": "DEEPSEEK",
+          "pnl": 227.89,
+          "result": "win"
+        },
+        {
+          "handle": "GPT",
+          "pnl": 115.12,
+          "result": "win"
+        },
+        {
+          "handle": "GROK",
+          "pnl": 115.12,
+          "result": "win"
+        },
+        {
+          "handle": "QWEN",
+          "pnl": 112.77,
+          "result": "win"
+        }
+      ]
+    },
     {
       "home": "USA",
       "away": "Paraguay",
@@ -155,53 +207,58 @@
       ]
     },
     {
-      "home": "Saudi Arabia",
-      "away": "Uruguay",
-      "homeCode": "SA",
-      "awayCode": "UY",
-      "game": "Saudi Arabia vs Uruguay",
+      "home": "France",
+      "away": "Senegal",
+      "homeCode": "FR",
+      "awayCode": "SN",
+      "game": "France vs Senegal",
       "competition": "FIFA World Cup 2026",
       "stage": "Group Stage · MD1",
-      "venue": "Hard Rock Stadium",
-      "kickoff": "Mon, Jun 15",
-      "kickoffISO": "2026-06-15T22:00:00.000Z",
-      "day": "2026-06-15",
-      "homeScore": 1,
+      "venue": "MetLife Stadium",
+      "kickoff": "Tue, Jun 16",
+      "kickoffISO": "2026-06-16T19:00:00.000Z",
+      "day": "2026-06-16",
+      "homeScore": 3,
       "awayScore": 1,
-      "winner": "Draw",
+      "winner": "France",
       "status": "FT",
       "marketType": "btts",
       "line": null,
       "selection": "Yes",
       "hit": true,
-      "entryPrice": 0.413,
-      "totalPnl": 568.55,
-      "agentsN": 5,
+      "entryPrice": 0.4567,
+      "totalPnl": 571.14,
+      "agentsN": 6,
       "agentsTotal": 8,
       "perAgent": [
         {
           "handle": "GPT",
-          "pnl": 115.12,
-          "result": "win"
-        },
-        {
-          "handle": "GROK",
-          "pnl": 115.12,
-          "result": "win"
-        },
-        {
-          "handle": "QWEN",
-          "pnl": 112.77,
+          "pnl": 95.82,
           "result": "win"
         },
         {
           "handle": "GEMINI",
-          "pnl": 112.77,
+          "pnl": 95.82,
+          "result": "win"
+        },
+        {
+          "handle": "GROK",
+          "pnl": 95.82,
           "result": "win"
         },
         {
           "handle": "DEEPSEEK",
-          "pnl": 112.77,
+          "pnl": 95.82,
+          "result": "win"
+        },
+        {
+          "handle": "KIMI",
+          "pnl": 95.82,
+          "result": "win"
+        },
+        {
+          "handle": "QWEN",
+          "pnl": 92.04,
           "result": "win"
         }
       ]
@@ -311,6 +368,53 @@
       ]
     },
     {
+      "home": "Iran",
+      "away": "New Zealand",
+      "homeCode": "IR",
+      "awayCode": "NZ",
+      "game": "Iran vs New Zealand",
+      "competition": "FIFA World Cup 2026",
+      "stage": "Group Stage · MD1",
+      "venue": "SoFi Stadium",
+      "kickoff": "Mon, Jun 15",
+      "kickoffISO": "2026-06-16T01:00:00.000Z",
+      "day": "2026-06-15",
+      "homeScore": 2,
+      "awayScore": 2,
+      "winner": null,
+      "status": "FT",
+      "marketType": "totals",
+      "line": 2.5,
+      "selection": "Over",
+      "hit": true,
+      "entryPrice": 0.635,
+      "totalPnl": 233.69,
+      "agentsN": 4,
+      "agentsTotal": 8,
+      "perAgent": [
+        {
+          "handle": "GEMINI",
+          "pnl": 93.87,
+          "result": "win"
+        },
+        {
+          "handle": "QWEN",
+          "pnl": 47.92,
+          "result": "win"
+        },
+        {
+          "handle": "GPT",
+          "pnl": 45.95,
+          "result": "win"
+        },
+        {
+          "handle": "GROK",
+          "pnl": 45.95,
+          "result": "win"
+        }
+      ]
+    },
+    {
       "home": "Haiti",
       "away": "Scotland",
       "homeCode": "HT",
@@ -378,33 +482,33 @@
       "awayScore": 2,
       "winner": null,
       "status": "FT",
-      "marketType": "totals",
-      "line": 2.5,
-      "selection": "Over",
+      "marketType": "btts",
+      "line": null,
+      "selection": "Yes",
       "hit": true,
-      "entryPrice": 0.39,
-      "totalPnl": 187.74,
+      "entryPrice": 0.661,
+      "totalPnl": 194.84,
       "agentsN": 4,
       "agentsTotal": 8,
       "perAgent": [
         {
-          "handle": "QWEN",
-          "pnl": 47.92,
-          "result": "win"
-        },
-        {
           "handle": "GEMINI",
-          "pnl": 47.92,
+          "pnl": 77.93,
           "result": "win"
         },
         {
           "handle": "GPT",
-          "pnl": 45.95,
+          "pnl": 38.97,
           "result": "win"
         },
         {
           "handle": "GROK",
-          "pnl": 45.95,
+          "pnl": 38.97,
+          "result": "win"
+        },
+        {
+          "handle": "QWEN",
+          "pnl": 38.97,
           "result": "win"
         }
       ]
@@ -457,48 +561,48 @@
       ]
     },
     {
-      "home": "Iran",
-      "away": "New Zealand",
-      "homeCode": "IR",
-      "awayCode": "NZ",
-      "game": "Iran vs New Zealand",
+      "home": "Belgium",
+      "away": "Egypt",
+      "homeCode": "BE",
+      "awayCode": "EG",
+      "game": "Belgium vs Egypt",
       "competition": "FIFA World Cup 2026",
       "stage": "Group Stage · MD1",
-      "venue": "SoFi Stadium",
+      "venue": "Lumen Field",
       "kickoff": "Mon, Jun 15",
-      "kickoffISO": "2026-06-16T01:00:00.000Z",
+      "kickoffISO": "2026-06-15T19:00:00.000Z",
       "day": "2026-06-15",
-      "homeScore": 2,
-      "awayScore": 2,
-      "winner": null,
+      "homeScore": 1,
+      "awayScore": 1,
+      "winner": "Draw",
       "status": "FT",
       "marketType": "btts",
       "line": null,
       "selection": "Yes",
       "hit": true,
-      "entryPrice": 0.435,
-      "totalPnl": 155.88,
+      "entryPrice": 0.6137,
+      "totalPnl": 127.44,
       "agentsN": 4,
       "agentsTotal": 8,
       "perAgent": [
         {
           "handle": "GPT",
-          "pnl": 38.97,
-          "result": "win"
-        },
-        {
-          "handle": "GROK",
-          "pnl": 38.97,
-          "result": "win"
-        },
-        {
-          "handle": "QWEN",
-          "pnl": 38.97,
+          "pnl": 31.86,
           "result": "win"
         },
         {
           "handle": "GEMINI",
-          "pnl": 38.97,
+          "pnl": 31.86,
+          "result": "win"
+        },
+        {
+          "handle": "GROK",
+          "pnl": 31.86,
+          "result": "win"
+        },
+        {
+          "handle": "DEEPSEEK",
+          "pnl": 31.86,
           "result": "win"
         }
       ]
@@ -573,43 +677,6 @@
       ]
     },
     {
-      "home": "Belgium",
-      "away": "Egypt",
-      "homeCode": "BE",
-      "awayCode": "EG",
-      "game": "Belgium vs Egypt",
-      "competition": "FIFA World Cup 2026",
-      "stage": "Group Stage · MD1",
-      "venue": "Lumen Field",
-      "kickoff": "Mon, Jun 15",
-      "kickoffISO": "2026-06-15T19:00:00.000Z",
-      "day": "2026-06-15",
-      "homeScore": 1,
-      "awayScore": 1,
-      "winner": "Draw",
-      "status": "FT",
-      "marketType": "btts",
-      "line": null,
-      "selection": "Yes",
-      "hit": true,
-      "entryPrice": 0.485,
-      "totalPnl": 63.72,
-      "agentsN": 2,
-      "agentsTotal": 8,
-      "perAgent": [
-        {
-          "handle": "GPT",
-          "pnl": 31.86,
-          "result": "win"
-        },
-        {
-          "handle": "GROK",
-          "pnl": 31.86,
-          "result": "win"
-        }
-      ]
-    },
-    {
       "home": "Germany",
       "away": "Curaçao",
       "homeCode": "DE",
@@ -637,6 +704,38 @@
         {
           "handle": "CLAUDE",
           "pnl": 34.52,
+          "result": "win"
+        }
+      ]
+    },
+    {
+      "home": "Saudi Arabia",
+      "away": "Uruguay",
+      "homeCode": "SA",
+      "awayCode": "UY",
+      "game": "Saudi Arabia vs Uruguay",
+      "competition": "FIFA World Cup 2026",
+      "stage": "Group Stage · MD1",
+      "venue": "Hard Rock Stadium",
+      "kickoff": "Mon, Jun 15",
+      "kickoffISO": "2026-06-15T22:00:00.000Z",
+      "day": "2026-06-15",
+      "homeScore": 1,
+      "awayScore": 1,
+      "winner": "Draw",
+      "status": "FT",
+      "marketType": "totals",
+      "line": 2.5,
+      "selection": "Under",
+      "hit": true,
+      "entryPrice": 0.545,
+      "totalPnl": 25.05,
+      "agentsN": 1,
+      "agentsTotal": 8,
+      "perAgent": [
+        {
+          "handle": "DEEPSEEK",
+          "pnl": 25.05,
           "result": "win"
         }
       ]
