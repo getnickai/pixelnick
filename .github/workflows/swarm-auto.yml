@@ -46,7 +46,7 @@ concurrency:
   cancel-in-progress: false
 
 permissions:
-  contents: read
+  contents: write # the cron commits refreshed feeds back to main so the history site updates
 
 jobs:
   tick:
@@ -129,3 +129,17 @@ jobs:
           [ "$IN_FLB" = "true" ] && ARGS+=("--force-leaderboard")
           [ "$IN_NOSLACK" = "true" ] && ARGS+=("--no-slack")
           bun scripts/swarm-auto.ts "${ARGS[@]}"
+
+      # Publish the feeds the history site reads (results / consensus), so a day's
+      # games + results show on the site. Runs only on ticks that generated a card
+      # (the render step rebuilt the feeds); commits only when a feed changed;
+      # the push makes Vercel redeploy the history page.
+      - name: Publish refreshed feeds to the history site
+        if: steps.gate.outputs.due != '0' && (github.event_name != 'workflow_dispatch' || inputs.dry_run != true)
+        run: |
+          git config user.name "swarm-auto"
+          git config user.email "swarm-auto@users.noreply.github.com"
+          git add public/swarm-arena-cards/results.json public/swarm-arena-cards/consensus.json public/swarm-arena-cards/fixtures.json 2>/dev/null || true
+          if git diff --cached --quiet; then echo "no feed changes to publish"; exit 0; fi
+          git commit -m "chore(swarm-auto): refresh history feeds"
+          git push origin HEAD:main || echo "push raced; next card run will catch up"
