@@ -59,8 +59,8 @@ const AUDIO_LEADERBOARD = path.join(process.cwd(), "public", "audio", "victory-j
 
 const PREGAME_LEAD_MIN = 60; // fire on the first tick at/after kickoff − 60m
 const PREGAME_FLOOR_MIN = 3; // never fire inside this many minutes of kickoff
-const LEADERBOARD_LEAD_MIN = 210; // 3.5h before the slate's first kickoff
-const BUNDLE_LEAD_MIN = 210; // games-of-the-day bundle: same ~3.5h pre-slate window
+const LEADERBOARD_LEAD_MIN = 390; // 6.5h before the slate's first kickoff (moved up 3h)
+const BUNDLE_LEAD_MIN = 390; // games-of-the-day bundle: 6.5h before first kickoff (moved up 3h)
 const POSTGAME_GIVEUP_HRS = 24; // stop retrying a result card this long after kickoff
 const FINAL_STATUSES = new Set(["FT", "AET", "PEN", "AWD", "WO"]);
 
