@@ -112,7 +112,12 @@ const MIN = 60_000;
 // schedule is grouped. A late US-evening kickoff that lands after 00:00 UTC is
 // still the same matchday, so group by ET date (not UTC, not Dubai) to fire one
 // leaderboard per matchday.
-const slateDay = (ms: number) => new Date(ms).toLocaleDateString("en-CA", { timeZone: "America/New_York" });
+// WC games run from afternoon into the small hours US-Eastern; a game just past
+// midnight ET (e.g. Austria v Jordan at 00:00 ET) is the tail of the PRIOR
+// evening's slate, not a new day. Shift the day boundary to ~6am ET (no games
+// run 1am-1pm ET, so it's a safe gap) so late-night games group with their day.
+const SLATE_BOUNDARY_MS = 6 * 60 * 60 * 1000;
+const slateDay = (ms: number) => new Date(ms - SLATE_BOUNDARY_MS).toLocaleDateString("en-CA", { timeZone: "America/New_York" });
 const kickoffMs = (m: Match) => new Date(m.scheduled_at).getTime();
 
 // ── DB ────────────────────────────────────────────────────────────────────--
