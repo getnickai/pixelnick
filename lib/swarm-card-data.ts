@@ -23,6 +23,7 @@ export const MODEL_LOGOS: Record<string, string> = {
   GROK: "grok",
   DEEPSEEK: "deepseek",
   MISTRAL: "mistral",
+  QWEN: "qwen",
 };
 
 /**
