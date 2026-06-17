@@ -1,7 +1,7 @@
 {
-  "generatedAt": "2026-06-17T22:12:23.696Z",
+  "generatedAt": "2026-06-17T23:33:50.913Z",
   "source": "R2 match-reader closed_trades + matches mirror (FT)",
-  "count": 18,
+  "count": 19,
   "records": [
     {
       "home": "Portugal",
@@ -44,17 +44,17 @@
           "result": "win"
         },
         {
-          "handle": "QWEN",
-          "pnl": 117.53,
-          "result": "win"
-        },
-        {
           "handle": "GROK",
           "pnl": 117.53,
           "result": "win"
         },
         {
           "handle": "DEEPSEEK",
+          "pnl": 117.53,
+          "result": "win"
+        },
+        {
+          "handle": "QWEN",
           "pnl": 117.53,
           "result": "win"
         },
@@ -519,6 +519,63 @@
         {
           "handle": "GROK",
           "pnl": 45.95,
+          "result": "win"
+        }
+      ]
+    },
+    {
+      "home": "England",
+      "away": "Croatia",
+      "homeCode": "GB",
+      "awayCode": "HR",
+      "game": "England vs Croatia",
+      "competition": "FIFA World Cup 2026",
+      "stage": "Group Stage · MD1",
+      "venue": "AT&T Stadium",
+      "kickoff": "Wed, Jun 17",
+      "kickoffISO": "2026-06-17T20:00:00.000Z",
+      "day": "2026-06-17",
+      "homeScore": 4,
+      "awayScore": 2,
+      "winner": "England",
+      "status": "FT",
+      "marketType": "btts",
+      "line": null,
+      "selection": "Yes",
+      "hit": true,
+      "entryPrice": 0.5542,
+      "totalPnl": 207.12,
+      "agentsN": 6,
+      "agentsTotal": 8,
+      "perAgent": [
+        {
+          "handle": "GEMINI",
+          "pnl": 34.52,
+          "result": "win"
+        },
+        {
+          "handle": "GROK",
+          "pnl": 34.52,
+          "result": "win"
+        },
+        {
+          "handle": "DEEPSEEK",
+          "pnl": 34.52,
+          "result": "win"
+        },
+        {
+          "handle": "QWEN",
+          "pnl": 34.52,
+          "result": "win"
+        },
+        {
+          "handle": "GPT",
+          "pnl": 34.52,
+          "result": "win"
+        },
+        {
+          "handle": "KIMI",
+          "pnl": 34.52,
           "result": "win"
         }
       ]
