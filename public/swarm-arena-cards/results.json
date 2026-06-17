@@ -1,5 +1,5 @@
 {
-  "generatedAt": "2026-06-17T21:16:28.068Z",
+  "generatedAt": "2026-06-17T22:12:23.696Z",
   "source": "R2 match-reader closed_trades + matches mirror (FT)",
   "count": 18,
   "records": [
@@ -29,22 +29,22 @@
       "agentsTotal": 8,
       "perAgent": [
         {
-          "handle": "GEMINI",
-          "pnl": 117.53,
-          "result": "win"
-        },
-        {
-          "handle": "QWEN",
-          "pnl": 117.53,
-          "result": "win"
-        },
-        {
           "handle": "CLAUDE",
           "pnl": 117.53,
           "result": "win"
         },
         {
           "handle": "GPT",
+          "pnl": 117.53,
+          "result": "win"
+        },
+        {
+          "handle": "GEMINI",
+          "pnl": 117.53,
+          "result": "win"
+        },
+        {
+          "handle": "QWEN",
           "pnl": 117.53,
           "result": "win"
         },
