@@ -1,7 +1,7 @@
 {
-  "generatedAt": "2026-06-17T00:49:27.366Z",
+  "generatedAt": "2026-06-17T04:53:41.960Z",
   "source": "R2 match-reader closed_trades + matches mirror (FT)",
-  "count": 17,
+  "count": 16,
   "records": [
     {
       "home": "Saudi Arabia",
@@ -731,38 +731,6 @@
         {
           "handle": "DEEPSEEK",
           "pnl": 25.05,
-          "result": "win"
-        }
-      ]
-    },
-    {
-      "home": "Iraq",
-      "away": "Norway",
-      "homeCode": "IQ",
-      "awayCode": "NO",
-      "game": "Iraq vs Norway",
-      "competition": "FIFA World Cup 2026",
-      "stage": "Group Stage · MD1",
-      "venue": "Gillette Stadium",
-      "kickoff": "Tue, Jun 16",
-      "kickoffISO": "2026-06-16T22:00:00.000Z",
-      "day": "2026-06-16",
-      "homeScore": 1,
-      "awayScore": 4,
-      "winner": "Norway",
-      "status": "FT",
-      "marketType": "totals",
-      "line": 2.5,
-      "selection": "Over",
-      "hit": true,
-      "entryPrice": 0.615,
-      "totalPnl": 0,
-      "agentsN": 1,
-      "agentsTotal": 8,
-      "perAgent": [
-        {
-          "handle": "DEEPSEEK",
-          "pnl": 0,
           "result": "win"
         }
       ]
