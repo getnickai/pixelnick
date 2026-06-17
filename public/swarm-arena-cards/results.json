@@ -1,7 +1,7 @@
 {
-  "generatedAt": "2026-06-17T04:53:41.960Z",
+  "generatedAt": "2026-06-17T06:44:42.998Z",
   "source": "R2 match-reader closed_trades + matches mirror (FT)",
-  "count": 16,
+  "count": 17,
   "records": [
     {
       "home": "Saudi Arabia",
@@ -504,6 +504,43 @@
         {
           "handle": "QWEN",
           "pnl": 38.97,
+          "result": "win"
+        }
+      ]
+    },
+    {
+      "home": "Austria",
+      "away": "Jordan",
+      "homeCode": "AT",
+      "awayCode": "JO",
+      "game": "Austria vs Jordan",
+      "competition": "FIFA World Cup 2026",
+      "stage": "Group Stage · MD1",
+      "venue": "Levi's Stadium",
+      "kickoff": "Wed, Jun 17",
+      "kickoffISO": "2026-06-17T04:00:00.000Z",
+      "day": "2026-06-17",
+      "homeScore": 3,
+      "awayScore": 1,
+      "winner": "Austria",
+      "status": "FT",
+      "marketType": "btts",
+      "line": null,
+      "selection": "Yes",
+      "hit": true,
+      "entryPrice": 0.465,
+      "totalPnl": 184.08,
+      "agentsN": 2,
+      "agentsTotal": 8,
+      "perAgent": [
+        {
+          "handle": "GPT",
+          "pnl": 92.04,
+          "result": "win"
+        },
+        {
+          "handle": "GROK",
+          "pnl": 92.04,
           "result": "win"
         }
       ]
