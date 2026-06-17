@@ -1,7 +1,7 @@
 {
-  "generatedAt": "2026-06-16T21:33:53.096Z",
+  "generatedAt": "2026-06-17T00:49:27.366Z",
   "source": "R2 match-reader closed_trades + matches mirror (FT)",
-  "count": 16,
+  "count": 17,
   "records": [
     {
       "home": "Saudi Arabia",
@@ -207,63 +207,6 @@
       ]
     },
     {
-      "home": "France",
-      "away": "Senegal",
-      "homeCode": "FR",
-      "awayCode": "SN",
-      "game": "France vs Senegal",
-      "competition": "FIFA World Cup 2026",
-      "stage": "Group Stage · MD1",
-      "venue": "MetLife Stadium",
-      "kickoff": "Tue, Jun 16",
-      "kickoffISO": "2026-06-16T19:00:00.000Z",
-      "day": "2026-06-16",
-      "homeScore": 3,
-      "awayScore": 1,
-      "winner": "France",
-      "status": "FT",
-      "marketType": "btts",
-      "line": null,
-      "selection": "Yes",
-      "hit": true,
-      "entryPrice": 0.4567,
-      "totalPnl": 571.14,
-      "agentsN": 6,
-      "agentsTotal": 8,
-      "perAgent": [
-        {
-          "handle": "GPT",
-          "pnl": 95.82,
-          "result": "win"
-        },
-        {
-          "handle": "GEMINI",
-          "pnl": 95.82,
-          "result": "win"
-        },
-        {
-          "handle": "GROK",
-          "pnl": 95.82,
-          "result": "win"
-        },
-        {
-          "handle": "DEEPSEEK",
-          "pnl": 95.82,
-          "result": "win"
-        },
-        {
-          "handle": "KIMI",
-          "pnl": 95.82,
-          "result": "win"
-        },
-        {
-          "handle": "QWEN",
-          "pnl": 92.04,
-          "result": "win"
-        }
-      ]
-    },
-    {
       "home": "USA",
       "away": "Paraguay",
       "homeCode": "US",
@@ -311,6 +254,58 @@
         {
           "handle": "QWEN",
           "pnl": 110.48,
+          "result": "win"
+        }
+      ]
+    },
+    {
+      "home": "France",
+      "away": "Senegal",
+      "homeCode": "FR",
+      "awayCode": "SN",
+      "game": "France vs Senegal",
+      "competition": "FIFA World Cup 2026",
+      "stage": "Group Stage · MD1",
+      "venue": "MetLife Stadium",
+      "kickoff": "Tue, Jun 16",
+      "kickoffISO": "2026-06-16T19:00:00.000Z",
+      "day": "2026-06-16",
+      "homeScore": 3,
+      "awayScore": 1,
+      "winner": "France",
+      "status": "FT",
+      "marketType": "btts",
+      "line": null,
+      "selection": "Yes",
+      "hit": true,
+      "entryPrice": 0.566,
+      "totalPnl": 475.32,
+      "agentsN": 5,
+      "agentsTotal": 8,
+      "perAgent": [
+        {
+          "handle": "GPT",
+          "pnl": 95.82,
+          "result": "win"
+        },
+        {
+          "handle": "GEMINI",
+          "pnl": 95.82,
+          "result": "win"
+        },
+        {
+          "handle": "GROK",
+          "pnl": 95.82,
+          "result": "win"
+        },
+        {
+          "handle": "DEEPSEEK",
+          "pnl": 95.82,
+          "result": "win"
+        },
+        {
+          "handle": "QWEN",
+          "pnl": 92.04,
           "result": "win"
         }
       ]
@@ -736,6 +731,38 @@
         {
           "handle": "DEEPSEEK",
           "pnl": 25.05,
+          "result": "win"
+        }
+      ]
+    },
+    {
+      "home": "Iraq",
+      "away": "Norway",
+      "homeCode": "IQ",
+      "awayCode": "NO",
+      "game": "Iraq vs Norway",
+      "competition": "FIFA World Cup 2026",
+      "stage": "Group Stage · MD1",
+      "venue": "Gillette Stadium",
+      "kickoff": "Tue, Jun 16",
+      "kickoffISO": "2026-06-16T22:00:00.000Z",
+      "day": "2026-06-16",
+      "homeScore": 1,
+      "awayScore": 4,
+      "winner": "Norway",
+      "status": "FT",
+      "marketType": "totals",
+      "line": 2.5,
+      "selection": "Over",
+      "hit": true,
+      "entryPrice": 0.615,
+      "totalPnl": 0,
+      "agentsN": 1,
+      "agentsTotal": 8,
+      "perAgent": [
+        {
+          "handle": "DEEPSEEK",
+          "pnl": 0,
           "result": "win"
         }
       ]
