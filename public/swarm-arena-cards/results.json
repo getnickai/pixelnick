@@ -1,7 +1,7 @@
 {
-  "generatedAt": "2026-06-18T05:38:02.220Z",
+  "generatedAt": "2026-06-18T20:01:09.214Z",
   "source": "R2 match-reader closed_trades + matches mirror (FT)",
-  "count": 20,
+  "count": 22,
   "records": [
     {
       "home": "Portugal",
@@ -252,12 +252,12 @@
           "result": "win"
         },
         {
-          "handle": "GROK",
+          "handle": "GPT",
           "pnl": 115.12,
           "result": "win"
         },
         {
-          "handle": "GPT",
+          "handle": "GROK",
           "pnl": 115.12,
           "result": "win"
         },
@@ -944,6 +944,70 @@
         {
           "handle": "DEEPSEEK",
           "pnl": 25.05,
+          "result": "win"
+        }
+      ]
+    },
+    {
+      "home": "Czech Republic",
+      "away": "South Africa",
+      "homeCode": "CZ",
+      "awayCode": "ZA",
+      "game": "Czech Republic vs South Africa",
+      "competition": "FIFA World Cup 2026",
+      "stage": "Group Stage · MD2",
+      "venue": "Mercedes-Benz Stadium",
+      "kickoff": "Thu, Jun 18",
+      "kickoffISO": "2026-06-18T16:00:00.000Z",
+      "day": "2026-06-18",
+      "homeScore": 1,
+      "awayScore": 1,
+      "winner": "Draw",
+      "status": "FT",
+      "marketType": "btts",
+      "line": null,
+      "selection": "Yes",
+      "hit": true,
+      "entryPrice": 0.495,
+      "totalPnl": 0,
+      "agentsN": 1,
+      "agentsTotal": 8,
+      "perAgent": [
+        {
+          "handle": "DEEPSEEK",
+          "pnl": 0,
+          "result": "win"
+        }
+      ]
+    },
+    {
+      "home": "Czech Republic",
+      "away": "South Africa",
+      "homeCode": "CZ",
+      "awayCode": "ZA",
+      "game": "Czech Republic vs South Africa",
+      "competition": "FIFA World Cup 2026",
+      "stage": "Group Stage · MD2",
+      "venue": "Mercedes-Benz Stadium",
+      "kickoff": "Thu, Jun 18",
+      "kickoffISO": "2026-06-18T16:00:00.000Z",
+      "day": "2026-06-18",
+      "homeScore": 1,
+      "awayScore": 1,
+      "winner": "Draw",
+      "status": "FT",
+      "marketType": "totals",
+      "line": 2.5,
+      "selection": "Under",
+      "hit": true,
+      "entryPrice": 0.545,
+      "totalPnl": 0,
+      "agentsN": 1,
+      "agentsTotal": 8,
+      "perAgent": [
+        {
+          "handle": "DEEPSEEK",
+          "pnl": 0,
           "result": "win"
         }
       ]
