@@ -225,6 +225,24 @@ function leaderboardCaption(): string {
     CTA,
   ].join("\n");
 }
+/** The #1 agent's spotlight caption — fired alongside the leaderboard. Reads
+ *  the deck agent's own fields (no identity import needed; the adapter already
+ *  resolves `short`/`provider`). Honest about a small/negative book. */
+function topAgentCaption(a: any): string {
+  const name = a.short ?? a.label ?? a.handle;
+  const provider = a.provider ? ` (${a.provider})` : "";
+  const base = a.spark?.[0] ?? 1000;
+  const equity = a.spark?.[a.spark.length - 1] ?? base * (1 + (a.roiPct ?? 0) / 100);
+  const pnl = equity - base;
+  const roi = Number(a.roiPct ?? 0);
+  const roiStr = `${roi >= 0 ? "+" : "-"}${Math.abs(roi).toFixed(2).replace(/\.?0+$/, "")}%`;
+  const pnlStr = `${pnl >= 0 ? "+" : "-"}$${Math.round(Math.abs(pnl))}`;
+  return [
+    `*Top agent · ${name} leads the Swarm Arena*`,
+    `${name}${provider} is out front of all 8 AI models right now: ${roiStr} ROI, ${pnlStr} on its $1,000 book.`,
+    CTA,
+  ].join("\n");
+}
 
 // ISO-2 country code → flag emoji. Flags are the ONLY emoji used in X drafts.
 function flagFor(code: string): string {
@@ -460,15 +478,58 @@ async function fireLeaderboard(key: string, cfg: SlackConfig | null, l: Ledger):
     return false;
   }
   if (mp4) await muxAudio(mp4, AUDIO_LEADERBOARD);
-  if (!cfg) {
+  if (cfg) {
+    const res = await postCardToSlack(cfg, { slug: "leaderboard-model" } as any, { png, mp4 }, "Leaderboard · Swarm Arena\nSave the MP4 for Reels/TikTok. X draft below.");
+    await postXDraft(cfg.token, leaderboardCaption());
+    console.log(`  ⤴ leaderboard: posted ${res.permalink ?? "(ok)"}`);
+    l.actions[key] = { postedAt: new Date().toISOString(), permalink: res.permalink };
+  } else {
     console.log(`  ✓ leaderboard: rendered (no Slack post). ${mp4 ?? png}`);
-    return true;
   }
-  const res = await postCardToSlack(cfg, { slug: "leaderboard-model" } as any, { png, mp4 }, "Leaderboard · Swarm Arena\nSave the MP4 for Reels/TikTok. X draft below.");
-  await postXDraft(cfg.token, leaderboardCaption());
-  console.log(`  ⤴ leaderboard: posted ${res.permalink ?? "(ok)"}`);
-  l.actions[key] = { postedAt: new Date().toISOString(), permalink: res.permalink };
+  // The #1 agent's performance card, fired alongside the leaderboard (same
+  // deck, same tick). Best-effort: a failure here is logged but never undoes
+  // the leaderboard post above or its ledger entry.
+  try {
+    await fireTopAgent(deck, cfg);
+  } catch (e) {
+    console.error(`  ✗ top agent: ${(e as Error).message}`);
+  }
   return true;
+}
+
+/** Render + post the #1 agent's performance card (the model design), fired
+ *  alongside the leaderboard. Reuses the deck fireLeaderboard already refreshed
+ *  from R2, picks the top agent by ROI (same rank the leaderboard uses, after
+ *  the same dedupe-by-handle), renders just that handle's card, muxes the
+ *  victory jingle, and posts the MP4 + PNG with an X draft. */
+async function fireTopAgent(deck: any, cfg: SlackConfig | null): Promise<void> {
+  const seen = new Set<string>();
+  const unique: any[] = (deck?.agents ?? []).filter((a: any) => (seen.has(a.handle) ? false : (seen.add(a.handle), true)));
+  const top = [...unique].sort((a, b) => (b.roiPct ?? 0) - (a.roiPct ?? 0))[0];
+  if (!top) {
+    console.log("  · top agent: deck has no agents — skipping.");
+    return;
+  }
+  const name = top.short ?? top.label ?? top.handle;
+  const slug = `model-${String(top.handle).toLowerCase()}`;
+  const outDir = path.join(OUT_ROOT, "top-agent");
+  fs.rmSync(outDir, { recursive: true, force: true });
+  console.log(`  → rendering top-agent card: ${name} (${slug})`);
+  const ok = await sh(["bun", "scripts/generate-swarm-cards.ts", "--card=model", `--slug=${slug}`, "--mp4", `--deck=${LIVE_DECK}`, `--out=${outDir}`]);
+  if (!ok) return;
+  const { png, mp4 } = collectOutputs(outDir);
+  if (!png && !mp4) {
+    console.error("  ✗ top agent: render produced no files.");
+    return;
+  }
+  if (mp4) await muxAudio(mp4, AUDIO_LEADERBOARD);
+  if (!cfg) {
+    console.log(`  ✓ top agent: rendered (no Slack post). ${mp4 ?? png}`);
+    return;
+  }
+  const res = await postCardToSlack(cfg, { slug } as any, { png, mp4 }, `Top agent · ${name} leads Swarm Arena\nSave the MP4 for Reels/TikTok. X draft below.`);
+  await postXDraft(cfg.token, topAgentCaption(top));
+  console.log(`  ⤴ top agent: posted ${res.permalink ?? "(ok)"}`);
 }
 
 // ── Games-of-the-day bundle ─────────────────────────────────────────────────
