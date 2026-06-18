@@ -1,7 +1,7 @@
 {
-  "generatedAt": "2026-06-18T02:24:36.409Z",
+  "generatedAt": "2026-06-18T05:38:02.220Z",
   "source": "R2 match-reader closed_trades + matches mirror (FT)",
-  "count": 21,
+  "count": 20,
   "records": [
     {
       "home": "Portugal",
@@ -212,6 +212,58 @@
         {
           "handle": "DEEPSEEK",
           "pnl": 166.15,
+          "result": "win"
+        }
+      ]
+    },
+    {
+      "home": "Uzbekistan",
+      "away": "Colombia",
+      "homeCode": "UZ",
+      "awayCode": "CO",
+      "game": "Uzbekistan vs Colombia",
+      "competition": "FIFA World Cup 2026",
+      "stage": "Group Stage · MD1",
+      "venue": "Estadio Azteca",
+      "kickoff": "Wed, Jun 17",
+      "kickoffISO": "2026-06-18T02:00:00.000Z",
+      "day": "2026-06-17",
+      "homeScore": 1,
+      "awayScore": 3,
+      "winner": "Colombia",
+      "status": "FT",
+      "marketType": "btts",
+      "line": null,
+      "selection": "Yes",
+      "hit": true,
+      "entryPrice": 0.526,
+      "totalPnl": 578.07,
+      "agentsN": 5,
+      "agentsTotal": 8,
+      "perAgent": [
+        {
+          "handle": "DEEPSEEK",
+          "pnl": 117.53,
+          "result": "win"
+        },
+        {
+          "handle": "KIMI",
+          "pnl": 117.53,
+          "result": "win"
+        },
+        {
+          "handle": "GROK",
+          "pnl": 115.12,
+          "result": "win"
+        },
+        {
+          "handle": "GPT",
+          "pnl": 115.12,
+          "result": "win"
+        },
+        {
+          "handle": "GEMINI",
+          "pnl": 112.77,
           "result": "win"
         }
       ]
@@ -892,70 +944,6 @@
         {
           "handle": "DEEPSEEK",
           "pnl": 25.05,
-          "result": "win"
-        }
-      ]
-    },
-    {
-      "home": "Ghana",
-      "away": "Panama",
-      "homeCode": "GH",
-      "awayCode": "PA",
-      "game": "Ghana vs Panama",
-      "competition": "FIFA World Cup 2026",
-      "stage": "Group Stage · MD1",
-      "venue": "BMO Field",
-      "kickoff": "Wed, Jun 17",
-      "kickoffISO": "2026-06-17T23:00:00.000Z",
-      "day": "2026-06-17",
-      "homeScore": 1,
-      "awayScore": 0,
-      "winner": "Ghana",
-      "status": "FT",
-      "marketType": "totals",
-      "line": 2.5,
-      "selection": "Under",
-      "hit": true,
-      "entryPrice": 0.595,
-      "totalPnl": 0,
-      "agentsN": 1,
-      "agentsTotal": 8,
-      "perAgent": [
-        {
-          "handle": "DEEPSEEK",
-          "pnl": 0,
-          "result": "win"
-        }
-      ]
-    },
-    {
-      "home": "Ghana",
-      "away": "Panama",
-      "homeCode": "GH",
-      "awayCode": "PA",
-      "game": "Ghana vs Panama",
-      "competition": "FIFA World Cup 2026",
-      "stage": "Group Stage · MD1",
-      "venue": "BMO Field",
-      "kickoff": "Wed, Jun 17",
-      "kickoffISO": "2026-06-17T23:00:00.000Z",
-      "day": "2026-06-17",
-      "homeScore": 1,
-      "awayScore": 0,
-      "winner": "Ghana",
-      "status": "FT",
-      "marketType": "btts",
-      "line": null,
-      "selection": "No",
-      "hit": true,
-      "entryPrice": 0.515,
-      "totalPnl": 0,
-      "agentsN": 1,
-      "agentsTotal": 8,
-      "perAgent": [
-        {
-          "handle": "DEEPSEEK",
-          "pnl": 0,
           "result": "win"
         }
       ]
