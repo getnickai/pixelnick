@@ -15,10 +15,31 @@
 import fs from "node:fs";
 import path from "node:path";
 import { buildSwarmDeck } from "../lib/swarm-deck";
+import { buildDeckFromSite } from "../lib/swarm-deck-from-site";
 
 const OUT = path.join(process.cwd(), "public", "swarm-arena-cards", "live-deck.json");
 
-const deck = await buildSwarmDeck();
+// Source of truth = swarmarena.ai's own computed leaderboard (/api/leaderboard),
+// so the cards always match the site. Fall back to the R2 recompute only if the
+// endpoint is unreachable/empty — logging which source won so a mismatch (the
+// fallback's known drift) is never silent. Set SWARM_DECK_R2_ONLY=1 to force the
+// legacy R2 path (e.g. for debugging the recompute).
+let deck: { _generatedFrom: string; agents: any[]; match: any };
+if (process.env.SWARM_DECK_R2_ONLY) {
+  console.log("SWARM_DECK_R2_ONLY set — using the R2 recompute.");
+  deck = await buildSwarmDeck();
+} else {
+  try {
+    deck = await buildDeckFromSite();
+    console.log(`Leaderboard source: site endpoint (${deck._generatedFrom}).`);
+  } catch (e) {
+    console.warn(
+      `Leaderboard source: site endpoint unavailable (${(e as Error).message}) — ` +
+        "falling back to the R2 recompute (numbers may differ from swarmarena.ai).",
+    );
+    deck = await buildSwarmDeck();
+  }
+}
 const handles = deck.agents.map((a: any) => a.handle);
 console.log(`Base: ${deck._generatedFrom}`);
 console.log(`Agents discovered: ${deck.agents.length}${handles.length ? ` (${handles.join(", ")})` : ""}`);
