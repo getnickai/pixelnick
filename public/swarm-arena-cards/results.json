@@ -1,7 +1,7 @@
 {
-  "generatedAt": "2026-06-19T02:41:56.430Z",
+  "generatedAt": "2026-06-19T04:11:36.489Z",
   "source": "R2 match-reader closed_trades + matches mirror (FT)",
-  "count": 23,
+  "count": 24,
   "records": [
     {
       "home": "Portugal",
@@ -880,6 +880,38 @@
         {
           "handle": "GROK",
           "pnl": 41.43,
+          "result": "win"
+        }
+      ]
+    },
+    {
+      "home": "Mexico",
+      "away": "South Korea",
+      "homeCode": "MX",
+      "awayCode": "KR",
+      "game": "Mexico vs South Korea",
+      "competition": "FIFA World Cup 2026",
+      "stage": "Group Stage · MD2",
+      "venue": "Estadio Akron",
+      "kickoff": "Thu, Jun 18",
+      "kickoffISO": "2026-06-19T01:00:00.000Z",
+      "day": "2026-06-18",
+      "homeScore": 1,
+      "awayScore": 0,
+      "winner": "Mexico",
+      "status": "FT",
+      "marketType": "btts",
+      "line": null,
+      "selection": "No",
+      "hit": true,
+      "entryPrice": 0.445,
+      "totalPnl": 62.36,
+      "agentsN": 1,
+      "agentsTotal": 8,
+      "perAgent": [
+        {
+          "handle": "GPT",
+          "pnl": 62.36,
           "result": "win"
         }
       ]
