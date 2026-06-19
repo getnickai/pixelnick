@@ -1,7 +1,7 @@
 {
-  "generatedAt": "2026-06-19T00:04:40.631Z",
+  "generatedAt": "2026-06-19T01:32:50.041Z",
   "source": "R2 match-reader closed_trades + matches mirror (FT)",
-  "count": 22,
+  "count": 23,
   "records": [
     {
       "home": "Portugal",
@@ -880,6 +880,38 @@
         {
           "handle": "GROK",
           "pnl": 41.43,
+          "result": "win"
+        }
+      ]
+    },
+    {
+      "home": "Canada",
+      "away": "Qatar",
+      "homeCode": "CA",
+      "awayCode": "QA",
+      "game": "Canada vs Qatar",
+      "competition": "FIFA World Cup 2026",
+      "stage": "Group Stage · MD2",
+      "venue": "BC Place",
+      "kickoff": "Thu, Jun 18",
+      "kickoffISO": "2026-06-18T22:00:00.000Z",
+      "day": "2026-06-18",
+      "homeScore": 6,
+      "awayScore": 0,
+      "winner": "Canada",
+      "status": "FT",
+      "marketType": "totals",
+      "line": 2.5,
+      "selection": "Over",
+      "hit": true,
+      "entryPrice": 0.555,
+      "totalPnl": 40.09,
+      "agentsN": 1,
+      "agentsTotal": 8,
+      "perAgent": [
+        {
+          "handle": "KIMI",
+          "pnl": 40.09,
           "result": "win"
         }
       ]
