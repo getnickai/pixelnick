@@ -62,6 +62,12 @@ const PREGAME_FLOOR_MIN = 3; // never fire inside this many minutes of kickoff
 const LEADERBOARD_LEAD_MIN = 390; // 6.5h before the slate's first kickoff (moved up 3h)
 const BUNDLE_LEAD_MIN = 390; // games-of-the-day bundle: 6.5h before first kickoff (moved up 3h)
 const POSTGAME_GIVEUP_HRS = 24; // stop retrying a result card this long after kickoff
+// Grace after kickoff before a missing winning pick is treated as terminal (the
+// swarm lost the game's markets or never traded it) rather than a transient
+// closed_trades lag. Games run ~2h; self-settle already covers still-open picks
+// at FT, so ~8h post-kickoff (~6h post-FT) tolerates the writer lag while
+// ending the otherwise-silent 24h of fruitless retries.
+const POSTGAME_SETTLE_GRACE_MIN = Number(process.env.POSTGAME_SETTLE_GRACE_MIN) || 8 * 60;
 const FINAL_STATUSES = new Set(["FT", "AET", "PEN", "AWD", "WO"]);
 
 const CTA = "Follow the agents on swarmarena.ai";
@@ -425,6 +431,27 @@ async function fireGameCard(
 
   const rec = topRecord(feed, m, kind);
   if (!rec) {
+    // Result cards are wins-only: a card needs a winning swarm pick in the
+    // freshly-built feed. When there's none for a scheduled post-game, tell
+    // apart a transient settle lag from the terminal case (the game is settled
+    // and the swarm simply had no winning pick — it lost those markets, or
+    // never traded it). Within the grace window we genuinely retry; past it we
+    // record the game as resolved so the cron stops retrying every tick for 24h
+    // and the give-up is logged honestly instead of the misleading "yet" + a
+    // silent drop. Forced/pre-game runs keep the old behavior (no ledger write).
+    if (phase === "postgame") {
+      const sinceKickoffMin = (Date.now() - kickoffMs(m)) / MIN;
+      if (sinceKickoffMin >= POSTGAME_SETTLE_GRACE_MIN) {
+        console.log(`  · ${game}: FT and settled, but the swarm has no winning pick on it — no result card${FORCE_POST ? "" : " (recording as resolved; won't retry)"}.`);
+        // Record terminal resolution so the cron stops retrying every tick (the
+        // give-up is now explicit, not silent). Forced manual runs never touch
+        // the ledger, so testing can't block a real scheduled post.
+        if (!FORCE_POST) l.actions[`${m.match_uid}:postgame`] = { postedAt: new Date().toISOString(), note: "resolved: no winning swarm pick" };
+        return false;
+      }
+      console.log(`  · ${game}: no winning swarm pick in the results feed yet — within settle grace (${Math.round(sinceKickoffMin)}m since kickoff), will retry.`);
+      return false;
+    }
     console.log(`  · ${game}: no ${kind} coverage from the agents yet — skipping (will retry).`);
     return false;
   }
