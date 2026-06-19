@@ -1,7 +1,7 @@
 {
-  "generatedAt": "2026-06-19T18:55:02.476Z",
+  "generatedAt": "2026-06-19T21:54:43.762Z",
   "source": "R2 match-reader closed_trades + matches mirror (FT)",
-  "count": 21,
+  "count": 23,
   "records": [
     {
       "home": "Portugal",
@@ -961,6 +961,70 @@
         {
           "handle": "DEEPSEEK",
           "pnl": 25.05,
+          "result": "win"
+        }
+      ]
+    },
+    {
+      "home": "USA",
+      "away": "Australia",
+      "homeCode": "US",
+      "awayCode": "AU",
+      "game": "USA vs Australia",
+      "competition": "FIFA World Cup 2026",
+      "stage": "Group Stage · MD2",
+      "venue": "Lumen Field",
+      "kickoff": "Fri, Jun 19",
+      "kickoffISO": "2026-06-19T19:00:00.000Z",
+      "day": "2026-06-19",
+      "homeScore": 2,
+      "awayScore": 0,
+      "winner": "USA",
+      "status": "FT",
+      "marketType": "totals",
+      "line": 2.5,
+      "selection": "Under",
+      "hit": true,
+      "entryPrice": 0.515,
+      "totalPnl": 0,
+      "agentsN": 1,
+      "agentsTotal": 8,
+      "perAgent": [
+        {
+          "handle": "DEEPSEEK",
+          "pnl": 0,
+          "result": "win"
+        }
+      ]
+    },
+    {
+      "home": "USA",
+      "away": "Australia",
+      "homeCode": "US",
+      "awayCode": "AU",
+      "game": "USA vs Australia",
+      "competition": "FIFA World Cup 2026",
+      "stage": "Group Stage · MD2",
+      "venue": "Lumen Field",
+      "kickoff": "Fri, Jun 19",
+      "kickoffISO": "2026-06-19T19:00:00.000Z",
+      "day": "2026-06-19",
+      "homeScore": 2,
+      "awayScore": 0,
+      "winner": "USA",
+      "status": "FT",
+      "marketType": "btts",
+      "line": null,
+      "selection": "No",
+      "hit": true,
+      "entryPrice": 0.525,
+      "totalPnl": 0,
+      "agentsN": 1,
+      "agentsTotal": 8,
+      "perAgent": [
+        {
+          "handle": "DEEPSEEK",
+          "pnl": 0,
           "result": "win"
         }
       ]
