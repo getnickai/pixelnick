@@ -1,7 +1,7 @@
 {
-  "generatedAt": "2026-06-20T19:32:38.861Z",
+  "generatedAt": "2026-06-20T22:27:39.544Z",
   "source": "R2 match-reader closed_trades + matches mirror (FT)",
-  "count": 22,
+  "count": 21,
   "records": [
     {
       "home": "Portugal",
@@ -961,38 +961,6 @@
         {
           "handle": "DEEPSEEK",
           "pnl": 25.05,
-          "result": "win"
-        }
-      ]
-    },
-    {
-      "home": "Netherlands",
-      "away": "Sweden",
-      "homeCode": "NL",
-      "awayCode": "SE",
-      "game": "Netherlands vs Sweden",
-      "competition": "FIFA World Cup 2026",
-      "stage": "Group Stage · MD2",
-      "venue": "Reliant Stadium",
-      "kickoff": "Sat, Jun 20",
-      "kickoffISO": "2026-06-20T17:00:00.000Z",
-      "day": "2026-06-20",
-      "homeScore": 5,
-      "awayScore": 1,
-      "winner": null,
-      "status": "FT",
-      "marketType": "btts",
-      "line": null,
-      "selection": "Yes",
-      "hit": true,
-      "entryPrice": 0.525,
-      "totalPnl": 0,
-      "agentsN": 1,
-      "agentsTotal": 8,
-      "perAgent": [
-        {
-          "handle": "DEEPSEEK",
-          "pnl": 0,
           "result": "win"
         }
       ]
