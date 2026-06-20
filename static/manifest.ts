@@ -42,6 +42,24 @@ export const staticManifest: StaticEntryMeta[] = [
     width: 650,
     height: 1150,
   },
+  {
+    id: "matchday-card",
+    label: "Matchday Card",
+    width: 650,
+    height: 1156,
+  },
+  {
+    id: "matchday-card-analysis-start",
+    label: "Matchday (Analysis · Start)",
+    width: 650,
+    height: 1156,
+  },
+  {
+    id: "matchday-card-analysis-final",
+    label: "Matchday (Analysis · Final)",
+    width: 650,
+    height: 1156,
+  },
 ];
 
 export function getStaticEntryMeta(id: string): StaticEntryMeta | undefined {

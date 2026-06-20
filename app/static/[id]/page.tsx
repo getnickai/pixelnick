@@ -4,6 +4,7 @@ import SwarmArenaModelCard from "@/components/swarm-arena-model-card";
 import ConsensusCard from "@/components/consensus-card-view";
 import ResultCard from "@/components/result-card-view";
 import SwarmArenaLeaderboardCard from "@/components/swarm-arena-leaderboard-card";
+import MatchdayCard from "@/components/matchday-card-view";
 import { StaticVisualHost } from "@/components/static-visual-host";
 import { getStaticEntryMeta } from "@/static/manifest";
 
@@ -52,6 +53,30 @@ export default async function StaticVisualPage({
     return (
       <StaticVisualHost entry={entry}>
         <SwarmArenaLeaderboardCard />
+      </StaticVisualHost>
+    );
+  }
+
+  if (id === "matchday-card") {
+    return (
+      <StaticVisualHost entry={entry}>
+        <MatchdayCard />
+      </StaticVisualHost>
+    );
+  }
+
+  if (id === "matchday-card-analysis-start") {
+    return (
+      <StaticVisualHost entry={entry}>
+        <MatchdayCard variant="analysis" phase="start" />
+      </StaticVisualHost>
+    );
+  }
+
+  if (id === "matchday-card-analysis-final") {
+    return (
+      <StaticVisualHost entry={entry}>
+        <MatchdayCard variant="analysis" phase="final" />
       </StaticVisualHost>
     );
   }
