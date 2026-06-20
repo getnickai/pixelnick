@@ -28,6 +28,8 @@ import { ResultCardComposition } from "./compositions/result-card/composition";
 import { resultCardDefaultProps } from "./compositions/result-card/props";
 import { SwarmArenaLeaderboardCardComposition } from "./compositions/swarm-arena-leaderboard-card/composition";
 import { swarmArenaLeaderboardCardDefaultProps } from "./compositions/swarm-arena-leaderboard-card/props";
+import { MatchdayAnalysisComposition } from "./compositions/matchday-analysis/composition";
+import { matchdayAnalysisDefaultProps } from "./compositions/matchday-analysis/props";
 import { getMotionEntryMeta } from "./manifest";
 
 const perf = getMotionEntryMeta("performance-card")!;
@@ -37,6 +39,7 @@ const modelAnim = getMotionEntryMeta("swarm-arena-model-card")!;
 const consensus = getMotionEntryMeta("consensus-card")!;
 const result = getMotionEntryMeta("result-card")!;
 const leaderboardAnim = getMotionEntryMeta("swarm-arena-leaderboard-card")!;
+const matchdayAnim = getMotionEntryMeta("matchday-analysis")!;
 
 export const RemotionRoot: React.FC = () => {
   return (
@@ -113,6 +116,17 @@ export const RemotionRoot: React.FC = () => {
         width={leaderboardAnim.width}
         height={leaderboardAnim.height}
         defaultProps={swarmArenaLeaderboardCardDefaultProps}
+      />
+      {/* Animated Matchday (Analysis) — slate buffers fill then resolve into
+          the swarm's picks with slot-machine numbers, game by game. */}
+      <Composition
+        id="matchday-analysis"
+        component={MatchdayAnalysisComposition}
+        durationInFrames={matchdayAnim.durationInFrames}
+        fps={matchdayAnim.fps}
+        width={matchdayAnim.width}
+        height={matchdayAnim.height}
+        defaultProps={matchdayAnalysisDefaultProps}
       />
     </>
   );

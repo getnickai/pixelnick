@@ -110,6 +110,19 @@ export const motionManifest: MotionEntryMeta[] = [
     fps: 30,
     durationInFrames: 375,
   },
+  {
+    // Animated Matchday (Analysis) card — today's slate, each game's "AI Agents
+    // analysis" buffer fills then resolves into the swarm's pick with slot-
+    // machine numbers. Sequential per game (135f = 4.5s each) + 3s hold.
+    // Sample slate = 4 games → 4·135 + 90 = 630f (21s). Override per render via
+    // calculateMetadata when the real slate has a different game count.
+    id: "matchday-analysis",
+    label: "Matchday (Analysis)",
+    width: 650,
+    height: 1156,
+    fps: 30,
+    durationInFrames: 4 * 135 + 90,
+  },
 ];
 
 /** Server-safe lookup by id. */

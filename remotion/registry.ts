@@ -36,6 +36,11 @@ import {
   resultCardDefaultProps,
   type ResultCardProps,
 } from "./compositions/result-card/props";
+import { MatchdayAnalysisComposition } from "./compositions/matchday-analysis/composition";
+import {
+  matchdayAnalysisDefaultProps,
+  type MatchdayAnalysisProps,
+} from "./compositions/matchday-analysis/props";
 import {
   motionManifest,
   type MotionEntryMeta,
@@ -97,6 +102,10 @@ const componentBindings: Record<string, ComponentBinding> = {
     component: ResultCardComposition,
     defaultProps: resultCardDefaultProps,
   } as ComponentBinding<ResultCardProps> as ComponentBinding,
+  "matchday-analysis": {
+    component: MatchdayAnalysisComposition,
+    defaultProps: matchdayAnalysisDefaultProps,
+  } as ComponentBinding<MatchdayAnalysisProps> as ComponentBinding,
 };
 
 export const motionRegistry: MotionEntry[] = motionManifest
