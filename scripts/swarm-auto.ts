@@ -37,6 +37,7 @@
  *   --force-pregame=<substr>     ignore timing/ledger, fire a pregame card for the matching game
  *   --force-postgame=<substr>    ignore timing/ledger, fire a result card for the matching game
  *   --force-leaderboard          ignore timing/ledger, fire the leaderboard
+ *   --force-matchday             ignore timing/ledger, render + post the matchday card
  *
  * Run: bun scripts/swarm-auto.ts            (one tick; this is what CI runs)
  */
@@ -56,6 +57,7 @@ const LIVE_DECK = path.join(process.cwd(), "public", "swarm-arena-cards", "live-
 const AUDIO_GAME = path.join(process.cwd(), "public", "audio", "stadium-groove.mp3"); // pre-game game cards
 const AUDIO_RESULT = path.join(process.cwd(), "public", "audio", "decisive-moment.mp3"); // post-game result cards
 const AUDIO_LEADERBOARD = path.join(process.cwd(), "public", "audio", "victory-jingle.mp3"); // leaderboard
+const AUDIO_MATCHDAY = path.join(process.cwd(), "public", "audio", "stadium-groove-matchday.mp3"); // matchday card (~20s)
 
 const PREGAME_LEAD_MIN = 60; // fire on the first tick at/after kickoff − 60m
 const PREGAME_FLOOR_MIN = 3; // never fire inside this many minutes of kickoff
@@ -81,6 +83,7 @@ const FORCE_PRE = forceFlag("--force-pregame=");
 const FORCE_POST = forceFlag("--force-postgame=");
 const FORCE_LB = argv.includes("--force-leaderboard");
 const BUNDLE_TODAY = argv.includes("--bundle-today");
+const FORCE_MATCHDAY = argv.includes("--force-matchday");
 
 // ── Types ─────────────────────────────────────────────────────────────────--
 type Match = {
@@ -585,7 +588,7 @@ async function fireMatchday(cfg: SlackConfig | null): Promise<void> {
     console.error("  ✗ matchday: render produced no files.");
     return;
   }
-  if (mp4) await muxAudio(mp4, AUDIO_GAME);
+  if (mp4) await muxAudio(mp4, AUDIO_MATCHDAY);
   if (!cfg) {
     console.log(`  ✓ matchday: rendered (no Slack post). ${mp4 ?? png}`);
     return;
@@ -739,9 +742,18 @@ async function bundleToday(): Promise<void> {
   await renderBundle(games, cfg);
 }
 
+/** Manual (--force-matchday): render + post just the matchday card, ignore timing/ledger. */
+async function forceMatchday(): Promise<void> {
+  const token = slackTokenFromEnv();
+  const cfg: SlackConfig | null = token && CHANNEL && !NO_SLACK ? { token, channelId: CHANNEL } : null;
+  if (!cfg) console.log("(Slack token/channel not set or --no-slack — rendering only, not posting.)");
+  await fireMatchday(cfg);
+}
+
 // ── Main tick ───────────────────────────────────────────────────────────────
 async function main() {
   if (BUNDLE_TODAY) return bundleToday();
+  if (FORCE_MATCHDAY) return forceMatchday();
 
   const now = Date.now();
   const matches = await fetchMatches();
