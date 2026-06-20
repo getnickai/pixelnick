@@ -67,7 +67,7 @@ const TEAM_ALIAS: Record<string, string> = {
   "korea republic": "south korea",
   "ir iran": "iran",
 };
-const canonTeam = (t: string) => {
+export const canonTeam = (t: string) => {
   const k = strip(t);
   return TEAM_ALIAS[k] ?? k;
 };
@@ -86,7 +86,7 @@ const CODE: Record<string, string> = {
   Scotland: "GB-SCT", Tunisia: "TN", Sweden: "SE", Turkey: "TR", "Ivory Coast": "CI",
   "Curaçao": "CW", Curacao: "CW", Egypt: "EG", Poland: "PL", Bahrain: "BH",
 };
-const codeFor = (name: string) => CODE[name] ?? name.slice(0, 3).toUpperCase();
+export const codeFor = (name: string) => CODE[name] ?? name.slice(0, 3).toUpperCase();
 function fmtKickoff(iso: string): string {
   const d = new Date(iso);
   const date = d.toLocaleDateString("en-US", { weekday: "short", month: "short", day: "numeric", timeZone: "America/New_York" });
@@ -94,14 +94,14 @@ function fmtKickoff(iso: string): string {
   return `${date} · ${time}`;
 }
 /** "Mexico vs South Africa (2026-06-11)" → ["mexico","south africa"] (canon). */
-function teamsOf(market: string): [string, string] | null {
+export function teamsOf(market: string): [string, string] | null {
   const cleaned = market.replace(/\([^)]*\)/g, "").trim();
   const parts = cleaned.split(/\s+vs\.?\s+/i);
   if (parts.length !== 2) return null;
   return [canonTeam(parts[0]), canonTeam(parts[1])];
 }
 /** Selection without the embedded line: "Over 2.5" → "Over"; "Yes" → "Yes". */
-function canonSelection(sel: string): string {
+export function canonSelection(sel: string): string {
   const s = String(sel ?? "").trim();
   const m = s.match(/^(over|under|yes|no|home|away|draw)\b/i);
   return m ? m[1][0].toUpperCase() + m[1].slice(1).toLowerCase() : s;
@@ -126,7 +126,7 @@ type Pos = {
  * the consensus and "N of 8" was off. Discovery + canonicalHandle handles
  * either slot name. Keeps only dirs that actually have a snapshot.json.
  */
-async function discoverAgents(): Promise<string[]> {
+export async function discoverAgents(): Promise<string[]> {
   const all = await listKeys(BASE);
   return [...new Set(all.map((o) => o.key.slice(BASE.length).split("/")[0]).filter(Boolean))]
     .filter((id) => id.startsWith("s1-match-reader-"))
@@ -134,7 +134,7 @@ async function discoverAgents(): Promise<string[]> {
     .sort();
 }
 
-async function currentRun(agent: string): Promise<any | null> {
+export async function currentRun(agent: string): Promise<any | null> {
   const runKeys = (await listKeys(`${BASE}${agent}/runs/`)).filter((k) => /exe_.*\.json$/.test(k.key));
   if (!runKeys.length) return null;
   runKeys.sort((a, b) => a.mod.getTime() - b.mod.getTime()); // oldest → newest
@@ -273,7 +273,9 @@ async function main() {
     );
 }
 
-main().catch((err) => {
-  console.error(err);
-  process.exit(1);
-});
+if ((import.meta as ImportMeta & { main?: boolean }).main) {
+  main().catch((err) => {
+    console.error(err);
+    process.exit(1);
+  });
+}

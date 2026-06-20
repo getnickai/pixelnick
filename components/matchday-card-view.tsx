@@ -145,11 +145,14 @@ const PICK_MIN_H = 84;
 
 /** Chip copy from the swarm's selected market. */
 function chipLabel(g: MatchdayGame): string {
-  if (g.marketType === "btts") return "Both teams to score";
+  if (g.marketType === "btts") {
+    return String(g.selection).toLowerCase() === "no" ? "Not both to score" : "Both teams to score";
+  }
   if (g.marketType === "totals") {
     const dir = String(g.selection).toLowerCase() === "under" ? "Under" : "Over";
     return `${dir} ${g.line ?? 2.5} goals`;
   }
+  if (String(g.selection).toLowerCase() === "draw") return "Draw";
   return `${g.selection} to win`;
 }
 

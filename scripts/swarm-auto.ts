@@ -521,6 +521,14 @@ async function fireLeaderboard(key: string, cfg: SlackConfig | null, l: Ledger):
   } catch (e) {
     console.error(`  ✗ top agent: ${(e as Error).message}`);
   }
+  // The matchday card (today's slate, the swarm's pick per game), fired
+  // alongside the leaderboard. Best-effort: a failure never undoes the
+  // leaderboard post above or its ledger entry.
+  try {
+    await fireMatchday(cfg);
+  } catch (e) {
+    console.error(`  ✗ matchday: ${(e as Error).message}`);
+  }
   return true;
 }
 
@@ -557,6 +565,38 @@ async function fireTopAgent(deck: any, cfg: SlackConfig | null): Promise<void> {
   const res = await postCardToSlack(cfg, { slug } as any, { png, mp4 }, `Top agent · ${name} leads Swarm Arena\nSave the MP4 for Reels/TikTok. X draft below.`);
   await postXDraft(cfg.token, topAgentCaption(top));
   console.log(`  ⤴ top agent: posted ${res.permalink ?? "(ok)"}`);
+}
+
+/** Render + post the matchday card — today's slate with the swarm's
+ *  highest-consensus pick per game — fired alongside the leaderboard. Builds its
+ *  own data from R2 (today's upcoming games + agent positions). Best-effort;
+ *  renders nothing when no game has swarm coverage (honest-data rule). */
+async function fireMatchday(cfg: SlackConfig | null): Promise<void> {
+  const outDir = path.join(OUT_ROOT, "matchday");
+  fs.rmSync(outDir, { recursive: true, force: true });
+  console.log("  → rendering matchday card (today's slate)…");
+  const ok = await sh(["bun", "scripts/render-matchday.ts", `--out=${outDir}`]);
+  if (!ok) {
+    console.log("  · matchday: no card (no covered games today, or render failed).");
+    return;
+  }
+  const { png, mp4 } = collectOutputs(outDir);
+  if (!png && !mp4) {
+    console.error("  ✗ matchday: render produced no files.");
+    return;
+  }
+  if (mp4) await muxAudio(mp4, AUDIO_GAME);
+  if (!cfg) {
+    console.log(`  ✓ matchday: rendered (no Slack post). ${mp4 ?? png}`);
+    return;
+  }
+  const res = await postCardToSlack(
+    cfg,
+    { slug: "matchday" } as any,
+    { png, mp4 },
+    "Today's matchday · the swarm's picks\nSave the MP4 for Reels/TikTok.",
+  );
+  console.log(`  ⤴ matchday: posted ${res.permalink ?? "(ok)"}`);
 }
 
 // ── Games-of-the-day bundle ─────────────────────────────────────────────────
