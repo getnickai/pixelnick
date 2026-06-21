@@ -1,7 +1,7 @@
 {
-  "generatedAt": "2026-06-21T18:51:10.452Z",
+  "generatedAt": "2026-06-21T21:33:44.688Z",
   "source": "R2 match-reader closed_trades + matches mirror (FT)",
-  "count": 22,
+  "count": 23,
   "records": [
     {
       "home": "Portugal",
@@ -467,6 +467,63 @@
       ]
     },
     {
+      "home": "Belgium",
+      "away": "Iran",
+      "homeCode": "BE",
+      "awayCode": "IR",
+      "game": "Belgium vs Iran",
+      "competition": "FIFA World Cup 2026",
+      "stage": "Group Stage · MD2",
+      "venue": "SoFi Stadium",
+      "kickoff": "Sun, Jun 21",
+      "kickoffISO": "2026-06-21T19:00:00.000Z",
+      "day": "2026-06-21",
+      "homeScore": 0,
+      "awayScore": 0,
+      "winner": null,
+      "status": "FT",
+      "marketType": "totals",
+      "line": 2.5,
+      "selection": "Under",
+      "hit": true,
+      "entryPrice": 0.47,
+      "totalPnl": 272.07,
+      "agentsN": 6,
+      "agentsTotal": 8,
+      "perAgent": [
+        {
+          "handle": "GEMINI",
+          "pnl": 57.53,
+          "result": "win"
+        },
+        {
+          "handle": "GROK",
+          "pnl": 57.53,
+          "result": "win"
+        },
+        {
+          "handle": "KIMI",
+          "pnl": 57.53,
+          "result": "win"
+        },
+        {
+          "handle": "GPT",
+          "pnl": 33.16,
+          "result": "win"
+        },
+        {
+          "handle": "DEEPSEEK",
+          "pnl": 33.16,
+          "result": "win"
+        },
+        {
+          "handle": "QWEN",
+          "pnl": 33.16,
+          "result": "win"
+        }
+      ]
+    },
+    {
       "home": "Haiti",
       "away": "Scotland",
       "homeCode": "HT",
@@ -902,6 +959,38 @@
       ]
     },
     {
+      "home": "Belgium",
+      "away": "Iran",
+      "homeCode": "BE",
+      "awayCode": "IR",
+      "game": "Belgium vs Iran",
+      "competition": "FIFA World Cup 2026",
+      "stage": "Group Stage · MD2",
+      "venue": "SoFi Stadium",
+      "kickoff": "Sun, Jun 21",
+      "kickoffISO": "2026-06-21T19:00:00.000Z",
+      "day": "2026-06-21",
+      "homeScore": 0,
+      "awayScore": 0,
+      "winner": null,
+      "status": "FT",
+      "marketType": "btts",
+      "line": null,
+      "selection": "No",
+      "hit": true,
+      "entryPrice": 0.53,
+      "totalPnl": 44.34,
+      "agentsN": 1,
+      "agentsTotal": 8,
+      "perAgent": [
+        {
+          "handle": "GROK",
+          "pnl": 44.34,
+          "result": "win"
+        }
+      ]
+    },
+    {
       "home": "Germany",
       "away": "Curaçao",
       "homeCode": "DE",
@@ -961,38 +1050,6 @@
         {
           "handle": "DEEPSEEK",
           "pnl": 25.05,
-          "result": "win"
-        }
-      ]
-    },
-    {
-      "home": "Spain",
-      "away": "Saudi Arabia",
-      "homeCode": "ES",
-      "awayCode": "SA",
-      "game": "Spain vs Saudi Arabia",
-      "competition": "FIFA World Cup 2026",
-      "stage": "Group Stage · MD2",
-      "venue": "Mercedes-Benz Stadium",
-      "kickoff": "Sun, Jun 21",
-      "kickoffISO": "2026-06-21T16:00:00.000Z",
-      "day": "2026-06-21",
-      "homeScore": 4,
-      "awayScore": 0,
-      "winner": "Spain",
-      "status": "FT",
-      "marketType": "totals",
-      "line": 2.5,
-      "selection": "Over",
-      "hit": true,
-      "entryPrice": 0.665,
-      "totalPnl": 0,
-      "agentsN": 1,
-      "agentsTotal": 8,
-      "perAgent": [
-        {
-          "handle": "DEEPSEEK",
-          "pnl": 0,
           "result": "win"
         }
       ]
