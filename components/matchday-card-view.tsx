@@ -8,7 +8,8 @@ import type { ReactNode } from "react";
  * on our near-black brand surface, one row per game. Each row is two-tier:
  *   tier 1 — hexagon flags + (live score | "AI Agents analysis" chip)
  *   tier 2 — the swarm's HIGHEST-CONSENSUS bet as a chip, with the agent
- *            consensus, total stake (+ odds) and potential gain.
+ *            consensus, total stake (+ odds) and potential gain. Games the
+ *            swarm hasn't taken a position on show a "No position yet" state.
  *
  * Two tier-1 treatments (`variant`): the live "0–0" scoreboard, or the "AI
  * Agents analysis" buffer that fills and resolves into the pick.
@@ -40,22 +41,13 @@ export type MatchdayVariant = "score" | "analysis";
  */
 export type MatchdayPhase = "start" | "final";
 
-export type MatchdayGame = {
-  home: string;
-  away: string;
-  /** ISO-3166 alpha-2 (or USA/SCT shorthands the Crest resolver understands). */
-  homeCode: string;
-  awayCode: string;
-  homeScore: number;
-  awayScore: number;
-  /** Display kickoff, e.g. "20:00 ET". */
-  kickoff: string;
-  /** The swarm's highest-consensus market on this game. */
+/** The swarm's highest-consensus bet on a game. */
+export type MatchdayPick = {
   marketType: MatchdayMarket;
   /**
    * Drives the chip copy:
    *   moneyline → the team name to win ("Morocco" → "MOROCCO TO WIN")
-   *   btts      → "Yes"  → "BOTH TEAMS TO SCORE"
+   *   btts      → "Yes"/"No" → "BOTH TEAMS TO SCORE" / "NOT BOTH TO SCORE"
    *   totals    → "Over" | "Under" (+ `line`) → "UNDER 2.5 GOALS"
    */
   selection: string;
@@ -71,6 +63,20 @@ export type MatchdayGame = {
   agentProb: number;
 };
 
+export type MatchdayGame = {
+  home: string;
+  away: string;
+  /** ISO-3166 alpha-2 (or USA/SCT shorthands the Crest resolver understands). */
+  homeCode: string;
+  awayCode: string;
+  homeScore: number;
+  awayScore: number;
+  /** Display kickoff, e.g. "20:00 ET". */
+  kickoff: string;
+  /** The swarm's pick, or undefined when the agents have no position yet. */
+  pick?: MatchdayPick;
+};
+
 export type MatchdayCardData = {
   /** Header: "WORLD CUP DAY {day}". */
   day: number;
@@ -84,26 +90,22 @@ export const SAMPLE_MATCHDAY_CARD: MatchdayCardData = {
     {
       home: "USA", away: "Australia", homeCode: "US", awayCode: "AU",
       homeScore: 0, awayScore: 0, kickoff: "18:00 ET",
-      marketType: "moneyline", selection: "USA",
-      consensusN: 7, agentsTotal: 8, stakeUsd: 320, price: 0.57, agentProb: 0.71,
+      pick: { marketType: "moneyline", selection: "USA", consensusN: 7, agentsTotal: 8, stakeUsd: 320, price: 0.57, agentProb: 0.71 },
     },
     {
       home: "Scotland", away: "Morocco", homeCode: "SCT", awayCode: "MA",
       homeScore: 0, awayScore: 0, kickoff: "18:00 ET",
-      marketType: "moneyline", selection: "Morocco",
-      consensusN: 6, agentsTotal: 8, stakeUsd: 260, price: 0.46, agentProb: 0.60,
+      pick: { marketType: "moneyline", selection: "Morocco", consensusN: 6, agentsTotal: 8, stakeUsd: 260, price: 0.46, agentProb: 0.60 },
     },
     {
       home: "Brazil", away: "Haiti", homeCode: "BR", awayCode: "HT",
       homeScore: 0, awayScore: 0, kickoff: "21:00 ET",
-      marketType: "totals", selection: "Over", line: 2.5,
-      consensusN: 8, agentsTotal: 8, stakeUsd: 410, price: 0.55, agentProb: 0.78,
+      pick: { marketType: "totals", selection: "Over", line: 2.5, consensusN: 8, agentsTotal: 8, stakeUsd: 410, price: 0.55, agentProb: 0.78 },
     },
     {
       home: "Turkey", away: "Paraguay", homeCode: "TR", awayCode: "PY",
       homeScore: 0, awayScore: 0, kickoff: "21:00 ET",
-      marketType: "btts", selection: "Yes",
-      consensusN: 5, agentsTotal: 8, stakeUsd: 185, price: 0.43, agentProb: 0.58,
+      pick: { marketType: "btts", selection: "Yes", consensusN: 5, agentsTotal: 8, stakeUsd: 185, price: 0.43, agentProb: 0.58 },
     },
   ],
 };
@@ -144,16 +146,16 @@ export const asPct = (p: number) => Math.round(p * 100);
 const PICK_MIN_H = 84;
 
 /** Chip copy from the swarm's selected market. */
-function chipLabel(g: MatchdayGame): string {
-  if (g.marketType === "btts") {
-    return String(g.selection).toLowerCase() === "no" ? "Not both to score" : "Both teams to score";
+function chipLabel(pick: MatchdayPick): string {
+  if (pick.marketType === "btts") {
+    return String(pick.selection).toLowerCase() === "no" ? "Not both to score" : "Both teams to score";
   }
-  if (g.marketType === "totals") {
-    const dir = String(g.selection).toLowerCase() === "under" ? "Under" : "Over";
-    return `${dir} ${g.line ?? 2.5} goals`;
+  if (pick.marketType === "totals") {
+    const dir = String(pick.selection).toLowerCase() === "under" ? "Under" : "Over";
+    return `${dir} ${pick.line ?? 2.5} goals`;
   }
-  if (String(g.selection).toLowerCase() === "draw") return "Draw";
-  return `${g.selection} to win`;
+  if (String(pick.selection).toLowerCase() === "draw") return "Draw";
+  return `${pick.selection} to win`;
 }
 
 /** Minimal monochrome soccer ball — no emoji, brand-cream on the dark header. */
@@ -185,19 +187,34 @@ function LoadingChip() {
   );
 }
 
+/** Muted pill for a game the swarm has no position on yet. */
+function NoPickBlock() {
+  return (
+    <div className="flex h-full flex-col items-center justify-center gap-1">
+      <span
+        className="inline-flex items-center whitespace-nowrap rounded-full px-4 py-2 text-[13px] font-bold uppercase tracking-wide"
+        style={{ background: "#eef1f5", color: MUTE }}
+      >
+        No position yet
+      </span>
+      <span className="font-mono text-[11px]" style={{ color: "#aab2c0" }}>agents still analysing</span>
+    </div>
+  );
+}
+
 /** The swarm's pick — market vs agents · chip + stake/odds · consensus count. */
-function PickBlock({ g, a }: { g: MatchdayGame; a?: MatchdayRowAnim }) {
+function PickBlock({ pick, a }: { pick: MatchdayPick; a?: MatchdayRowAnim }) {
   return (
     <div className="grid grid-cols-3 items-center gap-2">
       {/* left — market % vs agents % */}
       <div className="flex flex-col gap-1.5 font-mono">
         <div className="flex items-baseline gap-1.5">
           <span className="text-[11px] font-semibold uppercase tracking-[0.08em]" style={{ color: MUTE }}>Market</span>
-          <span className="text-[15px] font-bold tabular-nums" style={{ color: INK }}>{a?.marketNode ?? `${asPct(g.price)}%`}</span>
+          <span className="text-[15px] font-bold tabular-nums" style={{ color: INK }}>{a?.marketNode ?? `${asPct(pick.price)}%`}</span>
         </div>
         <div className="flex items-baseline gap-1.5">
           <span className="text-[11px] font-semibold uppercase tracking-[0.08em]" style={{ color: MUTE }}>Agents</span>
-          <span className="text-[15px] font-bold tabular-nums" style={{ color: GAIN }}>{a?.agentsNode ?? `${asPct(g.agentProb)}%`}</span>
+          <span className="text-[15px] font-bold tabular-nums" style={{ color: GAIN }}>{a?.agentsNode ?? `${asPct(pick.agentProb)}%`}</span>
         </div>
       </div>
 
@@ -207,22 +224,22 @@ function PickBlock({ g, a }: { g: MatchdayGame; a?: MatchdayRowAnim }) {
           className="inline-flex w-fit items-center whitespace-nowrap rounded-full px-4 py-2 text-[13px] font-extrabold uppercase tracking-wide text-white shadow-[inset_0px_1px_1px_0px_rgba(255,255,255,0.55)]"
           style={{ backgroundImage: "linear-gradient(169deg,#f98051 17%,#e75218 89%)" }}
         >
-          {chipLabel(g)}
+          {chipLabel(pick)}
         </span>
         <div className="whitespace-nowrap font-mono leading-none">
-          <span className="text-[18px] font-extrabold tabular-nums" style={{ color: INK }}>{a?.stakeNode ?? usd(g.stakeUsd)}</span>
-          <span className="text-[11px]" style={{ color: MUTE }}> staked at {oddsStr(g.price)}</span>
+          <span className="text-[18px] font-extrabold tabular-nums" style={{ color: INK }}>{a?.stakeNode ?? usd(pick.stakeUsd)}</span>
+          <span className="text-[11px]" style={{ color: MUTE }}> staked at {oddsStr(pick.price)}</span>
         </div>
         <div className="whitespace-nowrap font-mono text-[14.4px] font-bold tabular-nums" style={{ color: GAIN }}>
-          {a?.gainNode ?? `+${usd(potentialUsd(g.stakeUsd, g.price))}`} if it hits
+          {a?.gainNode ?? `+${usd(potentialUsd(pick.stakeUsd, pick.price))}`} if it hits
         </div>
       </div>
 
       {/* right — agent consensus count */}
       <div className="flex flex-col items-end">
         <span className="text-[30px] font-extrabold leading-none tabular-nums" style={{ color: INK }}>
-          {a?.consensusNode ?? g.consensusN}
-          <span className="text-[18px]" style={{ color: "#aab2c0" }}>/{g.agentsTotal}</span>
+          {a?.consensusNode ?? pick.consensusN}
+          <span className="text-[18px]" style={{ color: "#aab2c0" }}>/{pick.agentsTotal}</span>
         </span>
         <span className="mt-1 font-mono text-[10px] font-semibold uppercase leading-tight tracking-[0.2em]" style={{ color: MUTE }}>
           agents
@@ -258,6 +275,8 @@ function GameRow({
   const barFrac = a ? a.barFrac : phase === "final" ? 1 : restFrac;
   const loadingOpacity = a ? a.loadingOpacity : phase === "start" ? 1 : 0;
   const pickOpacity = a ? a.pickOpacity : phase === "start" ? 0 : 1;
+  // The revealed bottom: the pick if the swarm has one, else the muted state.
+  const reveal = g.pick ? <PickBlock pick={g.pick} a={a} /> : <NoPickBlock />;
 
   return (
     <div className="relative overflow-hidden rounded-[26px] bg-white shadow-[0_14px_30px_-12px_rgba(0,0,0,0.55)]">
@@ -305,25 +324,23 @@ function GameRow({
           <div className="my-3 border-t" style={{ borderColor: HAIR }} />
         )}
 
-        {/* bottom — score variant always shows the pick; analysis crossfades
-            the blinking LOADING… chip into the revealed pick */}
+        {/* bottom — score variant always shows the reveal; analysis crossfades
+            the blinking LOADING… chip into the reveal (pick or "No position") */}
         {!analysis ? (
-          <PickBlock g={g} />
+          reveal
         ) : a ? (
           <div className="relative" style={{ minHeight: PICK_MIN_H }}>
             <div className="absolute inset-x-0 top-0 flex justify-center" style={{ opacity: loadingOpacity }}>
               <LoadingChip />
             </div>
-            <div style={{ opacity: pickOpacity }}>
-              <PickBlock g={g} a={a} />
-            </div>
+            <div className="h-full" style={{ opacity: pickOpacity }}>{reveal}</div>
           </div>
         ) : phase === "start" ? (
           <div className="flex justify-center py-1.5">
             <LoadingChip />
           </div>
         ) : (
-          <PickBlock g={g} />
+          reveal
         )}
       </div>
     </div>

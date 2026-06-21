@@ -30,6 +30,7 @@ import type {
   MatchdayCardData,
   MatchdayGame,
   MatchdayMarket,
+  MatchdayPick,
 } from "../components/matchday-card-view";
 
 const OUT = path.join(process.cwd(), "public", "swarm-arena-cards", "matchday.json");
@@ -109,39 +110,23 @@ export async function buildMatchdayData(opts: { all?: boolean } = {}): Promise<M
      WHERE scheduled_at >= now() - interval '1 day' ORDER BY scheduled_at ASC`,
   );
   await pool.end();
-  const fixByPair = new Map<string, any>();
-  for (const f of fixtures) {
-    const h = canonTeam(f.home_team), a = canonTeam(f.away_team);
-    fixByPair.set(`${h}|${a}`, f);
-    fixByPair.set(`${a}|${h}`, f);
-  }
 
-  // 3. Group positions by (game x market x line x selection) → one market each.
+  // 3. Aggregate positions per (game x market); keep the highest-consensus
+  //    market per game pair (most agents; tie → stake → edge).
   const groups = new Map<string, Pos[]>();
   for (const p of positions) {
     const key = `${p.teams[0]}|${p.teams[1]}|${p.rawType}|${p.line ?? ""}|${p.selection}`;
     (groups.get(key) ?? groups.set(key, []).get(key)!).push(p);
   }
-
-  const now = Date.now();
   const mean = (xs: number[]) => xs.reduce((s, x) => s + x, 0) / (xs.length || 1);
   type Mkt = {
-    pair: string; fix: any; kickoffMs: number;
     marketType: MatchdayMarket; line: number | null; selection: string;
     agentsN: number; price: number; agentProb: number; stakeUsd: number; edge: number;
   };
-  const markets: Mkt[] = [];
+  const bestByPair = new Map<string, Mkt>();
   for (const ps of groups.values()) {
-    const { teams } = ps[0];
-    const fix = fixByPair.get(`${teams[0]}|${teams[1]}`);
-    if (!fix) continue;
-    const kickoffMs = new Date(fix.scheduled_at).getTime();
-    const upcoming = kickoffMs > now && (fix.status ? fix.status === "NS" : true);
-    if (!opts.all && !upcoming) continue;
-    markets.push({
-      pair: `${canonTeam(fix.home_team)}|${canonTeam(fix.away_team)}`,
-      fix,
-      kickoffMs,
+    const pair = `${ps[0].teams[0]}|${ps[0].teams[1]}`;
+    const m: Mkt = {
       marketType: ps[0].marketType,
       line: ps[0].line,
       selection: ps[0].selection,
@@ -150,56 +135,68 @@ export async function buildMatchdayData(opts: { all?: boolean } = {}): Promise<M
       agentProb: mean(ps.map((p) => p.fairValue)),
       stakeUsd: ps.reduce((s, p) => s + (p.sizeUsd || 0), 0),
       edge: mean(ps.map((p) => p.edge)),
-    });
+    };
+    const cur = bestByPair.get(pair);
+    const better =
+      !cur ||
+      m.agentsN > cur.agentsN ||
+      (m.agentsN === cur.agentsN && m.stakeUsd > cur.stakeUsd) ||
+      (m.agentsN === cur.agentsN && m.stakeUsd === cur.stakeUsd && m.edge > cur.edge);
+    if (better) bestByPair.set(pair, m);
   }
 
-  if (!markets.length) return { day: dayNumber(etDate(now)), games: [] };
+  // 4. The slate = TODAY's US (ET) matchday, sourced from the FIXTURES (not from
+  //    coverage) so every scheduled game shows even when the agents haven't
+  //    taken a position yet. Slate date = the ET date of the earliest upcoming
+  //    NS fixture — the matchday the leaderboard fires for.
+  const now = Date.now();
+  const ns = fixtures
+    .map((f: any) => ({ f, kickoffMs: new Date(f.scheduled_at).getTime(), status: String(f.status ?? "") }))
+    .filter((x) => (opts.all ? true : x.kickoffMs > now && x.status === "NS"));
+  if (!ns.length) return { day: dayNumber(etDate(now)), games: [] };
+  const slate = opts.all ? null : ns.map((x) => etDate(x.kickoffMs)).sort()[0];
+  const slateFixtures = (slate ? ns.filter((x) => etDate(x.kickoffMs) === slate) : ns).sort(
+    (a, b) => a.kickoffMs - b.kickoffMs,
+  );
 
-  // 4. Restrict to a single matchday — the earliest upcoming ET slate with
-  //    coverage (which is the slate the leaderboard fires for).
-  const slate = opts.all ? null : markets.map((m) => etDate(m.kickoffMs)).sort()[0];
-  const slateMarkets = slate ? markets.filter((m) => etDate(m.kickoffMs) === slate) : markets;
-
-  // 5. Per game, pick the highest-consensus market (most agents; tie → stake → edge).
-  const byGame = new Map<string, Mkt[]>();
-  for (const m of slateMarkets) (byGame.get(m.pair) ?? byGame.set(m.pair, []).get(m.pair)!).push(m);
-
-  const picked: { kickoffMs: number; game: MatchdayGame }[] = [];
-  for (const ms of byGame.values()) {
-    const top = [...ms].sort(
-      (a, b) => b.agentsN - a.agentsN || b.stakeUsd - a.stakeUsd || b.edge - a.edge,
-    )[0];
-    const { home_team: home, away_team: away } = top.fix;
-    // moneyline selection ("Home"/"Away") → the team name for the chip copy.
-    const selection =
-      top.marketType === "moneyline"
-        ? top.selection === "Home" ? home : top.selection === "Away" ? away : top.selection
-        : top.selection;
-    picked.push({
-      kickoffMs: top.kickoffMs,
-      game: {
-        home, away,
-        homeCode: codeFor(home), awayCode: codeFor(away),
-        homeScore: 0, awayScore: 0,
-        kickoff: kickoffLabel(top.kickoffMs),
-        marketType: top.marketType, selection, line: top.line,
-        consensusN: top.agentsN, agentsTotal: agents.length,
-        stakeUsd: Math.round(top.stakeUsd),
-        price: Number(top.price.toFixed(4)),
-        agentProb: Number(top.agentProb.toFixed(4)),
-      },
-    });
-  }
-  // The card layout fits a handful of rows cleanly; on a heavy slate keep the
-  // strongest picks (most agents, then biggest stake), capped, then show them
-  // in kickoff order.
+  // 5. One row per slate game, attaching the swarm's pick where it has one.
+  //    The layout fits a handful of rows; cap to the first SWARM_MATCHDAY_MAX.
   const max = Number(process.env.SWARM_MATCHDAY_MAX ?? 6);
-  const top = [...picked]
-    .sort((a, b) => b.game.consensusN - a.game.consensusN || b.game.stakeUsd - a.game.stakeUsd)
-    .slice(0, max)
-    .sort((a, b) => a.kickoffMs - b.kickoffMs);
+  const games: MatchdayGame[] = slateFixtures.slice(0, max).map(({ f, kickoffMs }) => {
+    const home = f.home_team as string;
+    const away = f.away_team as string;
+    const m = bestByPair.get(`${canonTeam(home)}|${canonTeam(away)}`);
+    let pick: MatchdayPick | undefined;
+    if (m) {
+      // moneyline selection ("Home"/"Away") → the team name for the chip copy.
+      const selection =
+        m.marketType === "moneyline"
+          ? m.selection === "Home" ? home : m.selection === "Away" ? away : m.selection
+          : m.selection;
+      pick = {
+        marketType: m.marketType,
+        selection,
+        line: m.line,
+        consensusN: m.agentsN,
+        agentsTotal: agents.length,
+        stakeUsd: Math.round(m.stakeUsd),
+        price: Number(m.price.toFixed(4)),
+        agentProb: Number(m.agentProb.toFixed(4)),
+      };
+    }
+    return {
+      home,
+      away,
+      homeCode: codeFor(home),
+      awayCode: codeFor(away),
+      homeScore: 0,
+      awayScore: 0,
+      kickoff: kickoffLabel(kickoffMs),
+      pick,
+    };
+  });
 
-  return { day: dayNumber(slate ?? etDate(now)), games: top.map((p) => p.game) };
+  return { day: dayNumber(slate ?? etDate(now)), games };
 }
 
 if ((import.meta as ImportMeta & { main?: boolean }).main) {
@@ -208,11 +205,15 @@ if ((import.meta as ImportMeta & { main?: boolean }).main) {
       fs.mkdirSync(path.dirname(OUT), { recursive: true });
       fs.writeFileSync(OUT, `${JSON.stringify(data, null, 2)}\n`);
       console.log(`Wrote matchday — Day ${data.day}, ${data.games.length} game(s) → ${path.relative(process.cwd(), OUT)}`);
-      for (const g of data.games)
+      for (const g of data.games) {
+        const p = g.pick;
         console.log(
-          `  ${`${g.home} vs ${g.away}`.padEnd(34)} [${g.marketType}/${g.selection}${g.line != null ? ` ${g.line}` : ""}]` +
-            ` ${g.consensusN}/${g.agentsTotal} · $${g.stakeUsd} @ ${g.price} (agents ${Math.round(g.agentProb * 100)}%)`,
+          `  ${`${g.home} vs ${g.away}`.padEnd(34)} ` +
+            (p
+              ? `[${p.marketType}/${p.selection}${p.line != null ? ` ${p.line}` : ""}] ${p.consensusN}/${p.agentsTotal} · $${p.stakeUsd} @ ${p.price} (agents ${Math.round(p.agentProb * 100)}%)`
+              : "[no position yet]"),
         );
+      }
     })
     .catch((err) => {
       console.error(err);

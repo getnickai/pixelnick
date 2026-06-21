@@ -35,12 +35,12 @@ async function main() {
   console.log("Building matchday slate from R2…");
   const data = await buildMatchdayData({ all });
   if (!data.games.length) {
-    console.error("No covered games in today's slate — nothing to render.");
+    console.error("No games in the upcoming slate — nothing to render.");
     process.exit(2);
   }
   console.log(
     `Day ${data.day} · ${data.games.length} game(s): ` +
-      data.games.map((g) => `${g.home}/${g.selection}`).join(", "),
+      data.games.map((g) => `${g.home}/${g.pick ? g.pick.selection : "—"}`).join(", "),
   );
 
   fs.mkdirSync(out, { recursive: true });
