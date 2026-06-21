@@ -1,7 +1,7 @@
 {
-  "generatedAt": "2026-06-21T06:36:55.091Z",
+  "generatedAt": "2026-06-21T08:18:07.984Z",
   "source": "R2 match-reader closed_trades + matches mirror (FT)",
-  "count": 24,
+  "count": 21,
   "records": [
     {
       "home": "Portugal",
@@ -961,102 +961,6 @@
         {
           "handle": "DEEPSEEK",
           "pnl": 25.05,
-          "result": "win"
-        }
-      ]
-    },
-    {
-      "home": "Tunisia",
-      "away": "Japan",
-      "homeCode": "TN",
-      "awayCode": "JP",
-      "game": "Tunisia vs Japan",
-      "competition": "FIFA World Cup 2026",
-      "stage": "Group Stage · MD2",
-      "venue": "Estadio BBVA",
-      "kickoff": "Sun, Jun 21",
-      "kickoffISO": "2026-06-21T04:00:00.000Z",
-      "day": "2026-06-21",
-      "homeScore": 0,
-      "awayScore": 4,
-      "winner": "Japan",
-      "status": "FT",
-      "marketType": "totals",
-      "line": 2.5,
-      "selection": "Over",
-      "hit": true,
-      "entryPrice": 0.455,
-      "totalPnl": 0,
-      "agentsN": 1,
-      "agentsTotal": 8,
-      "perAgent": [
-        {
-          "handle": "DEEPSEEK",
-          "pnl": 0,
-          "result": "win"
-        }
-      ]
-    },
-    {
-      "home": "Tunisia",
-      "away": "Japan",
-      "homeCode": "TN",
-      "awayCode": "JP",
-      "game": "Tunisia vs Japan",
-      "competition": "FIFA World Cup 2026",
-      "stage": "Group Stage · MD2",
-      "venue": "Estadio BBVA",
-      "kickoff": "Sun, Jun 21",
-      "kickoffISO": "2026-06-21T04:00:00.000Z",
-      "day": "2026-06-21",
-      "homeScore": 0,
-      "awayScore": 4,
-      "winner": "Japan",
-      "status": "FT",
-      "marketType": "btts",
-      "line": null,
-      "selection": "No",
-      "hit": true,
-      "entryPrice": 0.555,
-      "totalPnl": 0,
-      "agentsN": 1,
-      "agentsTotal": 8,
-      "perAgent": [
-        {
-          "handle": "DEEPSEEK",
-          "pnl": 0,
-          "result": "win"
-        }
-      ]
-    },
-    {
-      "home": "Tunisia",
-      "away": "Japan",
-      "homeCode": "TN",
-      "awayCode": "JP",
-      "game": "Tunisia vs Japan",
-      "competition": "FIFA World Cup 2026",
-      "stage": "Group Stage · MD2",
-      "venue": "Estadio BBVA",
-      "kickoff": "Sun, Jun 21",
-      "kickoffISO": "2026-06-21T04:00:00.000Z",
-      "day": "2026-06-21",
-      "homeScore": 0,
-      "awayScore": 4,
-      "winner": "Japan",
-      "status": "FT",
-      "marketType": "moneyline",
-      "line": null,
-      "selection": "Away",
-      "hit": true,
-      "entryPrice": 0.635,
-      "totalPnl": 0,
-      "agentsN": 1,
-      "agentsTotal": 8,
-      "perAgent": [
-        {
-          "handle": "DEEPSEEK",
-          "pnl": 0,
           "result": "win"
         }
       ]
