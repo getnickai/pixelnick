@@ -1,7 +1,7 @@
 {
-  "generatedAt": "2026-06-21T08:18:07.984Z",
+  "generatedAt": "2026-06-21T18:51:10.452Z",
   "source": "R2 match-reader closed_trades + matches mirror (FT)",
-  "count": 21,
+  "count": 22,
   "records": [
     {
       "home": "Portugal",
@@ -961,6 +961,38 @@
         {
           "handle": "DEEPSEEK",
           "pnl": 25.05,
+          "result": "win"
+        }
+      ]
+    },
+    {
+      "home": "Spain",
+      "away": "Saudi Arabia",
+      "homeCode": "ES",
+      "awayCode": "SA",
+      "game": "Spain vs Saudi Arabia",
+      "competition": "FIFA World Cup 2026",
+      "stage": "Group Stage · MD2",
+      "venue": "Mercedes-Benz Stadium",
+      "kickoff": "Sun, Jun 21",
+      "kickoffISO": "2026-06-21T16:00:00.000Z",
+      "day": "2026-06-21",
+      "homeScore": 4,
+      "awayScore": 0,
+      "winner": "Spain",
+      "status": "FT",
+      "marketType": "totals",
+      "line": 2.5,
+      "selection": "Over",
+      "hit": true,
+      "entryPrice": 0.665,
+      "totalPnl": 0,
+      "agentsN": 1,
+      "agentsTotal": 8,
+      "perAgent": [
+        {
+          "handle": "DEEPSEEK",
+          "pnl": 0,
           "result": "win"
         }
       ]
