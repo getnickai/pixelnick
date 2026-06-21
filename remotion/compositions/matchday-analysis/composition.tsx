@@ -78,15 +78,18 @@ export const MatchdayAnalysisComposition: React.FC<MatchdayAnalysisProps> = ({
       <SlidingDigitCount targetValue={targetValue} countWindow={slotWin} slide={slide} {...opts} />
     );
 
+    // Uncovered games (no swarm position) animate the bar + reveal a muted
+    // "No position yet" state — no slot reels.
+    const p = g.pick;
     return {
       barFrac,
       loadingOpacity,
       pickOpacity,
-      marketNode: reel(asPct(g.price), { suffix: "%" }),
-      agentsNode: reel(asPct(g.agentProb), { suffix: "%" }),
-      stakeNode: reel(g.stakeUsd, { prefix: "$", thousandsSep: true }),
-      gainNode: reel(potentialUsd(g.stakeUsd, g.price), { prefix: "+$", thousandsSep: true }),
-      consensusNode: reel(g.consensusN),
+      marketNode: p ? reel(asPct(p.price), { suffix: "%" }) : undefined,
+      agentsNode: p ? reel(asPct(p.agentProb), { suffix: "%" }) : undefined,
+      stakeNode: p ? reel(p.stakeUsd, { prefix: "$", thousandsSep: true }) : undefined,
+      gainNode: p ? reel(potentialUsd(p.stakeUsd, p.price), { prefix: "+$", thousandsSep: true }) : undefined,
+      consensusNode: p ? reel(p.consensusN) : undefined,
     };
   });
 
