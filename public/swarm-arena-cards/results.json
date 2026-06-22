@@ -1,7 +1,7 @@
 {
-  "generatedAt": "2026-06-22T20:47:44.117Z",
+  "generatedAt": "2026-06-22T21:44:02.937Z",
   "source": "R2 match-reader closed_trades + matches mirror (FT)",
-  "count": 24,
+  "count": 25,
   "records": [
     {
       "home": "Portugal",
@@ -23,14 +23,19 @@
       "line": null,
       "selection": "Yes",
       "hit": true,
-      "entryPrice": 0.5042,
-      "totalPnl": 705.18,
-      "agentsN": 5,
+      "entryPrice": 0.49,
+      "totalPnl": 822.71,
+      "agentsN": 6,
       "agentsTotal": 8,
       "perAgent": [
         {
           "handle": "QWEN",
           "pnl": 235.06,
+          "result": "win"
+        },
+        {
+          "handle": "CLAUDE",
+          "pnl": 117.53,
           "result": "win"
         },
         {
@@ -1085,6 +1090,38 @@
         {
           "handle": "GROK",
           "pnl": 44.34,
+          "result": "win"
+        }
+      ]
+    },
+    {
+      "home": "Germany",
+      "away": "Curaçao",
+      "homeCode": "DE",
+      "awayCode": "CW",
+      "game": "Germany vs Curaçao",
+      "competition": "FIFA World Cup 2026",
+      "stage": "Group Stage · MD1",
+      "venue": "Reliant Stadium",
+      "kickoff": "Sun, Jun 14",
+      "kickoffISO": "2026-06-14T17:00:00.000Z",
+      "day": "2026-06-14",
+      "homeScore": 7,
+      "awayScore": 1,
+      "winner": "Germany",
+      "status": "FT",
+      "marketType": "totals",
+      "line": 4.5,
+      "selection": "Over",
+      "hit": true,
+      "entryPrice": 0.465,
+      "totalPnl": 34.52,
+      "agentsN": 1,
+      "agentsTotal": 8,
+      "perAgent": [
+        {
+          "handle": "CLAUDE",
+          "pnl": 34.52,
           "result": "win"
         }
       ]
