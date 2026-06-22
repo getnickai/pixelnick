@@ -1,5 +1,5 @@
 {
-  "generatedAt": "2026-06-22T04:54:21.849Z",
+  "generatedAt": "2026-06-22T06:49:31.877Z",
   "source": "R2 match-reader closed_trades + matches mirror (FT)",
   "count": 25,
   "records": [
@@ -160,63 +160,6 @@
       ]
     },
     {
-      "home": "New Zealand",
-      "away": "Egypt",
-      "homeCode": "NZ",
-      "awayCode": "EG",
-      "game": "New Zealand vs Egypt",
-      "competition": "FIFA World Cup 2026",
-      "stage": "Group Stage · MD2",
-      "venue": "BC Place",
-      "kickoff": "Sun, Jun 21",
-      "kickoffISO": "2026-06-22T01:00:00.000Z",
-      "day": "2026-06-21",
-      "homeScore": 1,
-      "awayScore": 3,
-      "winner": "Egypt",
-      "status": "FT",
-      "marketType": "btts",
-      "line": null,
-      "selection": "Yes",
-      "hit": true,
-      "entryPrice": 0.5375,
-      "totalPnl": 598.68,
-      "agentsN": 6,
-      "agentsTotal": 8,
-      "perAgent": [
-        {
-          "handle": "GPT",
-          "pnl": 99.78,
-          "result": "win"
-        },
-        {
-          "handle": "GEMINI",
-          "pnl": 99.78,
-          "result": "win"
-        },
-        {
-          "handle": "GROK",
-          "pnl": 99.78,
-          "result": "win"
-        },
-        {
-          "handle": "DEEPSEEK",
-          "pnl": 99.78,
-          "result": "win"
-        },
-        {
-          "handle": "KIMI",
-          "pnl": 99.78,
-          "result": "win"
-        },
-        {
-          "handle": "QWEN",
-          "pnl": 99.78,
-          "result": "win"
-        }
-      ]
-    },
-    {
       "home": "Saudi Arabia",
       "away": "Uruguay",
       "homeCode": "SA",
@@ -316,6 +259,58 @@
         {
           "handle": "QWEN",
           "pnl": 110.48,
+          "result": "win"
+        }
+      ]
+    },
+    {
+      "home": "New Zealand",
+      "away": "Egypt",
+      "homeCode": "NZ",
+      "awayCode": "EG",
+      "game": "New Zealand vs Egypt",
+      "competition": "FIFA World Cup 2026",
+      "stage": "Group Stage · MD2",
+      "venue": "BC Place",
+      "kickoff": "Sun, Jun 21",
+      "kickoffISO": "2026-06-22T01:00:00.000Z",
+      "day": "2026-06-21",
+      "homeScore": 1,
+      "awayScore": 3,
+      "winner": "Egypt",
+      "status": "FT",
+      "marketType": "btts",
+      "line": null,
+      "selection": "Yes",
+      "hit": true,
+      "entryPrice": 0.556,
+      "totalPnl": 498.9,
+      "agentsN": 5,
+      "agentsTotal": 8,
+      "perAgent": [
+        {
+          "handle": "GPT",
+          "pnl": 99.78,
+          "result": "win"
+        },
+        {
+          "handle": "GEMINI",
+          "pnl": 99.78,
+          "result": "win"
+        },
+        {
+          "handle": "GROK",
+          "pnl": 99.78,
+          "result": "win"
+        },
+        {
+          "handle": "DEEPSEEK",
+          "pnl": 99.78,
+          "result": "win"
+        },
+        {
+          "handle": "QWEN",
+          "pnl": 99.78,
           "result": "win"
         }
       ]
@@ -472,63 +467,6 @@
       ]
     },
     {
-      "home": "New Zealand",
-      "away": "Egypt",
-      "homeCode": "NZ",
-      "awayCode": "EG",
-      "game": "New Zealand vs Egypt",
-      "competition": "FIFA World Cup 2026",
-      "stage": "Group Stage · MD2",
-      "venue": "BC Place",
-      "kickoff": "Sun, Jun 21",
-      "kickoffISO": "2026-06-22T01:00:00.000Z",
-      "day": "2026-06-21",
-      "homeScore": 1,
-      "awayScore": 3,
-      "winner": "Egypt",
-      "status": "FT",
-      "marketType": "totals",
-      "line": 2.5,
-      "selection": "Over",
-      "hit": true,
-      "entryPrice": 0.525,
-      "totalPnl": 317.56,
-      "agentsN": 6,
-      "agentsTotal": 8,
-      "perAgent": [
-        {
-          "handle": "GROK",
-          "pnl": 67.65,
-          "result": "win"
-        },
-        {
-          "handle": "KIMI",
-          "pnl": 67.65,
-          "result": "win"
-        },
-        {
-          "handle": "QWEN",
-          "pnl": 67.65,
-          "result": "win"
-        },
-        {
-          "handle": "GPT",
-          "pnl": 39.77,
-          "result": "win"
-        },
-        {
-          "handle": "GEMINI",
-          "pnl": 37.42,
-          "result": "win"
-        },
-        {
-          "handle": "DEEPSEEK",
-          "pnl": 37.42,
-          "result": "win"
-        }
-      ]
-    },
-    {
       "home": "Brazil",
       "away": "Morocco",
       "homeCode": "BR",
@@ -576,6 +514,58 @@
         {
           "handle": "QWEN",
           "pnl": 55.26,
+          "result": "win"
+        }
+      ]
+    },
+    {
+      "home": "New Zealand",
+      "away": "Egypt",
+      "homeCode": "NZ",
+      "awayCode": "EG",
+      "game": "New Zealand vs Egypt",
+      "competition": "FIFA World Cup 2026",
+      "stage": "Group Stage · MD2",
+      "venue": "BC Place",
+      "kickoff": "Sun, Jun 21",
+      "kickoffISO": "2026-06-22T01:00:00.000Z",
+      "day": "2026-06-21",
+      "homeScore": 1,
+      "awayScore": 3,
+      "winner": "Egypt",
+      "status": "FT",
+      "marketType": "totals",
+      "line": 2.5,
+      "selection": "Over",
+      "hit": true,
+      "entryPrice": 0.545,
+      "totalPnl": 249.91,
+      "agentsN": 5,
+      "agentsTotal": 8,
+      "perAgent": [
+        {
+          "handle": "GROK",
+          "pnl": 67.65,
+          "result": "win"
+        },
+        {
+          "handle": "QWEN",
+          "pnl": 67.65,
+          "result": "win"
+        },
+        {
+          "handle": "GPT",
+          "pnl": 39.77,
+          "result": "win"
+        },
+        {
+          "handle": "GEMINI",
+          "pnl": 37.42,
+          "result": "win"
+        },
+        {
+          "handle": "DEEPSEEK",
+          "pnl": 37.42,
           "result": "win"
         }
       ]
