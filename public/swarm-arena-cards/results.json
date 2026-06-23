@@ -1,7 +1,7 @@
 {
-  "generatedAt": "2026-06-23T03:46:51.824Z",
+  "generatedAt": "2026-06-23T06:48:16.376Z",
   "source": "R2 match-reader closed_trades + matches mirror (FT)",
-  "count": 27,
+  "count": 29,
   "records": [
     {
       "home": "Portugal",
@@ -576,6 +576,43 @@
       ]
     },
     {
+      "home": "Jordan",
+      "away": "Algeria",
+      "homeCode": "JO",
+      "awayCode": "DZ",
+      "game": "Jordan vs Algeria",
+      "competition": "FIFA World Cup 2026",
+      "stage": "Group Stage · MD2",
+      "venue": "Levi's Stadium",
+      "kickoff": "Mon, Jun 22",
+      "kickoffISO": "2026-06-23T03:00:00.000Z",
+      "day": "2026-06-22",
+      "homeScore": 1,
+      "awayScore": 2,
+      "winner": "Algeria",
+      "status": "FT",
+      "marketType": "totals",
+      "line": 2.5,
+      "selection": "Over",
+      "hit": true,
+      "entryPrice": 0.405,
+      "totalPnl": 235.3,
+      "agentsN": 2,
+      "agentsTotal": 8,
+      "perAgent": [
+        {
+          "handle": "GEMINI",
+          "pnl": 122.53,
+          "result": "win"
+        },
+        {
+          "handle": "GPT",
+          "pnl": 112.77,
+          "result": "win"
+        }
+      ]
+    },
+    {
       "home": "Haiti",
       "away": "Scotland",
       "homeCode": "HT",
@@ -821,6 +858,63 @@
         {
           "handle": "GROK",
           "pnl": 38.97,
+          "result": "win"
+        }
+      ]
+    },
+    {
+      "home": "Jordan",
+      "away": "Algeria",
+      "homeCode": "JO",
+      "awayCode": "DZ",
+      "game": "Jordan vs Algeria",
+      "competition": "FIFA World Cup 2026",
+      "stage": "Group Stage · MD2",
+      "venue": "Levi's Stadium",
+      "kickoff": "Mon, Jun 22",
+      "kickoffISO": "2026-06-23T03:00:00.000Z",
+      "day": "2026-06-22",
+      "homeScore": 1,
+      "awayScore": 2,
+      "winner": "Algeria",
+      "status": "FT",
+      "marketType": "btts",
+      "line": null,
+      "selection": "Yes",
+      "hit": true,
+      "entryPrice": 0.485,
+      "totalPnl": 191.16,
+      "agentsN": 6,
+      "agentsTotal": 8,
+      "perAgent": [
+        {
+          "handle": "GPT",
+          "pnl": 31.86,
+          "result": "win"
+        },
+        {
+          "handle": "GEMINI",
+          "pnl": 31.86,
+          "result": "win"
+        },
+        {
+          "handle": "GROK",
+          "pnl": 31.86,
+          "result": "win"
+        },
+        {
+          "handle": "DEEPSEEK",
+          "pnl": 31.86,
+          "result": "win"
+        },
+        {
+          "handle": "KIMI",
+          "pnl": 31.86,
+          "result": "win"
+        },
+        {
+          "handle": "QWEN",
+          "pnl": 31.86,
           "result": "win"
         }
       ]
