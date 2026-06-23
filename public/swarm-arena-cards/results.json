@@ -1,5 +1,5 @@
 {
-  "generatedAt": "2026-06-23T22:55:38.808Z",
+  "generatedAt": "2026-06-23T23:26:13.322Z",
   "source": "R2 match-reader closed_trades + matches mirror (FT)",
   "count": 30,
   "records": [
@@ -502,12 +502,12 @@
           "result": "win"
         },
         {
-          "handle": "GPT",
+          "handle": "QWEN",
           "pnl": 112.77,
           "result": "win"
         },
         {
-          "handle": "QWEN",
+          "handle": "GPT",
           "pnl": 112.77,
           "result": "win"
         }
