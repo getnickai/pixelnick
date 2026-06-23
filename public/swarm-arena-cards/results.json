@@ -1,7 +1,7 @@
 {
-  "generatedAt": "2026-06-23T01:18:45.181Z",
+  "generatedAt": "2026-06-23T03:46:51.824Z",
   "source": "R2 match-reader closed_trades + matches mirror (FT)",
-  "count": 26,
+  "count": 27,
   "records": [
     {
       "home": "Portugal",
@@ -962,6 +962,38 @@
       ]
     },
     {
+      "home": "Norway",
+      "away": "Senegal",
+      "homeCode": "NO",
+      "awayCode": "SN",
+      "game": "Norway vs Senegal",
+      "competition": "FIFA World Cup 2026",
+      "stage": "Group Stage · MD2",
+      "venue": "MetLife Stadium",
+      "kickoff": "Mon, Jun 22",
+      "kickoffISO": "2026-06-23T00:00:00.000Z",
+      "day": "2026-06-22",
+      "homeScore": 3,
+      "awayScore": 2,
+      "winner": "Norway",
+      "status": "FT",
+      "marketType": "totals",
+      "line": 2.5,
+      "selection": "Over",
+      "hit": true,
+      "entryPrice": 0.415,
+      "totalPnl": 112.77,
+      "agentsN": 1,
+      "agentsTotal": 8,
+      "perAgent": [
+        {
+          "handle": "GPT",
+          "pnl": 112.77,
+          "result": "win"
+        }
+      ]
+    },
+    {
       "home": "Brazil",
       "away": "Morocco",
       "homeCode": "BR",
@@ -1095,38 +1127,6 @@
       ]
     },
     {
-      "home": "France",
-      "away": "Iraq",
-      "homeCode": "FR",
-      "awayCode": "IQ",
-      "game": "France vs Iraq",
-      "competition": "FIFA World Cup 2026",
-      "stage": "Group Stage · MD2",
-      "venue": "Lincoln Financial Field",
-      "kickoff": "Mon, Jun 22",
-      "kickoffISO": "2026-06-22T21:00:00.000Z",
-      "day": "2026-06-22",
-      "homeScore": 2,
-      "awayScore": 0,
-      "winner": "France",
-      "status": "FT",
-      "marketType": "totals",
-      "line": 2.5,
-      "selection": "Under",
-      "hit": true,
-      "entryPrice": 0.445,
-      "totalPnl": 37.42,
-      "agentsN": 1,
-      "agentsTotal": 8,
-      "perAgent": [
-        {
-          "handle": "GEMINI",
-          "pnl": 37.42,
-          "result": "win"
-        }
-      ]
-    },
-    {
       "home": "Germany",
       "away": "Curaçao",
       "homeCode": "DE",
@@ -1154,6 +1154,38 @@
         {
           "handle": "CLAUDE",
           "pnl": 34.52,
+          "result": "win"
+        }
+      ]
+    },
+    {
+      "home": "Norway",
+      "away": "Senegal",
+      "homeCode": "NO",
+      "awayCode": "SN",
+      "game": "Norway vs Senegal",
+      "competition": "FIFA World Cup 2026",
+      "stage": "Group Stage · MD2",
+      "venue": "MetLife Stadium",
+      "kickoff": "Mon, Jun 22",
+      "kickoffISO": "2026-06-23T00:00:00.000Z",
+      "day": "2026-06-22",
+      "homeScore": 3,
+      "awayScore": 2,
+      "winner": "Norway",
+      "status": "FT",
+      "marketType": "btts",
+      "line": null,
+      "selection": "Yes",
+      "hit": true,
+      "entryPrice": 0.495,
+      "totalPnl": 30.61,
+      "agentsN": 1,
+      "agentsTotal": 8,
+      "perAgent": [
+        {
+          "handle": "GPT",
+          "pnl": 30.61,
           "result": "win"
         }
       ]
