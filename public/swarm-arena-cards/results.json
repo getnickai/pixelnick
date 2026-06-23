@@ -1,7 +1,7 @@
 {
-  "generatedAt": "2026-06-23T21:50:23.150Z",
+  "generatedAt": "2026-06-23T22:34:22.001Z",
   "source": "R2 match-reader closed_trades + matches mirror (FT)",
-  "count": 29,
+  "count": 30,
   "records": [
     {
       "home": "Portugal",
@@ -462,6 +462,53 @@
         {
           "handle": "GPT",
           "pnl": 88.42,
+          "result": "win"
+        }
+      ]
+    },
+    {
+      "home": "England",
+      "away": "Ghana",
+      "homeCode": "GB",
+      "awayCode": "GH",
+      "game": "England vs Ghana",
+      "competition": "FIFA World Cup 2026",
+      "stage": "Group Stage · MD2",
+      "venue": "Gillette Stadium",
+      "kickoff": "Tue, Jun 23",
+      "kickoffISO": "2026-06-23T20:00:00.000Z",
+      "day": "2026-06-23",
+      "homeScore": 0,
+      "awayScore": 0,
+      "winner": "Draw",
+      "status": "FT",
+      "marketType": "totals",
+      "line": 2.5,
+      "selection": "Under",
+      "hit": true,
+      "entryPrice": 0.5613,
+      "totalPnl": 451.08,
+      "agentsN": 4,
+      "agentsTotal": 8,
+      "perAgent": [
+        {
+          "handle": "GEMINI",
+          "pnl": 112.77,
+          "result": "win"
+        },
+        {
+          "handle": "GROK",
+          "pnl": 112.77,
+          "result": "win"
+        },
+        {
+          "handle": "GPT",
+          "pnl": 112.77,
+          "result": "win"
+        },
+        {
+          "handle": "QWEN",
+          "pnl": 112.77,
           "result": "win"
         }
       ]
