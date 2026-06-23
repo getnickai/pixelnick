@@ -1,7 +1,7 @@
 {
-  "generatedAt": "2026-06-23T00:15:39.064Z",
+  "generatedAt": "2026-06-23T01:18:45.181Z",
   "source": "R2 match-reader closed_trades + matches mirror (FT)",
-  "count": 25,
+  "count": 26,
   "records": [
     {
       "home": "Portugal",
@@ -1090,6 +1090,38 @@
         {
           "handle": "GROK",
           "pnl": 44.34,
+          "result": "win"
+        }
+      ]
+    },
+    {
+      "home": "France",
+      "away": "Iraq",
+      "homeCode": "FR",
+      "awayCode": "IQ",
+      "game": "France vs Iraq",
+      "competition": "FIFA World Cup 2026",
+      "stage": "Group Stage · MD2",
+      "venue": "Lincoln Financial Field",
+      "kickoff": "Mon, Jun 22",
+      "kickoffISO": "2026-06-22T21:00:00.000Z",
+      "day": "2026-06-22",
+      "homeScore": 2,
+      "awayScore": 0,
+      "winner": "France",
+      "status": "FT",
+      "marketType": "totals",
+      "line": 2.5,
+      "selection": "Under",
+      "hit": true,
+      "entryPrice": 0.445,
+      "totalPnl": 37.42,
+      "agentsN": 1,
+      "agentsTotal": 8,
+      "perAgent": [
+        {
+          "handle": "GEMINI",
+          "pnl": 37.42,
           "result": "win"
         }
       ]
