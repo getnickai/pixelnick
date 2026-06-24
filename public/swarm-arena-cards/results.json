@@ -1,7 +1,7 @@
 {
-  "generatedAt": "2026-06-24T01:25:07.450Z",
+  "generatedAt": "2026-06-24T02:20:38.481Z",
   "source": "R2 match-reader closed_trades + matches mirror (FT)",
-  "count": 30,
+  "count": 31,
   "records": [
     {
       "home": "Portugal",
@@ -650,6 +650,58 @@
         {
           "handle": "GPT",
           "pnl": 112.77,
+          "result": "win"
+        }
+      ]
+    },
+    {
+      "home": "Panama",
+      "away": "Croatia",
+      "homeCode": "PA",
+      "awayCode": "HR",
+      "game": "Panama vs Croatia",
+      "competition": "FIFA World Cup 2026",
+      "stage": "Group Stage · MD2",
+      "venue": "BMO Field",
+      "kickoff": "Tue, Jun 23",
+      "kickoffISO": "2026-06-23T23:00:00.000Z",
+      "day": "2026-06-23",
+      "homeScore": 0,
+      "awayScore": 1,
+      "winner": "Croatia",
+      "status": "FT",
+      "marketType": "totals",
+      "line": 2.5,
+      "selection": "Under",
+      "hit": true,
+      "entryPrice": 0.574,
+      "totalPnl": 232.42,
+      "agentsN": 5,
+      "agentsTotal": 8,
+      "perAgent": [
+        {
+          "handle": "DEEPSEEK",
+          "pnl": 99.78,
+          "result": "win"
+        },
+        {
+          "handle": "GEMINI",
+          "pnl": 33.16,
+          "result": "win"
+        },
+        {
+          "handle": "GROK",
+          "pnl": 33.16,
+          "result": "win"
+        },
+        {
+          "handle": "QWEN",
+          "pnl": 33.16,
+          "result": "win"
+        },
+        {
+          "handle": "GPT",
+          "pnl": 33.16,
           "result": "win"
         }
       ]
