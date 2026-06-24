@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { Bot, Hexagon, History } from "lucide-react";
+import { Bot, FileText, Hexagon, History, LayoutGrid, Radar, TrendingUp } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { engineManifest } from "@/engine/manifest";
 
@@ -11,6 +11,10 @@ const ICONS: Record<string, typeof Hexagon> = {
   "swarm-arena-history": History,
   "nickai-kit": Bot,
   "nickai-history": History,
+  "x-signals": Radar,
+  "x-posts": FileText,
+  "x-performance": TrendingUp,
+  "agentic-drop": LayoutGrid,
 };
 
 /**

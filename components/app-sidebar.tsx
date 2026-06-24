@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { Bot, Cpu, Film, Hexagon, Image, Palette } from "lucide-react";
+import { Bot, Cpu, Film, Hexagon, Image, Palette, Radar } from "lucide-react";
 import {
   Sidebar,
   SidebarContent,
@@ -65,6 +65,12 @@ const WORKSPACES: Workspace[] = [
         href: "/engine/nickai-kit",
         icon: Bot,
         match: "/engine/nickai",
+      },
+      {
+        title: "X Engine",
+        href: "/engine/x-signals",
+        icon: Radar,
+        match: "/engine/x-",
       },
     ],
   },

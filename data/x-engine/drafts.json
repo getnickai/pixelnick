@@ -1,0 +1,50 @@
+{
+  "generated_at": "2026-06-22T18:58:38.707Z",
+  "drafts": [
+    {
+      "id": 5,
+      "target_account": "swarmarena",
+      "text": "The market and the swarm disagree more often than you'd think. When 6 of 8 agents fade the favorite, that is the line worth watching, not the consensus. Today's picks are live.",
+      "char_count": 176,
+      "hook_type": "observation",
+      "format": "single",
+      "angle": "Market-vs-agents divergence as the hook (no signal, evergreen brand post)",
+      "rationale": "SwarmArena scorecard: questions + world-cup/prediction-markets topics do best; this leans on the divergence tension the account owns.",
+      "predicted_virality": 0.04,
+      "status": "pending",
+      "created_at": "2026-06-22T18:31:00.217Z",
+      "signal_title": null,
+      "signal_url": null
+    },
+    {
+      "id": 4,
+      "target_account": "getnickai",
+      "text": "A local 0.6B model is now good enough to triage and categorize messages. You can wire that into NickAI as a 3-step agent: classify, route, draft the reply. No GPU, no code. Try it for free now: getnick.ai",
+      "char_count": 204,
+      "hook_type": "story",
+      "format": "single",
+      "angle": "Small-model fine-tuning news, turned into a build-this-today how-to",
+      "rationale": "Builder how-to with the allowed CTA; replies/originals aside, this is an original that shows a concrete output.",
+      "predicted_virality": 0.025,
+      "status": "pending",
+      "created_at": "2026-06-22T18:31:00.122Z",
+      "signal_title": "Temporary Cloudflare Accounts for AI agents",
+      "signal_url": "https://simonwillison.net/2026/Jun/21/temporary-cloudflare-accounts/#atom-everything"
+    },
+    {
+      "id": 3,
+      "target_account": "getnickai",
+      "text": "Most agent demos break the moment they touch the real internet, because they run on your logged-in cookies. The fix is scoped, disposable credentials per agent. Cloudflare just shipped that primitive. In NickAI your agents get isolated identity by default.",
+      "char_count": 256,
+      "hook_type": "contrarian",
+      "format": "single",
+      "angle": "Agent identity, not agent IQ, is the real production blocker",
+      "rationale": "Contrarian opener + ties live news to a concrete NickAI capability. getNickAI scorecard: links help, but this lands without one; on-topic ai-agents.",
+      "predicted_virality": 0.03,
+      "status": "pending",
+      "created_at": "2026-06-22T18:31:00.121Z",
+      "signal_title": "Temporary Cloudflare Accounts for AI agents",
+      "signal_url": "https://simonwillison.net/2026/Jun/21/temporary-cloudflare-accounts/#atom-everything"
+    }
+  ]
+}
