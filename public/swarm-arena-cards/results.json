@@ -1,7 +1,7 @@
 {
-  "generatedAt": "2026-06-24T10:32:36.667Z",
+  "generatedAt": "2026-06-24T22:10:57.874Z",
   "source": "R2 match-reader closed_trades + matches mirror (FT)",
-  "count": 31,
+  "count": 32,
   "records": [
     {
       "home": "Portugal",
@@ -754,6 +754,63 @@
         {
           "handle": "GROK",
           "pnl": 38.97,
+          "result": "win"
+        }
+      ]
+    },
+    {
+      "home": "Switzerland",
+      "away": "Canada",
+      "homeCode": "CH",
+      "awayCode": "CA",
+      "game": "Switzerland vs Canada",
+      "competition": "FIFA World Cup 2026",
+      "stage": "Group Stage · MD3",
+      "venue": "BC Place",
+      "kickoff": "Wed, Jun 24",
+      "kickoffISO": "2026-06-24T19:00:00.000Z",
+      "day": "2026-06-24",
+      "homeScore": 2,
+      "awayScore": 1,
+      "winner": "Switzerland",
+      "status": "FT",
+      "marketType": "totals",
+      "line": 2.5,
+      "selection": "Over",
+      "hit": true,
+      "entryPrice": 0.445,
+      "totalPnl": 224.52,
+      "agentsN": 6,
+      "agentsTotal": 8,
+      "perAgent": [
+        {
+          "handle": "GPT",
+          "pnl": 37.42,
+          "result": "win"
+        },
+        {
+          "handle": "GEMINI",
+          "pnl": 37.42,
+          "result": "win"
+        },
+        {
+          "handle": "GROK",
+          "pnl": 37.42,
+          "result": "win"
+        },
+        {
+          "handle": "DEEPSEEK",
+          "pnl": 37.42,
+          "result": "win"
+        },
+        {
+          "handle": "KIMI",
+          "pnl": 37.42,
+          "result": "win"
+        },
+        {
+          "handle": "QWEN",
+          "pnl": 37.42,
           "result": "win"
         }
       ]
