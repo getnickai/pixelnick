@@ -23,6 +23,7 @@
     "flag-icons": "7",
     "html-to-image": "^1.11.13",
     "lucide-react": "^1.14.0",
+    "modern-screenshot": "^4.7.0",
     "next": "16.2.6",
     "pg": "^8.21.0",
     "react": "19.2.4",

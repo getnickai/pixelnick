@@ -1,5 +1,6 @@
 import { readDrop } from "@/lib/x-engine-data";
 import type { XDropSlide, XDrop } from "@/lib/x-engine";
+import { DownloadSlidesButton } from "./download-button";
 
 function fmt(n: number): string {
   if (n >= 1_000_000) return `${(n / 1_000_000).toFixed(1)}M`;
@@ -99,7 +100,7 @@ function Slide({ slide, accent }: { slide: XDropSlide; accent: string }) {
 
   if (slide.kind === "cover") {
     return (
-      <div className={base}>
+      <div className={base} data-export-slide>
         {bg}
         <div className="absolute inset-0 bg-gradient-to-t from-black via-black/45 to-black/55" />
         {slide.inset ? <Inset src={slide.inset} accent={accent} /> : null}
@@ -124,7 +125,7 @@ function Slide({ slide, accent }: { slide: XDropSlide; accent: string }) {
   if (slide.kind === "outro") {
     // brand sign-off: title centered in the middle, uniform subtext, follow chip.
     return (
-      <div className={`${base} items-center justify-center text-center`}>
+      <div className={`${base} items-center justify-center text-center`} data-export-slide>
         {bg}
         <div className="absolute inset-0 bg-gradient-to-t from-black via-black/55 to-black/50" />
         <div className="relative z-10 flex flex-col items-center gap-4 px-8">
@@ -149,7 +150,7 @@ function Slide({ slide, accent }: { slide: XDropSlide; accent: string }) {
   // story — a self-contained news card: photo up top, brand bubble + optional inset,
   // then a text panel carrying headline (color-popped) + lead + the full detail body.
   return (
-    <div className={base}>
+    <div className={base} data-export-slide>
       {bg}
       {/* strong bottom scrim — the lower ~60% is a readable news panel */}
       <div className="absolute inset-0 bg-gradient-to-t from-black from-35% via-black/80 via-[58%] to-transparent" />
@@ -196,6 +197,7 @@ export function AgenticDrop() {
             {drop.edition} · {drop.slides.length} slides · source folder <span className="font-mono">{drop.source_folder}</span>
           </p>
         </div>
+        <DownloadSlidesButton />
       </div>
 
       <div className="min-h-0 flex-1 overflow-auto px-6 py-6">
