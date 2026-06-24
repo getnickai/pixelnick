@@ -46,6 +46,34 @@ export const engineManifest: EngineEntryMeta[] = [
     shortLabel: "History",
     meta: "live R2",
   },
+  {
+    id: "x-signals",
+    label: "X Signals",
+    group: "X Engine",
+    shortLabel: "Signals",
+    meta: "x-engine",
+  },
+  {
+    id: "x-posts",
+    label: "X Proposed posts",
+    group: "X Engine",
+    shortLabel: "Proposed posts",
+    meta: "x-engine",
+  },
+  {
+    id: "x-performance",
+    label: "X Performance",
+    group: "X Engine",
+    shortLabel: "Performance",
+    meta: "x-engine",
+  },
+  {
+    id: "agentic-drop",
+    label: "Agentic Drop",
+    group: "X Engine",
+    shortLabel: "Agentic Drop",
+    meta: "carousel",
+  },
 ];
 
 export function getEngineEntryMeta(id: string): EngineEntryMeta | undefined {

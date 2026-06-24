@@ -1,0 +1,362 @@
+{
+  "generated_at": "2026-06-22T18:58:38.707Z",
+  "signals": [
+    {
+      "id": "hackernews:48626137",
+      "source": "hackernews",
+      "title": "Deno Desktop",
+      "url": "https://docs.deno.com/runtime/desktop/",
+      "topics": [],
+      "score": 2.1036,
+      "velocity": 145.17,
+      "relevance": 0,
+      "created_at": "2026-06-22T05:38:40.000Z"
+    },
+    {
+      "id": "hackernews:48626866",
+      "source": "hackernews",
+      "title": "GLM 5.2 vs. Opus",
+      "url": "https://techstackups.com/comparisons/glm-5.2-vs-opus/",
+      "topics": [],
+      "score": 2.0535,
+      "velocity": 94.52,
+      "relevance": 0,
+      "created_at": "2026-06-22T07:22:03.000Z"
+    },
+    {
+      "id": "hackernews:48626930",
+      "source": "hackernews",
+      "title": "Codex logging bug may write TBs to local SSDs",
+      "url": "https://github.com/openai/codex/issues/28224",
+      "topics": [],
+      "score": 1.9578,
+      "velocity": 72.78,
+      "relevance": 0,
+      "created_at": "2026-06-22T07:30:17.000Z"
+    },
+    {
+      "id": "hackernews:48625823",
+      "source": "hackernews",
+      "title": "Danish privacy activist Lars Andersen raided by police",
+      "url": "https://twitter.com/LarsAnders1620/status/2068208864747540516#m",
+      "topics": [],
+      "score": 1.9112,
+      "velocity": 99.61,
+      "relevance": 0,
+      "created_at": "2026-06-22T04:50:26.000Z"
+    },
+    {
+      "id": "hackernews:48618455",
+      "source": "hackernews",
+      "title": "Identity verification on Claude",
+      "url": "https://support.claude.com/en/articles/14328960-identity-verification-on-claude",
+      "topics": [
+        "llms"
+      ],
+      "score": 1.8428,
+      "velocity": 89.11,
+      "relevance": 1.2,
+      "created_at": "2026-06-21T12:44:13.000Z"
+    },
+    {
+      "id": "rss:https://simonwillison.net/2026/Jun/21/temporary-cloudflare-accounts/#atom-everything",
+      "source": "rss",
+      "title": "Temporary Cloudflare Accounts for AI agents",
+      "url": "https://simonwillison.net/2026/Jun/21/temporary-cloudflare-accounts/#atom-everything",
+      "topics": [
+        "ai-agents",
+        "llms"
+      ],
+      "score": 1.8194,
+      "velocity": 0,
+      "relevance": 2.7,
+      "created_at": "2026-06-21T22:01:04.000Z"
+    },
+    {
+      "id": "hackernews:48623434",
+      "source": "hackernews",
+      "title": "Good results fine tuning a local LLM like Qwen 3:0.6B to categorize questions",
+      "url": "https://www.teachmecoolstuff.com/viewarticle/fine-tuning-a-local-llm-to-categorize-questions",
+      "topics": [
+        "llms"
+      ],
+      "score": 1.8125,
+      "velocity": 16.13,
+      "relevance": 1.2,
+      "created_at": "2026-06-21T22:55:23.000Z"
+    },
+    {
+      "id": "hackernews:48622867",
+      "source": "hackernews",
+      "title": "Did my old job only exist because of fraud?",
+      "url": "https://david.newgas.net/did-my-old-job-only-exist-because-of-fraud/",
+      "topics": [],
+      "score": 1.4939,
+      "velocity": 79.34,
+      "relevance": 0,
+      "created_at": "2026-06-21T21:40:53.000Z"
+    },
+    {
+      "id": "hackernews:48622987",
+      "source": "hackernews",
+      "title": "Rent collections are down in New York",
+      "url": "https://www.politico.com/news/2026/06/21/rent-collections-are-down-in-new-york-and-no-ones-sure-why-00966982",
+      "topics": [],
+      "score": 1.4208,
+      "velocity": 60.57,
+      "relevance": 0,
+      "created_at": "2026-06-21T21:54:34.000Z"
+    },
+    {
+      "id": "hackernews:48626918",
+      "source": "hackernews",
+      "title": "Investors get real-time view of UK bond market activity for the first time",
+      "url": "https://www.fca.org.uk/news/press-releases/investors-get-real-time-view-uk-bond-market-activity-first-time",
+      "topics": [],
+      "score": 1.3536,
+      "velocity": 15.8,
+      "relevance": 0,
+      "created_at": "2026-06-22T07:29:17.000Z"
+    },
+    {
+      "id": "hackernews:48624782",
+      "source": "hackernews",
+      "title": "Sakana Fugu",
+      "url": "https://sakana.ai/fugu/",
+      "topics": [],
+      "score": 1.3507,
+      "velocity": 29.46,
+      "relevance": 0,
+      "created_at": "2026-06-22T02:08:18.000Z"
+    },
+    {
+      "id": "hackernews:48622778",
+      "source": "hackernews",
+      "title": "Apertus – Open Foundation Model for Sovereign AI",
+      "url": "https://apertvs.ai/",
+      "topics": [],
+      "score": 1.3372,
+      "velocity": 48.13,
+      "relevance": 0,
+      "created_at": "2026-06-21T21:29:43.000Z"
+    },
+    {
+      "id": "hackernews:48622518",
+      "source": "hackernews",
+      "title": "There is minimal downside to switching to open models",
+      "url": "https://www.marble.onl/posts/cancel_claude.html",
+      "topics": [],
+      "score": 1.3055,
+      "velocity": 46.07,
+      "relevance": 0,
+      "created_at": "2026-06-21T20:56:01.000Z"
+    },
+    {
+      "id": "hackernews:48623419",
+      "source": "hackernews",
+      "title": "Japanese verb conjugation the simple hard way",
+      "url": "https://underreacted.leaflet.pub/3mmevu6woys27",
+      "topics": [],
+      "score": 1.2806,
+      "velocity": 34.13,
+      "relevance": 0,
+      "created_at": "2026-06-21T22:53:50.000Z"
+    },
+    {
+      "id": "hackernews:48622626",
+      "source": "hackernews",
+      "title": "Everything is logarithms",
+      "url": "https://alexkritchevsky.com/2026/05/25/everything-is-logarithms.html",
+      "topics": [],
+      "score": 1.0984,
+      "velocity": 22.09,
+      "relevance": 0,
+      "created_at": "2026-06-21T21:10:32.000Z"
+    },
+    {
+      "id": "hackernews:48628328",
+      "source": "hackernews",
+      "title": "Manticore Search 27.1.5: Auth, sharding, conversational and faster vector search",
+      "url": "https://manticoresearch.com/blog/manticore-search-27-1-5/",
+      "topics": [],
+      "score": 1.0531,
+      "velocity": 5.12,
+      "relevance": 0,
+      "created_at": "2026-06-22T10:35:21.000Z"
+    },
+    {
+      "id": "hackernews:48621517",
+      "source": "hackernews",
+      "title": "JSON-LD explained for personal websites",
+      "url": "https://hawksley.dev/blog/json-ld-explained-for-personal-websites/",
+      "topics": [],
+      "score": 1.029,
+      "velocity": 21.36,
+      "relevance": 0,
+      "created_at": "2026-06-21T18:51:47.000Z"
+    },
+    {
+      "id": "hackernews:48622731",
+      "source": "hackernews",
+      "title": "PowerFox Browser",
+      "url": "https://powerfox.jazzzny.me/",
+      "topics": [],
+      "score": 0.9904,
+      "velocity": 14.86,
+      "relevance": 0,
+      "created_at": "2026-06-21T21:23:13.000Z"
+    },
+    {
+      "id": "rss:https://simonwillison.net/2026/Jun/19/sean-lynch/#atom-everything",
+      "source": "rss",
+      "title": "Quoting Sean Lynch",
+      "url": "https://simonwillison.net/2026/Jun/19/sean-lynch/#atom-everything",
+      "topics": [
+        "ai-agents",
+        "llms"
+      ],
+      "score": 0.8216,
+      "velocity": 0,
+      "relevance": 2.7,
+      "created_at": "2026-06-19T22:45:49.000Z"
+    },
+    {
+      "id": "hackernews:48618488",
+      "source": "hackernews",
+      "title": "Show HN: Teach your kids perfect pitch",
+      "url": "https://github.com/paytonjjones/bsharp",
+      "topics": [],
+      "score": 0.8212,
+      "velocity": 15.31,
+      "relevance": 0,
+      "created_at": "2026-06-21T12:49:48.000Z"
+    },
+    {
+      "id": "rss:https://techcrunch.com/?p=3134737",
+      "source": "rss",
+      "title": "When the Trump administration cracks down on Anthropic, who benefits?",
+      "url": "https://techcrunch.com/2026/06/21/when-the-trump-administration-cracks-down-on-anthropic-who-benefits/",
+      "topics": [
+        "llms"
+      ],
+      "score": 0.7655,
+      "velocity": 0,
+      "relevance": 1.2,
+      "created_at": "2026-06-21T15:28:17.000Z"
+    },
+    {
+      "id": "rss:https://techcrunch.com/?p=3134677",
+      "source": "rss",
+      "title": "Nobel laureate John Jumper is leaving DeepMind for rival Anthropic",
+      "url": "https://techcrunch.com/2026/06/20/nobel-laureate-john-jumper-is-leaving-deepmind-for-rival-anthropic/",
+      "topics": [
+        "llms"
+      ],
+      "score": 0.5098,
+      "velocity": 0,
+      "relevance": 1.2,
+      "created_at": "2026-06-20T16:39:57.000Z"
+    },
+    {
+      "id": "rss:https://simonwillison.net/2026/Jun/17/glm-52/#atom-everything",
+      "source": "rss",
+      "title": "GLM-5.2 is probably the most powerful text-only open weights LLM",
+      "url": "https://simonwillison.net/2026/Jun/17/glm-52/#atom-everything",
+      "topics": [
+        "llms",
+        "crypto"
+      ],
+      "score": 0.4062,
+      "velocity": 0,
+      "relevance": 2,
+      "created_at": "2026-06-17T23:58:39.000Z"
+    },
+    {
+      "id": "rss:https://techcrunch.com/?p=3134219",
+      "source": "rss",
+      "title": "From PGP to Mythos: a brief history of export controls that didn&#8217;t stop anyone",
+      "url": "https://techcrunch.com/2026/06/19/encryption-spyware-and-now-mythos-history-shows-why-cyber-export-control-doesnt-work/",
+      "topics": [
+        "llms"
+      ],
+      "score": 0.4034,
+      "velocity": 0,
+      "relevance": 1.2,
+      "created_at": "2026-06-19T22:40:14.000Z"
+    },
+    {
+      "id": "hackernews:48605561",
+      "source": "hackernews",
+      "title": "Help I accidentally a wigglegram",
+      "url": "https://lmao.center/blog/wiggle-accidents/",
+      "topics": [],
+      "score": 0.3923,
+      "velocity": 8.15,
+      "relevance": 0,
+      "created_at": "2026-06-20T01:55:16.000Z"
+    },
+    {
+      "id": "hackernews:48609054",
+      "source": "hackernews",
+      "title": "Show HN: Criterion Closet as a website – pull any of 1,247 films off the shelf",
+      "url": "https://the-criterion-closet.vercel.app",
+      "topics": [],
+      "score": 0.3803,
+      "velocity": 4.87,
+      "relevance": 0,
+      "created_at": "2026-06-20T13:18:28.000Z"
+    },
+    {
+      "id": "rss:https://techcrunch.com/?post_type=tc_video&#038;p=3134608",
+      "source": "rss",
+      "title": "Is the US government&#8217;s Anthropic ban accidentally helping the brand?",
+      "url": "https://techcrunch.com/video/is-the-us-governments-anthropic-ban-accidentally-helping-the-brand/",
+      "topics": [
+        "llms"
+      ],
+      "score": 0.375,
+      "velocity": 0,
+      "relevance": 1.2,
+      "created_at": "2026-06-19T16:08:17.000Z"
+    },
+    {
+      "id": "rss:https://techcrunch.com/?post_type=tc_podcast&#038;p=3134607",
+      "source": "rss",
+      "title": "The US banned Anthropic&#8217;s Fable 5 release, but the numbers don&#8217;t seem to care",
+      "url": "https://techcrunch.com/podcast/the-us-banned-anthropics-fable-5-release-but-the-numbers-dont-seem-to-care/",
+      "topics": [
+        "llms"
+      ],
+      "score": 0.3745,
+      "velocity": 0,
+      "relevance": 1.2,
+      "created_at": "2026-06-19T16:01:03.000Z"
+    },
+    {
+      "id": "rss:https://www.theverge.com/?p=952906",
+      "source": "rss",
+      "title": "The film about Sam Altman has been dropped by Amazon MGM",
+      "url": "https://www.theverge.com/ai-artificial-intelligence/952906/sam-altman-film-artificial-openai-amazon-mgm-dropped",
+      "topics": [
+        "llms"
+      ],
+      "score": 0.3676,
+      "velocity": 0,
+      "relevance": 1.2,
+      "created_at": "2026-06-19T14:15:29.000Z"
+    },
+    {
+      "id": "rss:https://www.theverge.com/?p=952837",
+      "source": "rss",
+      "title": "Barret Zoph is out at OpenAI again after just five months",
+      "url": "https://www.theverge.com/ai-artificial-intelligence/952837/barret-zoph-openai-thinking-machines-lab",
+      "topics": [
+        "llms"
+      ],
+      "score": 0.3343,
+      "velocity": 0,
+      "relevance": 1.2,
+      "created_at": "2026-06-19T04:49:33.000Z"
+    }
+  ]
+}
