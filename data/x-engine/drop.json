@@ -8,8 +8,9 @@
       "kind": "cover",
       "kicker": "THE AGENTIC DROP",
       "date": "JUNE 23, 2026",
-      "headline": "3 CRAZY THINGS AI DID TODAY",
-      "subtitle": "The 3 stories you don't want to miss. Swipe →",
+      "headline": "*3* CRAZY THINGS IN AI *TODAY*",
+      "subtitle": "The *3 stories* you don't want to miss.",
+      "inset": "/x-engine/drop/bg-3.png",
       "art": {
         "shot_type": "conceptual",
         "bg_source": "generate",
@@ -22,9 +23,9 @@
     {
       "kind": "story",
       "index": 1,
-      "headline": "$7 AND 22 MINUTES TO BUILD A GAME",
-      "subtitle": "Sakana's Fugu Ultra went head to head with Claude Opus 4.8.",
-      "body": "Sakana's Fugu Ultra raced Claude Opus 4.8 to build a Crossy Road clone from a single prompt. Fugu finished in 22 minutes for $7.32, rough edges and all. Coding agents are now cheap enough to point at real prototypes, not just demos.",
+      "headline": "*$7* AND *22 MINUTES* TO BUILD A GAME",
+      "subtitle": "Sakana's *Fugu Ultra* went head to head with *Claude Opus 4.8*.",
+      "body": "From a single prompt, Fugu built a playable Crossy Road clone in *22 minutes* for *$7.32* — rough edges and all. Coding agents are now cheap enough to point at real prototypes, not just demos.",
       "accent": "lime",
       "source": {
         "handle": "markksantos",
@@ -60,9 +61,9 @@
     {
       "kind": "story",
       "index": 2,
-      "headline": "CLAUDE NOW LIVES IN YOUR SLACK",
-      "subtitle": "Anthropic's Claude Tag joins channels as a teammate, with memory.",
-      "body": "Anthropic launched Claude Tag: tag Claude into a channel and it works alongside the team, with its own memory and identity. The agent-as-teammate pattern just went mainstream. You can wire the same delegation flow in NickAI today.",
+      "headline": "*CLAUDE* NOW LIVES IN YOUR *SLACK*",
+      "subtitle": "Anthropic's *Claude Tag* joins channels as a teammate, with *memory*.",
+      "body": "Tag it into any channel and it reads context, takes action, and follows up on its own — no re-prompting. The *agent-as-teammate* pattern just went mainstream: assistants that live where work happens, not in a separate tab.",
       "accent": "orange",
       "source": {
         "handle": "bcherny",
@@ -97,9 +98,9 @@
     {
       "kind": "story",
       "index": 3,
-      "headline": "ZUCKERBERG WANTS A PREDICTION MARKET",
-      "subtitle": "Meta is reportedly building a prediction markets app.",
-      "body": "Meta is reportedly building a prediction markets app, stepping into the same arena as Polymarket and Kalshi. When the biggest platforms chase real time odds, the signal is clear: live markets are becoming a data layer worth building on.",
+      "headline": "*ZUCKERBERG* WANTS A *PREDICTION MARKET*",
+      "subtitle": "Meta is reportedly building a *prediction markets app*.",
+      "body": "That puts it in the same arena as *Polymarket* and *Kalshi*. When the biggest platforms chase live, real-time odds, the signal is clear: markets are becoming a data layer worth building on.",
       "accent": "blue",
       "source": {
         "handle": "WatcherGuru",
@@ -130,9 +131,9 @@
     },
     {
       "kind": "outro",
-      "headline": "BUILD ON TODAY'S NEWS",
-      "body": "Every story above is a workflow you can stand up without code.",
-      "cta": "Try it for free now: getnick.ai",
+      "headline": "AGENTIC *DROP* NEWS",
+      "body": "The key things to know in *AI & Tech* everyday.",
+      "cta": "Follow for tomorrow's drop →",
       "art": {
         "shot_type": "conceptual",
         "bg_source": "generate",
@@ -142,5 +143,5 @@
       "image": "/x-engine/drop/bg-4.png"
     }
   ],
-  "caption": "Three AI stories from June 23 that matter if you build:\n\n1. Sakana's Fugu Ultra built a playable game in 22 minutes for 7 dollars, head to head with Claude Opus 4.8.\n2. Claude Tag landed in Slack as a real teammate with memory.\n3. Meta is reportedly building a prediction markets app.\n\nThe pattern underneath all three: agents are getting cheaper, more proactive, and pointed at live data. All of it is buildable today.\n\nTry it for free now: getnick.ai"
+  "caption": "Three AI stories from June 23 worth your attention:\n\n1. Sakana's Fugu Ultra built a playable game in 22 minutes for 7 dollars, head to head with Claude Opus 4.8.\n2. Claude Tag landed in Slack as a real teammate with persistent memory.\n3. Meta is reportedly building a prediction markets app.\n\nThe through-line: AI is getting cheaper, more proactive, and pointed at real-time data.\n\nFollow for tomorrow's drop."
 }

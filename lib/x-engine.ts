@@ -58,6 +58,8 @@ type LogoImage = { domain: string; path: string };
 type WithImage = {
   image_prompt?: string;
   image?: string;
+  /** Optional accent-ringed circular cutout of a secondary related image (top-right). */
+  inset?: string;
   subtitle?: string;
   logo_images?: LogoImage[];
   art?: unknown;
@@ -96,6 +98,8 @@ export type XDrop = {
   edition: string;
   source_folder: string;
   brand_mark?: string;
+  /** Brand accent (hex) for keyword color-pop + SWIPE cue. Defaults to Claude coral. */
+  accent?: string;
   slides: XDropSlide[];
   caption: string;
 };
