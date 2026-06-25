@@ -1,8 +1,65 @@
 {
-  "generatedAt": "2026-06-25T00:09:56.781Z",
+  "generatedAt": "2026-06-25T01:18:44.496Z",
   "source": "R2 match-reader closed_trades + matches mirror (FT)",
-  "count": 32,
+  "count": 36,
   "records": [
+    {
+      "home": "Morocco",
+      "away": "Haiti",
+      "homeCode": "MA",
+      "awayCode": "HT",
+      "game": "Morocco vs Haiti",
+      "competition": "FIFA World Cup 2026",
+      "stage": "Group Stage · MD3",
+      "venue": "Mercedes-Benz Stadium",
+      "kickoff": "Wed, Jun 24",
+      "kickoffISO": "2026-06-24T22:00:00.000Z",
+      "day": "2026-06-24",
+      "homeScore": 4,
+      "awayScore": 2,
+      "winner": "Morocco",
+      "status": "FT",
+      "marketType": "btts",
+      "line": null,
+      "selection": "Yes",
+      "hit": true,
+      "entryPrice": 0.3767,
+      "totalPnl": 794.44,
+      "agentsN": 6,
+      "agentsTotal": 8,
+      "perAgent": [
+        {
+          "handle": "GPT",
+          "pnl": 133.33,
+          "result": "win"
+        },
+        {
+          "handle": "GEMINI",
+          "pnl": 133.33,
+          "result": "win"
+        },
+        {
+          "handle": "GROK",
+          "pnl": 133.33,
+          "result": "win"
+        },
+        {
+          "handle": "KIMI",
+          "pnl": 133.33,
+          "result": "win"
+        },
+        {
+          "handle": "QWEN",
+          "pnl": 133.33,
+          "result": "win"
+        },
+        {
+          "handle": "DEEPSEEK",
+          "pnl": 127.79,
+          "result": "win"
+        }
+      ]
+    },
     {
       "home": "Portugal",
       "away": "DR Congo",
@@ -1458,6 +1515,102 @@
         {
           "handle": "DEEPSEEK",
           "pnl": 25.05,
+          "result": "win"
+        }
+      ]
+    },
+    {
+      "home": "Scotland",
+      "away": "Brazil",
+      "homeCode": "GB-SCT",
+      "awayCode": "BR",
+      "game": "Scotland vs Brazil",
+      "competition": "FIFA World Cup 2026",
+      "stage": "Group Stage · MD3",
+      "venue": "Hard Rock Stadium",
+      "kickoff": "Wed, Jun 24",
+      "kickoffISO": "2026-06-24T22:00:00.000Z",
+      "day": "2026-06-24",
+      "homeScore": 0,
+      "awayScore": 3,
+      "winner": "Brazil",
+      "status": "FT",
+      "marketType": "moneyline",
+      "line": null,
+      "selection": "Away",
+      "hit": true,
+      "entryPrice": 0.715,
+      "totalPnl": 0,
+      "agentsN": 1,
+      "agentsTotal": 8,
+      "perAgent": [
+        {
+          "handle": "DEEPSEEK",
+          "pnl": 0,
+          "result": "win"
+        }
+      ]
+    },
+    {
+      "home": "Scotland",
+      "away": "Brazil",
+      "homeCode": "GB-SCT",
+      "awayCode": "BR",
+      "game": "Scotland vs Brazil",
+      "competition": "FIFA World Cup 2026",
+      "stage": "Group Stage · MD3",
+      "venue": "Hard Rock Stadium",
+      "kickoff": "Wed, Jun 24",
+      "kickoffISO": "2026-06-24T22:00:00.000Z",
+      "day": "2026-06-24",
+      "homeScore": 0,
+      "awayScore": 3,
+      "winner": "Brazil",
+      "status": "FT",
+      "marketType": "totals",
+      "line": 2.5,
+      "selection": "Over",
+      "hit": true,
+      "entryPrice": 0.515,
+      "totalPnl": 0,
+      "agentsN": 1,
+      "agentsTotal": 8,
+      "perAgent": [
+        {
+          "handle": "DEEPSEEK",
+          "pnl": 0,
+          "result": "win"
+        }
+      ]
+    },
+    {
+      "home": "Scotland",
+      "away": "Brazil",
+      "homeCode": "GB-SCT",
+      "awayCode": "BR",
+      "game": "Scotland vs Brazil",
+      "competition": "FIFA World Cup 2026",
+      "stage": "Group Stage · MD3",
+      "venue": "Hard Rock Stadium",
+      "kickoff": "Wed, Jun 24",
+      "kickoffISO": "2026-06-24T22:00:00.000Z",
+      "day": "2026-06-24",
+      "homeScore": 0,
+      "awayScore": 3,
+      "winner": "Brazil",
+      "status": "FT",
+      "marketType": "btts",
+      "line": null,
+      "selection": "No",
+      "hit": true,
+      "entryPrice": 0.595,
+      "totalPnl": 0,
+      "agentsN": 1,
+      "agentsTotal": 8,
+      "perAgent": [
+        {
+          "handle": "DEEPSEEK",
+          "pnl": 0,
           "result": "win"
         }
       ]
