@@ -63,6 +63,12 @@ type WithImage = {
   subtitle?: string;
   logo_images?: LogoImage[];
   art?: unknown;
+  /** CSS object-position for the bg image (e.g. "50% 35%") — focus the subject/faces. */
+  focus?: string;
+  /** Scale the bg image to crop in on the focus point (e.g. 1.4) — useful for real photos. */
+  zoom?: number;
+  /** CSS brightness multiplier for the bg image (e.g. 1.3) — lift dark generations. */
+  brightness?: number;
 };
 
 export type XDropSlide =
@@ -95,11 +101,13 @@ export type XDropSlide =
 
 export type XDrop = {
   generated_at?: string;
+  /** Edition date (YYYY-MM-DD). Set by the archive step; used by the history view. */
+  date?: string;
   edition: string;
   source_folder: string;
   brand_mark?: string;
   /** Brand accent (hex) for keyword color-pop + SWIPE cue. Defaults to Claude coral. */
   accent?: string;
   slides: XDropSlide[];
-  caption: string;
+  caption?: string;
 };

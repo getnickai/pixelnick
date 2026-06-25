@@ -7,14 +7,34 @@ import { domToPng } from "modern-screenshot";
 // upscale each capture by pixelRatio = 1080 / nodeWidth.
 const EXPORT_WIDTH = 1080;
 
-export function DownloadSlidesButton() {
+/**
+ * One-click export of a slideshow's slides to 1080×1350 PNGs.
+ * - `targetId`: limit the export to slides inside `#<targetId>` (one day's
+ *   strip). Omit to export every [data-export-slide] on the page.
+ * - `prefix`: filename prefix (default "agentic-drop"); pass the edition date
+ *   so each day's files are distinguishable.
+ */
+export function DownloadSlidesButton({
+  targetId,
+  prefix = "agentic-drop",
+  label = "Download PNGs",
+  size = "md",
+}: {
+  targetId?: string;
+  prefix?: string;
+  label?: string;
+  size?: "sm" | "md";
+}) {
   const [busy, setBusy] = useState(false);
 
   async function handleDownload() {
     if (busy) return;
     setBusy(true);
     try {
-      const nodes = Array.from(document.querySelectorAll<HTMLElement>("[data-export-slide]"));
+      const root = targetId ? document.getElementById(targetId) : document;
+      const nodes = root
+        ? Array.from(root.querySelectorAll<HTMLElement>("[data-export-slide]"))
+        : [];
       // ensure web fonts are loaded so headlines rasterize, not fall back
       if (document.fonts?.ready) await document.fonts.ready;
 
@@ -27,7 +47,7 @@ export function DownloadSlidesButton() {
         });
         const a = document.createElement("a");
         a.href = dataUrl;
-        a.download = `agentic-drop-${String(i + 1).padStart(2, "0")}.png`;
+        a.download = `${prefix}-${String(i + 1).padStart(2, "0")}.png`;
         a.click();
         await new Promise((r) => setTimeout(r, 250)); // let the browser register each download
       }
@@ -38,14 +58,15 @@ export function DownloadSlidesButton() {
     }
   }
 
+  const sizing = size === "sm" ? "px-3 py-1.5 text-xs" : "px-4 py-2 text-sm";
   return (
     <button
       type="button"
       onClick={handleDownload}
       disabled={busy}
-      className="shrink-0 rounded-lg bg-primary-500 px-4 py-2 text-sm font-semibold text-zinc-950 transition hover:opacity-90 disabled:opacity-60"
+      className={`shrink-0 rounded-lg bg-primary-500 font-semibold text-zinc-950 transition hover:opacity-90 disabled:opacity-60 ${sizing}`}
     >
-      {busy ? "Exporting…" : "Download PNGs"}
+      {busy ? "Exporting…" : label}
     </button>
   );
 }

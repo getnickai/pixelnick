@@ -74,6 +74,13 @@ export const engineManifest: EngineEntryMeta[] = [
     shortLabel: "Agentic Drop",
     meta: "carousel",
   },
+  {
+    id: "agentic-drop-history",
+    label: "Agentic Drop History",
+    group: "X Engine",
+    shortLabel: "Drop History",
+    meta: "archive",
+  },
 ];
 
 export function getEngineEntryMeta(id: string): EngineEntryMeta | undefined {

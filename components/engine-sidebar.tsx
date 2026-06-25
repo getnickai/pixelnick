@@ -15,6 +15,7 @@ const ICONS: Record<string, typeof Hexagon> = {
   "x-posts": FileText,
   "x-performance": TrendingUp,
   "agentic-drop": LayoutGrid,
+  "agentic-drop-history": History,
 };
 
 /**
