@@ -1,7 +1,7 @@
 {
-  "generatedAt": "2026-06-25T22:48:48.920Z",
+  "generatedAt": "2026-06-25T23:31:12.173Z",
   "source": "R2 match-reader closed_trades + matches mirror (FT)",
-  "count": 37,
+  "count": 38,
   "records": [
     {
       "home": "Portugal",
@@ -1244,6 +1244,43 @@
         {
           "handle": "QWEN",
           "pnl": 38.18,
+          "result": "win"
+        }
+      ]
+    },
+    {
+      "home": "Curaçao",
+      "away": "Ivory Coast",
+      "homeCode": "CW",
+      "awayCode": "CI",
+      "game": "Curaçao vs Ivory Coast",
+      "competition": "FIFA World Cup 2026",
+      "stage": "Group Stage · MD3",
+      "venue": "Lincoln Financial Field",
+      "kickoff": "Thu, Jun 25",
+      "kickoffISO": "2026-06-25T20:00:00.000Z",
+      "day": "2026-06-25",
+      "homeScore": 0,
+      "awayScore": 2,
+      "winner": null,
+      "status": "FT",
+      "marketType": "totals",
+      "line": 2.5,
+      "selection": "Under",
+      "hit": true,
+      "entryPrice": 0.36,
+      "totalPnl": 143.04,
+      "agentsN": 2,
+      "agentsTotal": 8,
+      "perAgent": [
+        {
+          "handle": "QWEN",
+          "pnl": 90.85,
+          "result": "win"
+        },
+        {
+          "handle": "DEEPSEEK",
+          "pnl": 52.19,
           "result": "win"
         }
       ]
