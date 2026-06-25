@@ -8,7 +8,7 @@
  *
  *   PREGAME      ~1h before kickoff  → consensus "Market vs Agents" card
  *   POSTGAME     when status = FT    → result "Won Pick" card (final score)
- *   LEADERBOARD  ~3.5h before the slate's first kickoff (once per slate day)
+ *   LEADERBOARD  ~9.5h before the slate's first kickoff (once per slate day)
  *
  * For each fired card it:
  *   1. builds the feed (swarm-consensus / swarm-results; leaderboard reads R2),
@@ -61,8 +61,8 @@ const AUDIO_MATCHDAY = path.join(process.cwd(), "public", "audio", "stadium-groo
 
 const PREGAME_LEAD_MIN = 60; // fire on the first tick at/after kickoff − 60m
 const PREGAME_FLOOR_MIN = 3; // never fire inside this many minutes of kickoff
-const LEADERBOARD_LEAD_MIN = 390; // 6.5h before the slate's first kickoff (moved up 3h)
-const BUNDLE_LEAD_MIN = 390; // games-of-the-day bundle: 6.5h before first kickoff (moved up 3h)
+const LEADERBOARD_LEAD_MIN = 570; // 9.5h before the slate's first kickoff (moved up another 3h)
+const BUNDLE_LEAD_MIN = 570; // games-of-the-day bundle: 9.5h before first kickoff (moved up another 3h)
 const POSTGAME_GIVEUP_HRS = 24; // stop retrying a result card this long after kickoff
 // Grace after kickoff before a missing winning pick is treated as terminal (the
 // swarm lost the game's markets or never traded it) rather than a transient
@@ -179,7 +179,7 @@ function leaderboardDue(matches: Match[], now: number, l: Ledger): { key: string
   if (now >= firstKickoff - LEADERBOARD_LEAD_MIN * MIN && now < firstKickoff) return { key, firstKickoff };
   return null;
 }
-/** The games-of-the-day bundle: due once per matchday, ~3.5h before its first
+/** The games-of-the-day bundle: due once per matchday, ~9.5h before its first
  *  kickoff. Returns that matchday's not-yet-kicked-off games, or null. */
 function bundleDue(matches: Match[], now: number, l: Ledger): { key: string; games: Match[] } | null {
   const future = matches.filter((m) => kickoffMs(m) > now).sort((a, b) => kickoffMs(a) - kickoffMs(b));

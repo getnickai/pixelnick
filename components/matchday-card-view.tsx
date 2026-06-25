@@ -187,17 +187,17 @@ function LoadingChip() {
   );
 }
 
-/** Muted pill for a game the swarm has no position on yet. */
+/** Shown for a game the swarm found no edge to bet — same orange chip as a pick,
+ *  top-aligned so the LOADING… chip cross-fades into it in place. */
 function NoPickBlock() {
   return (
-    <div className="flex h-full flex-col items-center justify-center gap-1">
+    <div className="flex justify-center">
       <span
-        className="inline-flex items-center whitespace-nowrap rounded-full px-4 py-2 text-[13px] font-bold uppercase tracking-wide"
-        style={{ background: "#eef1f5", color: MUTE }}
+        className="inline-flex items-center whitespace-nowrap rounded-full px-4 py-2 text-[13px] font-extrabold uppercase tracking-wide text-white shadow-[inset_0px_1px_1px_0px_rgba(255,255,255,0.55)]"
+        style={{ backgroundImage: "linear-gradient(169deg,#f98051 17%,#e75218 89%)" }}
       >
-        No position yet
+        No edge found
       </span>
-      <span className="font-mono text-[11px]" style={{ color: "#aab2c0" }}>agents still analysing</span>
     </div>
   );
 }
