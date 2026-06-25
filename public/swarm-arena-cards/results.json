@@ -1,5 +1,5 @@
 {
-  "generatedAt": "2026-06-25T01:18:44.496Z",
+  "generatedAt": "2026-06-25T02:20:51.803Z",
   "source": "R2 match-reader closed_trades + matches mirror (FT)",
   "count": 36,
   "records": [
@@ -34,6 +34,11 @@
           "result": "win"
         },
         {
+          "handle": "QWEN",
+          "pnl": 133.33,
+          "result": "win"
+        },
+        {
           "handle": "GEMINI",
           "pnl": 133.33,
           "result": "win"
@@ -45,11 +50,6 @@
         },
         {
           "handle": "KIMI",
-          "pnl": 133.33,
-          "result": "win"
-        },
-        {
-          "handle": "QWEN",
           "pnl": 133.33,
           "result": "win"
         },
