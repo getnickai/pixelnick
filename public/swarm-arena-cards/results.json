@@ -1,7 +1,7 @@
 {
-  "generatedAt": "2026-06-25T02:20:51.803Z",
+  "generatedAt": "2026-06-25T03:46:24.820Z",
   "source": "R2 match-reader closed_trades + matches mirror (FT)",
-  "count": 36,
+  "count": 41,
   "records": [
     {
       "home": "Morocco",
@@ -1259,6 +1259,43 @@
       ]
     },
     {
+      "home": "South Africa",
+      "away": "South Korea",
+      "homeCode": "ZA",
+      "awayCode": "KR",
+      "game": "South Africa vs South Korea",
+      "competition": "FIFA World Cup 2026",
+      "stage": "Group Stage · MD3",
+      "venue": "Estadio BBVA",
+      "kickoff": "Wed, Jun 24",
+      "kickoffISO": "2026-06-25T01:00:00.000Z",
+      "day": "2026-06-24",
+      "homeScore": 1,
+      "awayScore": 0,
+      "winner": "South Africa",
+      "status": "FT",
+      "marketType": "moneyline",
+      "line": null,
+      "selection": "Home",
+      "hit": true,
+      "entryPrice": 0.17,
+      "totalPnl": 141.43,
+      "agentsN": 2,
+      "agentsTotal": 8,
+      "perAgent": [
+        {
+          "handle": "GROK",
+          "pnl": 141.43,
+          "result": "win"
+        },
+        {
+          "handle": "DEEPSEEK",
+          "pnl": 0,
+          "result": "win"
+        }
+      ]
+    },
+    {
       "home": "Norway",
       "away": "Senegal",
       "homeCode": "NO",
@@ -1520,6 +1557,75 @@
       ]
     },
     {
+      "home": "South Africa",
+      "away": "South Korea",
+      "homeCode": "ZA",
+      "awayCode": "KR",
+      "game": "South Africa vs South Korea",
+      "competition": "FIFA World Cup 2026",
+      "stage": "Group Stage · MD3",
+      "venue": "Estadio BBVA",
+      "kickoff": "Wed, Jun 24",
+      "kickoffISO": "2026-06-25T01:00:00.000Z",
+      "day": "2026-06-24",
+      "homeScore": 1,
+      "awayScore": 0,
+      "winner": "South Africa",
+      "status": "FT",
+      "marketType": "totals",
+      "line": 2.5,
+      "selection": "Under",
+      "hit": true,
+      "entryPrice": 0.535,
+      "totalPnl": 0,
+      "agentsN": 2,
+      "agentsTotal": 8,
+      "perAgent": [
+        {
+          "handle": "CLAUDE",
+          "pnl": 0,
+          "result": "win"
+        },
+        {
+          "handle": "DEEPSEEK",
+          "pnl": 0,
+          "result": "win"
+        }
+      ]
+    },
+    {
+      "home": "South Africa",
+      "away": "South Korea",
+      "homeCode": "ZA",
+      "awayCode": "KR",
+      "game": "South Africa vs South Korea",
+      "competition": "FIFA World Cup 2026",
+      "stage": "Group Stage · MD3",
+      "venue": "Estadio BBVA",
+      "kickoff": "Wed, Jun 24",
+      "kickoffISO": "2026-06-25T01:00:00.000Z",
+      "day": "2026-06-24",
+      "homeScore": 1,
+      "awayScore": 0,
+      "winner": "South Africa",
+      "status": "FT",
+      "marketType": "btts",
+      "line": null,
+      "selection": "No",
+      "hit": true,
+      "entryPrice": 0.535,
+      "totalPnl": 0,
+      "agentsN": 1,
+      "agentsTotal": 8,
+      "perAgent": [
+        {
+          "handle": "DEEPSEEK",
+          "pnl": 0,
+          "result": "win"
+        }
+      ]
+    },
+    {
       "home": "Scotland",
       "away": "Brazil",
       "homeCode": "GB-SCT",
@@ -1604,6 +1710,70 @@
       "selection": "No",
       "hit": true,
       "entryPrice": 0.595,
+      "totalPnl": 0,
+      "agentsN": 1,
+      "agentsTotal": 8,
+      "perAgent": [
+        {
+          "handle": "DEEPSEEK",
+          "pnl": 0,
+          "result": "win"
+        }
+      ]
+    },
+    {
+      "home": "Czech Republic",
+      "away": "Mexico",
+      "homeCode": "CZ",
+      "awayCode": "MX",
+      "game": "Czech Republic vs Mexico",
+      "competition": "FIFA World Cup 2026",
+      "stage": "Group Stage · MD3",
+      "venue": "Estadio Azteca",
+      "kickoff": "Wed, Jun 24",
+      "kickoffISO": "2026-06-25T01:00:00.000Z",
+      "day": "2026-06-24",
+      "homeScore": 0,
+      "awayScore": 3,
+      "winner": "Mexico",
+      "status": "FT",
+      "marketType": "totals",
+      "line": 2.5,
+      "selection": "Over",
+      "hit": true,
+      "entryPrice": 0.465,
+      "totalPnl": 0,
+      "agentsN": 1,
+      "agentsTotal": 8,
+      "perAgent": [
+        {
+          "handle": "DEEPSEEK",
+          "pnl": 0,
+          "result": "win"
+        }
+      ]
+    },
+    {
+      "home": "Czech Republic",
+      "away": "Mexico",
+      "homeCode": "CZ",
+      "awayCode": "MX",
+      "game": "Czech Republic vs Mexico",
+      "competition": "FIFA World Cup 2026",
+      "stage": "Group Stage · MD3",
+      "venue": "Estadio Azteca",
+      "kickoff": "Wed, Jun 24",
+      "kickoffISO": "2026-06-25T01:00:00.000Z",
+      "day": "2026-06-24",
+      "homeScore": 0,
+      "awayScore": 3,
+      "winner": "Mexico",
+      "status": "FT",
+      "marketType": "btts",
+      "line": null,
+      "selection": "No",
+      "hit": true,
+      "entryPrice": 0.505,
       "totalPnl": 0,
       "agentsN": 1,
       "agentsTotal": 8,
