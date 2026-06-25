@@ -1,0 +1,148 @@
+{
+  "generated_at": "2026-06-23T20:00:00.000Z",
+  "edition": "June 23, 2026",
+  "source_folder": "Claude pixelnick",
+  "brand_mark": "NickAI",
+  "slides": [
+    {
+      "kind": "cover",
+      "kicker": "THE AGENTIC DROP",
+      "date": "JUNE 23, 2026",
+      "headline": "*3* CRAZY THINGS IN AI *TODAY*",
+      "subtitle": "The *3 stories* you don't want to miss.",
+      "inset": "/x-engine/drop/2026-06-23/bg-3.png",
+      "art": {
+        "shot_type": "conceptual",
+        "bg_source": "generate",
+        "bg_prompt": "A photorealistic cinematic close-up of a young person staring at a glowing laptop screen with a genuinely shocked, amazed expression: wide eyes, hand near the mouth, face lit by cool blue screen glow in a dark room. Shallow depth of field, dramatic and premium editorial photography, real natural human skin, not cartoon, not uncanny. Vertical 4:5 with the bottom third darker and uncluttered for a headline overlay.",
+        "logos": []
+      },
+      "logo_images": [],
+      "image": "/x-engine/drop/2026-06-23/bg-0.png"
+    },
+    {
+      "kind": "story",
+      "index": 1,
+      "headline": "*$7* AND *22 MINUTES* TO BUILD A GAME",
+      "subtitle": "Sakana's *Fugu Ultra* went head to head with *Claude Opus 4.8*.",
+      "body": "From a single prompt, Fugu built a playable Crossy Road clone in *22 minutes* for *$7.32* — rough edges and all. Coding agents are now cheap enough to point at real prototypes, not just demos.",
+      "accent": "lime",
+      "source": {
+        "handle": "markksantos",
+        "name": "Mark Santos"
+      },
+      "metrics": {
+        "impression_count": 649342,
+        "like_count": 4898,
+        "bookmark_count": 2363
+      },
+      "art": {
+        "shot_type": "deterministic",
+        "bg_source": "post_media",
+        "bg_image_url": "https://pbs.twimg.com/amplify_video_thumb/2068961820782514176/img/3EUKgKaRn4klXzFN.jpg",
+        "bg_prompt_fallback": "A cinematic 3D voxel game world at night with glowing light trails, premium render, no text.",
+        "logos": [
+          "sakana.ai",
+          "claude.ai"
+        ]
+      },
+      "logo_images": [
+        {
+          "domain": "sakana.ai",
+          "path": "/x-engine/drop/2026-06-23/logos/1-0.png"
+        },
+        {
+          "domain": "claude.ai",
+          "path": "/x-engine/drop/2026-06-23/logos/1-1.png"
+        }
+      ],
+      "image": "/x-engine/drop/2026-06-23/bg-1.jpg"
+    },
+    {
+      "kind": "story",
+      "index": 2,
+      "headline": "*CLAUDE* NOW LIVES IN YOUR *SLACK*",
+      "subtitle": "Anthropic's *Claude Tag* joins channels as a teammate, with *memory*.",
+      "body": "Tag it into any channel and it reads context, takes action, and follows up on its own — no re-prompting. The *agent-as-teammate* pattern just went mainstream: assistants that live where work happens, not in a separate tab.",
+      "accent": "orange",
+      "source": {
+        "handle": "bcherny",
+        "name": "Boris Cherny"
+      },
+      "metrics": {
+        "impression_count": 99748,
+        "like_count": 663,
+        "bookmark_count": 236
+      },
+      "art": {
+        "shot_type": "conceptual",
+        "bg_source": "generate",
+        "bg_prompt": "A realistic modern team-chat workspace on a laptop screen at night, a single warm glowing AI presence orb integrated into the conversation, soft orange accent light, cinematic photographic depth of field, no readable text.",
+        "logos": [
+          "claude.ai",
+          "slack.com"
+        ]
+      },
+      "logo_images": [
+        {
+          "domain": "claude.ai",
+          "path": "/x-engine/drop/2026-06-23/logos/2-0.png"
+        },
+        {
+          "domain": "slack.com",
+          "path": "/x-engine/drop/2026-06-23/logos/2-1.png"
+        }
+      ],
+      "image": "/x-engine/drop/2026-06-23/bg-2.png"
+    },
+    {
+      "kind": "story",
+      "index": 3,
+      "headline": "*ZUCKERBERG* WANTS A *PREDICTION MARKET*",
+      "subtitle": "Meta is reportedly building a *prediction markets app*.",
+      "body": "That puts it in the same arena as *Polymarket* and *Kalshi*. When the biggest platforms chase live, real-time odds, the signal is clear: markets are becoming a data layer worth building on.",
+      "accent": "blue",
+      "source": {
+        "handle": "WatcherGuru",
+        "name": "Watcher.Guru"
+      },
+      "metrics": {
+        "impression_count": 287647,
+        "like_count": 1880,
+        "bookmark_count": 108
+      },
+      "art": {
+        "shot_type": "person_composite",
+        "bg_source": "generate",
+        "person": "Mark Zuckerberg",
+        "bg_prompt": "Place this real person (keep his face and likeness exactly) center-frame, looking confident, in front of a large glowing prediction-market odds board showing probability percentages and live market candlestick graphs, cool electric-blue trading-floor lighting, cinematic editorial photograph, premium and realistic.",
+        "logos": [
+          "polymarket.com",
+          "kalshi.com"
+        ]
+      },
+      "logo_images": [
+        {
+          "domain": "polymarket.com",
+          "path": "/x-engine/drop/2026-06-23/logos/3-0.png"
+        }
+      ],
+      "image": "/x-engine/drop/2026-06-23/bg-3.png"
+    },
+    {
+      "kind": "outro",
+      "headline": "AGENTIC *DROP* NEWS",
+      "body": "The key things to know in *AI & Tech* everyday.",
+      "cta": "Follow for tomorrow's drop →",
+      "art": {
+        "shot_type": "conceptual",
+        "bg_source": "generate",
+        "bg_prompt": "A clean minimal dark scene of glowing modular building blocks assembling into a connected workflow graph, optimistic premium blue glow, cinematic 3D render, no text."
+      },
+      "logo_images": [],
+      "image": "/x-engine/drop/2026-06-23/bg-4.png"
+    }
+  ],
+  "caption": "Three AI stories from June 23 worth your attention:\n\n1. Sakana's Fugu Ultra built a playable game in 22 minutes for 7 dollars, head to head with Claude Opus 4.8.\n2. Claude Tag landed in Slack as a real teammate with persistent memory.\n3. Meta is reportedly building a prediction markets app.\n\nThe through-line: AI is getting cheaper, more proactive, and pointed at real-time data.\n\nFollow for tomorrow's drop.",
+  "date": "2026-06-23"
+}

@@ -11,7 +11,7 @@
       "date": "JUNE 25, 2026",
       "headline": "*4* CRAZY THINGS IN AI *TODAY*",
       "subtitle": "The *4 stories* you don't want to miss.",
-      "inset": "/x-engine/drop/bg-1.jpg",
+      "inset": "/x-engine/drop/2026-06-25/bg-1.jpg",
       "art": {
         "shot_type": "conceptual",
         "bg_source": "generate",
@@ -19,7 +19,7 @@
         "logos": []
       },
       "logo_images": [],
-      "image": "/x-engine/drop/bg-0.png"
+      "image": "/x-engine/drop/2026-06-25/bg-0.png"
     },
     {
       "kind": "story",
@@ -44,7 +44,7 @@
         "logos": []
       },
       "logo_images": [],
-      "image": "/x-engine/drop/bg-1.jpg",
+      "image": "/x-engine/drop/2026-06-25/bg-1.jpg",
       "focus": "50% 40%",
       "zoom": 1.5
     },
@@ -70,7 +70,7 @@
         "logos": []
       },
       "logo_images": [],
-      "image": "/x-engine/drop/bg-2.png",
+      "image": "/x-engine/drop/2026-06-25/bg-2.png",
       "brightness": 1.35
     },
     {
@@ -100,7 +100,7 @@
         "logos": []
       },
       "logo_images": [],
-      "image": "/x-engine/drop/bg-3.png",
+      "image": "/x-engine/drop/2026-06-25/bg-3.png",
       "brightness": 1.35
     },
     {
@@ -130,7 +130,7 @@
         "logos": []
       },
       "logo_images": [],
-      "image": "/x-engine/drop/bg-4.png"
+      "image": "/x-engine/drop/2026-06-25/bg-4.png"
     },
     {
       "kind": "outro",
@@ -144,7 +144,8 @@
         "logos": []
       },
       "logo_images": [],
-      "image": "/x-engine/drop/bg-5.png"
+      "image": "/x-engine/drop/2026-06-25/bg-5.png"
     }
-  ]
+  ],
+  "date": "2026-06-25"
 }
