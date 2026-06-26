@@ -1,5 +1,5 @@
 {
-  "generatedAt": "2026-06-26T01:17:42.702Z",
+  "generatedAt": "2026-06-26T02:21:01.297Z",
   "source": "R2 match-reader closed_trades + matches mirror (FT)",
   "count": 40,
   "records": [
@@ -579,7 +579,7 @@
       "day": "2026-06-25",
       "homeScore": 1,
       "awayScore": 3,
-      "winner": null,
+      "winner": "Netherlands",
       "status": "FT",
       "marketType": "btts",
       "line": null,
@@ -596,12 +596,12 @@
           "result": "win"
         },
         {
-          "handle": "GROK",
+          "handle": "DEEPSEEK",
           "pnl": 139.18,
           "result": "win"
         },
         {
-          "handle": "DEEPSEEK",
+          "handle": "GROK",
           "pnl": 139.18,
           "result": "win"
         }
@@ -900,6 +900,43 @@
         {
           "handle": "QWEN",
           "pnl": 33.16,
+          "result": "win"
+        }
+      ]
+    },
+    {
+      "home": "Japan",
+      "away": "Sweden",
+      "homeCode": "JP",
+      "awayCode": "SE",
+      "game": "Japan vs Sweden",
+      "competition": "FIFA World Cup 2026",
+      "stage": "Group Stage · MD3",
+      "venue": "AT&T Stadium",
+      "kickoff": "Thu, Jun 25",
+      "kickoffISO": "2026-06-25T23:00:00.000Z",
+      "day": "2026-06-25",
+      "homeScore": 1,
+      "awayScore": 1,
+      "winner": "Draw",
+      "status": "FT",
+      "marketType": "totals",
+      "line": 2.5,
+      "selection": "Under",
+      "hit": true,
+      "entryPrice": 0.455,
+      "totalPnl": 191.64,
+      "agentsN": 2,
+      "agentsTotal": 8,
+      "perAgent": [
+        {
+          "handle": "QWEN",
+          "pnl": 95.82,
+          "result": "win"
+        },
+        {
+          "handle": "GROK",
+          "pnl": 95.82,
           "result": "win"
         }
       ]
@@ -1711,38 +1748,6 @@
       "perAgent": [
         {
           "handle": "CLAUDE",
-          "pnl": 0,
-          "result": "win"
-        }
-      ]
-    },
-    {
-      "home": "Tunisia",
-      "away": "Netherlands",
-      "homeCode": "TN",
-      "awayCode": "NL",
-      "game": "Tunisia vs Netherlands",
-      "competition": "FIFA World Cup 2026",
-      "stage": "Group Stage · MD3",
-      "venue": "GEHA Field at Arrowhead Stadium",
-      "kickoff": "Thu, Jun 25",
-      "kickoffISO": "2026-06-25T23:00:00.000Z",
-      "day": "2026-06-25",
-      "homeScore": 1,
-      "awayScore": 3,
-      "winner": null,
-      "status": "FT",
-      "marketType": "moneyline",
-      "line": null,
-      "selection": "Away",
-      "hit": true,
-      "entryPrice": 0.875,
-      "totalPnl": 0,
-      "agentsN": 1,
-      "agentsTotal": 8,
-      "perAgent": [
-        {
-          "handle": "DEEPSEEK",
           "pnl": 0,
           "result": "win"
         }
