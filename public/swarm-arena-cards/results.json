@@ -1,7 +1,7 @@
 {
-  "generatedAt": "2026-06-27T02:20:03.357Z",
+  "generatedAt": "2026-06-27T03:46:24.852Z",
   "source": "R2 match-reader closed_trades + matches mirror (FT)",
-  "count": 40,
+  "count": 43,
   "records": [
     {
       "home": "Portugal",
@@ -1530,6 +1530,43 @@
       ]
     },
     {
+      "home": "Uruguay",
+      "away": "Spain",
+      "homeCode": "UY",
+      "awayCode": "ES",
+      "game": "Uruguay vs Spain",
+      "competition": "FIFA World Cup 2026",
+      "stage": "Group Stage · MD3",
+      "venue": "Estadio Akron",
+      "kickoff": "Fri, Jun 26",
+      "kickoffISO": "2026-06-27T00:00:00.000Z",
+      "day": "2026-06-26",
+      "homeScore": 0,
+      "awayScore": 1,
+      "winner": "Spain",
+      "status": "FT",
+      "marketType": "totals",
+      "line": 2.5,
+      "selection": "Under",
+      "hit": true,
+      "entryPrice": 0.475,
+      "totalPnl": 66.32,
+      "agentsN": 2,
+      "agentsTotal": 8,
+      "perAgent": [
+        {
+          "handle": "GROK",
+          "pnl": 33.16,
+          "result": "win"
+        },
+        {
+          "handle": "DEEPSEEK",
+          "pnl": 33.16,
+          "result": "win"
+        }
+      ]
+    },
+    {
       "home": "Mexico",
       "away": "South Korea",
       "homeCode": "MX",
@@ -1748,6 +1785,70 @@
       "perAgent": [
         {
           "handle": "CLAUDE",
+          "pnl": 0,
+          "result": "win"
+        }
+      ]
+    },
+    {
+      "home": "Uruguay",
+      "away": "Spain",
+      "homeCode": "UY",
+      "awayCode": "ES",
+      "game": "Uruguay vs Spain",
+      "competition": "FIFA World Cup 2026",
+      "stage": "Group Stage · MD3",
+      "venue": "Estadio Akron",
+      "kickoff": "Fri, Jun 26",
+      "kickoffISO": "2026-06-27T00:00:00.000Z",
+      "day": "2026-06-26",
+      "homeScore": 0,
+      "awayScore": 1,
+      "winner": "Spain",
+      "status": "FT",
+      "marketType": "moneyline",
+      "line": null,
+      "selection": "Away",
+      "hit": true,
+      "entryPrice": 0.595,
+      "totalPnl": 0,
+      "agentsN": 1,
+      "agentsTotal": 8,
+      "perAgent": [
+        {
+          "handle": "DEEPSEEK",
+          "pnl": 0,
+          "result": "win"
+        }
+      ]
+    },
+    {
+      "home": "Uruguay",
+      "away": "Spain",
+      "homeCode": "UY",
+      "awayCode": "ES",
+      "game": "Uruguay vs Spain",
+      "competition": "FIFA World Cup 2026",
+      "stage": "Group Stage · MD3",
+      "venue": "Estadio Akron",
+      "kickoff": "Fri, Jun 26",
+      "kickoffISO": "2026-06-27T00:00:00.000Z",
+      "day": "2026-06-26",
+      "homeScore": 0,
+      "awayScore": 1,
+      "winner": "Spain",
+      "status": "FT",
+      "marketType": "btts",
+      "line": null,
+      "selection": "No",
+      "hit": true,
+      "entryPrice": 0.525,
+      "totalPnl": 0,
+      "agentsN": 1,
+      "agentsTotal": 8,
+      "perAgent": [
+        {
+          "handle": "DEEPSEEK",
           "pnl": 0,
           "result": "win"
         }
