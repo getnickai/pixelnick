@@ -1,7 +1,7 @@
 {
-  "generatedAt": "2026-06-27T05:19:25.072Z",
+  "generatedAt": "2026-06-27T06:38:23.937Z",
   "source": "R2 match-reader closed_trades + matches mirror (FT)",
-  "count": 41,
+  "count": 45,
   "records": [
     {
       "home": "Portugal",
@@ -1429,6 +1429,43 @@
       ]
     },
     {
+      "home": "Egypt",
+      "away": "Iran",
+      "homeCode": "EG",
+      "awayCode": "IR",
+      "game": "Egypt vs Iran",
+      "competition": "FIFA World Cup 2026",
+      "stage": "Group Stage · MD3",
+      "venue": "Lumen Field",
+      "kickoff": "Fri, Jun 26",
+      "kickoffISO": "2026-06-27T03:00:00.000Z",
+      "day": "2026-06-26",
+      "homeScore": 1,
+      "awayScore": 1,
+      "winner": null,
+      "status": "FT",
+      "marketType": "btts",
+      "line": null,
+      "selection": "Yes",
+      "hit": true,
+      "entryPrice": 0.43,
+      "totalPnl": 103.91,
+      "agentsN": 2,
+      "agentsTotal": 8,
+      "perAgent": [
+        {
+          "handle": "GROK",
+          "pnl": 103.91,
+          "result": "win"
+        },
+        {
+          "handle": "DEEPSEEK",
+          "pnl": 0,
+          "result": "win"
+        }
+      ]
+    },
+    {
       "home": "Ecuador",
       "away": "Germany",
       "homeCode": "EC",
@@ -1785,6 +1822,102 @@
       "perAgent": [
         {
           "handle": "CLAUDE",
+          "pnl": 0,
+          "result": "win"
+        }
+      ]
+    },
+    {
+      "home": "New Zealand",
+      "away": "Belgium",
+      "homeCode": "NZ",
+      "awayCode": "BE",
+      "game": "New Zealand vs Belgium",
+      "competition": "FIFA World Cup 2026",
+      "stage": "Group Stage · MD3",
+      "venue": "BC Place",
+      "kickoff": "Fri, Jun 26",
+      "kickoffISO": "2026-06-27T03:00:00.000Z",
+      "day": "2026-06-26",
+      "homeScore": 1,
+      "awayScore": 5,
+      "winner": "Belgium",
+      "status": "FT",
+      "marketType": "moneyline",
+      "line": null,
+      "selection": "Away",
+      "hit": true,
+      "entryPrice": 0.825,
+      "totalPnl": 0,
+      "agentsN": 1,
+      "agentsTotal": 8,
+      "perAgent": [
+        {
+          "handle": "DEEPSEEK",
+          "pnl": 0,
+          "result": "win"
+        }
+      ]
+    },
+    {
+      "home": "Egypt",
+      "away": "Iran",
+      "homeCode": "EG",
+      "awayCode": "IR",
+      "game": "Egypt vs Iran",
+      "competition": "FIFA World Cup 2026",
+      "stage": "Group Stage · MD3",
+      "venue": "Lumen Field",
+      "kickoff": "Fri, Jun 26",
+      "kickoffISO": "2026-06-27T03:00:00.000Z",
+      "day": "2026-06-26",
+      "homeScore": 1,
+      "awayScore": 1,
+      "winner": null,
+      "status": "FT",
+      "marketType": "totals",
+      "line": 2.5,
+      "selection": "Under",
+      "hit": true,
+      "entryPrice": 0.695,
+      "totalPnl": 0,
+      "agentsN": 1,
+      "agentsTotal": 8,
+      "perAgent": [
+        {
+          "handle": "DEEPSEEK",
+          "pnl": 0,
+          "result": "win"
+        }
+      ]
+    },
+    {
+      "home": "Egypt",
+      "away": "Iran",
+      "homeCode": "EG",
+      "awayCode": "IR",
+      "game": "Egypt vs Iran",
+      "competition": "FIFA World Cup 2026",
+      "stage": "Group Stage · MD3",
+      "venue": "Lumen Field",
+      "kickoff": "Fri, Jun 26",
+      "kickoffISO": "2026-06-27T03:00:00.000Z",
+      "day": "2026-06-26",
+      "homeScore": 1,
+      "awayScore": 1,
+      "winner": null,
+      "status": "FT",
+      "marketType": "moneyline",
+      "line": null,
+      "selection": "Draw",
+      "hit": true,
+      "entryPrice": 0.365,
+      "totalPnl": 0,
+      "agentsN": 1,
+      "agentsTotal": 8,
+      "perAgent": [
+        {
+          "handle": "DEEPSEEK",
           "pnl": 0,
           "result": "win"
         }
