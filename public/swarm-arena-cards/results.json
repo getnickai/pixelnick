@@ -1,7 +1,7 @@
 {
-  "generatedAt": "2026-06-27T03:46:24.852Z",
+  "generatedAt": "2026-06-27T05:19:25.072Z",
   "source": "R2 match-reader closed_trades + matches mirror (FT)",
-  "count": 43,
+  "count": 41,
   "records": [
     {
       "home": "Portugal",
@@ -1555,12 +1555,12 @@
       "agentsTotal": 8,
       "perAgent": [
         {
-          "handle": "GROK",
+          "handle": "DEEPSEEK",
           "pnl": 33.16,
           "result": "win"
         },
         {
-          "handle": "DEEPSEEK",
+          "handle": "GROK",
           "pnl": 33.16,
           "result": "win"
         }
@@ -1785,70 +1785,6 @@
       "perAgent": [
         {
           "handle": "CLAUDE",
-          "pnl": 0,
-          "result": "win"
-        }
-      ]
-    },
-    {
-      "home": "Uruguay",
-      "away": "Spain",
-      "homeCode": "UY",
-      "awayCode": "ES",
-      "game": "Uruguay vs Spain",
-      "competition": "FIFA World Cup 2026",
-      "stage": "Group Stage · MD3",
-      "venue": "Estadio Akron",
-      "kickoff": "Fri, Jun 26",
-      "kickoffISO": "2026-06-27T00:00:00.000Z",
-      "day": "2026-06-26",
-      "homeScore": 0,
-      "awayScore": 1,
-      "winner": "Spain",
-      "status": "FT",
-      "marketType": "moneyline",
-      "line": null,
-      "selection": "Away",
-      "hit": true,
-      "entryPrice": 0.595,
-      "totalPnl": 0,
-      "agentsN": 1,
-      "agentsTotal": 8,
-      "perAgent": [
-        {
-          "handle": "DEEPSEEK",
-          "pnl": 0,
-          "result": "win"
-        }
-      ]
-    },
-    {
-      "home": "Uruguay",
-      "away": "Spain",
-      "homeCode": "UY",
-      "awayCode": "ES",
-      "game": "Uruguay vs Spain",
-      "competition": "FIFA World Cup 2026",
-      "stage": "Group Stage · MD3",
-      "venue": "Estadio Akron",
-      "kickoff": "Fri, Jun 26",
-      "kickoffISO": "2026-06-27T00:00:00.000Z",
-      "day": "2026-06-26",
-      "homeScore": 0,
-      "awayScore": 1,
-      "winner": "Spain",
-      "status": "FT",
-      "marketType": "btts",
-      "line": null,
-      "selection": "No",
-      "hit": true,
-      "entryPrice": 0.525,
-      "totalPnl": 0,
-      "agentsN": 1,
-      "agentsTotal": 8,
-      "perAgent": [
-        {
-          "handle": "DEEPSEEK",
           "pnl": 0,
           "result": "win"
         }
