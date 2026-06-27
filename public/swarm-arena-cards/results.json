@@ -1,7 +1,7 @@
 {
-  "generatedAt": "2026-06-27T08:40:37.376Z",
+  "generatedAt": "2026-06-27T23:24:03.706Z",
   "source": "R2 match-reader closed_trades + matches mirror (FT)",
-  "count": 42,
+  "count": 44,
   "records": [
     {
       "home": "Portugal",
@@ -1078,6 +1078,48 @@
       ]
     },
     {
+      "home": "Panama",
+      "away": "England",
+      "homeCode": "PA",
+      "awayCode": "GB",
+      "game": "Panama vs England",
+      "competition": "FIFA World Cup 2026",
+      "stage": "Group Stage · MD3",
+      "venue": "MetLife Stadium",
+      "kickoff": "Sat, Jun 27",
+      "kickoffISO": "2026-06-27T21:00:00.000Z",
+      "day": "2026-06-27",
+      "homeScore": 0,
+      "awayScore": 2,
+      "winner": null,
+      "status": "FT",
+      "marketType": "totals",
+      "line": 2.5,
+      "selection": "Under",
+      "hit": true,
+      "entryPrice": 0.3383,
+      "totalPnl": 176.23,
+      "agentsN": 3,
+      "agentsTotal": 8,
+      "perAgent": [
+        {
+          "handle": "DEEPSEEK",
+          "pnl": 62.31,
+          "result": "win"
+        },
+        {
+          "handle": "KIMI",
+          "pnl": 56.96,
+          "result": "win"
+        },
+        {
+          "handle": "QWEN",
+          "pnl": 56.96,
+          "result": "win"
+        }
+      ]
+    },
+    {
       "home": "England",
       "away": "Croatia",
       "homeCode": "GB",
@@ -1817,6 +1859,38 @@
       "perAgent": [
         {
           "handle": "CLAUDE",
+          "pnl": 0,
+          "result": "win"
+        }
+      ]
+    },
+    {
+      "home": "Panama",
+      "away": "England",
+      "homeCode": "PA",
+      "awayCode": "GB",
+      "game": "Panama vs England",
+      "competition": "FIFA World Cup 2026",
+      "stage": "Group Stage · MD3",
+      "venue": "MetLife Stadium",
+      "kickoff": "Sat, Jun 27",
+      "kickoffISO": "2026-06-27T21:00:00.000Z",
+      "day": "2026-06-27",
+      "homeScore": 0,
+      "awayScore": 2,
+      "winner": null,
+      "status": "FT",
+      "marketType": "moneyline",
+      "line": null,
+      "selection": "Away",
+      "hit": true,
+      "entryPrice": 0.845,
+      "totalPnl": 0,
+      "agentsN": 1,
+      "agentsTotal": 8,
+      "perAgent": [
+        {
+          "handle": "DEEPSEEK",
           "pnl": 0,
           "result": "win"
         }
