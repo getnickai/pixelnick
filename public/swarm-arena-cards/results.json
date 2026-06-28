@@ -1,7 +1,7 @@
 {
-  "generatedAt": "2026-06-27T23:49:51.858Z",
+  "generatedAt": "2026-06-28T02:41:06.642Z",
   "source": "R2 match-reader closed_trades + matches mirror (FT)",
-  "count": 47,
+  "count": 50,
   "records": [
     {
       "home": "Portugal",
@@ -1078,48 +1078,6 @@
       ]
     },
     {
-      "home": "Panama",
-      "away": "England",
-      "homeCode": "PA",
-      "awayCode": "GB",
-      "game": "Panama vs England",
-      "competition": "FIFA World Cup 2026",
-      "stage": "Group Stage · MD3",
-      "venue": "MetLife Stadium",
-      "kickoff": "Sat, Jun 27",
-      "kickoffISO": "2026-06-27T21:00:00.000Z",
-      "day": "2026-06-27",
-      "homeScore": 0,
-      "awayScore": 2,
-      "winner": "England",
-      "status": "FT",
-      "marketType": "totals",
-      "line": 2.5,
-      "selection": "Under",
-      "hit": true,
-      "entryPrice": 0.3383,
-      "totalPnl": 176.23,
-      "agentsN": 3,
-      "agentsTotal": 8,
-      "perAgent": [
-        {
-          "handle": "DEEPSEEK",
-          "pnl": 62.31,
-          "result": "win"
-        },
-        {
-          "handle": "KIMI",
-          "pnl": 56.96,
-          "result": "win"
-        },
-        {
-          "handle": "QWEN",
-          "pnl": 56.96,
-          "result": "win"
-        }
-      ]
-    },
-    {
       "home": "England",
       "away": "Croatia",
       "homeCode": "GB",
@@ -1439,33 +1397,33 @@
       ]
     },
     {
-      "home": "Croatia",
-      "away": "Ghana",
-      "homeCode": "HR",
-      "awayCode": "GH",
-      "game": "Croatia vs Ghana",
+      "home": "Colombia",
+      "away": "Portugal",
+      "homeCode": "CO",
+      "awayCode": "PT",
+      "game": "Colombia vs Portugal",
       "competition": "FIFA World Cup 2026",
       "stage": "Group Stage · MD3",
-      "venue": "Lincoln Financial Field",
+      "venue": "Hard Rock Stadium",
       "kickoff": "Sat, Jun 27",
-      "kickoffISO": "2026-06-27T21:00:00.000Z",
+      "kickoffISO": "2026-06-27T23:30:00.000Z",
       "day": "2026-06-27",
-      "homeScore": 2,
-      "awayScore": 1,
-      "winner": "Croatia",
+      "homeScore": 0,
+      "awayScore": 0,
+      "winner": "Draw",
       "status": "FT",
-      "marketType": "totals",
-      "line": 2.5,
-      "selection": "Over",
+      "marketType": "btts",
+      "line": null,
+      "selection": "No",
       "hit": true,
-      "entryPrice": 0.395,
-      "totalPnl": 137.94,
+      "entryPrice": 0.4317,
+      "totalPnl": 119.41,
       "agentsN": 3,
       "agentsTotal": 8,
       "perAgent": [
         {
           "handle": "KIMI",
-          "pnl": 47.92,
+          "pnl": 73.46,
           "result": "win"
         },
         {
@@ -1475,7 +1433,44 @@
         },
         {
           "handle": "DEEPSEEK",
-          "pnl": 44.07,
+          "pnl": 0,
+          "result": "win"
+        }
+      ]
+    },
+    {
+      "home": "Panama",
+      "away": "England",
+      "homeCode": "PA",
+      "awayCode": "GB",
+      "game": "Panama vs England",
+      "competition": "FIFA World Cup 2026",
+      "stage": "Group Stage · MD3",
+      "venue": "MetLife Stadium",
+      "kickoff": "Sat, Jun 27",
+      "kickoffISO": "2026-06-27T21:00:00.000Z",
+      "day": "2026-06-27",
+      "homeScore": 0,
+      "awayScore": 2,
+      "winner": "England",
+      "status": "FT",
+      "marketType": "totals",
+      "line": 2.5,
+      "selection": "Under",
+      "hit": true,
+      "entryPrice": 0.335,
+      "totalPnl": 119.27,
+      "agentsN": 2,
+      "agentsTotal": 8,
+      "perAgent": [
+        {
+          "handle": "DEEPSEEK",
+          "pnl": 62.31,
+          "result": "win"
+        },
+        {
+          "handle": "QWEN",
+          "pnl": 56.96,
           "result": "win"
         }
       ]
@@ -1577,6 +1572,85 @@
       ]
     },
     {
+      "home": "DR Congo",
+      "away": "Uzbekistan",
+      "homeCode": "DR ",
+      "awayCode": "UZ",
+      "game": "DR Congo vs Uzbekistan",
+      "competition": "FIFA World Cup 2026",
+      "stage": "Group Stage · MD3",
+      "venue": "Mercedes-Benz Stadium",
+      "kickoff": "Sat, Jun 27",
+      "kickoffISO": "2026-06-27T23:30:00.000Z",
+      "day": "2026-06-27",
+      "homeScore": 3,
+      "awayScore": 1,
+      "winner": "DR Congo",
+      "status": "FT",
+      "marketType": "btts",
+      "line": null,
+      "selection": "Yes",
+      "hit": true,
+      "entryPrice": 0.495,
+      "totalPnl": 91.97,
+      "agentsN": 3,
+      "agentsTotal": 8,
+      "perAgent": [
+        {
+          "handle": "QWEN",
+          "pnl": 31.86,
+          "result": "win"
+        },
+        {
+          "handle": "KIMI",
+          "pnl": 31.86,
+          "result": "win"
+        },
+        {
+          "handle": "DEEPSEEK",
+          "pnl": 28.25,
+          "result": "win"
+        }
+      ]
+    },
+    {
+      "home": "Croatia",
+      "away": "Ghana",
+      "homeCode": "HR",
+      "awayCode": "GH",
+      "game": "Croatia vs Ghana",
+      "competition": "FIFA World Cup 2026",
+      "stage": "Group Stage · MD3",
+      "venue": "Lincoln Financial Field",
+      "kickoff": "Sat, Jun 27",
+      "kickoffISO": "2026-06-27T21:00:00.000Z",
+      "day": "2026-06-27",
+      "homeScore": 2,
+      "awayScore": 1,
+      "winner": "Croatia",
+      "status": "FT",
+      "marketType": "totals",
+      "line": 2.5,
+      "selection": "Over",
+      "hit": true,
+      "entryPrice": 0.4,
+      "totalPnl": 90.02,
+      "agentsN": 2,
+      "agentsTotal": 8,
+      "perAgent": [
+        {
+          "handle": "QWEN",
+          "pnl": 45.95,
+          "result": "win"
+        },
+        {
+          "handle": "DEEPSEEK",
+          "pnl": 44.07,
+          "result": "win"
+        }
+      ]
+    },
+    {
       "home": "Brazil",
       "away": "Morocco",
       "homeCode": "BR",
@@ -1641,48 +1715,6 @@
         {
           "handle": "GROK",
           "pnl": 41.43,
-          "result": "win"
-        }
-      ]
-    },
-    {
-      "home": "Croatia",
-      "away": "Ghana",
-      "homeCode": "HR",
-      "awayCode": "GH",
-      "game": "Croatia vs Ghana",
-      "competition": "FIFA World Cup 2026",
-      "stage": "Group Stage · MD3",
-      "venue": "Lincoln Financial Field",
-      "kickoff": "Sat, Jun 27",
-      "kickoffISO": "2026-06-27T21:00:00.000Z",
-      "day": "2026-06-27",
-      "homeScore": 2,
-      "awayScore": 1,
-      "winner": "Croatia",
-      "status": "FT",
-      "marketType": "btts",
-      "line": null,
-      "selection": "Yes",
-      "hit": true,
-      "entryPrice": 0.4517,
-      "totalPnl": 74.84,
-      "agentsN": 3,
-      "agentsTotal": 8,
-      "perAgent": [
-        {
-          "handle": "KIMI",
-          "pnl": 37.42,
-          "result": "win"
-        },
-        {
-          "handle": "QWEN",
-          "pnl": 37.42,
-          "result": "win"
-        },
-        {
-          "handle": "DEEPSEEK",
-          "pnl": 0,
           "result": "win"
         }
       ]
@@ -1784,6 +1816,75 @@
         {
           "handle": "GROK",
           "pnl": 44.34,
+          "result": "win"
+        }
+      ]
+    },
+    {
+      "home": "Croatia",
+      "away": "Ghana",
+      "homeCode": "HR",
+      "awayCode": "GH",
+      "game": "Croatia vs Ghana",
+      "competition": "FIFA World Cup 2026",
+      "stage": "Group Stage · MD3",
+      "venue": "Lincoln Financial Field",
+      "kickoff": "Sat, Jun 27",
+      "kickoffISO": "2026-06-27T21:00:00.000Z",
+      "day": "2026-06-27",
+      "homeScore": 2,
+      "awayScore": 1,
+      "winner": "Croatia",
+      "status": "FT",
+      "marketType": "btts",
+      "line": null,
+      "selection": "Yes",
+      "hit": true,
+      "entryPrice": 0.445,
+      "totalPnl": 37.42,
+      "agentsN": 1,
+      "agentsTotal": 8,
+      "perAgent": [
+        {
+          "handle": "QWEN",
+          "pnl": 37.42,
+          "result": "win"
+        }
+      ]
+    },
+    {
+      "home": "Colombia",
+      "away": "Portugal",
+      "homeCode": "CO",
+      "awayCode": "PT",
+      "game": "Colombia vs Portugal",
+      "competition": "FIFA World Cup 2026",
+      "stage": "Group Stage · MD3",
+      "venue": "Hard Rock Stadium",
+      "kickoff": "Sat, Jun 27",
+      "kickoffISO": "2026-06-27T23:30:00.000Z",
+      "day": "2026-06-27",
+      "homeScore": 0,
+      "awayScore": 0,
+      "winner": "Draw",
+      "status": "FT",
+      "marketType": "totals",
+      "line": 2.5,
+      "selection": "Under",
+      "hit": true,
+      "entryPrice": 0.49,
+      "totalPnl": 35.93,
+      "agentsN": 2,
+      "agentsTotal": 8,
+      "perAgent": [
+        {
+          "handle": "KIMI",
+          "pnl": 35.93,
+          "result": "win"
+        },
+        {
+          "handle": "DEEPSEEK",
+          "pnl": 0,
           "result": "win"
         }
       ]
@@ -1949,26 +2050,26 @@
       ]
     },
     {
-      "home": "Panama",
-      "away": "England",
-      "homeCode": "PA",
-      "awayCode": "GB",
-      "game": "Panama vs England",
+      "home": "Colombia",
+      "away": "Portugal",
+      "homeCode": "CO",
+      "awayCode": "PT",
+      "game": "Colombia vs Portugal",
       "competition": "FIFA World Cup 2026",
       "stage": "Group Stage · MD3",
-      "venue": "MetLife Stadium",
+      "venue": "Hard Rock Stadium",
       "kickoff": "Sat, Jun 27",
-      "kickoffISO": "2026-06-27T21:00:00.000Z",
+      "kickoffISO": "2026-06-27T23:30:00.000Z",
       "day": "2026-06-27",
       "homeScore": 0,
-      "awayScore": 2,
-      "winner": "England",
+      "awayScore": 0,
+      "winner": "Draw",
       "status": "FT",
       "marketType": "moneyline",
       "line": null,
-      "selection": "Away",
+      "selection": "Draw",
       "hit": true,
-      "entryPrice": 0.845,
+      "entryPrice": 0.245,
       "totalPnl": 0,
       "agentsN": 1,
       "agentsTotal": 8,
@@ -1981,20 +2082,20 @@
       ]
     },
     {
-      "home": "Croatia",
-      "away": "Ghana",
-      "homeCode": "HR",
-      "awayCode": "GH",
-      "game": "Croatia vs Ghana",
+      "home": "DR Congo",
+      "away": "Uzbekistan",
+      "homeCode": "DR ",
+      "awayCode": "UZ",
+      "game": "DR Congo vs Uzbekistan",
       "competition": "FIFA World Cup 2026",
       "stage": "Group Stage · MD3",
-      "venue": "Lincoln Financial Field",
+      "venue": "Mercedes-Benz Stadium",
       "kickoff": "Sat, Jun 27",
-      "kickoffISO": "2026-06-27T21:00:00.000Z",
+      "kickoffISO": "2026-06-27T23:30:00.000Z",
       "day": "2026-06-27",
-      "homeScore": 2,
+      "homeScore": 3,
       "awayScore": 1,
-      "winner": "Croatia",
+      "winner": "DR Congo",
       "status": "FT",
       "marketType": "moneyline",
       "line": null,
