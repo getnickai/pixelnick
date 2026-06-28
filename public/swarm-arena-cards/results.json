@@ -1,5 +1,5 @@
 {
-  "generatedAt": "2026-06-28T02:41:06.642Z",
+  "generatedAt": "2026-06-28T04:09:08.629Z",
   "source": "R2 match-reader closed_trades + matches mirror (FT)",
   "count": 50,
   "records": [
@@ -561,6 +561,48 @@
         {
           "handle": "QWEN",
           "pnl": 112.77,
+          "result": "win"
+        }
+      ]
+    },
+    {
+      "home": "Algeria",
+      "away": "Austria",
+      "homeCode": "DZ",
+      "awayCode": "AT",
+      "game": "Algeria vs Austria",
+      "competition": "FIFA World Cup 2026",
+      "stage": "Group Stage · MD3",
+      "venue": "GEHA Field at Arrowhead Stadium",
+      "kickoff": "Sat, Jun 27",
+      "kickoffISO": "2026-06-28T02:00:00.000Z",
+      "day": "2026-06-27",
+      "homeScore": 3,
+      "awayScore": 3,
+      "winner": null,
+      "status": "FT",
+      "marketType": "totals",
+      "line": 2.5,
+      "selection": "Over",
+      "hit": true,
+      "entryPrice": 0.2917,
+      "totalPnl": 429.79,
+      "agentsN": 3,
+      "agentsTotal": 8,
+      "perAgent": [
+        {
+          "handle": "DEEPSEEK",
+          "pnl": 166.15,
+          "result": "win"
+        },
+        {
+          "handle": "KIMI",
+          "pnl": 131.82,
+          "result": "win"
+        },
+        {
+          "handle": "QWEN",
+          "pnl": 131.82,
           "result": "win"
         }
       ]
@@ -1397,6 +1439,38 @@
       ]
     },
     {
+      "home": "Jordan",
+      "away": "Argentina",
+      "homeCode": "JO",
+      "awayCode": "AR",
+      "game": "Jordan vs Argentina",
+      "competition": "FIFA World Cup 2026",
+      "stage": "Group Stage · MD3",
+      "venue": "AT&T Stadium",
+      "kickoff": "Sat, Jun 27",
+      "kickoffISO": "2026-06-28T02:00:00.000Z",
+      "day": "2026-06-27",
+      "homeScore": 1,
+      "awayScore": 3,
+      "winner": null,
+      "status": "FT",
+      "marketType": "btts",
+      "line": null,
+      "selection": "Yes",
+      "hit": true,
+      "entryPrice": 0.385,
+      "totalPnl": 127.79,
+      "agentsN": 1,
+      "agentsTotal": 8,
+      "perAgent": [
+        {
+          "handle": "DEEPSEEK",
+          "pnl": 127.79,
+          "result": "win"
+        }
+      ]
+    },
+    {
       "home": "Colombia",
       "away": "Portugal",
       "homeCode": "CO",
@@ -2044,70 +2118,6 @@
       "perAgent": [
         {
           "handle": "CLAUDE",
-          "pnl": 0,
-          "result": "win"
-        }
-      ]
-    },
-    {
-      "home": "Colombia",
-      "away": "Portugal",
-      "homeCode": "CO",
-      "awayCode": "PT",
-      "game": "Colombia vs Portugal",
-      "competition": "FIFA World Cup 2026",
-      "stage": "Group Stage · MD3",
-      "venue": "Hard Rock Stadium",
-      "kickoff": "Sat, Jun 27",
-      "kickoffISO": "2026-06-27T23:30:00.000Z",
-      "day": "2026-06-27",
-      "homeScore": 0,
-      "awayScore": 0,
-      "winner": "Draw",
-      "status": "FT",
-      "marketType": "moneyline",
-      "line": null,
-      "selection": "Draw",
-      "hit": true,
-      "entryPrice": 0.245,
-      "totalPnl": 0,
-      "agentsN": 1,
-      "agentsTotal": 8,
-      "perAgent": [
-        {
-          "handle": "DEEPSEEK",
-          "pnl": 0,
-          "result": "win"
-        }
-      ]
-    },
-    {
-      "home": "DR Congo",
-      "away": "Uzbekistan",
-      "homeCode": "DR ",
-      "awayCode": "UZ",
-      "game": "DR Congo vs Uzbekistan",
-      "competition": "FIFA World Cup 2026",
-      "stage": "Group Stage · MD3",
-      "venue": "Mercedes-Benz Stadium",
-      "kickoff": "Sat, Jun 27",
-      "kickoffISO": "2026-06-27T23:30:00.000Z",
-      "day": "2026-06-27",
-      "homeScore": 3,
-      "awayScore": 1,
-      "winner": "DR Congo",
-      "status": "FT",
-      "marketType": "moneyline",
-      "line": null,
-      "selection": "Home",
-      "hit": true,
-      "entryPrice": 0.545,
-      "totalPnl": 0,
-      "agentsN": 1,
-      "agentsTotal": 8,
-      "perAgent": [
-        {
-          "handle": "DEEPSEEK",
           "pnl": 0,
           "result": "win"
         }
