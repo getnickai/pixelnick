@@ -1,8 +1,186 @@
 {
-  "generatedAt": "2026-06-28T10:34:01.679Z",
+  "generatedAt": "2026-06-29T07:44:19.239Z",
   "source": "R2 match-reader agents + matches mirror",
-  "count": 6,
+  "count": 14,
   "records": [
+    {
+      "home": "Mexico",
+      "away": "Ecuador",
+      "homeCode": "MX",
+      "awayCode": "EC",
+      "game": "Mexico vs Ecuador",
+      "kickoffISO": "2026-07-01T01:00:00.000Z",
+      "kickoff": "Tue, Jun 30 · 9:00 PM EDT",
+      "competition": "FIFA World Cup 2026",
+      "stage": "Group Stage",
+      "venue": "Estadio Banorte, Mexico City",
+      "upcoming": true,
+      "marketType": "totals",
+      "line": 2.5,
+      "selection": "Under",
+      "marketPrice": 0.685,
+      "consensus": 0.6033,
+      "spread": [
+        0.6033,
+        0.6033
+      ],
+      "edgePp": -8.2,
+      "agentsN": 1,
+      "agentsTotal": 8,
+      "perAgent": [
+        {
+          "handle": "DEEPSEEK",
+          "fairValue": 0.6033,
+          "edgePp": -8.67
+        }
+      ]
+    },
+    {
+      "home": "Mexico",
+      "away": "Ecuador",
+      "homeCode": "MX",
+      "awayCode": "EC",
+      "game": "Mexico vs Ecuador",
+      "kickoffISO": "2026-07-01T01:00:00.000Z",
+      "kickoff": "Tue, Jun 30 · 9:00 PM EDT",
+      "competition": "FIFA World Cup 2026",
+      "stage": "Group Stage",
+      "venue": "Estadio Banorte, Mexico City",
+      "upcoming": true,
+      "marketType": "totals",
+      "line": 2.5,
+      "selection": "Over",
+      "marketPrice": 0.3283,
+      "consensus": 0.4057,
+      "spread": [
+        0.3967,
+        0.4102
+      ],
+      "edgePp": 7.7,
+      "agentsN": 6,
+      "agentsTotal": 8,
+      "perAgent": [
+        {
+          "handle": "DEEPSEEK",
+          "fairValue": 0.3967,
+          "edgePp": 7.67
+        },
+        {
+          "handle": "GPT",
+          "fairValue": 0.4102,
+          "edgePp": 7.02
+        },
+        {
+          "handle": "GEMINI",
+          "fairValue": 0.4068,
+          "edgePp": 6.68
+        },
+        {
+          "handle": "GROK",
+          "fairValue": 0.4068,
+          "edgePp": 6.68
+        },
+        {
+          "handle": "KIMI",
+          "fairValue": 0.4068,
+          "edgePp": 6.68
+        },
+        {
+          "handle": "QWEN",
+          "fairValue": 0.4068,
+          "edgePp": 6.68
+        }
+      ]
+    },
+    {
+      "home": "Netherlands",
+      "away": "Morocco",
+      "homeCode": "NL",
+      "awayCode": "MA",
+      "game": "Netherlands vs Morocco",
+      "kickoffISO": "2026-06-30T01:00:00.000Z",
+      "kickoff": "Mon, Jun 29 · 9:00 PM EDT",
+      "competition": "FIFA World Cup 2026",
+      "stage": "Group Stage",
+      "venue": "Estadio BBVA, Monterrey",
+      "upcoming": true,
+      "marketType": "totals",
+      "line": 2.5,
+      "selection": "Under",
+      "marketPrice": 0.565,
+      "consensus": 0.5027,
+      "spread": [
+        0.5027,
+        0.5027
+      ],
+      "edgePp": -6.2,
+      "agentsN": 1,
+      "agentsTotal": 8,
+      "perAgent": [
+        {
+          "handle": "DEEPSEEK",
+          "fairValue": 0.5027,
+          "edgePp": -6.73
+        }
+      ]
+    },
+    {
+      "home": "Belgium",
+      "away": "Senegal",
+      "homeCode": "BE",
+      "awayCode": "SN",
+      "game": "Belgium vs Senegal",
+      "kickoffISO": "2026-07-01T20:00:00.000Z",
+      "kickoff": "Wed, Jul 1 · 4:00 PM EDT",
+      "competition": "FIFA World Cup 2026",
+      "stage": "Group Stage",
+      "venue": "Lumen Field",
+      "upcoming": true,
+      "marketType": "totals",
+      "line": 2.5,
+      "selection": "Over",
+      "marketPrice": 0.445,
+      "consensus": 0.5063,
+      "spread": [
+        0.5063,
+        0.5063
+      ],
+      "edgePp": 6.1,
+      "agentsN": 6,
+      "agentsTotal": 8,
+      "perAgent": [
+        {
+          "handle": "DEEPSEEK",
+          "fairValue": 0.5063,
+          "edgePp": 5.63
+        },
+        {
+          "handle": "GEMINI",
+          "fairValue": 0.5063,
+          "edgePp": 5.63
+        },
+        {
+          "handle": "GPT",
+          "fairValue": 0.5063,
+          "edgePp": 5.63
+        },
+        {
+          "handle": "GROK",
+          "fairValue": 0.5063,
+          "edgePp": 5.63
+        },
+        {
+          "handle": "KIMI",
+          "fairValue": 0.5063,
+          "edgePp": 5.63
+        },
+        {
+          "handle": "QWEN",
+          "fairValue": 0.5063,
+          "edgePp": 5.63
+        }
+      ]
+    },
     {
       "home": "Netherlands",
       "away": "Morocco",
@@ -18,16 +196,21 @@
       "marketType": "totals",
       "line": 2.5,
       "selection": "Over",
-      "marketPrice": 0.435,
-      "consensus": 0.4942,
+      "marketPrice": 0.4342,
+      "consensus": 0.4947,
       "spread": [
         0.4942,
-        0.4942
+        0.4973
       ],
-      "edgePp": 5.9,
-      "agentsN": 3,
+      "edgePp": 6.1,
+      "agentsN": 6,
       "agentsTotal": 8,
       "perAgent": [
+        {
+          "handle": "DEEPSEEK",
+          "fairValue": 0.4973,
+          "edgePp": 5.73
+        },
         {
           "handle": "GEMINI",
           "fairValue": 0.4942,
@@ -39,46 +222,19 @@
           "edgePp": 5.42
         },
         {
-          "handle": "KIMI",
+          "handle": "GROK",
           "fairValue": 0.4942,
           "edgePp": 5.42
-        }
-      ]
-    },
-    {
-      "home": "South Africa",
-      "away": "Canada",
-      "homeCode": "ZA",
-      "awayCode": "CA",
-      "game": "South Africa vs Canada",
-      "kickoffISO": "2026-06-28T19:00:00.000Z",
-      "kickoff": "Sun, Jun 28 · 3:00 PM EDT",
-      "competition": "FIFA World Cup 2026",
-      "stage": "Group Stage",
-      "venue": "SoFi Stadium",
-      "upcoming": true,
-      "marketType": "totals",
-      "line": 2.5,
-      "selection": "Over",
-      "marketPrice": 0.445,
-      "consensus": 0.4905,
-      "spread": [
-        0.4905,
-        0.4905
-      ],
-      "edgePp": 4.5,
-      "agentsN": 2,
-      "agentsTotal": 8,
-      "perAgent": [
-        {
-          "handle": "GEMINI",
-          "fairValue": 0.4905,
-          "edgePp": 4.05
         },
         {
           "handle": "KIMI",
-          "fairValue": 0.4905,
-          "edgePp": 4.05
+          "fairValue": 0.4942,
+          "edgePp": 5.42
+        },
+        {
+          "handle": "QWEN",
+          "fairValue": 0.4942,
+          "edgePp": 5.42
         }
       ]
     },
@@ -97,16 +253,21 @@
       "marketType": "totals",
       "line": 2.5,
       "selection": "Over",
-      "marketPrice": 0.485,
-      "consensus": 0.5263,
+      "marketPrice": 0.48,
+      "consensus": 0.5258,
       "spread": [
-        0.5242,
+        0.5212,
         0.5273
       ],
-      "edgePp": 4.1,
-      "agentsN": 3,
+      "edgePp": 4.6,
+      "agentsN": 6,
       "agentsTotal": 8,
       "perAgent": [
+        {
+          "handle": "DEEPSEEK",
+          "fairValue": 0.5273,
+          "edgePp": 3.73
+        },
         {
           "handle": "GEMINI",
           "fairValue": 0.5273,
@@ -114,6 +275,11 @@
         },
         {
           "handle": "KIMI",
+          "fairValue": 0.5273,
+          "edgePp": 3.73
+        },
+        {
+          "handle": "QWEN",
           "fairValue": 0.5273,
           "edgePp": 3.73
         },
@@ -121,43 +287,53 @@
           "handle": "GPT",
           "fairValue": 0.5242,
           "edgePp": 3.42
+        },
+        {
+          "handle": "GROK",
+          "fairValue": 0.5212,
+          "edgePp": 3.12
         }
       ]
     },
     {
-      "home": "Netherlands",
-      "away": "Morocco",
-      "homeCode": "NL",
-      "awayCode": "MA",
-      "game": "Netherlands vs Morocco",
-      "kickoffISO": "2026-06-30T01:00:00.000Z",
-      "kickoff": "Mon, Jun 29 · 9:00 PM EDT",
+      "home": "Mexico",
+      "away": "Ecuador",
+      "homeCode": "MX",
+      "awayCode": "EC",
+      "game": "Mexico vs Ecuador",
+      "kickoffISO": "2026-07-01T01:00:00.000Z",
+      "kickoff": "Tue, Jun 30 · 9:00 PM EDT",
       "competition": "FIFA World Cup 2026",
       "stage": "Group Stage",
-      "venue": "Estadio BBVA, Monterrey",
+      "venue": "Estadio Banorte, Mexico City",
       "upcoming": true,
-      "marketType": "moneyline",
+      "marketType": "btts",
       "line": null,
-      "selection": "Away",
-      "marketPrice": 0.245,
-      "consensus": 0.2819,
+      "selection": "Yes",
+      "marketPrice": 0.415,
+      "consensus": 0.4595,
       "spread": [
-        0.2819,
-        0.2819
+        0.4595,
+        0.4595
       ],
-      "edgePp": 3.7,
-      "agentsN": 2,
+      "edgePp": 4.5,
+      "agentsN": 3,
       "agentsTotal": 8,
       "perAgent": [
         {
-          "handle": "GEMINI",
-          "fairValue": 0.2819,
-          "edgePp": 3.19
+          "handle": "GROK",
+          "fairValue": 0.4595,
+          "edgePp": 3.95
         },
         {
           "handle": "KIMI",
-          "fairValue": 0.2819,
-          "edgePp": 3.19
+          "fairValue": 0.4595,
+          "edgePp": 3.95
+        },
+        {
+          "handle": "QWEN",
+          "fairValue": 0.4595,
+          "edgePp": 3.95
         }
       ]
     },
@@ -176,16 +352,26 @@
       "marketType": "totals",
       "line": 2.5,
       "selection": "Under",
-      "marketPrice": 0.365,
-      "consensus": 0.3998,
+      "marketPrice": 0.359,
+      "consensus": 0.4031,
       "spread": [
         0.3998,
-        0.3998
+        0.4109
       ],
-      "edgePp": 3.5,
-      "agentsN": 2,
+      "edgePp": 4.4,
+      "agentsN": 5,
       "agentsTotal": 8,
       "perAgent": [
+        {
+          "handle": "GPT",
+          "fairValue": 0.4053,
+          "edgePp": 4.53
+        },
+        {
+          "handle": "GROK",
+          "fairValue": 0.4109,
+          "edgePp": 4.09
+        },
         {
           "handle": "GEMINI",
           "fairValue": 0.3998,
@@ -195,6 +381,184 @@
           "handle": "KIMI",
           "fairValue": 0.3998,
           "edgePp": 2.98
+        },
+        {
+          "handle": "QWEN",
+          "fairValue": 0.3998,
+          "edgePp": 2.98
+        }
+      ]
+    },
+    {
+      "home": "Belgium",
+      "away": "Senegal",
+      "homeCode": "BE",
+      "awayCode": "SN",
+      "game": "Belgium vs Senegal",
+      "kickoffISO": "2026-07-01T20:00:00.000Z",
+      "kickoff": "Wed, Jul 1 · 4:00 PM EDT",
+      "competition": "FIFA World Cup 2026",
+      "stage": "Group Stage",
+      "venue": "Lumen Field",
+      "upcoming": true,
+      "marketType": "btts",
+      "line": null,
+      "selection": "Yes",
+      "marketPrice": 0.495,
+      "consensus": 0.5383,
+      "spread": [
+        0.5383,
+        0.5383
+      ],
+      "edgePp": 4.3,
+      "agentsN": 1,
+      "agentsTotal": 8,
+      "perAgent": [
+        {
+          "handle": "QWEN",
+          "fairValue": 0.5383,
+          "edgePp": 3.83
+        }
+      ]
+    },
+    {
+      "home": "France",
+      "away": "Sweden",
+      "homeCode": "FR",
+      "awayCode": "SE",
+      "game": "France vs Sweden",
+      "kickoffISO": "2026-06-30T21:00:00.000Z",
+      "kickoff": "Tue, Jun 30 · 5:00 PM EDT",
+      "competition": "FIFA World Cup 2026",
+      "stage": "Group Stage",
+      "venue": "MetLife Stadium",
+      "upcoming": true,
+      "marketType": "btts",
+      "line": null,
+      "selection": "No",
+      "marketPrice": 0.515,
+      "consensus": 0.5537,
+      "spread": [
+        0.5494,
+        0.5584
+      ],
+      "edgePp": 3.9,
+      "agentsN": 4,
+      "agentsTotal": 8,
+      "perAgent": [
+        {
+          "handle": "QWEN",
+          "fairValue": 0.5584,
+          "edgePp": 3.84
+        },
+        {
+          "handle": "GROK",
+          "fairValue": 0.5535,
+          "edgePp": 3.35
+        },
+        {
+          "handle": "KIMI",
+          "fairValue": 0.5535,
+          "edgePp": 3.35
+        },
+        {
+          "handle": "GEMINI",
+          "fairValue": 0.5494,
+          "edgePp": 2.94
+        }
+      ]
+    },
+    {
+      "home": "Germany",
+      "away": "Paraguay",
+      "homeCode": "DE",
+      "awayCode": "PY",
+      "game": "Germany vs Paraguay",
+      "kickoffISO": "2026-06-29T20:30:00.000Z",
+      "kickoff": "Mon, Jun 29 · 4:30 PM EDT",
+      "competition": "FIFA World Cup 2026",
+      "stage": "Group Stage",
+      "venue": "Gillette Stadium",
+      "upcoming": true,
+      "marketType": "totals",
+      "line": 2.5,
+      "selection": "Under",
+      "marketPrice": 0.4317,
+      "consensus": 0.4687,
+      "spread": [
+        0.4677,
+        0.4707
+      ],
+      "edgePp": 3.7,
+      "agentsN": 3,
+      "agentsTotal": 8,
+      "perAgent": [
+        {
+          "handle": "GROK",
+          "fairValue": 0.4677,
+          "edgePp": 3.77
+        },
+        {
+          "handle": "KIMI",
+          "fairValue": 0.4677,
+          "edgePp": 3.77
+        },
+        {
+          "handle": "QWEN",
+          "fairValue": 0.4707,
+          "edgePp": 3.07
+        }
+      ]
+    },
+    {
+      "home": "Netherlands",
+      "away": "Morocco",
+      "homeCode": "NL",
+      "awayCode": "MA",
+      "game": "Netherlands vs Morocco",
+      "kickoffISO": "2026-06-30T01:00:00.000Z",
+      "kickoff": "Mon, Jun 29 · 9:00 PM EDT",
+      "competition": "FIFA World Cup 2026",
+      "stage": "Group Stage",
+      "venue": "Estadio BBVA, Monterrey",
+      "upcoming": true,
+      "marketType": "moneyline",
+      "line": null,
+      "selection": "Away",
+      "marketPrice": 0.251,
+      "consensus": 0.2865,
+      "spread": [
+        0.2819,
+        0.3039
+      ],
+      "edgePp": 3.6,
+      "agentsN": 5,
+      "agentsTotal": 8,
+      "perAgent": [
+        {
+          "handle": "GROK",
+          "fairValue": 0.3039,
+          "edgePp": 4.39
+        },
+        {
+          "handle": "DEEPSEEK",
+          "fairValue": 0.2824,
+          "edgePp": 3.24
+        },
+        {
+          "handle": "GPT",
+          "fairValue": 0.2824,
+          "edgePp": 3.24
+        },
+        {
+          "handle": "GEMINI",
+          "fairValue": 0.2819,
+          "edgePp": 3.19
+        },
+        {
+          "handle": "KIMI",
+          "fairValue": 0.2819,
+          "edgePp": 3.19
         }
       ]
     },
@@ -213,20 +577,72 @@
       "marketType": "btts",
       "line": null,
       "selection": "No",
-      "marketPrice": 0.535,
-      "consensus": 0.5678,
+      "marketPrice": 0.537,
+      "consensus": 0.5706,
       "spread": [
         0.5678,
-        0.5678
+        0.5741
       ],
-      "edgePp": 3.3,
-      "agentsN": 1,
+      "edgePp": 3.4,
+      "agentsN": 5,
       "agentsTotal": 8,
       "perAgent": [
+        {
+          "handle": "GEMINI",
+          "fairValue": 0.5741,
+          "edgePp": 3.41
+        },
+        {
+          "handle": "GPT",
+          "fairValue": 0.5717,
+          "edgePp": 3.17
+        },
+        {
+          "handle": "QWEN",
+          "fairValue": 0.5717,
+          "edgePp": 3.17
+        },
+        {
+          "handle": "GROK",
+          "fairValue": 0.5678,
+          "edgePp": 2.78
+        },
         {
           "handle": "KIMI",
           "fairValue": 0.5678,
           "edgePp": 2.78
+        }
+      ]
+    },
+    {
+      "home": "Belgium",
+      "away": "Senegal",
+      "homeCode": "BE",
+      "awayCode": "SN",
+      "game": "Belgium vs Senegal",
+      "kickoffISO": "2026-07-01T20:00:00.000Z",
+      "kickoff": "Wed, Jul 1 · 4:00 PM EDT",
+      "competition": "FIFA World Cup 2026",
+      "stage": "Group Stage",
+      "venue": "Lumen Field",
+      "upcoming": true,
+      "marketType": "moneyline",
+      "line": null,
+      "selection": "Away",
+      "marketPrice": 0.255,
+      "consensus": 0.2643,
+      "spread": [
+        0.2643,
+        0.2643
+      ],
+      "edgePp": 0.9,
+      "agentsN": 1,
+      "agentsTotal": 8,
+      "perAgent": [
+        {
+          "handle": "DEEPSEEK",
+          "fairValue": 0.2643,
+          "edgePp": 0.43
         }
       ]
     }
