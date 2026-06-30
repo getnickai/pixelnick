@@ -1,5 +1,5 @@
 {
-  "generatedAt": "2026-06-30T00:09:08.311Z",
+  "generatedAt": "2026-06-30T05:25:15.801Z",
   "source": "R2 match-reader closed_trades + matches mirror (FT)",
   "count": 50,
   "records": [
@@ -1068,58 +1068,6 @@
       ]
     },
     {
-      "home": "Germany",
-      "away": "Paraguay",
-      "homeCode": "DE",
-      "awayCode": "PY",
-      "game": "Germany vs Paraguay",
-      "competition": "FIFA World Cup 2026",
-      "stage": "Round of 32",
-      "venue": "Gillette Stadium",
-      "kickoff": "Mon, Jun 29",
-      "kickoffISO": "2026-06-29T20:30:00.000Z",
-      "day": "2026-06-29",
-      "homeScore": 1,
-      "awayScore": 1,
-      "winner": null,
-      "status": "FT",
-      "marketType": "totals",
-      "line": 2.5,
-      "selection": "Under",
-      "hit": true,
-      "entryPrice": 0.431,
-      "totalPnl": 198.09,
-      "agentsN": 5,
-      "agentsTotal": 8,
-      "perAgent": [
-        {
-          "handle": "GROK",
-          "pnl": 40.59,
-          "result": "win"
-        },
-        {
-          "handle": "KIMI",
-          "pnl": 40.59,
-          "result": "win"
-        },
-        {
-          "handle": "GPT",
-          "pnl": 38.97,
-          "result": "win"
-        },
-        {
-          "handle": "GEMINI",
-          "pnl": 38.97,
-          "result": "win"
-        },
-        {
-          "handle": "QWEN",
-          "pnl": 38.97,
-          "result": "win"
-        }
-      ]
-    },
-    {
       "home": "Japan",
       "away": "Sweden",
       "homeCode": "JP",
@@ -1585,6 +1533,53 @@
         {
           "handle": "QWEN",
           "pnl": 31.86,
+          "result": "win"
+        }
+      ]
+    },
+    {
+      "home": "Germany",
+      "away": "Paraguay",
+      "homeCode": "DE",
+      "awayCode": "PY",
+      "game": "Germany vs Paraguay",
+      "competition": "FIFA World Cup 2026",
+      "stage": "Round of 32",
+      "venue": "Gillette Stadium",
+      "kickoff": "Mon, Jun 29",
+      "kickoffISO": "2026-06-29T20:30:00.000Z",
+      "day": "2026-06-29",
+      "homeScore": 1,
+      "awayScore": 1,
+      "winner": null,
+      "status": "FT",
+      "marketType": "totals",
+      "line": 2.5,
+      "selection": "Under",
+      "hit": true,
+      "entryPrice": 0.5737,
+      "totalPnl": 157.5,
+      "agentsN": 4,
+      "agentsTotal": 8,
+      "perAgent": [
+        {
+          "handle": "GROK",
+          "pnl": 40.59,
+          "result": "win"
+        },
+        {
+          "handle": "GPT",
+          "pnl": 38.97,
+          "result": "win"
+        },
+        {
+          "handle": "GEMINI",
+          "pnl": 38.97,
+          "result": "win"
+        },
+        {
+          "handle": "QWEN",
+          "pnl": 38.97,
           "result": "win"
         }
       ]
