@@ -1,5 +1,5 @@
 {
-  "generatedAt": "2026-06-30T09:29:29.671Z",
+  "generatedAt": "2026-06-30T19:55:06.367Z",
   "source": "R2 match-reader closed_trades + matches mirror (FT)",
   "count": 50,
   "records": [
@@ -316,6 +316,58 @@
       ]
     },
     {
+      "home": "USA",
+      "away": "Paraguay",
+      "homeCode": "US",
+      "awayCode": "PY",
+      "game": "USA vs Paraguay",
+      "competition": "FIFA World Cup 2026",
+      "stage": "Group Stage · MD1",
+      "venue": "SoFi Stadium",
+      "kickoff": "Fri, Jun 12",
+      "kickoffISO": "2026-06-13T01:00:00.000Z",
+      "day": "2026-06-12",
+      "homeScore": 4,
+      "awayScore": 1,
+      "winner": "USA",
+      "status": "FT",
+      "marketType": "btts",
+      "line": null,
+      "selection": "Yes",
+      "hit": true,
+      "entryPrice": 0.5558,
+      "totalPnl": 548.63,
+      "agentsN": 5,
+      "agentsTotal": 8,
+      "perAgent": [
+        {
+          "handle": "GROK",
+          "pnl": 184.09,
+          "result": "win"
+        },
+        {
+          "handle": "GEMINI",
+          "pnl": 92.04,
+          "result": "win"
+        },
+        {
+          "handle": "DEEPSEEK",
+          "pnl": 92.04,
+          "result": "win"
+        },
+        {
+          "handle": "QWEN",
+          "pnl": 92.04,
+          "result": "win"
+        },
+        {
+          "handle": "GPT",
+          "pnl": 88.42,
+          "result": "win"
+        }
+      ]
+    },
+    {
       "home": "New Zealand",
       "away": "Egypt",
       "homeCode": "NZ",
@@ -462,58 +514,6 @@
         {
           "handle": "GEMINI",
           "pnl": 112.77,
-          "result": "win"
-        }
-      ]
-    },
-    {
-      "home": "USA",
-      "away": "Paraguay",
-      "homeCode": "US",
-      "awayCode": "PY",
-      "game": "USA vs Paraguay",
-      "competition": "FIFA World Cup 2026",
-      "stage": "Group Stage · MD1",
-      "venue": "SoFi Stadium",
-      "kickoff": "Fri, Jun 12",
-      "kickoffISO": "2026-06-13T01:00:00.000Z",
-      "day": "2026-06-12",
-      "homeScore": 4,
-      "awayScore": 1,
-      "winner": "USA",
-      "status": "FT",
-      "marketType": "btts",
-      "line": null,
-      "selection": "Yes",
-      "hit": true,
-      "entryPrice": 0.574,
-      "totalPnl": 456.58,
-      "agentsN": 5,
-      "agentsTotal": 8,
-      "perAgent": [
-        {
-          "handle": "GEMINI",
-          "pnl": 92.04,
-          "result": "win"
-        },
-        {
-          "handle": "GROK",
-          "pnl": 92.04,
-          "result": "win"
-        },
-        {
-          "handle": "DEEPSEEK",
-          "pnl": 92.04,
-          "result": "win"
-        },
-        {
-          "handle": "QWEN",
-          "pnl": 92.04,
-          "result": "win"
-        },
-        {
-          "handle": "GPT",
-          "pnl": 88.42,
           "result": "win"
         }
       ]
@@ -1068,6 +1068,58 @@
       ]
     },
     {
+      "home": "Brazil",
+      "away": "Japan",
+      "homeCode": "BR",
+      "awayCode": "JP",
+      "game": "Brazil vs Japan",
+      "competition": "FIFA World Cup 2026",
+      "stage": "Round of 32",
+      "venue": "NRG Stadium",
+      "kickoff": "Mon, Jun 29",
+      "kickoffISO": "2026-06-29T17:00:00.000Z",
+      "day": "2026-06-29",
+      "homeScore": 2,
+      "awayScore": 1,
+      "winner": null,
+      "status": "FT",
+      "marketType": "totals",
+      "line": 2.5,
+      "selection": "Over",
+      "hit": true,
+      "entryPrice": 0.5708,
+      "totalPnl": 212.39,
+      "agentsN": 5,
+      "agentsTotal": 8,
+      "perAgent": [
+        {
+          "handle": "GROK",
+          "pnl": 84.95,
+          "result": "win"
+        },
+        {
+          "handle": "GPT",
+          "pnl": 31.86,
+          "result": "win"
+        },
+        {
+          "handle": "GEMINI",
+          "pnl": 31.86,
+          "result": "win"
+        },
+        {
+          "handle": "DEEPSEEK",
+          "pnl": 31.86,
+          "result": "win"
+        },
+        {
+          "handle": "QWEN",
+          "pnl": 31.86,
+          "result": "win"
+        }
+      ]
+    },
+    {
       "home": "Japan",
       "away": "Sweden",
       "homeCode": "JP",
@@ -1486,58 +1538,6 @@
       ]
     },
     {
-      "home": "Brazil",
-      "away": "Japan",
-      "homeCode": "BR",
-      "awayCode": "JP",
-      "game": "Brazil vs Japan",
-      "competition": "FIFA World Cup 2026",
-      "stage": "Round of 32",
-      "venue": "NRG Stadium",
-      "kickoff": "Mon, Jun 29",
-      "kickoffISO": "2026-06-29T17:00:00.000Z",
-      "day": "2026-06-29",
-      "homeScore": 2,
-      "awayScore": 1,
-      "winner": null,
-      "status": "FT",
-      "marketType": "totals",
-      "line": 2.5,
-      "selection": "Over",
-      "hit": true,
-      "entryPrice": 0.588,
-      "totalPnl": 159.3,
-      "agentsN": 5,
-      "agentsTotal": 8,
-      "perAgent": [
-        {
-          "handle": "GPT",
-          "pnl": 31.86,
-          "result": "win"
-        },
-        {
-          "handle": "GEMINI",
-          "pnl": 31.86,
-          "result": "win"
-        },
-        {
-          "handle": "GROK",
-          "pnl": 31.86,
-          "result": "win"
-        },
-        {
-          "handle": "DEEPSEEK",
-          "pnl": 31.86,
-          "result": "win"
-        },
-        {
-          "handle": "QWEN",
-          "pnl": 31.86,
-          "result": "win"
-        }
-      ]
-    },
-    {
       "home": "Germany",
       "away": "Paraguay",
       "homeCode": "DE",
@@ -1871,6 +1871,48 @@
       ]
     },
     {
+      "home": "Ivory Coast",
+      "away": "Norway",
+      "homeCode": "CI",
+      "awayCode": "NO",
+      "game": "Ivory Coast vs Norway",
+      "competition": "FIFA World Cup 2026",
+      "stage": "Round of 32",
+      "venue": null,
+      "kickoff": "Tue, Jun 30",
+      "kickoffISO": "2026-06-30T17:00:00.000Z",
+      "day": "2026-06-30",
+      "homeScore": 1,
+      "awayScore": 2,
+      "winner": null,
+      "status": "FT",
+      "marketType": "totals",
+      "line": 2.5,
+      "selection": "Over",
+      "hit": true,
+      "entryPrice": 0.67,
+      "totalPnl": 89.47,
+      "agentsN": 3,
+      "agentsTotal": 8,
+      "perAgent": [
+        {
+          "handle": "GEMINI",
+          "pnl": 30.61,
+          "result": "win"
+        },
+        {
+          "handle": "DEEPSEEK",
+          "pnl": 30.61,
+          "result": "win"
+        },
+        {
+          "handle": "QWEN",
+          "pnl": 28.25,
+          "result": "win"
+        }
+      ]
+    },
+    {
       "home": "Brazil",
       "away": "Morocco",
       "homeCode": "BR",
@@ -2137,38 +2179,6 @@
         {
           "handle": "GROK",
           "pnl": 57.53,
-          "result": "win"
-        }
-      ]
-    },
-    {
-      "home": "Belgium",
-      "away": "Iran",
-      "homeCode": "BE",
-      "awayCode": "IR",
-      "game": "Belgium vs Iran",
-      "competition": "FIFA World Cup 2026",
-      "stage": "Group Stage · MD2",
-      "venue": "SoFi Stadium",
-      "kickoff": "Sun, Jun 21",
-      "kickoffISO": "2026-06-21T19:00:00.000Z",
-      "day": "2026-06-21",
-      "homeScore": 0,
-      "awayScore": 0,
-      "winner": null,
-      "status": "FT",
-      "marketType": "btts",
-      "line": null,
-      "selection": "No",
-      "hit": true,
-      "entryPrice": 0.53,
-      "totalPnl": 44.34,
-      "agentsN": 1,
-      "agentsTotal": 8,
-      "perAgent": [
-        {
-          "handle": "GROK",
-          "pnl": 44.34,
           "result": "win"
         }
       ]
