@@ -1,7 +1,7 @@
 {
-  "generatedAt": "2026-07-01T22:57:32.446Z",
+  "generatedAt": "2026-07-01T23:34:57.605Z",
   "source": "R2 match-reader closed_trades + matches mirror (FT)",
-  "count": 49,
+  "count": 50,
   "records": [
     {
       "home": "Portugal",
@@ -281,6 +281,63 @@
         {
           "handle": "QWEN",
           "pnl": 110.48,
+          "result": "win"
+        }
+      ]
+    },
+    {
+      "home": "Belgium",
+      "away": "Senegal",
+      "homeCode": "BE",
+      "awayCode": "SN",
+      "game": "Belgium vs Senegal",
+      "competition": "FIFA World Cup 2026",
+      "stage": "Round of 32",
+      "venue": "Lumen Field",
+      "kickoff": "Wed, Jul 1",
+      "kickoffISO": "2026-07-01T20:00:00.000Z",
+      "day": "2026-07-01",
+      "homeScore": 3,
+      "awayScore": 2,
+      "winner": null,
+      "status": "FT",
+      "marketType": "totals",
+      "line": 2.5,
+      "selection": "Over",
+      "hit": true,
+      "entryPrice": 0.445,
+      "totalPnl": 411.58,
+      "agentsN": 6,
+      "agentsTotal": 8,
+      "perAgent": [
+        {
+          "handle": "GROK",
+          "pnl": 99.78,
+          "result": "win"
+        },
+        {
+          "handle": "GPT",
+          "pnl": 62.36,
+          "result": "win"
+        },
+        {
+          "handle": "GEMINI",
+          "pnl": 62.36,
+          "result": "win"
+        },
+        {
+          "handle": "DEEPSEEK",
+          "pnl": 62.36,
+          "result": "win"
+        },
+        {
+          "handle": "KIMI",
+          "pnl": 62.36,
+          "result": "win"
+        },
+        {
+          "handle": "QWEN",
+          "pnl": 62.36,
           "result": "win"
         }
       ]
@@ -1689,6 +1746,48 @@
       ]
     },
     {
+      "home": "Belgium",
+      "away": "Senegal",
+      "homeCode": "BE",
+      "awayCode": "SN",
+      "game": "Belgium vs Senegal",
+      "competition": "FIFA World Cup 2026",
+      "stage": "Round of 32",
+      "venue": "Lumen Field",
+      "kickoff": "Wed, Jul 1",
+      "kickoffISO": "2026-07-01T20:00:00.000Z",
+      "day": "2026-07-01",
+      "homeScore": 3,
+      "awayScore": 2,
+      "winner": null,
+      "status": "FT",
+      "marketType": "btts",
+      "line": null,
+      "selection": "Yes",
+      "hit": true,
+      "entryPrice": 0.5083,
+      "totalPnl": 58.86,
+      "agentsN": 3,
+      "agentsTotal": 8,
+      "perAgent": [
+        {
+          "handle": "QWEN",
+          "pnl": 30.61,
+          "result": "win"
+        },
+        {
+          "handle": "KIMI",
+          "pnl": 28.25,
+          "result": "win"
+        },
+        {
+          "handle": "DEEPSEEK",
+          "pnl": 0,
+          "result": "win"
+        }
+      ]
+    },
+    {
       "home": "Colombia",
       "away": "Portugal",
       "homeCode": "CO",
@@ -1940,38 +2039,6 @@
         {
           "handle": "DEEPSEEK",
           "pnl": 24.05,
-          "result": "win"
-        }
-      ]
-    },
-    {
-      "home": "South Africa",
-      "away": "South Korea",
-      "homeCode": "ZA",
-      "awayCode": "KR",
-      "game": "South Africa vs South Korea",
-      "competition": "FIFA World Cup 2026",
-      "stage": "Group Stage · MD3",
-      "venue": "Estadio BBVA",
-      "kickoff": "Wed, Jun 24",
-      "kickoffISO": "2026-06-25T01:00:00.000Z",
-      "day": "2026-06-24",
-      "homeScore": 1,
-      "awayScore": 0,
-      "winner": "South Africa",
-      "status": "FT",
-      "marketType": "totals",
-      "line": 2.5,
-      "selection": "Under",
-      "hit": true,
-      "entryPrice": 0.535,
-      "totalPnl": 0,
-      "agentsN": 1,
-      "agentsTotal": 8,
-      "perAgent": [
-        {
-          "handle": "CLAUDE",
-          "pnl": 0,
           "result": "win"
         }
       ]
