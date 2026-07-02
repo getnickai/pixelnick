@@ -1,5 +1,5 @@
 {
-  "generatedAt": "2026-07-02T00:09:10.548Z",
+  "generatedAt": "2026-07-02T03:47:01.668Z",
   "source": "R2 match-reader closed_trades + matches mirror (FT)",
   "count": 50,
   "records": [
@@ -305,7 +305,7 @@
       "line": 2.5,
       "selection": "Over",
       "hit": true,
-      "entryPrice": 0.445,
+      "entryPrice": 0.5375,
       "totalPnl": 411.58,
       "agentsN": 6,
       "agentsTotal": 8,
@@ -331,12 +331,12 @@
           "result": "win"
         },
         {
-          "handle": "KIMI",
+          "handle": "QWEN",
           "pnl": 62.36,
           "result": "win"
         },
         {
-          "handle": "QWEN",
+          "handle": "KIMI",
           "pnl": 62.36,
           "result": "win"
         }
@@ -1765,9 +1765,9 @@
       "line": null,
       "selection": "Yes",
       "hit": true,
-      "entryPrice": 0.5083,
+      "entryPrice": 0.505,
       "totalPnl": 58.86,
-      "agentsN": 3,
+      "agentsN": 2,
       "agentsTotal": 8,
       "perAgent": [
         {
@@ -1778,11 +1778,6 @@
         {
           "handle": "KIMI",
           "pnl": 28.25,
-          "result": "win"
-        },
-        {
-          "handle": "DEEPSEEK",
-          "pnl": 0,
           "result": "win"
         }
       ]
