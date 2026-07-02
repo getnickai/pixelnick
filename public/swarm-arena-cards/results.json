@@ -1,5 +1,5 @@
 {
-  "generatedAt": "2026-07-02T09:06:39.498Z",
+  "generatedAt": "2026-07-02T22:24:29.292Z",
   "source": "R2 match-reader closed_trades + matches mirror (FT)",
   "count": 50,
   "records": [
@@ -306,13 +306,13 @@
       "selection": "Over",
       "hit": true,
       "entryPrice": 0.5375,
-      "totalPnl": 411.58,
-      "agentsN": 6,
+      "totalPnl": 448.99,
+      "agentsN": 5,
       "agentsTotal": 8,
       "perAgent": [
         {
           "handle": "GROK",
-          "pnl": 99.78,
+          "pnl": 199.55,
           "result": "win"
         },
         {
@@ -332,11 +332,6 @@
         },
         {
           "handle": "QWEN",
-          "pnl": 62.36,
-          "result": "win"
-        },
-        {
-          "handle": "KIMI",
           "pnl": 62.36,
           "result": "win"
         }
@@ -1677,6 +1672,53 @@
       ]
     },
     {
+      "home": "Spain",
+      "away": "Austria",
+      "homeCode": "ES",
+      "awayCode": "AT",
+      "game": "Spain vs Austria",
+      "competition": "FIFA World Cup 2026",
+      "stage": "Round of 32",
+      "venue": "SoFi Stadium",
+      "kickoff": "Thu, Jul 2",
+      "kickoffISO": "2026-07-02T19:00:00.000Z",
+      "day": "2026-07-02",
+      "homeScore": 3,
+      "awayScore": 0,
+      "winner": null,
+      "status": "FT",
+      "marketType": "btts",
+      "line": null,
+      "selection": "No",
+      "hit": true,
+      "entryPrice": 0.565,
+      "totalPnl": 72.15,
+      "agentsN": 4,
+      "agentsTotal": 8,
+      "perAgent": [
+        {
+          "handle": "GEMINI",
+          "pnl": 24.05,
+          "result": "win"
+        },
+        {
+          "handle": "KIMI",
+          "pnl": 24.05,
+          "result": "win"
+        },
+        {
+          "handle": "QWEN",
+          "pnl": 24.05,
+          "result": "win"
+        },
+        {
+          "handle": "DEEPSEEK",
+          "pnl": 0,
+          "result": "win"
+        }
+      ]
+    },
+    {
       "home": "Mexico",
       "away": "South Korea",
       "homeCode": "MX",
@@ -1740,43 +1782,6 @@
         },
         {
           "handle": "DEEPSEEK",
-          "pnl": 28.25,
-          "result": "win"
-        }
-      ]
-    },
-    {
-      "home": "Belgium",
-      "away": "Senegal",
-      "homeCode": "BE",
-      "awayCode": "SN",
-      "game": "Belgium vs Senegal",
-      "competition": "FIFA World Cup 2026",
-      "stage": "Round of 32",
-      "venue": "Lumen Field",
-      "kickoff": "Wed, Jul 1",
-      "kickoffISO": "2026-07-01T20:00:00.000Z",
-      "day": "2026-07-01",
-      "homeScore": 3,
-      "awayScore": 2,
-      "winner": null,
-      "status": "FT",
-      "marketType": "btts",
-      "line": null,
-      "selection": "Yes",
-      "hit": true,
-      "entryPrice": 0.505,
-      "totalPnl": 58.86,
-      "agentsN": 2,
-      "agentsTotal": 8,
-      "perAgent": [
-        {
-          "handle": "QWEN",
-          "pnl": 30.61,
-          "result": "win"
-        },
-        {
-          "handle": "KIMI",
           "pnl": 28.25,
           "result": "win"
         }
@@ -1975,6 +1980,38 @@
       ]
     },
     {
+      "home": "Belgium",
+      "away": "Senegal",
+      "homeCode": "BE",
+      "awayCode": "SN",
+      "game": "Belgium vs Senegal",
+      "competition": "FIFA World Cup 2026",
+      "stage": "Round of 32",
+      "venue": "Lumen Field",
+      "kickoff": "Wed, Jul 1",
+      "kickoffISO": "2026-07-01T20:00:00.000Z",
+      "day": "2026-07-01",
+      "homeScore": 3,
+      "awayScore": 2,
+      "winner": null,
+      "status": "FT",
+      "marketType": "btts",
+      "line": null,
+      "selection": "Yes",
+      "hit": true,
+      "entryPrice": 0.495,
+      "totalPnl": 30.61,
+      "agentsN": 1,
+      "agentsTotal": 8,
+      "perAgent": [
+        {
+          "handle": "QWEN",
+          "pnl": 30.61,
+          "result": "win"
+        }
+      ]
+    },
+    {
       "home": "Saudi Arabia",
       "away": "Uruguay",
       "homeCode": "SA",
@@ -2002,38 +2039,6 @@
         {
           "handle": "DEEPSEEK",
           "pnl": 25.05,
-          "result": "win"
-        }
-      ]
-    },
-    {
-      "home": "Ecuador",
-      "away": "Germany",
-      "homeCode": "EC",
-      "awayCode": "DE",
-      "game": "Ecuador vs Germany",
-      "competition": "FIFA World Cup 2026",
-      "stage": "Group Stage · MD3",
-      "venue": "MetLife Stadium",
-      "kickoff": "Thu, Jun 25",
-      "kickoffISO": "2026-06-25T20:00:00.000Z",
-      "day": "2026-06-25",
-      "homeScore": 2,
-      "awayScore": 1,
-      "winner": "Ecuador",
-      "status": "FT",
-      "marketType": "btts",
-      "line": null,
-      "selection": "Yes",
-      "hit": true,
-      "entryPrice": 0.555,
-      "totalPnl": 24.05,
-      "agentsN": 1,
-      "agentsTotal": 8,
-      "perAgent": [
-        {
-          "handle": "DEEPSEEK",
-          "pnl": 24.05,
           "result": "win"
         }
       ]
