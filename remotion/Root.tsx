@@ -30,6 +30,8 @@ import { SwarmArenaLeaderboardCardComposition } from "./compositions/swarm-arena
 import { swarmArenaLeaderboardCardDefaultProps } from "./compositions/swarm-arena-leaderboard-card/props";
 import { MatchdayAnalysisComposition } from "./compositions/matchday-analysis/composition";
 import { matchdayAnalysisDefaultProps } from "./compositions/matchday-analysis/props";
+import { NickaiSocialCardComposition } from "./compositions/nickai-social-card/composition";
+import { nickaiSocialCardDefaultProps } from "./compositions/nickai-social-card/props";
 import { getMotionEntryMeta } from "./manifest";
 
 const perf = getMotionEntryMeta("performance-card")!;
@@ -40,6 +42,7 @@ const consensus = getMotionEntryMeta("consensus-card")!;
 const result = getMotionEntryMeta("result-card")!;
 const leaderboardAnim = getMotionEntryMeta("swarm-arena-leaderboard-card")!;
 const matchdayAnim = getMotionEntryMeta("matchday-analysis")!;
+const nickaiSocial = getMotionEntryMeta("nickai-social-card")!;
 
 export const RemotionRoot: React.FC = () => {
   return (
@@ -127,6 +130,17 @@ export const RemotionRoot: React.FC = () => {
         width={matchdayAnim.width}
         height={matchdayAnim.height}
         defaultProps={matchdayAnalysisDefaultProps}
+      />
+      {/* NickAI social card (STA-473) — brand-dark frame for the weekly X
+          content calendar, rendered to PNG/MP4 by render-nickai-social. */}
+      <Composition
+        id="nickai-social-card"
+        component={NickaiSocialCardComposition}
+        durationInFrames={nickaiSocial.durationInFrames}
+        fps={nickaiSocial.fps}
+        width={nickaiSocial.width}
+        height={nickaiSocial.height}
+        defaultProps={nickaiSocialCardDefaultProps}
       />
     </>
   );

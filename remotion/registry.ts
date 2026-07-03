@@ -41,6 +41,11 @@ import {
   matchdayAnalysisDefaultProps,
   type MatchdayAnalysisProps,
 } from "./compositions/matchday-analysis/props";
+import { NickaiSocialCardComposition } from "./compositions/nickai-social-card/composition";
+import {
+  nickaiSocialCardDefaultProps,
+  type NickaiSocialCardProps,
+} from "./compositions/nickai-social-card/props";
 import {
   motionManifest,
   type MotionEntryMeta,
@@ -106,6 +111,10 @@ const componentBindings: Record<string, ComponentBinding> = {
     component: MatchdayAnalysisComposition,
     defaultProps: matchdayAnalysisDefaultProps,
   } as ComponentBinding<MatchdayAnalysisProps> as ComponentBinding,
+  "nickai-social-card": {
+    component: NickaiSocialCardComposition,
+    defaultProps: nickaiSocialCardDefaultProps,
+  } as ComponentBinding<NickaiSocialCardProps> as ComponentBinding,
 };
 
 export const motionRegistry: MotionEntry[] = motionManifest
