@@ -15,7 +15,7 @@ export async function GET(
   if (!/^\d{4}-W\d{2}$/.test(week)) return new Response("bad week", { status: 400 });
   const asset = await getAsset(week, file);
   if (!asset) return new Response("not found", { status: 404 });
-  return new Response(asset.bytes, {
+  return new Response(Buffer.from(asset.bytes), {
     headers: {
       "Content-Type": asset.contentType,
       "Cache-Control": "private, max-age=3600",
