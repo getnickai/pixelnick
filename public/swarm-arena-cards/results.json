@@ -1,5 +1,5 @@
 {
-  "generatedAt": "2026-07-02T22:24:29.292Z",
+  "generatedAt": "2026-07-03T02:19:50.805Z",
   "source": "R2 match-reader closed_trades + matches mirror (FT)",
   "count": 50,
   "records": [
@@ -1672,53 +1672,6 @@
       ]
     },
     {
-      "home": "Spain",
-      "away": "Austria",
-      "homeCode": "ES",
-      "awayCode": "AT",
-      "game": "Spain vs Austria",
-      "competition": "FIFA World Cup 2026",
-      "stage": "Round of 32",
-      "venue": "SoFi Stadium",
-      "kickoff": "Thu, Jul 2",
-      "kickoffISO": "2026-07-02T19:00:00.000Z",
-      "day": "2026-07-02",
-      "homeScore": 3,
-      "awayScore": 0,
-      "winner": null,
-      "status": "FT",
-      "marketType": "btts",
-      "line": null,
-      "selection": "No",
-      "hit": true,
-      "entryPrice": 0.565,
-      "totalPnl": 72.15,
-      "agentsN": 4,
-      "agentsTotal": 8,
-      "perAgent": [
-        {
-          "handle": "GEMINI",
-          "pnl": 24.05,
-          "result": "win"
-        },
-        {
-          "handle": "KIMI",
-          "pnl": 24.05,
-          "result": "win"
-        },
-        {
-          "handle": "QWEN",
-          "pnl": 24.05,
-          "result": "win"
-        },
-        {
-          "handle": "DEEPSEEK",
-          "pnl": 0,
-          "result": "win"
-        }
-      ]
-    },
-    {
       "home": "Mexico",
       "away": "South Korea",
       "homeCode": "MX",
@@ -1783,6 +1736,48 @@
         {
           "handle": "DEEPSEEK",
           "pnl": 28.25,
+          "result": "win"
+        }
+      ]
+    },
+    {
+      "home": "Spain",
+      "away": "Austria",
+      "homeCode": "ES",
+      "awayCode": "AT",
+      "game": "Spain vs Austria",
+      "competition": "FIFA World Cup 2026",
+      "stage": "Round of 32",
+      "venue": "SoFi Stadium",
+      "kickoff": "Thu, Jul 2",
+      "kickoffISO": "2026-07-02T19:00:00.000Z",
+      "day": "2026-07-02",
+      "homeScore": 3,
+      "awayScore": 0,
+      "winner": null,
+      "status": "FT",
+      "marketType": "btts",
+      "line": null,
+      "selection": "No",
+      "hit": true,
+      "entryPrice": 0.7167,
+      "totalPnl": 48.1,
+      "agentsN": 3,
+      "agentsTotal": 8,
+      "perAgent": [
+        {
+          "handle": "GEMINI",
+          "pnl": 24.05,
+          "result": "win"
+        },
+        {
+          "handle": "QWEN",
+          "pnl": 24.05,
+          "result": "win"
+        },
+        {
+          "handle": "DEEPSEEK",
+          "pnl": 0,
           "result": "win"
         }
       ]
