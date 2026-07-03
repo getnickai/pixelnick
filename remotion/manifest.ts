@@ -125,14 +125,15 @@ export const motionManifest: MotionEntryMeta[] = [
   },
   {
     // NickAI social card (STA-473) — brand-dark frame for the weekly X
-    // content calendar. Still for now; the CP2 motion pass bumps the
-    // duration when the entrance animation lands.
+    // content calendar. ~2.4s staggered entrance (wave → header → headline →
+    // subline → chips/module → footer) + hold. Stills render settled at any
+    // frame because the entrance pins to 1 when `animate` is off.
     id: "nickai-social-card",
     label: "NickAI Social Card",
     width: 1600,
     height: 900,
     fps: 30,
-    durationInFrames: 1,
+    durationInFrames: 240,
   },
 ];
 

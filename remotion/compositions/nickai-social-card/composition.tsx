@@ -8,7 +8,14 @@
  * layout below is frame-independent so `renderStill` at frame 0 is the
  * settled card.
  */
-import { AbsoluteFill, Img, staticFile } from "remotion";
+import {
+  AbsoluteFill,
+  Easing,
+  Img,
+  interpolate,
+  staticFile,
+  useCurrentFrame,
+} from "remotion";
 import type { NickaiSocialCardProps } from "./props";
 
 const BLUE = "#0178ff";
@@ -41,9 +48,30 @@ export const NickaiSocialCardComposition: React.FC<NickaiSocialCardProps> = ({
   fill = { kind: "none" },
   meta,
   wave = 1,
+  animate = false,
 }) => {
+  const frame = useCurrentFrame();
   const hasSideFill = fill.kind !== "none";
   const textWidth = hasSideFill ? "58%" : "72%";
+
+  /**
+   * Entrance progress for a window of frames: 0→1 with an ease-out, pinned
+   * to 1 when `animate` is off so stills stay settled at any frame.
+   */
+  const enter = (from: number, to: number): number =>
+    animate
+      ? interpolate(frame, [from, to], [0, 1], {
+          extrapolateLeft: "clamp",
+          extrapolateRight: "clamp",
+          easing: Easing.out(Easing.cubic),
+        })
+      : 1;
+
+  /** fade + rise entrance style for a progress value. */
+  const rise = (p: number, distance = 28): React.CSSProperties => ({
+    opacity: p,
+    transform: `translateY(${(1 - p) * distance}px)`,
+  });
 
   return (
     <AbsoluteFill style={{ backgroundColor: CANVAS, fontFamily: fontSans }}>
@@ -57,7 +85,8 @@ export const NickaiSocialCardComposition: React.FC<NickaiSocialCardProps> = ({
             width: 980,
             mixBlendMode: "screen",
             // Recede behind data modules so numbers stay legible.
-            opacity: hasSideFill ? 0.4 : 0.9,
+            opacity: (hasSideFill ? 0.4 : 0.9) * enter(0, 45),
+            transform: `translateX(${(1 - enter(0, 45)) * 60}px)`,
           }}
         />
       )}
@@ -69,6 +98,7 @@ export const NickaiSocialCardComposition: React.FC<NickaiSocialCardProps> = ({
             display: "flex",
             justifyContent: "space-between",
             alignItems: "center",
+            ...rise(enter(0, 24), 16),
           }}
         >
           <Img src={staticFile("figma/logo.svg")} style={{ height: 38, width: 182 }} />
@@ -108,6 +138,7 @@ export const NickaiSocialCardComposition: React.FC<NickaiSocialCardProps> = ({
                 lineHeight: 1.12,
                 color: "#fafafa",
                 letterSpacing: -0.5,
+                ...rise(enter(8, 40)),
               }}
             >
               {headline}
@@ -121,6 +152,7 @@ export const NickaiSocialCardComposition: React.FC<NickaiSocialCardProps> = ({
                   lineHeight: 1.5,
                   color: "#a1a1aa",
                   maxWidth: 720,
+                  ...rise(enter(20, 50)),
                 }}
               >
                 {subline}
@@ -128,10 +160,11 @@ export const NickaiSocialCardComposition: React.FC<NickaiSocialCardProps> = ({
             )}
             {chips.length > 0 && (
               <div style={{ display: "flex", gap: 14, marginTop: 6 }}>
-                {chips.map((chip) => (
+                {chips.map((chip, i) => (
                   <div
-                    key={chip}
+                    key={`${chip}-${i}`}
                     style={{
+                      ...rise(enter(32 + i * 8, 58 + i * 8), 20),
                       fontFamily: fontSans,
                       fontWeight: 500,
                       fontSize: 22,
@@ -158,6 +191,9 @@ export const NickaiSocialCardComposition: React.FC<NickaiSocialCardProps> = ({
                 textAlign: "right",
                 gap: 10,
                 paddingRight: 8,
+                opacity: enter(30, 64),
+                transform: `scale(${0.92 + 0.08 * enter(30, 64)})`,
+                transformOrigin: "right center",
               }}
             >
               <div
@@ -204,6 +240,7 @@ export const NickaiSocialCardComposition: React.FC<NickaiSocialCardProps> = ({
                 maxHeight: 460,
                 objectFit: "contain",
                 borderRadius: 16,
+                ...rise(enter(28, 60), 24),
               }}
             />
           )}
@@ -217,6 +254,7 @@ export const NickaiSocialCardComposition: React.FC<NickaiSocialCardProps> = ({
             alignItems: "baseline",
             borderTop: "1.5px solid #18181b",
             paddingTop: 28,
+            opacity: enter(48, 72),
           }}
         >
           <div
