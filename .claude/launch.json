@@ -2,10 +2,10 @@
   "version": "0.0.1",
   "configurations": [
     {
-      "name": "pixelnick",
+      "name": "nickai-social-dev",
       "runtimeExecutable": "bun",
-      "runtimeArgs": ["run", "dev"],
-      "autoPort": true
+      "runtimeArgs": ["run", "dev", "--port", "3021"],
+      "port": 3021
     }
   ]
 }

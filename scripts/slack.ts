@@ -36,7 +36,7 @@ export function slackConfigFromEnv(): SlackConfig | null {
   return { token, channelId };
 }
 
-async function slackGet(token: string, method: string, params: Record<string, string>) {
+export async function slackGet(token: string, method: string, params: Record<string, string>) {
   const qs = new URLSearchParams(params).toString();
   const res = await fetch(`${SLACK_API}/${method}?${qs}`, {
     headers: { Authorization: `Bearer ${token}` },
@@ -44,7 +44,7 @@ async function slackGet(token: string, method: string, params: Record<string, st
   return res.json();
 }
 
-async function slackPostForm(token: string, method: string, params: Record<string, string>) {
+export async function slackPostForm(token: string, method: string, params: Record<string, string>) {
   const res = await fetch(`${SLACK_API}/${method}`, {
     method: "POST",
     headers: {
@@ -57,7 +57,7 @@ async function slackPostForm(token: string, method: string, params: Record<strin
 }
 
 /** Step 1+2: reserve an upload URL and PUT the file bytes. Returns the file id. */
-async function uploadOne(token: string, filePath: string): Promise<string> {
+export async function uploadOne(token: string, filePath: string): Promise<string> {
   const bytes = fs.readFileSync(filePath);
   const filename = path.basename(filePath);
 
