@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+  Weekly NickAI social batch (STA-473). Runs scripts/run-weekly-social.sh
+  every FRIDAY at 09:20 local (Dubai) — the batch covers the FOLLOWING week,
+  leaving the weekend to tweak before Monday's post. launchd catches up after
+  wake, so a sleeping Mac delays (not skips) the run.
+
+  Install:
+    cp .claude/launchd/com.nickai.weekly-social.plist ~/Library/LaunchAgents/
+    launchctl load ~/Library/LaunchAgents/com.nickai.weekly-social.plist
+  Uninstall:
+    launchctl unload ~/Library/LaunchAgents/com.nickai.weekly-social.plist
+    rm ~/Library/LaunchAgents/com.nickai.weekly-social.plist
+  Test now:
+    launchctl start com.nickai.weekly-social
+-->
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+    <key>Label</key>
+    <string>com.nickai.weekly-social</string>
+
+    <key>ProgramArguments</key>
+    <array>
+        <string>/bin/bash</string>
+        <string>/Users/badi/claude/pixelnick-social-cards/scripts/run-weekly-social.sh</string>
+    </array>
+
+    <key>StartCalendarInterval</key>
+    <dict>
+        <key>Weekday</key>
+        <integer>5</integer>
+        <key>Hour</key>
+        <integer>9</integer>
+        <key>Minute</key>
+        <integer>20</integer>
+    </dict>
+
+    <key>RunAtLoad</key>
+    <false/>
+
+    <key>StandardOutPath</key>
+    <string>/dev/null</string>
+    <key>StandardErrorPath</key>
+    <string>/dev/null</string>
+</dict>
+</plist>
