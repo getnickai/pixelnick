@@ -1,102 +1,8 @@
 {
-  "generatedAt": "2026-07-02T10:18:14.123Z",
+  "generatedAt": "2026-07-03T08:41:57.284Z",
   "source": "R2 match-reader agents + matches mirror",
-  "count": 28,
+  "count": 13,
   "records": [
-    {
-      "home": "Switzerland",
-      "away": "Algeria",
-      "homeCode": "CH",
-      "awayCode": "DZ",
-      "game": "Switzerland vs Algeria",
-      "kickoffISO": "2026-07-03T03:00:00.000Z",
-      "kickoff": "Thu, Jul 2 · 11:00 PM EDT",
-      "competition": "FIFA World Cup 2026",
-      "stage": "Group Stage",
-      "venue": "BC Place",
-      "upcoming": true,
-      "marketType": "totals",
-      "line": 2.5,
-      "selection": "Over",
-      "marketPrice": 0.435,
-      "consensus": 0.4858,
-      "spread": [
-        0.4858,
-        0.4858
-      ],
-      "edgePp": 5.1,
-      "agentsN": 7,
-      "agentsTotal": 8,
-      "perAgent": [
-        {
-          "handle": "GEMINI",
-          "fairValue": 0.4858,
-          "edgePp": 4.58
-        },
-        {
-          "handle": "GPT",
-          "fairValue": 0.4858,
-          "edgePp": 4.58
-        },
-        {
-          "handle": "GROK",
-          "fairValue": 0.4858,
-          "edgePp": 4.58
-        },
-        {
-          "handle": "KIMI",
-          "fairValue": 0.4858,
-          "edgePp": 4.58
-        },
-        {
-          "handle": "MISTRAL",
-          "fairValue": 0.4858,
-          "edgePp": 4.58
-        },
-        {
-          "handle": "QWEN",
-          "fairValue": 0.4858,
-          "edgePp": 4.58
-        },
-        {
-          "handle": "DEEPSEEK",
-          "fairValue": 0.4858,
-          "edgePp": 4.579999999999999
-        }
-      ]
-    },
-    {
-      "home": "Switzerland",
-      "away": "Algeria",
-      "homeCode": "CH",
-      "awayCode": "DZ",
-      "game": "Switzerland vs Algeria",
-      "kickoffISO": "2026-07-03T03:00:00.000Z",
-      "kickoff": "Thu, Jul 2 · 11:00 PM EDT",
-      "competition": "FIFA World Cup 2026",
-      "stage": "Group Stage",
-      "venue": "BC Place",
-      "upcoming": true,
-      "marketType": "totals",
-      "line": 2.5,
-      "selection": "Under",
-      "marketPrice": 0.565,
-      "consensus": 0.5142,
-      "spread": [
-        0.5142,
-        0.5142
-      ],
-      "edgePp": -5.1,
-      "agentsN": 1,
-      "agentsTotal": 8,
-      "perAgent": [
-        {
-          "handle": "MISTRAL",
-          "fairValue": 0.5142,
-          "edgePp": -5.58
-        }
-      ]
-    },
     {
       "home": "Australia",
       "away": "Egypt",
@@ -112,16 +18,21 @@
       "marketType": "totals",
       "line": 2.5,
       "selection": "Under",
-      "marketPrice": 0.665,
-      "consensus": 0.6303,
+      "marketPrice": 0.675,
+      "consensus": 0.6337,
       "spread": [
         0.6303,
-        0.6303
+        0.6371
       ],
-      "edgePp": -3.5,
-      "agentsN": 1,
+      "edgePp": -4.1,
+      "agentsN": 2,
       "agentsTotal": 8,
       "perAgent": [
+        {
+          "handle": "MISTRAL",
+          "fairValue": 0.6371,
+          "edgePp": 5.29
+        },
         {
           "handle": "DEEPSEEK",
           "fairValue": 0.6303,
@@ -182,217 +93,39 @@
       ]
     },
     {
-      "home": "Portugal",
-      "away": "Croatia",
-      "homeCode": "PT",
-      "awayCode": "HR",
-      "game": "Portugal vs Croatia",
-      "kickoffISO": "2026-07-02T23:00:00.000Z",
-      "kickoff": "Thu, Jul 2 · 7:00 PM EDT",
+      "home": "Colombia",
+      "away": "Ghana",
+      "homeCode": "CO",
+      "awayCode": "GH",
+      "game": "Colombia vs Ghana",
+      "kickoffISO": "2026-07-04T01:30:00.000Z",
+      "kickoff": "Fri, Jul 3 · 9:30 PM EDT",
       "competition": "FIFA World Cup 2026",
       "stage": "Group Stage",
-      "venue": "BMO Field",
+      "venue": "Arrowhead Stadium",
       "upcoming": true,
       "marketType": "btts",
       "line": null,
       "selection": "No",
-      "marketPrice": 0.5033,
-      "consensus": 0.5344,
+      "marketPrice": 0.6,
+      "consensus": 0.6259,
       "spread": [
-        0.5301,
-        0.5358
+        0.6247,
+        0.6271
       ],
-      "edgePp": 3.1,
-      "agentsN": 6,
-      "agentsTotal": 8,
-      "perAgent": [
-        {
-          "handle": "GEMINI",
-          "fairValue": 0.5301,
-          "edgePp": 3.01
-        },
-        {
-          "handle": "GPT",
-          "fairValue": 0.5358,
-          "edgePp": 2.58
-        },
-        {
-          "handle": "GROK",
-          "fairValue": 0.5351,
-          "edgePp": 2.51
-        },
-        {
-          "handle": "KIMI",
-          "fairValue": 0.5351,
-          "edgePp": 2.51
-        },
-        {
-          "handle": "MISTRAL",
-          "fairValue": 0.5351,
-          "edgePp": 2.51
-        },
-        {
-          "handle": "QWEN",
-          "fairValue": 0.5351,
-          "edgePp": 2.51
-        }
-      ]
-    },
-    {
-      "home": "Australia",
-      "away": "Egypt",
-      "homeCode": "AU",
-      "awayCode": "EG",
-      "game": "Australia vs Egypt",
-      "kickoffISO": "2026-07-03T18:00:00.000Z",
-      "kickoff": "Fri, Jul 3 · 2:00 PM EDT",
-      "competition": "FIFA World Cup 2026",
-      "stage": "Group Stage",
-      "venue": null,
-      "upcoming": true,
-      "marketType": "moneyline",
-      "line": null,
-      "selection": "Away",
-      "marketPrice": 0.385,
-      "consensus": 0.3558,
-      "spread": [
-        0.3558,
-        0.3558
-      ],
-      "edgePp": -2.9,
-      "agentsN": 1,
-      "agentsTotal": 8,
-      "perAgent": [
-        {
-          "handle": "DEEPSEEK",
-          "fairValue": 0.3558,
-          "edgePp": -3.42
-        }
-      ]
-    },
-    {
-      "home": "Spain",
-      "away": "Austria",
-      "homeCode": "ES",
-      "awayCode": "AT",
-      "game": "Spain vs Austria",
-      "kickoffISO": "2026-07-02T19:00:00.000Z",
-      "kickoff": "Thu, Jul 2 · 3:00 PM EDT",
-      "competition": "FIFA World Cup 2026",
-      "stage": "Group Stage",
-      "venue": "SoFi Stadium",
-      "upcoming": true,
-      "marketType": "moneyline",
-      "line": null,
-      "selection": "Away",
-      "marketPrice": 0.08,
-      "consensus": 0.107,
-      "spread": [
-        0.0957,
-        0.1183
-      ],
-      "edgePp": 2.7,
+      "edgePp": 2.6,
       "agentsN": 2,
       "agentsTotal": 8,
       "perAgent": [
         {
-          "handle": "MISTRAL",
-          "fairValue": 0.1183,
-          "edgePp": 3.83
-        },
-        {
-          "handle": "DEEPSEEK",
-          "fairValue": 0.0957,
-          "edgePp": 0.57
-        }
-      ]
-    },
-    {
-      "home": "Portugal",
-      "away": "Croatia",
-      "homeCode": "PT",
-      "awayCode": "HR",
-      "game": "Portugal vs Croatia",
-      "kickoffISO": "2026-07-02T23:00:00.000Z",
-      "kickoff": "Thu, Jul 2 · 7:00 PM EDT",
-      "competition": "FIFA World Cup 2026",
-      "stage": "Group Stage",
-      "venue": "BMO Field",
-      "upcoming": true,
-      "marketType": "totals",
-      "line": 2.5,
-      "selection": "Under",
-      "marketPrice": 0.4938,
-      "consensus": 0.5204,
-      "spread": [
-        0.5035,
-        0.5478
-      ],
-      "edgePp": 2.7,
-      "agentsN": 3,
-      "agentsTotal": 8,
-      "perAgent": [
-        {
-          "handle": "GEMINI",
-          "fairValue": 0.5035,
-          "edgePp": 4.1
-        },
-        {
-          "handle": "QWEN",
-          "fairValue": 0.5098,
-          "edgePp": 2.98
-        },
-        {
-          "handle": "MISTRAL",
-          "fairValue": 0.5478,
-          "edgePp": -0.22
-        }
-      ]
-    },
-    {
-      "home": "Spain",
-      "away": "Austria",
-      "homeCode": "ES",
-      "awayCode": "AT",
-      "game": "Spain vs Austria",
-      "kickoffISO": "2026-07-02T19:00:00.000Z",
-      "kickoff": "Thu, Jul 2 · 3:00 PM EDT",
-      "competition": "FIFA World Cup 2026",
-      "stage": "Group Stage",
-      "venue": "SoFi Stadium",
-      "upcoming": true,
-      "marketType": "totals",
-      "line": 2.5,
-      "selection": "Under",
-      "marketPrice": 0.4544,
-      "consensus": 0.4712,
-      "spread": [
-        0.4643,
-        0.4795
-      ],
-      "edgePp": 1.7,
-      "agentsN": 4,
-      "agentsTotal": 8,
-      "perAgent": [
-        {
-          "handle": "GEMINI",
-          "fairValue": 0.4643,
-          "edgePp": 2.93
-        },
-        {
           "handle": "GPT",
-          "fairValue": 0.4643,
-          "edgePp": 2.93
+          "fairValue": 0.6271,
+          "edgePp": 2.71
         },
         {
           "handle": "MISTRAL",
-          "fairValue": 0.4795,
-          "edgePp": -0.05
-        },
-        {
-          "handle": "DEEPSEEK",
-          "fairValue": 0.4765,
-          "edgePp": -0.35
+          "fairValue": 0.6247,
+          "edgePp": 1.47
         }
       ]
     },
@@ -411,16 +144,21 @@
       "marketType": "moneyline",
       "line": null,
       "selection": "Home",
-      "marketPrice": 0.645,
-      "consensus": 0.6286,
+      "marketPrice": 0.665,
+      "consensus": 0.6492,
       "spread": [
         0.6286,
-        0.6286
+        0.6697
       ],
       "edgePp": -1.6,
-      "agentsN": 1,
+      "agentsN": 2,
       "agentsTotal": 8,
       "perAgent": [
+        {
+          "handle": "MISTRAL",
+          "fairValue": 0.6697,
+          "edgePp": -2.03
+        },
         {
           "handle": "DEEPSEEK",
           "fairValue": 0.6286,
@@ -493,273 +231,81 @@
       ]
     },
     {
-      "home": "Colombia",
-      "away": "Ghana",
-      "homeCode": "CO",
-      "awayCode": "GH",
-      "game": "Colombia vs Ghana",
-      "kickoffISO": "2026-07-04T01:30:00.000Z",
-      "kickoff": "Fri, Jul 3 · 9:30 PM EDT",
+      "home": "Australia",
+      "away": "Egypt",
+      "homeCode": "AU",
+      "awayCode": "EG",
+      "game": "Australia vs Egypt",
+      "kickoffISO": "2026-07-03T18:00:00.000Z",
+      "kickoff": "Fri, Jul 3 · 2:00 PM EDT",
       "competition": "FIFA World Cup 2026",
       "stage": "Group Stage",
-      "venue": "Arrowhead Stadium",
+      "venue": null,
       "upcoming": true,
-      "marketType": "totals",
-      "line": 2.5,
-      "selection": "Under",
-      "marketPrice": 0.585,
-      "consensus": 0.5689,
+      "marketType": "moneyline",
+      "line": null,
+      "selection": "Away",
+      "marketPrice": 0.385,
+      "consensus": 0.3997,
       "spread": [
-        0.5689,
-        0.5689
+        0.3558,
+        0.4216
       ],
-      "edgePp": -1.6,
-      "agentsN": 1,
+      "edgePp": 1.5,
+      "agentsN": 3,
       "agentsTotal": 8,
       "perAgent": [
         {
+          "handle": "GEMINI",
+          "fairValue": 0.4216,
+          "edgePp": 3.16
+        },
+        {
+          "handle": "GPT",
+          "fairValue": 0.4216,
+          "edgePp": 3.16
+        },
+        {
           "handle": "DEEPSEEK",
-          "fairValue": 0.5689,
-          "edgePp": -2.11
+          "fairValue": 0.3558,
+          "edgePp": -3.42
         }
       ]
     },
     {
-      "home": "Switzerland",
-      "away": "Algeria",
-      "homeCode": "CH",
-      "awayCode": "DZ",
-      "game": "Switzerland vs Algeria",
-      "kickoffISO": "2026-07-03T03:00:00.000Z",
-      "kickoff": "Thu, Jul 2 · 11:00 PM EDT",
+      "home": "Australia",
+      "away": "Egypt",
+      "homeCode": "AU",
+      "awayCode": "EG",
+      "game": "Australia vs Egypt",
+      "kickoffISO": "2026-07-03T18:00:00.000Z",
+      "kickoff": "Fri, Jul 3 · 2:00 PM EDT",
       "competition": "FIFA World Cup 2026",
       "stage": "Group Stage",
-      "venue": "BC Place",
+      "venue": null,
       "upcoming": true,
       "marketType": "moneyline",
       "line": null,
       "selection": "Home",
-      "marketPrice": 0.475,
-      "consensus": 0.461,
+      "marketPrice": 0.285,
+      "consensus": 0.2747,
       "spread": [
-        0.461,
-        0.461
+        0.268,
+        0.2815
       ],
-      "edgePp": -1.4,
-      "agentsN": 1,
-      "agentsTotal": 8,
-      "perAgent": [
-        {
-          "handle": "MISTRAL",
-          "fairValue": 0.461,
-          "edgePp": -1.9
-        }
-      ]
-    },
-    {
-      "home": "Spain",
-      "away": "Austria",
-      "homeCode": "ES",
-      "awayCode": "AT",
-      "game": "Spain vs Austria",
-      "kickoffISO": "2026-07-02T19:00:00.000Z",
-      "kickoff": "Thu, Jul 2 · 3:00 PM EDT",
-      "competition": "FIFA World Cup 2026",
-      "stage": "Group Stage",
-      "venue": "SoFi Stadium",
-      "upcoming": true,
-      "marketType": "btts",
-      "line": null,
-      "selection": "No",
-      "marketPrice": 0.6,
-      "consensus": 0.589,
-      "spread": [
-        0.589,
-        0.589
-      ],
-      "edgePp": -1.1,
-      "agentsN": 2,
-      "agentsTotal": 8,
-      "perAgent": [
-        {
-          "handle": "DEEPSEEK",
-          "fairValue": 0.589,
-          "edgePp": -1.1
-        },
-        {
-          "handle": "MISTRAL",
-          "fairValue": 0.589,
-          "edgePp": -2.1
-        }
-      ]
-    },
-    {
-      "home": "Portugal",
-      "away": "Croatia",
-      "homeCode": "PT",
-      "awayCode": "HR",
-      "game": "Portugal vs Croatia",
-      "kickoffISO": "2026-07-02T23:00:00.000Z",
-      "kickoff": "Thu, Jul 2 · 7:00 PM EDT",
-      "competition": "FIFA World Cup 2026",
-      "stage": "Group Stage",
-      "venue": "BMO Field",
-      "upcoming": true,
-      "marketType": "moneyline",
-      "line": null,
-      "selection": "Away",
-      "marketPrice": 0.185,
-      "consensus": 0.1931,
-      "spread": [
-        0.1931,
-        0.1931
-      ],
-      "edgePp": 0.8,
+      "edgePp": -1,
       "agentsN": 2,
       "agentsTotal": 8,
       "perAgent": [
         {
           "handle": "MISTRAL",
-          "fairValue": 0.1931,
-          "edgePp": 0.31
+          "fairValue": 0.268,
+          "edgePp": 2.8
         },
         {
           "handle": "DEEPSEEK",
-          "fairValue": 0.1931,
-          "edgePp": 0.30999999999999994
-        }
-      ]
-    },
-    {
-      "home": "Switzerland",
-      "away": "Algeria",
-      "homeCode": "CH",
-      "awayCode": "DZ",
-      "game": "Switzerland vs Algeria",
-      "kickoffISO": "2026-07-03T03:00:00.000Z",
-      "kickoff": "Thu, Jul 2 · 11:00 PM EDT",
-      "competition": "FIFA World Cup 2026",
-      "stage": "Group Stage",
-      "venue": "BC Place",
-      "upcoming": true,
-      "marketType": "btts",
-      "line": null,
-      "selection": "Yes",
-      "marketPrice": 0.51,
-      "consensus": 0.5176,
-      "spread": [
-        0.5176,
-        0.5176
-      ],
-      "edgePp": 0.8,
-      "agentsN": 1,
-      "agentsTotal": 8,
-      "perAgent": [
-        {
-          "handle": "DEEPSEEK",
-          "fairValue": 0.5176,
-          "edgePp": -0.24000000000000002
-        }
-      ]
-    },
-    {
-      "home": "Spain",
-      "away": "Austria",
-      "homeCode": "ES",
-      "awayCode": "AT",
-      "game": "Spain vs Austria",
-      "kickoffISO": "2026-07-02T19:00:00.000Z",
-      "kickoff": "Thu, Jul 2 · 3:00 PM EDT",
-      "competition": "FIFA World Cup 2026",
-      "stage": "Group Stage",
-      "venue": "SoFi Stadium",
-      "upcoming": true,
-      "marketType": "moneyline",
-      "line": null,
-      "selection": "Draw",
-      "marketPrice": 0.175,
-      "consensus": 0.1832,
-      "spread": [
-        0.1832,
-        0.1832
-      ],
-      "edgePp": 0.8,
-      "agentsN": 1,
-      "agentsTotal": 8,
-      "perAgent": [
-        {
-          "handle": "MISTRAL",
-          "fairValue": 0.1832,
-          "edgePp": 0.32
-        }
-      ]
-    },
-    {
-      "home": "Switzerland",
-      "away": "Algeria",
-      "homeCode": "CH",
-      "awayCode": "DZ",
-      "game": "Switzerland vs Algeria",
-      "kickoffISO": "2026-07-03T03:00:00.000Z",
-      "kickoff": "Thu, Jul 2 · 11:00 PM EDT",
-      "competition": "FIFA World Cup 2026",
-      "stage": "Group Stage",
-      "venue": "BC Place",
-      "upcoming": true,
-      "marketType": "moneyline",
-      "line": null,
-      "selection": "Away",
-      "marketPrice": 0.235,
-      "consensus": 0.242,
-      "spread": [
-        0.242,
-        0.242
-      ],
-      "edgePp": 0.7,
-      "agentsN": 2,
-      "agentsTotal": 8,
-      "perAgent": [
-        {
-          "handle": "DEEPSEEK",
-          "fairValue": 0.242,
-          "edgePp": 0.2000000000000001
-        },
-        {
-          "handle": "MISTRAL",
-          "fairValue": 0.242,
-          "edgePp": 0.2
-        }
-      ]
-    },
-    {
-      "home": "Spain",
-      "away": "Austria",
-      "homeCode": "ES",
-      "awayCode": "AT",
-      "game": "Spain vs Austria",
-      "kickoffISO": "2026-07-02T19:00:00.000Z",
-      "kickoff": "Thu, Jul 2 · 3:00 PM EDT",
-      "competition": "FIFA World Cup 2026",
-      "stage": "Group Stage",
-      "venue": "SoFi Stadium",
-      "upcoming": true,
-      "marketType": "btts",
-      "line": null,
-      "selection": "Yes",
-      "marketPrice": 0.405,
-      "consensus": 0.411,
-      "spread": [
-        0.411,
-        0.411
-      ],
-      "edgePp": 0.6,
-      "agentsN": 1,
-      "agentsTotal": 8,
-      "perAgent": [
-        {
-          "handle": "DEEPSEEK",
-          "fairValue": 0.411,
-          "edgePp": 0.1
+          "fairValue": 0.2815,
+          "edgePp": -0.85
         }
       ]
     },
@@ -809,107 +355,6 @@
       "upcoming": true,
       "marketType": "moneyline",
       "line": null,
-      "selection": "Home",
-      "marketPrice": 0.285,
-      "consensus": 0.2815,
-      "spread": [
-        0.2815,
-        0.2815
-      ],
-      "edgePp": -0.4,
-      "agentsN": 1,
-      "agentsTotal": 8,
-      "perAgent": [
-        {
-          "handle": "DEEPSEEK",
-          "fairValue": 0.2815,
-          "edgePp": -0.85
-        }
-      ]
-    },
-    {
-      "home": "Portugal",
-      "away": "Croatia",
-      "homeCode": "PT",
-      "awayCode": "HR",
-      "game": "Portugal vs Croatia",
-      "kickoffISO": "2026-07-02T23:00:00.000Z",
-      "kickoff": "Thu, Jul 2 · 7:00 PM EDT",
-      "competition": "FIFA World Cup 2026",
-      "stage": "Group Stage",
-      "venue": "BMO Field",
-      "upcoming": true,
-      "marketType": "moneyline",
-      "line": null,
-      "selection": "Home",
-      "marketPrice": 0.545,
-      "consensus": 0.5424,
-      "spread": [
-        0.5424,
-        0.5424
-      ],
-      "edgePp": -0.3,
-      "agentsN": 1,
-      "agentsTotal": 8,
-      "perAgent": [
-        {
-          "handle": "MISTRAL",
-          "fairValue": 0.5424,
-          "edgePp": -0.76
-        }
-      ]
-    },
-    {
-      "home": "Spain",
-      "away": "Austria",
-      "homeCode": "ES",
-      "awayCode": "AT",
-      "game": "Spain vs Austria",
-      "kickoffISO": "2026-07-02T19:00:00.000Z",
-      "kickoff": "Thu, Jul 2 · 3:00 PM EDT",
-      "competition": "FIFA World Cup 2026",
-      "stage": "Group Stage",
-      "venue": "SoFi Stadium",
-      "upcoming": true,
-      "marketType": "totals",
-      "line": 2.5,
-      "selection": "Over",
-      "marketPrice": 0.525,
-      "consensus": 0.5235,
-      "spread": [
-        0.5235,
-        0.5235
-      ],
-      "edgePp": -0.2,
-      "agentsN": 2,
-      "agentsTotal": 8,
-      "perAgent": [
-        {
-          "handle": "DEEPSEEK",
-          "fairValue": 0.5235,
-          "edgePp": -0.65
-        },
-        {
-          "handle": "MISTRAL",
-          "fairValue": 0.5235,
-          "edgePp": -0.65
-        }
-      ]
-    },
-    {
-      "home": "Australia",
-      "away": "Egypt",
-      "homeCode": "AU",
-      "awayCode": "EG",
-      "game": "Australia vs Egypt",
-      "kickoffISO": "2026-07-03T18:00:00.000Z",
-      "kickoff": "Fri, Jul 3 · 2:00 PM EDT",
-      "competition": "FIFA World Cup 2026",
-      "stage": "Group Stage",
-      "venue": null,
-      "upcoming": true,
-      "marketType": "moneyline",
-      "line": null,
       "selection": "Draw",
       "marketPrice": 0.335,
       "consensus": 0.3327,
@@ -929,34 +374,39 @@
       ]
     },
     {
-      "home": "Switzerland",
-      "away": "Algeria",
-      "homeCode": "CH",
-      "awayCode": "DZ",
-      "game": "Switzerland vs Algeria",
-      "kickoffISO": "2026-07-03T03:00:00.000Z",
-      "kickoff": "Thu, Jul 2 · 11:00 PM EDT",
+      "home": "Colombia",
+      "away": "Ghana",
+      "homeCode": "CO",
+      "awayCode": "GH",
+      "game": "Colombia vs Ghana",
+      "kickoffISO": "2026-07-04T01:30:00.000Z",
+      "kickoff": "Fri, Jul 3 · 9:30 PM EDT",
       "competition": "FIFA World Cup 2026",
       "stage": "Group Stage",
-      "venue": "BC Place",
+      "venue": "Arrowhead Stadium",
       "upcoming": true,
-      "marketType": "moneyline",
-      "line": null,
-      "selection": "Draw",
-      "marketPrice": 0.295,
-      "consensus": 0.297,
+      "marketType": "totals",
+      "line": 2.5,
+      "selection": "Under",
+      "marketPrice": 0.575,
+      "consensus": 0.5739,
       "spread": [
-        0.297,
-        0.297
+        0.5689,
+        0.5789
       ],
-      "edgePp": 0.2,
-      "agentsN": 1,
+      "edgePp": -0.1,
+      "agentsN": 2,
       "agentsTotal": 8,
       "perAgent": [
         {
           "handle": "MISTRAL",
-          "fairValue": 0.297,
-          "edgePp": -0.3
+          "fairValue": 0.5789,
+          "edgePp": 0.89
+        },
+        {
+          "handle": "DEEPSEEK",
+          "fairValue": 0.5689,
+          "edgePp": -2.11
         }
       ]
     },
