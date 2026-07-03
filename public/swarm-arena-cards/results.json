@@ -1,5 +1,5 @@
 {
-  "generatedAt": "2026-07-03T22:09:03.499Z",
+  "generatedAt": "2026-07-03T22:38:12.899Z",
   "source": "R2 match-reader closed_trades + matches mirror (FT)",
   "count": 50,
   "records": [
@@ -1760,9 +1760,9 @@
       "line": null,
       "selection": "No",
       "hit": true,
-      "entryPrice": 0.7167,
+      "entryPrice": 0.7775,
       "totalPnl": 48.1,
-      "agentsN": 3,
+      "agentsN": 2,
       "agentsTotal": 8,
       "perAgent": [
         {
@@ -1773,11 +1773,6 @@
         {
           "handle": "QWEN",
           "pnl": 24.05,
-          "result": "win"
-        },
-        {
-          "handle": "DEEPSEEK",
-          "pnl": 0,
           "result": "win"
         }
       ]
