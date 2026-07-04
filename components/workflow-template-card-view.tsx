@@ -254,9 +254,9 @@ export function WorkflowTemplateCardView({
       </div>
 
       {/* Footer CTA — "Try for free" (reuses the perf-card tab + brand button).
-          right-10 + bottom-16: tuck into the corner with the same 64px bottom
-          inset as left-16 content; sit above the line graph (z-10). */}
-      <div className="absolute bottom-16 right-10 z-10" style={{ opacity: anim.ctaOpacity }}>
+          bottom-[80px] + right-14: ~20px+ clearance above the tab at the
+          tightest point; right-14 mirrors left-16 content inset. */}
+      <div className="absolute bottom-[80px] right-14 z-10" style={{ opacity: anim.ctaOpacity }}>
         <div className="relative flex items-start">
           <div className="relative h-[56px] w-[46px] shrink-0 rotate-180">
             <img alt="" src={`${ASSET}/cta-tab.svg`} className="absolute inset-0 block size-full max-w-none" />
