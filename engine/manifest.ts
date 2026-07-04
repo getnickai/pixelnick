@@ -47,6 +47,13 @@ export const engineManifest: EngineEntryMeta[] = [
     meta: "live R2",
   },
   {
+    id: "nickai-template-library",
+    label: "NickAI Template Library",
+    group: "NickAI",
+    shortLabel: "Template Library",
+    meta: "21 templates",
+  },
+  {
     id: "x-signals",
     label: "X Signals",
     group: "X Engine",

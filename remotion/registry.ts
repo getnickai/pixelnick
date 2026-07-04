@@ -46,6 +46,11 @@ import {
   nickaiSocialCardDefaultProps,
   type NickaiSocialCardProps,
 } from "./compositions/nickai-social-card/props";
+import { WorkflowTemplateCardComposition } from "./compositions/workflow-template-card/composition";
+import {
+  workflowTemplateCardDefaultProps,
+  type WorkflowTemplateCardProps,
+} from "./compositions/workflow-template-card/props";
 import {
   motionManifest,
   type MotionEntryMeta,
@@ -115,6 +120,10 @@ const componentBindings: Record<string, ComponentBinding> = {
     component: NickaiSocialCardComposition,
     defaultProps: nickaiSocialCardDefaultProps,
   } as ComponentBinding<NickaiSocialCardProps> as ComponentBinding,
+  "workflow-template-card": {
+    component: WorkflowTemplateCardComposition,
+    defaultProps: workflowTemplateCardDefaultProps,
+  } as ComponentBinding<WorkflowTemplateCardProps> as ComponentBinding,
 };
 
 export const motionRegistry: MotionEntry[] = motionManifest

@@ -12,6 +12,9 @@
  *   1. Add an entry here (server-safe metadata).
  *   2. Add the same id to the `componentBindings` map in `./registry.ts`.
  */
+import { TEMPLATES } from "./compositions/workflow-template-card/data/templates.generated";
+import { wtcDuration } from "./compositions/workflow-template-card/timeline";
+
 export type MotionEntryMeta = {
   id: string;
   label: string;
@@ -134,6 +137,20 @@ export const motionManifest: MotionEntryMeta[] = [
     height: 900,
     fps: 30,
     durationInFrames: 240,
+  },
+  {
+    // Workflow Template Card — the library "Blueprint" video: a first-person
+    // prompt types in, lifts into the headline, then the template's nodes ride
+    // a conveyor (pop centre → slide left → dim → spill) with accelerando
+    // pacing, before the (CP3) zoom-out settles into the static poster. Portrait
+    // default; duration scales with the graph's node count (BTC-dip = 10). CP4
+    // overrides per template via calculateMetadata.
+    id: "workflow-template-card",
+    label: "Workflow Template Card",
+    width: 650,
+    height: 1136,
+    fps: 30,
+    durationInFrames: wtcDuration(TEMPLATES["btc-buy-the-dip"].nodes.length),
   },
 ];
 

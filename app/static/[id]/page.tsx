@@ -1,5 +1,6 @@
 import { notFound } from "next/navigation";
 import AiReadyCard from "@/components/ai-ready-card";
+import WorkflowTemplateCard from "@/components/workflow-template-card";
 import SwarmArenaModelCard from "@/components/swarm-arena-model-card";
 import ConsensusCard from "@/components/consensus-card-view";
 import ResultCard from "@/components/result-card-view";
@@ -21,6 +22,14 @@ export default async function StaticVisualPage({
     return (
       <StaticVisualHost entry={entry}>
         <AiReadyCard />
+      </StaticVisualHost>
+    );
+  }
+
+  if (id === "workflow-template-card") {
+    return (
+      <StaticVisualHost entry={entry}>
+        <WorkflowTemplateCard />
       </StaticVisualHost>
     );
   }
