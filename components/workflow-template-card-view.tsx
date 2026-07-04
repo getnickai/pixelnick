@@ -90,8 +90,8 @@ export function WorkflowTemplateCardView({
     padding: GRAPH.padding,
   });
   const graphTop = anim.graphTop ?? 360;
-  const descriptionTop = anim.descriptionTop ?? 712;
-  const metaTop = anim.metaTop ?? 832;
+  const metaTop = anim.metaTop ?? 712;
+  const descriptionTop = anim.descriptionTop ?? 752;
   const bodyCopy = anim.nickVoice
     ? template.nickDescription || template.description
     : template.description;
@@ -232,15 +232,7 @@ export function WorkflowTemplateCardView({
         })}
       </div>
 
-      {/* Description */}
-      <div
-        className="absolute left-16 right-16"
-        style={{ top: descriptionTop, opacity: anim.descriptionOpacity }}
-      >
-        <p className="text-[22px] leading-[1.45] text-zinc-400">{bodyCopy}</p>
-      </div>
-
-      {/* Meta */}
+      {/* Meta — node count sits directly under the graph */}
       <div
         className="absolute left-16 flex items-center gap-3"
         style={{ top: metaTop, opacity: anim.metaOpacity }}
@@ -253,8 +245,18 @@ export function WorkflowTemplateCardView({
         </p>
       </div>
 
-      {/* Footer CTA — "Try for free" (reuses the perf-card tab + brand button) */}
-      <div className="absolute bottom-[56px] right-16" style={{ opacity: anim.ctaOpacity }}>
+      {/* Description */}
+      <div
+        className="absolute left-16 right-16"
+        style={{ top: descriptionTop, opacity: anim.descriptionOpacity }}
+      >
+        <p className="text-[22px] leading-[1.45] text-zinc-400">{bodyCopy}</p>
+      </div>
+
+      {/* Footer CTA — "Try for free" (reuses the perf-card tab + brand button).
+          right-10 + bottom-16: tuck into the corner with the same 64px bottom
+          inset as left-16 content; sit above the line graph (z-10). */}
+      <div className="absolute bottom-16 right-10 z-10" style={{ opacity: anim.ctaOpacity }}>
         <div className="relative flex items-start">
           <div className="relative h-[56px] w-[46px] shrink-0 rotate-180">
             <img alt="" src={`${ASSET}/cta-tab.svg`} className="absolute inset-0 block size-full max-w-none" />
