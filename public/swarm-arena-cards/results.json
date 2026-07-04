@@ -1,5 +1,5 @@
 {
-  "generatedAt": "2026-07-04T02:42:25.251Z",
+  "generatedAt": "2026-07-04T04:03:01.872Z",
   "source": "R2 match-reader closed_trades + matches mirror (FT)",
   "count": 50,
   "records": [
@@ -1672,6 +1672,53 @@
       ]
     },
     {
+      "home": "Colombia",
+      "away": "Ghana",
+      "homeCode": "CO",
+      "awayCode": "GH",
+      "game": "Colombia vs Ghana",
+      "competition": "FIFA World Cup 2026",
+      "stage": "Round of 32",
+      "venue": "Arrowhead Stadium",
+      "kickoff": "Fri, Jul 3",
+      "kickoffISO": "2026-07-04T01:30:00.000Z",
+      "day": "2026-07-03",
+      "homeScore": 1,
+      "awayScore": 0,
+      "winner": null,
+      "status": "FT",
+      "marketType": "btts",
+      "line": null,
+      "selection": "No",
+      "hit": true,
+      "entryPrice": 0.58,
+      "totalPnl": 86.93,
+      "agentsN": 4,
+      "agentsTotal": 8,
+      "perAgent": [
+        {
+          "handle": "GEMINI",
+          "pnl": 22.17,
+          "result": "win"
+        },
+        {
+          "handle": "KIMI",
+          "pnl": 22.17,
+          "result": "win"
+        },
+        {
+          "handle": "QWEN",
+          "pnl": 22.17,
+          "result": "win"
+        },
+        {
+          "handle": "GPT",
+          "pnl": 20.42,
+          "result": "win"
+        }
+      ]
+    },
+    {
       "home": "Mexico",
       "away": "South Korea",
       "homeCode": "MX",
@@ -1997,38 +2044,6 @@
         {
           "handle": "QWEN",
           "pnl": 30.61,
-          "result": "win"
-        }
-      ]
-    },
-    {
-      "home": "Saudi Arabia",
-      "away": "Uruguay",
-      "homeCode": "SA",
-      "awayCode": "UY",
-      "game": "Saudi Arabia vs Uruguay",
-      "competition": "FIFA World Cup 2026",
-      "stage": "Group Stage · MD1",
-      "venue": "Hard Rock Stadium",
-      "kickoff": "Mon, Jun 15",
-      "kickoffISO": "2026-06-15T22:00:00.000Z",
-      "day": "2026-06-15",
-      "homeScore": 1,
-      "awayScore": 1,
-      "winner": "Draw",
-      "status": "FT",
-      "marketType": "totals",
-      "line": 2.5,
-      "selection": "Under",
-      "hit": true,
-      "entryPrice": 0.545,
-      "totalPnl": 25.05,
-      "agentsN": 1,
-      "agentsTotal": 8,
-      "perAgent": [
-        {
-          "handle": "DEEPSEEK",
-          "pnl": 25.05,
           "result": "win"
         }
       ]
