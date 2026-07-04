@@ -11,6 +11,7 @@
  *   bun scripts/render-wtc.ts --slug=eth-agent-ai --mp4
  *   bun scripts/render-wtc.ts --ratio=landscape --mp4
  *   bun scripts/render-wtc.ts --all --mp4           # every template → mp4
+ *   bun scripts/render-wtc.ts --all --mp4 --archive # … + copy to public/workflow-templates/
  *
  * Not part of the product; used for review. Output under out/wtc/.
  */
@@ -26,6 +27,7 @@ import {
 
 const ID = "workflow-template-card";
 const OUT = path.join(process.cwd(), "out", "wtc");
+const ARCHIVE = path.join(process.cwd(), "public", "workflow-templates");
 const PUBLIC_DIR = path.join(process.cwd(), "public");
 
 function argValue(flag: string): string | undefined {
@@ -34,11 +36,14 @@ function argValue(flag: string): string | undefined {
 }
 
 async function main() {
-  fs.mkdirSync(OUT, { recursive: true });
-
   const wantMp4 = process.argv.includes("--mp4");
   const all = process.argv.includes("--all");
+  const archive = process.argv.includes("--archive");
   const ratio = (argValue("--ratio") ?? "portrait") as "portrait" | "landscape";
+
+  fs.mkdirSync(OUT, { recursive: true });
+  if (archive) fs.mkdirSync(ARCHIVE, { recursive: true });
+
   if (ratio === "landscape") {
     throw new Error(
       "landscape (16:9) layout isn't implemented yet — the View + conveyor geometry are portrait-only. Use --ratio=portrait.",
@@ -77,6 +82,23 @@ async function main() {
         outputLocation: mp4,
       });
       console.log(`mp4 → ${path.relative(process.cwd(), mp4)}`);
+
+      const poster = path.join(OUT, `${s}.${ratio}.poster.png`);
+      await renderStill({
+        composition,
+        serveUrl,
+        output: poster,
+        frame: composition.durationInFrames - 1,
+        imageFormat: "png",
+        inputProps,
+      });
+      console.log(`poster → ${path.relative(process.cwd(), poster)}`);
+
+      if (archive) {
+        fs.copyFileSync(mp4, path.join(ARCHIVE, `${s}.mp4`));
+        fs.copyFileSync(poster, path.join(ARCHIVE, `${s}.png`));
+        console.log(`archived → public/workflow-templates/${s}.{mp4,png}`);
+      }
       continue;
     }
 
