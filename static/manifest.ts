@@ -19,6 +19,12 @@ export const staticManifest: StaticEntryMeta[] = [
     height: 1136,
   },
   {
+    id: "workflow-template-card",
+    label: "Workflow Template Card",
+    width: 650,
+    height: 1136,
+  },
+  {
     id: "swarm-arena-model-card",
     label: "SwarmArena Model Card",
     width: 650,

@@ -32,6 +32,11 @@ import { MatchdayAnalysisComposition } from "./compositions/matchday-analysis/co
 import { matchdayAnalysisDefaultProps } from "./compositions/matchday-analysis/props";
 import { NickaiSocialCardComposition } from "./compositions/nickai-social-card/composition";
 import { nickaiSocialCardDefaultProps } from "./compositions/nickai-social-card/props";
+import { WorkflowTemplateCardCard } from "./compositions/workflow-template-card/card-with-font";
+import {
+  workflowTemplateCardDefaultProps,
+  calcWorkflowTemplateMetadata,
+} from "./compositions/workflow-template-card/props";
 import { getMotionEntryMeta } from "./manifest";
 
 const perf = getMotionEntryMeta("performance-card")!;
@@ -43,6 +48,7 @@ const result = getMotionEntryMeta("result-card")!;
 const leaderboardAnim = getMotionEntryMeta("swarm-arena-leaderboard-card")!;
 const matchdayAnim = getMotionEntryMeta("matchday-analysis")!;
 const nickaiSocial = getMotionEntryMeta("nickai-social-card")!;
+const workflowTemplate = getMotionEntryMeta("workflow-template-card")!;
 
 export const RemotionRoot: React.FC = () => {
   return (
@@ -141,6 +147,18 @@ export const RemotionRoot: React.FC = () => {
         width={nickaiSocial.width}
         height={nickaiSocial.height}
         defaultProps={nickaiSocialCardDefaultProps}
+      />
+      {/* Workflow Template Card (library "Blueprint" video) — prompt types in →
+          lifts to headline → node conveyor (accelerando) → CP3 zoom-out. */}
+      <Composition
+        id="workflow-template-card"
+        component={WorkflowTemplateCardCard}
+        durationInFrames={workflowTemplate.durationInFrames}
+        fps={workflowTemplate.fps}
+        width={workflowTemplate.width}
+        height={workflowTemplate.height}
+        defaultProps={workflowTemplateCardDefaultProps}
+        calculateMetadata={calcWorkflowTemplateMetadata}
       />
     </>
   );
