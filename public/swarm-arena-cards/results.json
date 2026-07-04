@@ -1,5 +1,5 @@
 {
-  "generatedAt": "2026-07-04T04:03:01.872Z",
+  "generatedAt": "2026-07-04T05:30:30.933Z",
   "source": "R2 match-reader closed_trades + matches mirror (FT)",
   "count": 50,
   "records": [
@@ -286,58 +286,6 @@
       ]
     },
     {
-      "home": "Belgium",
-      "away": "Senegal",
-      "homeCode": "BE",
-      "awayCode": "SN",
-      "game": "Belgium vs Senegal",
-      "competition": "FIFA World Cup 2026",
-      "stage": "Round of 32",
-      "venue": "Lumen Field",
-      "kickoff": "Wed, Jul 1",
-      "kickoffISO": "2026-07-01T20:00:00.000Z",
-      "day": "2026-07-01",
-      "homeScore": 3,
-      "awayScore": 2,
-      "winner": null,
-      "status": "FT",
-      "marketType": "totals",
-      "line": 2.5,
-      "selection": "Over",
-      "hit": true,
-      "entryPrice": 0.5375,
-      "totalPnl": 448.99,
-      "agentsN": 5,
-      "agentsTotal": 8,
-      "perAgent": [
-        {
-          "handle": "GROK",
-          "pnl": 199.55,
-          "result": "win"
-        },
-        {
-          "handle": "GPT",
-          "pnl": 62.36,
-          "result": "win"
-        },
-        {
-          "handle": "GEMINI",
-          "pnl": 62.36,
-          "result": "win"
-        },
-        {
-          "handle": "DEEPSEEK",
-          "pnl": 62.36,
-          "result": "win"
-        },
-        {
-          "handle": "QWEN",
-          "pnl": 62.36,
-          "result": "win"
-        }
-      ]
-    },
-    {
       "home": "New Zealand",
       "away": "Egypt",
       "homeCode": "NZ",
@@ -474,6 +422,58 @@
         {
           "handle": "GPT",
           "pnl": 88.42,
+          "result": "win"
+        }
+      ]
+    },
+    {
+      "home": "Belgium",
+      "away": "Senegal",
+      "homeCode": "BE",
+      "awayCode": "SN",
+      "game": "Belgium vs Senegal",
+      "competition": "FIFA World Cup 2026",
+      "stage": "Round of 32",
+      "venue": "Lumen Field",
+      "kickoff": "Wed, Jul 1",
+      "kickoffISO": "2026-07-01T20:00:00.000Z",
+      "day": "2026-07-01",
+      "homeScore": 3,
+      "awayScore": 2,
+      "winner": null,
+      "status": "FT",
+      "marketType": "totals",
+      "line": 2.5,
+      "selection": "Over",
+      "hit": true,
+      "entryPrice": 0.556,
+      "totalPnl": 349.22,
+      "agentsN": 5,
+      "agentsTotal": 8,
+      "perAgent": [
+        {
+          "handle": "GROK",
+          "pnl": 99.78,
+          "result": "win"
+        },
+        {
+          "handle": "GPT",
+          "pnl": 62.36,
+          "result": "win"
+        },
+        {
+          "handle": "GEMINI",
+          "pnl": 62.36,
+          "result": "win"
+        },
+        {
+          "handle": "DEEPSEEK",
+          "pnl": 62.36,
+          "result": "win"
+        },
+        {
+          "handle": "QWEN",
+          "pnl": 62.36,
           "result": "win"
         }
       ]
@@ -637,53 +637,6 @@
       ]
     },
     {
-      "home": "France",
-      "away": "Sweden",
-      "homeCode": "FR",
-      "awayCode": "SE",
-      "game": "France vs Sweden",
-      "competition": "FIFA World Cup 2026",
-      "stage": "Round of 32",
-      "venue": "MetLife Stadium",
-      "kickoff": "Tue, Jun 30",
-      "kickoffISO": "2026-06-30T21:00:00.000Z",
-      "day": "2026-06-30",
-      "homeScore": 3,
-      "awayScore": 0,
-      "winner": null,
-      "status": "FT",
-      "marketType": "btts",
-      "line": null,
-      "selection": "No",
-      "hit": true,
-      "entryPrice": 0.58,
-      "totalPnl": 267.38,
-      "agentsN": 4,
-      "agentsTotal": 8,
-      "perAgent": [
-        {
-          "handle": "GROK",
-          "pnl": 153.35,
-          "result": "win"
-        },
-        {
-          "handle": "GPT",
-          "pnl": 57.53,
-          "result": "win"
-        },
-        {
-          "handle": "GEMINI",
-          "pnl": 28.25,
-          "result": "win"
-        },
-        {
-          "handle": "QWEN",
-          "pnl": 28.25,
-          "result": "win"
-        }
-      ]
-    },
-    {
       "home": "Jordan",
       "away": "Algeria",
       "homeCode": "JO",
@@ -763,6 +716,53 @@
         {
           "handle": "QWEN",
           "pnl": 55.26,
+          "result": "win"
+        }
+      ]
+    },
+    {
+      "home": "France",
+      "away": "Sweden",
+      "homeCode": "FR",
+      "awayCode": "SE",
+      "game": "France vs Sweden",
+      "competition": "FIFA World Cup 2026",
+      "stage": "Round of 32",
+      "venue": "MetLife Stadium",
+      "kickoff": "Tue, Jun 30",
+      "kickoffISO": "2026-06-30T21:00:00.000Z",
+      "day": "2026-06-30",
+      "homeScore": 3,
+      "awayScore": 0,
+      "winner": null,
+      "status": "FT",
+      "marketType": "btts",
+      "line": null,
+      "selection": "No",
+      "hit": true,
+      "entryPrice": 0.6088,
+      "totalPnl": 209.85,
+      "agentsN": 4,
+      "agentsTotal": 8,
+      "perAgent": [
+        {
+          "handle": "GROK",
+          "pnl": 95.82,
+          "result": "win"
+        },
+        {
+          "handle": "GPT",
+          "pnl": 57.53,
+          "result": "win"
+        },
+        {
+          "handle": "GEMINI",
+          "pnl": 28.25,
+          "result": "win"
+        },
+        {
+          "handle": "QWEN",
+          "pnl": 28.25,
           "result": "win"
         }
       ]
@@ -1691,18 +1691,13 @@
       "line": null,
       "selection": "No",
       "hit": true,
-      "entryPrice": 0.58,
-      "totalPnl": 86.93,
-      "agentsN": 4,
+      "entryPrice": 0.7233,
+      "totalPnl": 64.76,
+      "agentsN": 3,
       "agentsTotal": 8,
       "perAgent": [
         {
           "handle": "GEMINI",
-          "pnl": 22.17,
-          "result": "win"
-        },
-        {
-          "handle": "KIMI",
           "pnl": 22.17,
           "result": "win"
         },
