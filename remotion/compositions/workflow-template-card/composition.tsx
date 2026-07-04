@@ -45,8 +45,8 @@ const HEAD_TOP = 190;
 const STATUS_GAP = 14;
 /** Payoff layout — graph + copy tuck under the lifted chat box + status. */
 const END_GRAPH_TOP = HEAD_TOP + BOX_H + STATUS_GAP + 28 + 20;
-const END_DESC_TOP = END_GRAPH_TOP + 300 + 24;
-const END_META_TOP = END_DESC_TOP + 168;
+const END_META_TOP = END_GRAPH_TOP + 300 + 24;
+const END_DESC_TOP = END_META_TOP + 40;
 
 const clamp = (v: number, lo: number, hi: number) => Math.min(Math.max(v, lo), hi);
 
