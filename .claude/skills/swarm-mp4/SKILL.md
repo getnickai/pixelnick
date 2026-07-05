@@ -93,6 +93,20 @@ committed `history/` dir — **use it for on-demand downloads.**
   `consensus-<home>-vs-<away>-<market>`, result = `result-<home>-vs-<away>-<market>`
   (full team names).
 
+### Other flags worth knowing (not in the matrix above)
+- `--out=<dir>` — override the output folder. Every render script defaults to
+  `out/mp4/`; only pass this if you want the files elsewhere.
+- `--feed=<path>` — point `render-consensus.ts` / `render-results.ts` at a
+  different `consensus.json` / `results.json` instead of the default in
+  `public/swarm-arena-cards/`.
+- `--top` — the explicit opposite of `--no-top` (render only the best market per
+  game); it's the default, so you rarely need it.
+- `render-consensus.ts --src=<url>` — override the upcoming/Elo feed for
+  `--preview-game` (defaults to prod `/api/swarm-upcoming`).
+- `swarm-results.ts` feed-builder flags: `--limit=<n>` (cap picks, default 50),
+  `--runs=<n>` (recent runs scanned per agent for closed trades, default 8),
+  `--settle-open` (also settle still-open positions).
+
 ## The games/match card IS the consensus card
 **For any game/match, always render the consensus "Market vs Agents" design**
 (the design built 2026-06-12, STA-421). The old classic Elo match-preview card
@@ -117,7 +131,7 @@ This pulls the fixture + Elo from `/api/swarm-upcoming` and renders the
 consensus card's **preview branch** (`data.preview`): same shell/crests/footer,
 but the body is a 3-way win-probability panel + both teams' Elo ratings + an
 honest "agent picks land closer to kickoff" note (slug
-`consensus-preview-<homeCode>-<awayCode>`). Use the normal `--game=` path the
+`consensus-preview-<home>-vs-<away>`, full team names). Use the normal `--game=` path the
 moment the agents cover it (check `consensus.json`). Example 2026-06-12: USA vs
 Paraguay had 6/8 agents → full consensus card; Canada vs Bosnia had zero coverage
 to kickoff → Elo preview of the same design.
@@ -151,7 +165,8 @@ the **biggest-payout** one by default (`--no-top` for all markets; `--market=` t
 force one); `--all` renders every settled pick. By default only the swarm's
 **winning** picks are in the feed — pass `--include-losses` to `swarm-results.ts`
 to also build cards for picks they got wrong. Slug:
-`result-<market>-<homeCode>-<awayCode>`. Read `public/swarm-arena-cards/results.json`
+`result-<home>-vs-<away>-<market>` (full team names, matching the consensus slug).
+Read `public/swarm-arena-cards/results.json`
 to see which games/markets settled. Example 2026-06-14: USA 4–1 Paraguay, the
 swarm's Over 2.5 hit and 5/8 agents banked +$564.
 
