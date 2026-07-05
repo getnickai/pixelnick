@@ -402,7 +402,17 @@ export const WorkflowTemplateCardComposition: React.FC<WorkflowTemplateCardProps
           const r = i - a;
           const opacity = slotOpacity(r) * conveyorGate;
           if (opacity < 0.005) return null;
-          const scale = slotScale(r);
+          // Opening node is rendered larger while it's centre, then eases back
+          // to normal size as the belt moves past it — a clear "this is the
+          // first node" signal to match its longer hold (see timeline firstHold).
+          const firstBoost =
+            i === 0
+              ? interpolate(a, [0, 1], [1.18, 1], {
+                  extrapolateLeft: "clamp",
+                  extrapolateRight: "clamp",
+                })
+              : 1;
+          const scale = slotScale(r) * firstBoost;
           const x = centerX + r * SLOT;
           return (
             <div
