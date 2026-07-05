@@ -23,6 +23,12 @@ export const WTC_ANIM = {
   /** First hero node arrives centre here. */
   conveyorStart: 172,
   /**
+   * Extra frames the OPENING node holds centre before the second node arrives,
+   * on top of `beatBase`. Gives the viewer a beat to register "this is the
+   * first node / the start of the workflow" before the conveyor gets going.
+   */
+  firstHold: 26,
+  /**
    * Accelerando. The first three nodes share `beatBase` (constant tempo);
    * starting at the 3rd node, each subsequent beat shortens by 30%
    * (× `beatRatio`), compounding toward the end. `beatFloor` keeps the late,
@@ -43,6 +49,8 @@ export const WTC_ANIM = {
  * 3rd node and compounds 30% per node, floored so it stays visible.
  */
 export function wtcBeat(k: number): number {
+  // Opening node lingers: base tempo + firstHold before node 2 arrives.
+  if (k === 0) return WTC_ANIM.beatBase + WTC_ANIM.firstHold;
   if (k < 2) return WTC_ANIM.beatBase;
   return Math.max(
     WTC_ANIM.beatFloor,
