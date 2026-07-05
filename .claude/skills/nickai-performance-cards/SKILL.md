@@ -18,6 +18,15 @@ frame) and **MP4** (a 5-second animation) from a JSON data feed, then post the
 new/changed ones to Slack. This skill drives the pipeline in the `pixelnick`
 repo (`getnickai/pixelnick`).
 
+## TL;DR (the 90% case)
+From the repo root, with `SOURCES` + R2/Slack creds set in `.env.local`:
+```bash
+bun run cards --dry-run   # preview what's new vs unchanged across all sources
+bun run cards             # render PNG + MP4 for changed cards, post to Slack
+```
+Curated one-off (no R2): `bun scripts/generate-cards.ts --data=data/incoming/agents.json`.
+Everything below is reference for the other 10% (flags, env, ledger, producer setup).
+
 ## When to use this
 Anyone who has agent stats and wants shareable graphics. Typical asks: "generate
 cards for this week's top agents", "re-render the cards with updated numbers",
@@ -109,54 +118,22 @@ contract (for testing only) is in `data/agent-input.ts` with an example at
 
 ## Adding a new workflow to the pipeline (producer-side setup)
 
-For a step-by-step walkthrough of wiring up a NickAI workflow to produce card
-data — including the function-node sharing caveat, the troubleshooting flow,
-and the table of "who does what" — see **[PRODUCER_GUIDE.md](./PRODUCER_GUIDE.md)**.
-The short version is below.
+Wiring a NickAI workflow up to feed this pipeline is the **producer side**, and
+it has its own hard-won lessons. **All of it lives in one place:
+[PRODUCER_GUIDE.md](./PRODUCER_GUIDE.md)** — the step-by-step walkthrough, the
+schemas, the function-node reuse caveat, the "who does what" table, and the full
+list of regressions to avoid. Read it before hooking up a new workflow.
 
-The hard lessons from wiring up the first live workflow — read this before
-hooking a new one to the pipeline, otherwise you'll burn an afternoon
-chasing the same regressions we already chased.
-
-### NickAI's nodes can't read context dynamically
-Workflow nodes can't introspect the workflow's own name or the builder's
-identity at execution time. So those values must be **explicitly injected**
-into the producer node:
-
-- **`agentName`** — hard-code the workflow's title per workflow (e.g.
-  `"Disciplined BTC Paper Trader"`). If you skip this, the producer ends up
-  writing a synthetic fallback like `"NickAI Agent {workflowId}"` and the
-  card headline shows the id instead of the name.
-- **`builder.name`** and **`builder.avatarUrl`** — set as workflow variables
-  (or hard-coded). Without these the card shows a placeholder builder and
-  the bundled Franklin avatar as a fallback.
-- **`nodes`** — the workflow's node count. Without it the card silently
-  falls back to the Remotion composition's default value (currently 9),
-  which looks plausible but is wrong.
-
-### Where shared producer vars live
-R2 creds, Slack tokens, and the producer's standard variable set live in
-the **enterprise marketing NickAI account** as the team's single source of
-truth. Reuse those when adding a new workflow instead of re-creating
-credentials per workflow — same vars, same bucket, same Slack app.
-
-### Common producer mistakes to avoid
-- **Don't confuse `snapshot.json` with a run record.** `snapshot.json` is
-  *cumulative state* (totals across all runs: `pnlUsd`, `runsTotal`,
-  `tradesTotal`, etc.). The per-execution trading signal output lives in
-  `runs/{date}/{executionId}.json`. We hit this — the producer briefly
-  overwrote `snapshot.json` with what was essentially a single run's
-  output, dropping every metric the card needs.
-- **`nextRunISO` must be a real future timestamp**, not equal to `asOfISO`.
-  When they match, the relative formatter renders "Next run in **now**"
-  on the card.
-- **Overwrite `profile.json` on every execution**, not just at workflow
-  creation. Otherwise renaming the workflow / updating the builder doesn't
-  propagate to R2 (we wasted a couple iterations because the profile was
-  stuck on stale values until we re-triggered creation).
-- **Date-partition `runs/` correctly**: `runs/{YYYY-MM-DD}/{executionId}.json`.
-  Flat paths like `runs/{ISO_with_dashes}.json` will work today (we don't
-  read the runs layer yet) but will break trade-highlight cards later.
+The three things producers most often get wrong (the guide covers the rest):
+- **Inject what the node can't introspect** — `agentName`, `nodes` (a *number*),
+  and `builder.name`/`builder.avatarUrl`. Missing any of these and the card
+  silently falls back to the workflowId, a default node count, or the Franklin
+  avatar.
+- **`snapshot.json` is cumulative state, not a per-run record** — per-execution
+  detail belongs in `runs/{date}/{executionId}.json`. Conflating them drops
+  every metric the card needs.
+- **`nextRunISO` must be a real future timestamp** (`> asOfISO`), or the card
+  renders "Next run in now".
 
 ## The input data (curated mode — testing only)
 
