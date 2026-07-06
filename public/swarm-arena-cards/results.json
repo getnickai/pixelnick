@@ -1,5 +1,5 @@
 {
-  "generatedAt": "2026-07-06T04:45:13.654Z",
+  "generatedAt": "2026-07-06T21:50:58.866Z",
   "source": "R2 match-reader closed_trades + matches mirror (FT)",
   "count": 50,
   "records": [
@@ -432,58 +432,6 @@
       ]
     },
     {
-      "home": "Mexico",
-      "away": "England",
-      "homeCode": "MX",
-      "awayCode": "GB",
-      "game": "Mexico vs England",
-      "competition": "FIFA World Cup 2026",
-      "stage": "Round of 16",
-      "venue": "Estadio Azteca, Mexico City",
-      "kickoff": "Sun, Jul 5",
-      "kickoffISO": "2026-07-06T01:00:00.000Z",
-      "day": "2026-07-05",
-      "homeScore": 2,
-      "awayScore": 3,
-      "winner": "England",
-      "status": "FT",
-      "marketType": "totals",
-      "line": 2.5,
-      "selection": "Over",
-      "hit": true,
-      "entryPrice": 0.397,
-      "totalPnl": 379.78,
-      "agentsN": 5,
-      "agentsTotal": 8,
-      "perAgent": [
-        {
-          "handle": "GPT",
-          "pnl": 76.58,
-          "result": "win"
-        },
-        {
-          "handle": "GEMINI",
-          "pnl": 76.58,
-          "result": "win"
-        },
-        {
-          "handle": "KIMI",
-          "pnl": 76.58,
-          "result": "win"
-        },
-        {
-          "handle": "QWEN",
-          "pnl": 76.58,
-          "result": "win"
-        },
-        {
-          "handle": "DEEPSEEK",
-          "pnl": 73.46,
-          "result": "win"
-        }
-      ]
-    },
-    {
       "home": "USA",
       "away": "Paraguay",
       "homeCode": "US",
@@ -526,58 +474,6 @@
         {
           "handle": "GPT",
           "pnl": 88.42,
-          "result": "win"
-        }
-      ]
-    },
-    {
-      "home": "Belgium",
-      "away": "Senegal",
-      "homeCode": "BE",
-      "awayCode": "SN",
-      "game": "Belgium vs Senegal",
-      "competition": "FIFA World Cup 2026",
-      "stage": "Round of 32",
-      "venue": "Lumen Field, Seattle",
-      "kickoff": "Wed, Jul 1",
-      "kickoffISO": "2026-07-01T20:00:00.000Z",
-      "day": "2026-07-01",
-      "homeScore": 3,
-      "awayScore": 2,
-      "winner": "Belgium",
-      "status": "FT",
-      "marketType": "totals",
-      "line": 2.5,
-      "selection": "Over",
-      "hit": true,
-      "entryPrice": 0.556,
-      "totalPnl": 349.22,
-      "agentsN": 5,
-      "agentsTotal": 8,
-      "perAgent": [
-        {
-          "handle": "GROK",
-          "pnl": 99.78,
-          "result": "win"
-        },
-        {
-          "handle": "GPT",
-          "pnl": 62.36,
-          "result": "win"
-        },
-        {
-          "handle": "GEMINI",
-          "pnl": 62.36,
-          "result": "win"
-        },
-        {
-          "handle": "DEEPSEEK",
-          "pnl": 62.36,
-          "result": "win"
-        },
-        {
-          "handle": "QWEN",
-          "pnl": 62.36,
           "result": "win"
         }
       ]
@@ -662,6 +558,53 @@
         {
           "handle": "QWEN",
           "pnl": 112.77,
+          "result": "win"
+        }
+      ]
+    },
+    {
+      "home": "Mexico",
+      "away": "England",
+      "homeCode": "MX",
+      "awayCode": "GB",
+      "game": "Mexico vs England",
+      "competition": "FIFA World Cup 2026",
+      "stage": "Round of 16",
+      "venue": "Estadio Banorte, Mexico City",
+      "kickoff": "Sun, Jul 5",
+      "kickoffISO": "2026-07-06T01:00:00.000Z",
+      "day": "2026-07-05",
+      "homeScore": 2,
+      "awayScore": 3,
+      "winner": "England",
+      "status": "FT",
+      "marketType": "totals",
+      "line": 2.5,
+      "selection": "Over",
+      "hit": true,
+      "entryPrice": 0.5488,
+      "totalPnl": 303.2,
+      "agentsN": 4,
+      "agentsTotal": 8,
+      "perAgent": [
+        {
+          "handle": "GPT",
+          "pnl": 76.58,
+          "result": "win"
+        },
+        {
+          "handle": "GEMINI",
+          "pnl": 76.58,
+          "result": "win"
+        },
+        {
+          "handle": "QWEN",
+          "pnl": 76.58,
+          "result": "win"
+        },
+        {
+          "handle": "DEEPSEEK",
+          "pnl": 73.46,
           "result": "win"
         }
       ]
@@ -1065,6 +1008,53 @@
       ]
     },
     {
+      "home": "Portugal",
+      "away": "Spain",
+      "homeCode": "PT",
+      "awayCode": "ES",
+      "game": "Portugal vs Spain",
+      "competition": "FIFA World Cup 2026",
+      "stage": "Round of 16",
+      "venue": "AT&T Stadium, Dallas",
+      "kickoff": "Mon, Jul 6",
+      "kickoffISO": "2026-07-06T19:00:00.000Z",
+      "day": "2026-07-06",
+      "homeScore": 0,
+      "awayScore": 1,
+      "winner": "Spain",
+      "status": "FT",
+      "marketType": "btts",
+      "line": null,
+      "selection": "No",
+      "hit": true,
+      "entryPrice": 0.405,
+      "totalPnl": 176.28,
+      "agentsN": 4,
+      "agentsTotal": 8,
+      "perAgent": [
+        {
+          "handle": "GPT",
+          "pnl": 44.07,
+          "result": "win"
+        },
+        {
+          "handle": "DEEPSEEK",
+          "pnl": 44.07,
+          "result": "win"
+        },
+        {
+          "handle": "KIMI",
+          "pnl": 44.07,
+          "result": "win"
+        },
+        {
+          "handle": "QWEN",
+          "pnl": 44.07,
+          "result": "win"
+        }
+      ]
+    },
+    {
       "home": "Belgium",
       "away": "Iran",
       "homeCode": "BE",
@@ -1280,58 +1270,6 @@
         {
           "handle": "QWEN",
           "pnl": 45.95,
-          "result": "win"
-        }
-      ]
-    },
-    {
-      "home": "Mexico",
-      "away": "England",
-      "homeCode": "MX",
-      "awayCode": "GB",
-      "game": "Mexico vs England",
-      "competition": "FIFA World Cup 2026",
-      "stage": "Round of 16",
-      "venue": "Estadio Azteca, Mexico City",
-      "kickoff": "Sun, Jul 5",
-      "kickoffISO": "2026-07-06T01:00:00.000Z",
-      "day": "2026-07-05",
-      "homeScore": 2,
-      "awayScore": 3,
-      "winner": "England",
-      "status": "FT",
-      "marketType": "btts",
-      "line": null,
-      "selection": "Yes",
-      "hit": true,
-      "entryPrice": 0.473,
-      "totalPnl": 134,
-      "agentsN": 5,
-      "agentsTotal": 8,
-      "perAgent": [
-        {
-          "handle": "GPT",
-          "pnl": 34.52,
-          "result": "win"
-        },
-        {
-          "handle": "GEMINI",
-          "pnl": 33.16,
-          "result": "win"
-        },
-        {
-          "handle": "KIMI",
-          "pnl": 33.16,
-          "result": "win"
-        },
-        {
-          "handle": "QWEN",
-          "pnl": 33.16,
-          "result": "win"
-        },
-        {
-          "handle": "DEEPSEEK",
-          "pnl": 0,
           "result": "win"
         }
       ]
@@ -1589,48 +1527,6 @@
       ]
     },
     {
-      "home": "Germany",
-      "away": "Paraguay",
-      "homeCode": "DE",
-      "awayCode": "PY",
-      "game": "Germany vs Paraguay",
-      "competition": "FIFA World Cup 2026",
-      "stage": "Round of 32",
-      "venue": "Gillette Stadium, Boston",
-      "kickoff": "Mon, Jun 29",
-      "kickoffISO": "2026-06-29T20:30:00.000Z",
-      "day": "2026-06-29",
-      "homeScore": 1,
-      "awayScore": 1,
-      "winner": null,
-      "status": "FT",
-      "marketType": "totals",
-      "line": 2.5,
-      "selection": "Under",
-      "hit": true,
-      "entryPrice": 0.6233,
-      "totalPnl": 116.91,
-      "agentsN": 3,
-      "agentsTotal": 8,
-      "perAgent": [
-        {
-          "handle": "GPT",
-          "pnl": 38.97,
-          "result": "win"
-        },
-        {
-          "handle": "GEMINI",
-          "pnl": 38.97,
-          "result": "win"
-        },
-        {
-          "handle": "QWEN",
-          "pnl": 38.97,
-          "result": "win"
-        }
-      ]
-    },
-    {
       "home": "Iran",
       "away": "New Zealand",
       "homeCode": "IR",
@@ -1700,6 +1596,48 @@
         {
           "handle": "GPT",
           "pnl": 112.77,
+          "result": "win"
+        }
+      ]
+    },
+    {
+      "home": "Mexico",
+      "away": "England",
+      "homeCode": "MX",
+      "awayCode": "GB",
+      "game": "Mexico vs England",
+      "competition": "FIFA World Cup 2026",
+      "stage": "Round of 16",
+      "venue": "Estadio Banorte, Mexico City",
+      "kickoff": "Sun, Jul 5",
+      "kickoffISO": "2026-07-06T01:00:00.000Z",
+      "day": "2026-07-05",
+      "homeScore": 2,
+      "awayScore": 3,
+      "winner": "England",
+      "status": "FT",
+      "marketType": "btts",
+      "line": null,
+      "selection": "Yes",
+      "hit": true,
+      "entryPrice": 0.6467,
+      "totalPnl": 100.84,
+      "agentsN": 3,
+      "agentsTotal": 8,
+      "perAgent": [
+        {
+          "handle": "GPT",
+          "pnl": 34.52,
+          "result": "win"
+        },
+        {
+          "handle": "GEMINI",
+          "pnl": 33.16,
+          "result": "win"
+        },
+        {
+          "handle": "QWEN",
+          "pnl": 33.16,
           "result": "win"
         }
       ]
@@ -2139,6 +2077,38 @@
         {
           "handle": "QWEN",
           "pnl": 45.95,
+          "result": "win"
+        }
+      ]
+    },
+    {
+      "home": "South Korea",
+      "away": "Czech Republic",
+      "homeCode": "KR",
+      "awayCode": "CZ",
+      "game": "South Korea vs Czech Republic",
+      "competition": "FIFA World Cup 2026",
+      "stage": "Group Stage · MD1",
+      "venue": "Estadio Akron",
+      "kickoff": "Thu, Jun 11",
+      "kickoffISO": "2026-06-12T02:00:00.000Z",
+      "day": "2026-06-11",
+      "homeScore": 2,
+      "awayScore": 1,
+      "winner": "South Korea",
+      "status": "FT",
+      "marketType": "totals",
+      "line": 2.5,
+      "selection": "Over",
+      "hit": true,
+      "entryPrice": 1,
+      "totalPnl": 41.43,
+      "agentsN": 1,
+      "agentsTotal": 8,
+      "perAgent": [
+        {
+          "handle": "GEMINI",
+          "pnl": 41.43,
           "result": "win"
         }
       ]
