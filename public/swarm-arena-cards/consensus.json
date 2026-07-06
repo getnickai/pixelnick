@@ -1,7 +1,7 @@
 {
-  "generatedAt": "2026-07-05T10:49:45.069Z",
+  "generatedAt": "2026-07-06T09:37:30.463Z",
   "source": "R2 match-reader agents + matches mirror",
-  "count": 32,
+  "count": 21,
   "records": [
     {
       "home": "Switzerland",
@@ -19,13 +19,13 @@
       "line": 2.5,
       "selection": "Over",
       "marketPrice": 0.395,
-      "consensus": 0.482,
+      "consensus": 0.4812,
       "spread": [
-        0.4807,
+        0.4774,
         0.4871
       ],
-      "edgePp": 8.7,
-      "agentsN": 5,
+      "edgePp": 8.6,
+      "agentsN": 6,
       "agentsTotal": 8,
       "perAgent": [
         {
@@ -52,95 +52,43 @@
           "handle": "QWEN",
           "fairValue": 0.4807,
           "edgePp": 8.07
+        },
+        {
+          "handle": "MISTRAL",
+          "fairValue": 0.4774,
+          "edgePp": 7.74
         }
       ]
     },
     {
-      "home": "Mexico",
-      "away": "England",
-      "homeCode": "MX",
-      "awayCode": "GB",
-      "game": "Mexico vs England",
-      "kickoffISO": "2026-07-06T00:00:00.000Z",
-      "kickoff": "Sun, Jul 5 · 8:00 PM EDT",
+      "home": "Switzerland",
+      "away": "Colombia",
+      "homeCode": "CH",
+      "awayCode": "CO",
+      "game": "Switzerland vs Colombia",
+      "kickoffISO": "2026-07-07T20:00:00.000Z",
+      "kickoff": "Tue, Jul 7 · 4:00 PM EDT",
       "competition": "FIFA World Cup 2026",
       "stage": "Group Stage",
-      "venue": "Estadio Banorte, Mexico City",
+      "venue": null,
       "upcoming": true,
       "marketType": "totals",
       "line": 2.5,
       "selection": "Under",
-      "marketPrice": 0.6075,
-      "consensus": 0.5479,
+      "marketPrice": 0.605,
+      "consensus": 0.5226,
       "spread": [
-        0.5463,
-        0.5496
+        0.5226,
+        0.5226
       ],
-      "edgePp": -6,
-      "agentsN": 2,
+      "edgePp": -8.2,
+      "agentsN": 1,
       "agentsTotal": 8,
       "perAgent": [
         {
           "handle": "MISTRAL",
-          "fairValue": 0.5496,
-          "edgePp": 12.96
-        },
-        {
-          "handle": "DEEPSEEK",
-          "fairValue": 0.5463,
-          "edgePp": -6.37
-        }
-      ]
-    },
-    {
-      "home": "Mexico",
-      "away": "England",
-      "homeCode": "MX",
-      "awayCode": "GB",
-      "game": "Mexico vs England",
-      "kickoffISO": "2026-07-06T00:00:00.000Z",
-      "kickoff": "Sun, Jul 5 · 8:00 PM EDT",
-      "competition": "FIFA World Cup 2026",
-      "stage": "Group Stage",
-      "venue": "Estadio Banorte, Mexico City",
-      "upcoming": true,
-      "marketType": "totals",
-      "line": 2.5,
-      "selection": "Over",
-      "marketPrice": 0.397,
-      "consensus": 0.4517,
-      "spread": [
-        0.4504,
-        0.4537
-      ],
-      "edgePp": 5.5,
-      "agentsN": 5,
-      "agentsTotal": 8,
-      "perAgent": [
-        {
-          "handle": "GPT",
-          "fairValue": 0.4537,
-          "edgePp": 5.37
-        },
-        {
-          "handle": "GEMINI",
-          "fairValue": 0.4504,
-          "edgePp": 5.04
-        },
-        {
-          "handle": "KIMI",
-          "fairValue": 0.4504,
-          "edgePp": 5.04
-        },
-        {
-          "handle": "QWEN",
-          "fairValue": 0.4504,
-          "edgePp": 5.04
-        },
-        {
-          "handle": "DEEPSEEK",
-          "fairValue": 0.4537,
-          "edgePp": 4.37
+          "fairValue": 0.5226,
+          "edgePp": 1.26
         }
       ]
     },
@@ -243,13 +191,13 @@
       "marketType": "btts",
       "line": null,
       "selection": "No",
-      "marketPrice": 0.395,
+      "marketPrice": 0.3933,
       "consensus": 0.4363,
       "spread": [
         0.4361,
         0.4363
       ],
-      "edgePp": 4.1,
+      "edgePp": 4.3,
       "agentsN": 6,
       "agentsTotal": 8,
       "perAgent": [
@@ -318,34 +266,59 @@
       ]
     },
     {
-      "home": "Mexico",
-      "away": "England",
-      "homeCode": "MX",
-      "awayCode": "GB",
-      "game": "Mexico vs England",
-      "kickoffISO": "2026-07-06T00:00:00.000Z",
-      "kickoff": "Sun, Jul 5 · 8:00 PM EDT",
+      "home": "USA",
+      "away": "Belgium",
+      "homeCode": "US",
+      "awayCode": "BE",
+      "game": "USA vs Belgium",
+      "kickoffISO": "2026-07-07T00:00:00.000Z",
+      "kickoff": "Mon, Jul 6 · 8:00 PM EDT",
       "competition": "FIFA World Cup 2026",
       "stage": "Group Stage",
-      "venue": "Estadio Banorte, Mexico City",
+      "venue": "Lumen Field",
       "upcoming": true,
-      "marketType": "moneyline",
-      "line": null,
-      "selection": "Home",
-      "marketPrice": 0.305,
-      "consensus": 0.3431,
+      "marketType": "totals",
+      "line": 2.5,
+      "selection": "Under",
+      "marketPrice": 0.43,
+      "consensus": 0.4674,
       "spread": [
-        0.3431,
-        0.3431
+        0.4564,
+        0.4942
       ],
-      "edgePp": 3.8,
-      "agentsN": 1,
+      "edgePp": 3.7,
+      "agentsN": 6,
       "agentsTotal": 8,
       "perAgent": [
         {
           "handle": "DEEPSEEK",
-          "fairValue": 0.3431,
-          "edgePp": 3.31
+          "fairValue": 0.4564,
+          "edgePp": 3.64
+        },
+        {
+          "handle": "GPT",
+          "fairValue": 0.4564,
+          "edgePp": 3.64
+        },
+        {
+          "handle": "QWEN",
+          "fairValue": 0.4564,
+          "edgePp": 3.64
+        },
+        {
+          "handle": "GEMINI",
+          "fairValue": 0.4942,
+          "edgePp": 3.42
+        },
+        {
+          "handle": "KIMI",
+          "fairValue": 0.4671,
+          "edgePp": 2.71
+        },
+        {
+          "handle": "MISTRAL",
+          "fairValue": 0.4742,
+          "edgePp": 1.42
         }
       ]
     },
@@ -382,226 +355,6 @@
       ]
     },
     {
-      "home": "Brazil",
-      "away": "Norway",
-      "homeCode": "BR",
-      "awayCode": "NO",
-      "game": "Brazil vs Norway",
-      "kickoffISO": "2026-07-05T20:00:00.000Z",
-      "kickoff": "Sun, Jul 5 · 4:00 PM EDT",
-      "competition": "FIFA World Cup 2026",
-      "stage": "Group Stage",
-      "venue": "MetLife Stadium",
-      "upcoming": true,
-      "marketType": "totals",
-      "line": 2.5,
-      "selection": "Under",
-      "marketPrice": 0.455,
-      "consensus": 0.4192,
-      "spread": [
-        0.4192,
-        0.4192
-      ],
-      "edgePp": -3.6,
-      "agentsN": 1,
-      "agentsTotal": 8,
-      "perAgent": [
-        {
-          "handle": "MISTRAL",
-          "fairValue": 0.4192,
-          "edgePp": -4.08
-        }
-      ]
-    },
-    {
-      "home": "USA",
-      "away": "Belgium",
-      "homeCode": "US",
-      "awayCode": "BE",
-      "game": "USA vs Belgium",
-      "kickoffISO": "2026-07-07T00:00:00.000Z",
-      "kickoff": "Mon, Jul 6 · 8:00 PM EDT",
-      "competition": "FIFA World Cup 2026",
-      "stage": "Group Stage",
-      "venue": "Lumen Field",
-      "upcoming": true,
-      "marketType": "totals",
-      "line": 2.5,
-      "selection": "Under",
-      "marketPrice": 0.445,
-      "consensus": 0.4785,
-      "spread": [
-        0.4671,
-        0.4942
-      ],
-      "edgePp": 3.3,
-      "agentsN": 3,
-      "agentsTotal": 8,
-      "perAgent": [
-        {
-          "handle": "GEMINI",
-          "fairValue": 0.4942,
-          "edgePp": 3.42
-        },
-        {
-          "handle": "KIMI",
-          "fairValue": 0.4671,
-          "edgePp": 2.71
-        },
-        {
-          "handle": "MISTRAL",
-          "fairValue": 0.4742,
-          "edgePp": 1.42
-        }
-      ]
-    },
-    {
-      "home": "Brazil",
-      "away": "Norway",
-      "homeCode": "BR",
-      "awayCode": "NO",
-      "game": "Brazil vs Norway",
-      "kickoffISO": "2026-07-05T20:00:00.000Z",
-      "kickoff": "Sun, Jul 5 · 4:00 PM EDT",
-      "competition": "FIFA World Cup 2026",
-      "stage": "Group Stage",
-      "venue": "MetLife Stadium",
-      "upcoming": true,
-      "marketType": "totals",
-      "line": 2.5,
-      "selection": "Over",
-      "marketPrice": 0.5517,
-      "consensus": 0.5832,
-      "spread": [
-        0.5808,
-        0.5865
-      ],
-      "edgePp": 3.2,
-      "agentsN": 6,
-      "agentsTotal": 8,
-      "perAgent": [
-        {
-          "handle": "KIMI",
-          "fairValue": 0.5837,
-          "edgePp": 3.37
-        },
-        {
-          "handle": "MISTRAL",
-          "fairValue": 0.5837,
-          "edgePp": 3.37
-        },
-        {
-          "handle": "QWEN",
-          "fairValue": 0.5837,
-          "edgePp": 3.37
-        },
-        {
-          "handle": "GEMINI",
-          "fairValue": 0.5808,
-          "edgePp": 3.08
-        },
-        {
-          "handle": "GPT",
-          "fairValue": 0.5808,
-          "edgePp": 3.08
-        },
-        {
-          "handle": "DEEPSEEK",
-          "fairValue": 0.5865,
-          "edgePp": 2.65
-        }
-      ]
-    },
-    {
-      "home": "Brazil",
-      "away": "Norway",
-      "homeCode": "BR",
-      "awayCode": "NO",
-      "game": "Brazil vs Norway",
-      "kickoffISO": "2026-07-05T20:00:00.000Z",
-      "kickoff": "Sun, Jul 5 · 4:00 PM EDT",
-      "competition": "FIFA World Cup 2026",
-      "stage": "Group Stage",
-      "venue": "MetLife Stadium",
-      "upcoming": true,
-      "marketType": "moneyline",
-      "line": null,
-      "selection": "Home",
-      "marketPrice": 0.535,
-      "consensus": 0.5035,
-      "spread": [
-        0.5035,
-        0.5035
-      ],
-      "edgePp": -3.2,
-      "agentsN": 1,
-      "agentsTotal": 8,
-      "perAgent": [
-        {
-          "handle": "MISTRAL",
-          "fairValue": 0.5035,
-          "edgePp": 3.65
-        }
-      ]
-    },
-    {
-      "home": "Mexico",
-      "away": "England",
-      "homeCode": "MX",
-      "awayCode": "GB",
-      "game": "Mexico vs England",
-      "kickoffISO": "2026-07-06T00:00:00.000Z",
-      "kickoff": "Sun, Jul 5 · 8:00 PM EDT",
-      "competition": "FIFA World Cup 2026",
-      "stage": "Group Stage",
-      "venue": "Estadio Banorte, Mexico City",
-      "upcoming": true,
-      "marketType": "btts",
-      "line": null,
-      "selection": "Yes",
-      "marketPrice": 0.475,
-      "consensus": 0.5055,
-      "spread": [
-        0.5038,
-        0.5073
-      ],
-      "edgePp": 3,
-      "agentsN": 6,
-      "agentsTotal": 8,
-      "perAgent": [
-        {
-          "handle": "GPT",
-          "fairValue": 0.5038,
-          "edgePp": 3.38
-        },
-        {
-          "handle": "KIMI",
-          "fairValue": 0.5073,
-          "edgePp": 2.73
-        },
-        {
-          "handle": "GEMINI",
-          "fairValue": 0.5068,
-          "edgePp": 2.68
-        },
-        {
-          "handle": "QWEN",
-          "fairValue": 0.5068,
-          "edgePp": 2.68
-        },
-        {
-          "handle": "DEEPSEEK",
-          "fairValue": 0.5044,
-          "edgePp": 2.44
-        },
-        {
-          "handle": "MISTRAL",
-          "fairValue": 0.5038,
-          "edgePp": 2.38
-        }
-      ]
-    },
-    {
       "home": "Argentina",
       "away": "Egypt",
       "homeCode": "AR",
@@ -616,13 +369,13 @@
       "marketType": "totals",
       "line": 2.5,
       "selection": "Over",
-      "marketPrice": 0.475,
+      "marketPrice": 0.4733,
       "consensus": 0.5052,
       "spread": [
         0.5052,
         0.5052
       ],
-      "edgePp": 3,
+      "edgePp": 3.2,
       "agentsN": 6,
       "agentsTotal": 8,
       "perAgent": [
@@ -691,43 +444,6 @@
       ]
     },
     {
-      "home": "Brazil",
-      "away": "Norway",
-      "homeCode": "BR",
-      "awayCode": "NO",
-      "game": "Brazil vs Norway",
-      "kickoffISO": "2026-07-05T20:00:00.000Z",
-      "kickoff": "Sun, Jul 5 · 4:00 PM EDT",
-      "competition": "FIFA World Cup 2026",
-      "stage": "Group Stage",
-      "venue": "MetLife Stadium",
-      "upcoming": true,
-      "marketType": "moneyline",
-      "line": null,
-      "selection": "Away",
-      "marketPrice": 0.21,
-      "consensus": 0.2379,
-      "spread": [
-        0.2162,
-        0.2596
-      ],
-      "edgePp": 2.8,
-      "agentsN": 2,
-      "agentsTotal": 8,
-      "perAgent": [
-        {
-          "handle": "MISTRAL",
-          "fairValue": 0.2596,
-          "edgePp": 3.96
-        },
-        {
-          "handle": "DEEPSEEK",
-          "fairValue": 0.2162,
-          "edgePp": 0.62
-        }
-      ]
-    },
-    {
       "home": "Argentina",
       "away": "Egypt",
       "homeCode": "AR",
@@ -760,70 +476,6 @@
       ]
     },
     {
-      "home": "Argentina",
-      "away": "Egypt",
-      "homeCode": "AR",
-      "awayCode": "EG",
-      "game": "Argentina vs Egypt",
-      "kickoffISO": "2026-07-07T16:00:00.000Z",
-      "kickoff": "Tue, Jul 7 · 12:00 PM EDT",
-      "competition": "FIFA World Cup 2026",
-      "stage": "Group Stage",
-      "venue": null,
-      "upcoming": true,
-      "marketType": "btts",
-      "line": null,
-      "selection": "No",
-      "marketPrice": 0.605,
-      "consensus": 0.5776,
-      "spread": [
-        0.5776,
-        0.5776
-      ],
-      "edgePp": -2.7,
-      "agentsN": 1,
-      "agentsTotal": 8,
-      "perAgent": [
-        {
-          "handle": "DEEPSEEK",
-          "fairValue": 0.5776,
-          "edgePp": -3.24
-        }
-      ]
-    },
-    {
-      "home": "Mexico",
-      "away": "England",
-      "homeCode": "MX",
-      "awayCode": "GB",
-      "game": "Mexico vs England",
-      "kickoffISO": "2026-07-06T00:00:00.000Z",
-      "kickoff": "Sun, Jul 5 · 8:00 PM EDT",
-      "competition": "FIFA World Cup 2026",
-      "stage": "Group Stage",
-      "venue": "Estadio Banorte, Mexico City",
-      "upcoming": true,
-      "marketType": "btts",
-      "line": null,
-      "selection": "No",
-      "marketPrice": 0.525,
-      "consensus": 0.4986,
-      "spread": [
-        0.4986,
-        0.4986
-      ],
-      "edgePp": -2.6,
-      "agentsN": 1,
-      "agentsTotal": 8,
-      "perAgent": [
-        {
-          "handle": "MISTRAL",
-          "fairValue": 0.4986,
-          "edgePp": 3.14
-        }
-      ]
-    },
-    {
       "home": "Portugal",
       "away": "Spain",
       "homeCode": "PT",
@@ -852,6 +504,43 @@
           "handle": "MISTRAL",
           "fairValue": 0.5375,
           "edgePp": 1.75
+        }
+      ]
+    },
+    {
+      "home": "Argentina",
+      "away": "Egypt",
+      "homeCode": "AR",
+      "awayCode": "EG",
+      "game": "Argentina vs Egypt",
+      "kickoffISO": "2026-07-07T16:00:00.000Z",
+      "kickoff": "Tue, Jul 7 · 12:00 PM EDT",
+      "competition": "FIFA World Cup 2026",
+      "stage": "Group Stage",
+      "venue": null,
+      "upcoming": true,
+      "marketType": "btts",
+      "line": null,
+      "selection": "No",
+      "marketPrice": 0.605,
+      "consensus": 0.585,
+      "spread": [
+        0.5776,
+        0.5923
+      ],
+      "edgePp": -2,
+      "agentsN": 2,
+      "agentsTotal": 8,
+      "perAgent": [
+        {
+          "handle": "MISTRAL",
+          "fairValue": 0.5923,
+          "edgePp": 1.77
+        },
+        {
+          "handle": "DEEPSEEK",
+          "fairValue": 0.5776,
+          "edgePp": -3.24
         }
       ]
     },
@@ -916,43 +605,6 @@
           "handle": "MISTRAL",
           "fairValue": 0.3625,
           "edgePp": -1.75
-        }
-      ]
-    },
-    {
-      "home": "Mexico",
-      "away": "England",
-      "homeCode": "MX",
-      "awayCode": "GB",
-      "game": "Mexico vs England",
-      "kickoffISO": "2026-07-06T00:00:00.000Z",
-      "kickoff": "Sun, Jul 5 · 8:00 PM EDT",
-      "competition": "FIFA World Cup 2026",
-      "stage": "Group Stage",
-      "venue": "Estadio Banorte, Mexico City",
-      "upcoming": true,
-      "marketType": "moneyline",
-      "line": null,
-      "selection": "Away",
-      "marketPrice": 0.39,
-      "consensus": 0.3789,
-      "spread": [
-        0.3731,
-        0.3846
-      ],
-      "edgePp": -1.1,
-      "agentsN": 2,
-      "agentsTotal": 8,
-      "perAgent": [
-        {
-          "handle": "MISTRAL",
-          "fairValue": 0.3846,
-          "edgePp": 3.46
-        },
-        {
-          "handle": "DEEPSEEK",
-          "fairValue": 0.3731,
-          "edgePp": -1.69
         }
       ]
     },
@@ -1085,43 +737,6 @@
       ]
     },
     {
-      "home": "Brazil",
-      "away": "Norway",
-      "homeCode": "BR",
-      "awayCode": "NO",
-      "game": "Brazil vs Norway",
-      "kickoffISO": "2026-07-05T20:00:00.000Z",
-      "kickoff": "Sun, Jul 5 · 4:00 PM EDT",
-      "competition": "FIFA World Cup 2026",
-      "stage": "Group Stage",
-      "venue": "MetLife Stadium",
-      "upcoming": true,
-      "marketType": "btts",
-      "line": null,
-      "selection": "Yes",
-      "marketPrice": 0.585,
-      "consensus": 0.5822,
-      "spread": [
-        0.5813,
-        0.5831
-      ],
-      "edgePp": -0.3,
-      "agentsN": 2,
-      "agentsTotal": 8,
-      "perAgent": [
-        {
-          "handle": "MISTRAL",
-          "fairValue": 0.5831,
-          "edgePp": -0.69
-        },
-        {
-          "handle": "DEEPSEEK",
-          "fairValue": 0.5813,
-          "edgePp": -0.87
-        }
-      ]
-    },
-    {
       "home": "Portugal",
       "away": "Spain",
       "homeCode": "PT",
@@ -1150,43 +765,6 @@
           "handle": "MISTRAL",
           "fairValue": 0.2629,
           "edgePp": -0.71
-        }
-      ]
-    },
-    {
-      "home": "Brazil",
-      "away": "Norway",
-      "homeCode": "BR",
-      "awayCode": "NO",
-      "game": "Brazil vs Norway",
-      "kickoffISO": "2026-07-05T20:00:00.000Z",
-      "kickoff": "Sun, Jul 5 · 4:00 PM EDT",
-      "competition": "FIFA World Cup 2026",
-      "stage": "Group Stage",
-      "venue": "MetLife Stadium",
-      "upcoming": true,
-      "marketType": "btts",
-      "line": null,
-      "selection": "No",
-      "marketPrice": 0.4175,
-      "consensus": 0.4185,
-      "spread": [
-        0.4183,
-        0.4187
-      ],
-      "edgePp": 0.1,
-      "agentsN": 2,
-      "agentsTotal": 8,
-      "perAgent": [
-        {
-          "handle": "DEEPSEEK",
-          "fairValue": 0.4187,
-          "edgePp": -0.13
-        },
-        {
-          "handle": "MISTRAL",
-          "fairValue": 0.4183,
-          "edgePp": -1.17
         }
       ]
     },
