@@ -20,14 +20,14 @@ export const WTC_ANIM = {
   sendClick: [66, 78] as [number, number],
   /** Chat box + status line spring up under the header. */
   lift: [96, 126] as [number, number],
-  /** First hero node arrives centre here. */
-  conveyorStart: 172,
+  /** First hero node arrives centre here (soon after the lift settles). */
+  conveyorStart: 140,
   /**
    * Extra frames the OPENING node holds centre before the second node arrives,
    * on top of `beatBase`. Gives the viewer a beat to register "this is the
    * first node / the start of the workflow" before the conveyor gets going.
    */
-  firstHold: 26,
+  firstHold: 44,
   /**
    * Accelerando. The first three nodes share `beatBase` (constant tempo);
    * starting at the 3rd node, each subsequent beat shortens by 30%
@@ -92,4 +92,13 @@ export function wtcZoomWindow(nodeCount: number): [number, number] {
 /** Total frames for a graph of `nodeCount` nodes. */
 export function wtcDuration(nodeCount: number): number {
   return wtcZoomWindow(nodeCount)[1] + WTC_ANIM.settleHold;
+}
+
+/**
+ * Tool calls a template makes = nodes × 2.4, rounded up. Drives both the
+ * settled "N tools called" meta row and the live counter that climbs during
+ * the build. Shared so the two never disagree.
+ */
+export function toolsCalledFor(nodeCount: number): number {
+  return Math.ceil(nodeCount * 2.4);
 }

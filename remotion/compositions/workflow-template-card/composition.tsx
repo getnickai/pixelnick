@@ -14,8 +14,16 @@
  * The zoom-out payoff (settled graph + description + CTA) lands in CP3 by
  * revealing the `WorkflowTemplateCardView` base layer that renders underneath.
  */
-import { AbsoluteFill, Easing, interpolate, useCurrentFrame, useVideoConfig } from "remotion";
-import { ArrowUp } from "lucide-react";
+import {
+  AbsoluteFill,
+  Audio,
+  Easing,
+  interpolate,
+  staticFile,
+  useCurrentFrame,
+  useVideoConfig,
+} from "remotion";
+import { ArrowUp, Check, Settings, ShieldCheck } from "lucide-react";
 // Relative imports: this file is bundled by Remotion's webpack, which doesn't
 // resolve the "@/" alias.
 import {
@@ -26,7 +34,13 @@ import {
 import { getGlyph } from "./node-glyphs";
 import { topoOrder } from "./layout";
 import type { TemplateNodeData, WorkflowTemplateCardProps } from "./props";
-import { WTC_ANIM, wtcLastHeroIndex, wtcNodeArrival, wtcZoomWindow } from "./timeline";
+import {
+  WTC_ANIM,
+  toolsCalledFor,
+  wtcLastHeroIndex,
+  wtcNodeArrival,
+  wtcZoomWindow,
+} from "./timeline";
 
 /* ── Conveyor geometry (portrait 650×1136) ───────────────────────────────── */
 const HERO_W = 404;
@@ -43,12 +57,61 @@ const BOX_CY = 430;
 const HEAD_LEFT = 64;
 const HEAD_TOP = 190;
 const STATUS_GAP = 14;
-/** Payoff layout — graph + copy tuck under the lifted chat box + status. */
-const END_GRAPH_TOP = HEAD_TOP + BOX_H + STATUS_GAP + 28 + 20;
+const STATUS_H = 30; // status text line height
+const TOOLROW_GAP = 12; // gap: status text → tool-call row
+const TOOLROW_H = 40; // tool-call row height (persists into the settle)
+/** Tool-call row sits under the status line; both lift with the chat box. */
+const toolRowTopFor = (statusTop: number) => statusTop + STATUS_H + TOOLROW_GAP;
+/** Payoff layout — graph + copy tuck under the chat box + status + tool row. */
+const END_GRAPH_TOP =
+  HEAD_TOP + BOX_H + STATUS_GAP + STATUS_H + TOOLROW_GAP + TOOLROW_H + 24;
 const END_META_TOP = END_GRAPH_TOP + 300 + 24;
-const END_DESC_TOP = END_META_TOP + 40;
+const END_DESC_TOP = END_META_TOP + 86;
 
 const clamp = (v: number, lo: number, hi: number) => Math.min(Math.max(v, lo), hi);
+
+/* ── Tool-call reel ───────────────────────────────────────────────────────── */
+const CHIP_H = 52; // height of one "1 tool call" chip (the reel viewport)
+
+/** One completed tool call: cog + "1 tool call" left, green Completed chip right.
+    Identical every cycle — the reel makes them stream past like live activity. */
+function ToolChip() {
+  return (
+    <div
+      className="flex items-center justify-between rounded-xl border border-zinc-800 px-4"
+      style={{ height: CHIP_H, backgroundColor: "rgba(15,18,20,0.85)" }}
+    >
+      <span className="flex items-center gap-3 font-sans text-[19px] font-medium text-white">
+        <Settings size={18} color="#a1a1aa" strokeWidth={2} aria-hidden />
+        <span>1 tool call</span>
+      </span>
+      <span className="inline-flex items-center gap-1 rounded-md bg-green-500/15 px-2.5 py-1 text-[14px] font-semibold text-green-400">
+        <Check size={14} strokeWidth={3} aria-hidden />
+        Completed
+      </span>
+    </div>
+  );
+}
+
+/** Final reel chip: the workflow passed validation. Green check icon left,
+    "Workflow validated" + a green "Ready" chip right. Rests at the settle. */
+function ValidatedChip() {
+  return (
+    <div
+      className="flex items-center justify-between rounded-xl border px-4"
+      style={{ height: CHIP_H, backgroundColor: "rgba(15,18,20,0.85)", borderColor: "rgba(0,201,80,0.4)" }}
+    >
+      <span className="flex items-center gap-3 font-sans text-[19px] font-medium text-white">
+        <ShieldCheck size={20} color="#00c950" strokeWidth={2.2} aria-hidden />
+        <span>Workflow validated</span>
+      </span>
+      <span className="inline-flex items-center gap-1 rounded-md bg-green-500/15 px-2.5 py-1 text-[14px] font-semibold text-green-400">
+        <Check size={14} strokeWidth={3} aria-hidden />
+        Ready
+      </span>
+    </div>
+  );
+}
 
 /** Opacity as a function of the node's fractional slot offset `r = index − a`. */
 function slotOpacity(r: number): number {
@@ -67,14 +130,21 @@ function slotScale(r: number): number {
   return 1 - Math.min(Math.abs(r), 1) * 0.16;
 }
 
-/** Fractional "active" index over time, eased between arrivals (accelerando). */
-function activeIndex(frame: number, arrivals: number[]): number {
+/**
+ * Fractional "active" index over time, eased between arrivals (accelerando).
+ * `firstDwell` holds the belt pinned on node 0 for that many frames after it
+ * arrives, so the opening node truly sits centre before the conveyor eases it
+ * away (a real highlight, not just a slower drift).
+ */
+function activeIndex(frame: number, arrivals: number[], firstDwell = 0): number {
   const n = arrivals.length;
   if (n === 0) return 0;
   if (frame <= arrivals[0]) return 0;
   for (let k = 0; k < n - 1; k++) {
     if (frame < arrivals[k + 1]) {
-      const raw = (frame - arrivals[k]) / (arrivals[k + 1] - arrivals[k]);
+      const start = k === 0 ? arrivals[0] + firstDwell : arrivals[k];
+      if (frame <= start) return k; // dwell: hold on node k
+      const raw = (frame - start) / (arrivals[k + 1] - start);
       return k + raw * raw * (3 - 2 * raw); // smoothstep
     }
   }
@@ -120,7 +190,7 @@ function HeroCard({ node }: { node: TemplateNodeData }) {
 
 export const WorkflowTemplateCardComposition: React.FC<WorkflowTemplateCardProps> = (props) => {
   const frame = useCurrentFrame();
-  const { width } = useVideoConfig();
+  const { width, durationInFrames } = useVideoConfig();
   const { template } = props;
   const centerX = width / 2;
 
@@ -133,8 +203,9 @@ export const WorkflowTemplateCardComposition: React.FC<WorkflowTemplateCardProps
   // Belt stops at the last hero node; the final node is revealed by the
   // zoom-out (inside the mini-canvas), never as its own centred card.
   const lastHero = wtcLastHeroIndex(ordered.length);
-  const a = Math.min(activeIndex(frame, arrivals), lastHero);
+  const a = Math.min(activeIndex(frame, arrivals, WTC_ANIM.firstHold), lastHero);
   const conveyorGate = clamp((frame - WTC_ANIM.conveyorStart + 2) / 10, 0, 1);
+  const finalTools = toolsCalledFor(template.nodes.length);
 
   /* ── Zoom-out: conveyor recedes → settled mini-canvas poster ───────────── */
   const [zs, ze] = wtcZoomWindow(ordered.length);
@@ -155,6 +226,31 @@ export const WorkflowTemplateCardComposition: React.FC<WorkflowTemplateCardProps
   // Keep the belt sliding left as it recedes, so the accelerando flows straight
   // into the pull-back instead of parking on the final card.
   const conveyorDrift = interpolate(zoomP, [0, 1], [0, SLOT * 0.7], {
+    extrapolateLeft: "clamp",
+    extrapolateRight: "clamp",
+  });
+
+  /* ── Tool-call reel — identical "1 tool call" chips stream up. Cadence is an
+        accelerando over the build (slow first, faster later) to match the node
+        conveyor; ~half as many cycles as calls. Rests on a chip once settled. */
+  const toolCycles = Math.max(1, Math.ceil(finalTools / 2));
+  const reelT = clamp((frame - WTC_ANIM.conveyorStart) / (zs - WTC_ANIM.conveyorStart), 0, 1);
+  const reelPhase = toolCycles * reelT ** 1.8;
+  const reelFrac = reelPhase - Math.floor(reelPhase);
+  const reelSlideRaw = clamp((reelFrac - 0.6) / 0.4, 0, 1); // dwell, then quick slide
+  const reelSlide = reelT >= 1 ? 0 : reelSlideRaw * reelSlideRaw * (3 - 2 * reelSlideRaw);
+  // Once the reel reaches its final cycle, the chip rising from below is the
+  // "Workflow validated" chip; it lands and rests through the settle.
+  const reelAtRest = reelT >= 1;
+  const reelFinalCycle = reelPhase >= toolCycles - 1;
+  // "Click" pop as the validated chip lands (at zs): quick press-in, then a
+  // slight overshoot back, with a green glow flash — makes it stand out.
+  const validateClick = interpolate(frame, [zs, zs + 3, zs + 11, zs + 18], [1, 0.93, 1.03, 1], {
+    extrapolateLeft: "clamp",
+    extrapolateRight: "clamp",
+    easing: Easing.inOut(Easing.cubic),
+  });
+  const validateGlow = interpolate(frame, [zs, zs + 2, zs + 26], [0, 1, 0], {
     extrapolateLeft: "clamp",
     extrapolateRight: "clamp",
   });
@@ -286,13 +382,27 @@ export const WorkflowTemplateCardComposition: React.FC<WorkflowTemplateCardProps
 
   const statusLabel =
     frame >= zs
-      ? "Nick is ready to execute"
+      ? "Nick is ready to execute your strategy"
       : frame >= WTC_ANIM.conveyorStart
         ? `Nick is building${statusDots}`
         : `Nick is thinking${statusDots}`;
 
   return (
     <AbsoluteFill className="font-sans">
+      {/* Soundtrack — fades in at the start and out over the settle hold so it
+          never clips. Stills (renderStill) carry no audio; the MP4 render must
+          pass muted:false (see scripts/render-wtc.ts). */}
+      <Audio
+        src={staticFile("audio/workflow-template-card.mp3")}
+        volume={(f) =>
+          interpolate(
+            f,
+            [0, 10, durationInFrames - 26, durationInFrames - 1],
+            [0, 1, 1, 0],
+            { extrapolateLeft: "clamp", extrapolateRight: "clamp" },
+          )
+        }
+      />
       <WorkflowTemplateCardView props={props} anim={baseAnim} />
 
       {/* ── Nick-style chat input — types in centre, lifts up as a box ────── */}
@@ -335,6 +445,41 @@ export const WorkflowTemplateCardComposition: React.FC<WorkflowTemplateCardProps
           style={{ left: statusLeft, top: statusTop, opacity: statusOpacity }}
         >
           {statusLabel}
+        </div>
+      ) : null}
+
+      {/* ── Tool-call counter — climbs on a slot-machine reel as nodes appear,
+            then holds at the final count. "N tool calls" + green Completed
+            chip on one row (Nick's live reasoning). Persists into the settle. */}
+      {frame >= WTC_ANIM.conveyorStart - 2 ? (
+        <div
+          className="absolute overflow-hidden rounded-xl"
+          style={{
+            left: statusLeft,
+            top: toolRowTopFor(statusTop),
+            width: BOX_W,
+            height: CHIP_H,
+            transform: `scale(${validateClick})`,
+            transformOrigin: "center center",
+            boxShadow:
+              validateGlow > 0.01
+                ? `0 0 0 2px rgba(0,201,80,${0.5 * validateGlow}), 0 16px 46px -10px rgba(0,201,80,${0.55 * validateGlow})`
+                : undefined,
+            opacity: interpolate(
+              frame,
+              [WTC_ANIM.conveyorStart - 2, WTC_ANIM.conveyorStart + 10],
+              [0, 1],
+              { extrapolateLeft: "clamp", extrapolateRight: "clamp" },
+            ),
+          }}
+        >
+          {/* Two chips stacked; sliding the column up by one chip height and
+              looping makes a fresh chip rise from below. The final cycle rises
+              a "Workflow validated" chip, which rests through the settle. */}
+          <div style={{ transform: `translateY(${-CHIP_H * reelSlide}px)` }}>
+            {reelAtRest ? <ValidatedChip /> : <ToolChip />}
+            {reelFinalCycle ? <ValidatedChip /> : <ToolChip />}
+          </div>
         </div>
       ) : null}
 

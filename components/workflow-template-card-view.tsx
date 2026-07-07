@@ -2,9 +2,11 @@
 import type { CSSProperties } from "react";
 // Relative (not "@/") imports: this view is bundled by Remotion's webpack (via
 // the composition) for headless generation, which doesn't resolve the "@/" alias.
+import { Settings } from "lucide-react";
 import type { WorkflowTemplateCardProps } from "../remotion/compositions/workflow-template-card/props";
 import { edgePath, layoutGraph } from "../remotion/compositions/workflow-template-card/layout";
 import { getGlyph } from "../remotion/compositions/workflow-template-card/node-glyphs";
+import { toolsCalledFor } from "../remotion/compositions/workflow-template-card/timeline";
 
 const ASSET = "/figma";
 
@@ -232,17 +234,25 @@ export function WorkflowTemplateCardView({
         })}
       </div>
 
-      {/* Meta — node count sits directly under the graph */}
+      {/* Meta — node count + tools called, stacked under the graph */}
       <div
-        className="absolute left-16 flex items-center gap-3"
+        className="absolute left-16 flex flex-col gap-3"
         style={{ top: metaTop, opacity: anim.metaOpacity }}
       >
-        <div className="relative h-[16.67px] w-[20.837px] shrink-0">
-          <img alt="" src={`${ASSET}/icon-nodes.svg`} className="block size-full max-w-none" />
+        <div className="flex items-center gap-3">
+          <div className="relative h-[16.67px] w-[20.837px] shrink-0">
+            <img alt="" src={`${ASSET}/icon-nodes.svg`} className="block size-full max-w-none" />
+          </div>
+          <p className="whitespace-nowrap text-xl leading-4 text-zinc-400">
+            {template.nodes.length} nodes
+          </p>
         </div>
-        <p className="whitespace-nowrap text-xl leading-4 text-zinc-400">
-          {template.nodes.length} nodes
-        </p>
+        <div className="flex items-center gap-3">
+          <Settings size={20} className="shrink-0 text-zinc-400" strokeWidth={2} aria-hidden />
+          <p className="whitespace-nowrap text-xl leading-4 text-zinc-400">
+            {toolsCalledFor(template.nodes.length)} tools called
+          </p>
+        </div>
       </div>
 
       {/* Description */}
@@ -253,19 +263,22 @@ export function WorkflowTemplateCardView({
         <p className="text-[22px] leading-[1.45] text-zinc-400">{bodyCopy}</p>
       </div>
 
-      {/* Footer CTA — "Try for free" (reuses the perf-card tab + brand button).
-          Positioned to match the performance card exactly: bottom-[45px]
-          right-10, seated over the footer line graph like Try in NickAI. */}
-      <div className="absolute bottom-[45px] right-10 z-10" style={{ opacity: anim.ctaOpacity }}>
-        <div className="relative flex items-start">
+      {/* Footer CTA — full-width brand button (perf-card tab + brand body).
+          Copy: "Start your agentic trading, try Nick for free". No footer
+          caption and no decorative line graph on this card. */}
+      {/* Width matches the chat input box up top (520px, same left edge). */}
+      <div className="absolute bottom-[45px] left-16 z-10 w-[520px]" style={{ opacity: anim.ctaOpacity }}>
+        <div className="flex items-stretch">
           <div className="relative h-[56px] w-[46px] shrink-0 rotate-180">
             <img alt="" src={`${ASSET}/cta-tab.svg`} className="absolute inset-0 block size-full max-w-none" />
           </div>
           <div
-            className="relative -ml-[2px] flex shrink-0 items-center gap-[9px] rounded-r-[12px] py-4 pr-5 pl-1 text-white"
+            className="relative -ml-[2px] flex flex-1 items-center justify-center gap-[9px] rounded-r-[12px] px-4 text-white"
             style={{ backgroundColor: "#0178FF" }}
           >
-            <p className="whitespace-nowrap text-xl font-semibold leading-[1.2]">Try for free</p>
+            <p className="whitespace-nowrap text-[18px] font-semibold leading-[1.2]">
+              Create your trading agent today, try Nick for free
+            </p>
             <svg className="size-6 shrink-0" viewBox="0 0 24 24" fill="none" aria-hidden>
               <path
                 d="M13 18L19 12L13 6M18.5 12H5"
@@ -275,22 +288,6 @@ export function WorkflowTemplateCardView({
               />
             </svg>
           </div>
-        </div>
-      </div>
-
-      {/* Footer line graph — wipes in left → right (performance card) */}
-      <div
-        className="pointer-events-none absolute -bottom-10 left-[-270px] h-[329.506px] w-[1389.202px]"
-        style={
-          {
-            clipPath: `inset(0 ${anim.graphInsetRight ?? 0}% 0 0)`,
-            WebkitClipPath: `inset(0 ${anim.graphInsetRight ?? 0}% 0 0)`,
-          } as CSSProperties
-        }
-        aria-hidden
-      >
-        <div className="absolute inset-[-0.15%_0]">
-          <img alt="" src={`${ASSET}/line-graph.svg`} className="block size-full max-w-none" />
         </div>
       </div>
     </div>
