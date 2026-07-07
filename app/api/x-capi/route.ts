@@ -69,7 +69,9 @@ function safeEqual(a: string, b: string): boolean {
 // PostHog event name -> X conversion event id (configured in X Events Manager).
 function eventIdFor(event: string): string | undefined {
   if (event === "subscription_started") return process.env.X_PURCHASE_EVENT_ID;
-  if (event === "user_signed_up") return process.env.X_SIGNUP_EVENT_ID;
+  // signup_confirmed is the relayed signup (a PostHog workflow emits it ~1h after
+  // user_signed_up, once the email and click IDs have attached to the person).
+  if (event === "user_signed_up" || event === "signup_confirmed") return process.env.X_SIGNUP_EVENT_ID;
   return undefined;
 }
 
@@ -97,16 +99,23 @@ export async function POST(req: Request) {
   const hashedEmail =
     (typeof body.hashed_email === "string" && body.hashed_email) ||
     (typeof body.email === "string" && body.email ? sha256(body.email) : "");
-  if (!hashedEmail) {
-    return NextResponse.json({ error: "missing email / hashed_email" }, { status: 422 });
+  const twclid = typeof body.twclid === "string" ? body.twclid : "";
+  if (!hashedEmail && !twclid) {
+    return NextResponse.json({ error: "missing email / hashed_email / twclid" }, { status: 422 });
   }
+
+  // X matches a conversion on any identifier; send the twclid (direct click match)
+  // and/or the hashed email.
+  const identifiers: Record<string, string>[] = [];
+  if (twclid) identifiers.push({ twclid });
+  if (hashedEmail) identifiers.push({ hashed_email: hashedEmail });
 
   const conversion: Record<string, unknown> = {
     // X wants yyyy-MM-ddTHH:mm:ss.SSSZ; toISOString() produces exactly that.
     conversion_time:
       typeof body.conversion_time === "string" ? body.conversion_time : new Date().toISOString(),
     event_id: eventId,
-    identifiers: [{ hashed_email: hashedEmail }],
+    identifiers,
   };
   // conversion_id dedups retries (use the PostHog event uuid).
   if (body.conversion_id) conversion.conversion_id = String(body.conversion_id);
