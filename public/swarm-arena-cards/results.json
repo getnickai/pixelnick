@@ -1,5 +1,5 @@
 {
-  "generatedAt": "2026-07-07T03:46:43.778Z",
+  "generatedAt": "2026-07-07T05:20:50.063Z",
   "source": "R2 match-reader closed_trades + matches mirror (FT)",
   "count": 50,
   "records": [
@@ -474,58 +474,6 @@
         {
           "handle": "GPT",
           "pnl": 88.42,
-          "result": "win"
-        }
-      ]
-    },
-    {
-      "home": "Belgium",
-      "away": "Senegal",
-      "homeCode": "BE",
-      "awayCode": "SN",
-      "game": "Belgium vs Senegal",
-      "competition": "FIFA World Cup 2026",
-      "stage": "Round of 32",
-      "venue": "Lumen Field, Seattle",
-      "kickoff": "Wed, Jul 1",
-      "kickoffISO": "2026-07-01T20:00:00.000Z",
-      "day": "2026-07-01",
-      "homeScore": 3,
-      "awayScore": 2,
-      "winner": "Belgium",
-      "status": "FT",
-      "marketType": "totals",
-      "line": 2.5,
-      "selection": "Over",
-      "hit": true,
-      "entryPrice": 0.556,
-      "totalPnl": 349.22,
-      "agentsN": 5,
-      "agentsTotal": 8,
-      "perAgent": [
-        {
-          "handle": "GROK",
-          "pnl": 99.78,
-          "result": "win"
-        },
-        {
-          "handle": "GPT",
-          "pnl": 62.36,
-          "result": "win"
-        },
-        {
-          "handle": "GEMINI",
-          "pnl": 62.36,
-          "result": "win"
-        },
-        {
-          "handle": "DEEPSEEK",
-          "pnl": 62.36,
-          "result": "win"
-        },
-        {
-          "handle": "QWEN",
-          "pnl": 62.36,
           "result": "win"
         }
       ]
@@ -2124,6 +2072,38 @@
         {
           "handle": "QWEN",
           "pnl": 45.95,
+          "result": "win"
+        }
+      ]
+    },
+    {
+      "home": "South Korea",
+      "away": "Czech Republic",
+      "homeCode": "KR",
+      "awayCode": "CZ",
+      "game": "South Korea vs Czech Republic",
+      "competition": "FIFA World Cup 2026",
+      "stage": "Group Stage · MD1",
+      "venue": "Estadio Akron",
+      "kickoff": "Thu, Jun 11",
+      "kickoffISO": "2026-06-12T02:00:00.000Z",
+      "day": "2026-06-11",
+      "homeScore": 2,
+      "awayScore": 1,
+      "winner": "South Korea",
+      "status": "FT",
+      "marketType": "totals",
+      "line": 2.5,
+      "selection": "Over",
+      "hit": true,
+      "entryPrice": 1,
+      "totalPnl": 41.43,
+      "agentsN": 1,
+      "agentsTotal": 8,
+      "perAgent": [
+        {
+          "handle": "GEMINI",
+          "pnl": 41.43,
           "result": "win"
         }
       ]
