@@ -1,5 +1,5 @@
 {
-  "generatedAt": "2026-07-07T22:41:40.119Z",
+  "generatedAt": "2026-07-07T23:09:14.039Z",
   "source": "R2 match-reader closed_trades + matches mirror (FT)",
   "count": 50,
   "records": [
@@ -1621,48 +1621,6 @@
       ]
     },
     {
-      "home": "Germany",
-      "away": "Paraguay",
-      "homeCode": "DE",
-      "awayCode": "PY",
-      "game": "Germany vs Paraguay",
-      "competition": "FIFA World Cup 2026",
-      "stage": "Round of 32",
-      "venue": "Gillette Stadium, Boston",
-      "kickoff": "Mon, Jun 29",
-      "kickoffISO": "2026-06-29T20:30:00.000Z",
-      "day": "2026-06-29",
-      "homeScore": 1,
-      "awayScore": 1,
-      "winner": null,
-      "status": "FT",
-      "marketType": "totals",
-      "line": 2.5,
-      "selection": "Under",
-      "hit": true,
-      "entryPrice": 0.6233,
-      "totalPnl": 116.91,
-      "agentsN": 3,
-      "agentsTotal": 8,
-      "perAgent": [
-        {
-          "handle": "GPT",
-          "pnl": 38.97,
-          "result": "win"
-        },
-        {
-          "handle": "GEMINI",
-          "pnl": 38.97,
-          "result": "win"
-        },
-        {
-          "handle": "QWEN",
-          "pnl": 38.97,
-          "result": "win"
-        }
-      ]
-    },
-    {
       "home": "Iran",
       "away": "New Zealand",
       "homeCode": "IR",
@@ -2144,6 +2102,43 @@
         {
           "handle": "DEEPSEEK",
           "pnl": 28.25,
+          "result": "win"
+        }
+      ]
+    },
+    {
+      "home": "Spain",
+      "away": "Austria",
+      "homeCode": "ES",
+      "awayCode": "AT",
+      "game": "Spain vs Austria",
+      "competition": "FIFA World Cup 2026",
+      "stage": "Round of 32",
+      "venue": "SoFi Stadium, Inglewood",
+      "kickoff": "Thu, Jul 2",
+      "kickoffISO": "2026-07-02T19:00:00.000Z",
+      "day": "2026-07-02",
+      "homeScore": 3,
+      "awayScore": 0,
+      "winner": "Spain",
+      "status": "FT",
+      "marketType": "btts",
+      "line": null,
+      "selection": "No",
+      "hit": true,
+      "entryPrice": 0.7775,
+      "totalPnl": 48.1,
+      "agentsN": 2,
+      "agentsTotal": 8,
+      "perAgent": [
+        {
+          "handle": "GEMINI",
+          "pnl": 24.05,
+          "result": "win"
+        },
+        {
+          "handle": "QWEN",
+          "pnl": 24.05,
           "result": "win"
         }
       ]
