@@ -77,7 +77,7 @@ async function main() {
         composition,
         serveUrl,
         codec: "h264",
-        muted: true,
+        muted: false,
         inputProps,
         outputLocation: mp4,
       });
@@ -119,7 +119,7 @@ async function main() {
         composition,
         serveUrl,
         codec: "h264",
-        muted: true,
+        muted: false,
         inputProps,
         outputLocation: mp4,
       });
