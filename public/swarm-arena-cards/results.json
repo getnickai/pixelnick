@@ -1,5 +1,5 @@
 {
-  "generatedAt": "2026-07-07T08:08:36.951Z",
+  "generatedAt": "2026-07-07T18:59:31.986Z",
   "source": "R2 match-reader closed_trades + matches mirror (FT)",
   "count": 50,
   "records": [
@@ -1060,6 +1060,58 @@
       ]
     },
     {
+      "home": "Argentina",
+      "away": "Egypt",
+      "homeCode": "AR",
+      "awayCode": "EG",
+      "game": "Argentina vs Egypt",
+      "competition": "FIFA World Cup 2026",
+      "stage": "Round of 16",
+      "venue": "Mercedes-Benz Stadium, Atlanta",
+      "kickoff": "Tue, Jul 7",
+      "kickoffISO": "2026-07-07T16:00:00.000Z",
+      "day": "2026-07-07",
+      "homeScore": 3,
+      "awayScore": 2,
+      "winner": "Argentina",
+      "status": "FT",
+      "marketType": "totals",
+      "line": 2.5,
+      "selection": "Over",
+      "hit": true,
+      "entryPrice": 0.475,
+      "totalPnl": 165.8,
+      "agentsN": 5,
+      "agentsTotal": 8,
+      "perAgent": [
+        {
+          "handle": "GPT",
+          "pnl": 33.16,
+          "result": "win"
+        },
+        {
+          "handle": "GEMINI",
+          "pnl": 33.16,
+          "result": "win"
+        },
+        {
+          "handle": "DEEPSEEK",
+          "pnl": 33.16,
+          "result": "win"
+        },
+        {
+          "handle": "KIMI",
+          "pnl": 33.16,
+          "result": "win"
+        },
+        {
+          "handle": "QWEN",
+          "pnl": 33.16,
+          "result": "win"
+        }
+      ]
+    },
+    {
       "home": "Belgium",
       "away": "Iran",
       "homeCode": "BE",
@@ -2097,43 +2149,6 @@
         {
           "handle": "DEEPSEEK",
           "pnl": 28.25,
-          "result": "win"
-        }
-      ]
-    },
-    {
-      "home": "Spain",
-      "away": "Austria",
-      "homeCode": "ES",
-      "awayCode": "AT",
-      "game": "Spain vs Austria",
-      "competition": "FIFA World Cup 2026",
-      "stage": "Round of 32",
-      "venue": "SoFi Stadium, Inglewood",
-      "kickoff": "Thu, Jul 2",
-      "kickoffISO": "2026-07-02T19:00:00.000Z",
-      "day": "2026-07-02",
-      "homeScore": 3,
-      "awayScore": 0,
-      "winner": "Spain",
-      "status": "FT",
-      "marketType": "btts",
-      "line": null,
-      "selection": "No",
-      "hit": true,
-      "entryPrice": 0.7775,
-      "totalPnl": 48.1,
-      "agentsN": 2,
-      "agentsTotal": 8,
-      "perAgent": [
-        {
-          "handle": "GEMINI",
-          "pnl": 24.05,
-          "result": "win"
-        },
-        {
-          "handle": "QWEN",
-          "pnl": 24.05,
           "result": "win"
         }
       ]
