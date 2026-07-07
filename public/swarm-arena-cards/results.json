@@ -1,5 +1,5 @@
 {
-  "generatedAt": "2026-07-07T18:59:31.986Z",
+  "generatedAt": "2026-07-07T22:41:40.119Z",
   "source": "R2 match-reader closed_trades + matches mirror (FT)",
   "count": 50,
   "records": [
@@ -1060,58 +1060,6 @@
       ]
     },
     {
-      "home": "Argentina",
-      "away": "Egypt",
-      "homeCode": "AR",
-      "awayCode": "EG",
-      "game": "Argentina vs Egypt",
-      "competition": "FIFA World Cup 2026",
-      "stage": "Round of 16",
-      "venue": "Mercedes-Benz Stadium, Atlanta",
-      "kickoff": "Tue, Jul 7",
-      "kickoffISO": "2026-07-07T16:00:00.000Z",
-      "day": "2026-07-07",
-      "homeScore": 3,
-      "awayScore": 2,
-      "winner": "Argentina",
-      "status": "FT",
-      "marketType": "totals",
-      "line": 2.5,
-      "selection": "Over",
-      "hit": true,
-      "entryPrice": 0.475,
-      "totalPnl": 165.8,
-      "agentsN": 5,
-      "agentsTotal": 8,
-      "perAgent": [
-        {
-          "handle": "GPT",
-          "pnl": 33.16,
-          "result": "win"
-        },
-        {
-          "handle": "GEMINI",
-          "pnl": 33.16,
-          "result": "win"
-        },
-        {
-          "handle": "DEEPSEEK",
-          "pnl": 33.16,
-          "result": "win"
-        },
-        {
-          "handle": "KIMI",
-          "pnl": 33.16,
-          "result": "win"
-        },
-        {
-          "handle": "QWEN",
-          "pnl": 33.16,
-          "result": "win"
-        }
-      ]
-    },
-    {
       "home": "Belgium",
       "away": "Iran",
       "homeCode": "BE",
@@ -1327,6 +1275,53 @@
         {
           "handle": "QWEN",
           "pnl": 45.95,
+          "result": "win"
+        }
+      ]
+    },
+    {
+      "home": "Argentina",
+      "away": "Egypt",
+      "homeCode": "AR",
+      "awayCode": "EG",
+      "game": "Argentina vs Egypt",
+      "competition": "FIFA World Cup 2026",
+      "stage": "Round of 16",
+      "venue": "Mercedes-Benz Stadium, Atlanta",
+      "kickoff": "Tue, Jul 7",
+      "kickoffISO": "2026-07-07T16:00:00.000Z",
+      "day": "2026-07-07",
+      "homeScore": 3,
+      "awayScore": 2,
+      "winner": "Argentina",
+      "status": "FT",
+      "marketType": "totals",
+      "line": 2.5,
+      "selection": "Over",
+      "hit": true,
+      "entryPrice": 0.6063,
+      "totalPnl": 132.64,
+      "agentsN": 4,
+      "agentsTotal": 8,
+      "perAgent": [
+        {
+          "handle": "GPT",
+          "pnl": 33.16,
+          "result": "win"
+        },
+        {
+          "handle": "GEMINI",
+          "pnl": 33.16,
+          "result": "win"
+        },
+        {
+          "handle": "DEEPSEEK",
+          "pnl": 33.16,
+          "result": "win"
+        },
+        {
+          "handle": "QWEN",
+          "pnl": 33.16,
           "result": "win"
         }
       ]
