@@ -1,5 +1,5 @@
 {
-  "generatedAt": "2026-07-08T00:54:41.599Z",
+  "generatedAt": "2026-07-08T01:36:06.085Z",
   "source": "R2 match-reader closed_trades + matches mirror (FT)",
   "count": 50,
   "records": [
@@ -474,6 +474,58 @@
         {
           "handle": "GPT",
           "pnl": 88.42,
+          "result": "win"
+        }
+      ]
+    },
+    {
+      "home": "Belgium",
+      "away": "Senegal",
+      "homeCode": "BE",
+      "awayCode": "SN",
+      "game": "Belgium vs Senegal",
+      "competition": "FIFA World Cup 2026",
+      "stage": "Round of 32",
+      "venue": "Lumen Field, Seattle",
+      "kickoff": "Wed, Jul 1",
+      "kickoffISO": "2026-07-01T20:00:00.000Z",
+      "day": "2026-07-01",
+      "homeScore": 3,
+      "awayScore": 2,
+      "winner": "Belgium",
+      "status": "FT",
+      "marketType": "totals",
+      "line": 2.5,
+      "selection": "Over",
+      "hit": true,
+      "entryPrice": 0.556,
+      "totalPnl": 349.22,
+      "agentsN": 5,
+      "agentsTotal": 8,
+      "perAgent": [
+        {
+          "handle": "GROK",
+          "pnl": 99.78,
+          "result": "win"
+        },
+        {
+          "handle": "GPT",
+          "pnl": 62.36,
+          "result": "win"
+        },
+        {
+          "handle": "GEMINI",
+          "pnl": 62.36,
+          "result": "win"
+        },
+        {
+          "handle": "DEEPSEEK",
+          "pnl": 62.36,
+          "result": "win"
+        },
+        {
+          "handle": "QWEN",
+          "pnl": 62.36,
           "result": "win"
         }
       ]
@@ -2087,38 +2139,6 @@
         {
           "handle": "QWEN",
           "pnl": 24.05,
-          "result": "win"
-        }
-      ]
-    },
-    {
-      "home": "Colombia",
-      "away": "Portugal",
-      "homeCode": "CO",
-      "awayCode": "PT",
-      "game": "Colombia vs Portugal",
-      "competition": "FIFA World Cup 2026",
-      "stage": "Group Stage · MD3",
-      "venue": "Hard Rock Stadium",
-      "kickoff": "Sat, Jun 27",
-      "kickoffISO": "2026-06-27T23:30:00.000Z",
-      "day": "2026-06-27",
-      "homeScore": 0,
-      "awayScore": 0,
-      "winner": "Draw",
-      "status": "FT",
-      "marketType": "btts",
-      "line": null,
-      "selection": "No",
-      "hit": true,
-      "entryPrice": 0.395,
-      "totalPnl": 45.95,
-      "agentsN": 1,
-      "agentsTotal": 8,
-      "perAgent": [
-        {
-          "handle": "QWEN",
-          "pnl": 45.95,
           "result": "win"
         }
       ]
