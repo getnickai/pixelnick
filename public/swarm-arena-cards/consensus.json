@@ -1,7 +1,7 @@
 {
-  "generatedAt": "2026-07-09T10:43:19.816Z",
+  "generatedAt": "2026-07-10T10:34:36.450Z",
   "source": "R2 match-reader agents + matches mirror",
-  "count": 20,
+  "count": 17,
   "records": [
     {
       "home": "Argentina",
@@ -13,12 +13,12 @@
       "kickoff": "Sat, Jul 11 · 9:00 PM EDT",
       "competition": "FIFA World Cup 2026",
       "stage": "Group Stage",
-      "venue": "GEHA Field at Arrowhead Stadium",
+      "venue": "Arrowhead Stadium, Kansas City",
       "upcoming": true,
       "marketType": "totals",
       "line": 2.5,
       "selection": "Over",
-      "marketPrice": 0.4233,
+      "marketPrice": 0.424,
       "consensus": 0.5025,
       "spread": [
         0.4942,
@@ -70,146 +70,30 @@
       "kickoff": "Sat, Jul 11 · 9:00 PM EDT",
       "competition": "FIFA World Cup 2026",
       "stage": "Group Stage",
-      "venue": "GEHA Field at Arrowhead Stadium",
+      "venue": "Arrowhead Stadium, Kansas City",
       "upcoming": true,
       "marketType": "totals",
       "line": 2.5,
       "selection": "Under",
-      "marketPrice": 0.575,
-      "consensus": 0.5058,
+      "marketPrice": 0.5781,
+      "consensus": 0.5008,
       "spread": [
-        0.5058,
+        0.4958,
         0.5058
       ],
-      "edgePp": -6.9,
-      "agentsN": 1,
+      "edgePp": -7.7,
+      "agentsN": 2,
       "agentsTotal": 8,
       "perAgent": [
         {
           "handle": "MISTRAL",
           "fairValue": 0.5058,
           "edgePp": -7.42
-        }
-      ]
-    },
-    {
-      "home": "France",
-      "away": "Morocco",
-      "homeCode": "FR",
-      "awayCode": "MA",
-      "game": "France vs Morocco",
-      "kickoffISO": "2026-07-09T20:00:00.000Z",
-      "kickoff": "Thu, Jul 9 · 4:00 PM EDT",
-      "competition": "FIFA World Cup 2026",
-      "stage": "Group Stage",
-      "venue": "Gillette Stadium, Boston",
-      "upcoming": true,
-      "marketType": "moneyline",
-      "line": null,
-      "selection": "Draw",
-      "marketPrice": 0.245,
-      "consensus": 0.301,
-      "spread": [
-        0.301,
-        0.301
-      ],
-      "edgePp": 5.6,
-      "agentsN": 1,
-      "agentsTotal": 8,
-      "perAgent": [
-        {
-          "handle": "KIMI",
-          "fairValue": 0.301,
-          "edgePp": 5.1
-        }
-      ]
-    },
-    {
-      "home": "France",
-      "away": "Morocco",
-      "homeCode": "FR",
-      "awayCode": "MA",
-      "game": "France vs Morocco",
-      "kickoffISO": "2026-07-09T20:00:00.000Z",
-      "kickoff": "Thu, Jul 9 · 4:00 PM EDT",
-      "competition": "FIFA World Cup 2026",
-      "stage": "Group Stage",
-      "venue": "Gillette Stadium, Boston",
-      "upcoming": true,
-      "marketType": "totals",
-      "line": 2.5,
-      "selection": "Under",
-      "marketPrice": 0.525,
-      "consensus": 0.4748,
-      "spread": [
-        0.4748,
-        0.4748
-      ],
-      "edgePp": -5,
-      "agentsN": 1,
-      "agentsTotal": 8,
-      "perAgent": [
-        {
-          "handle": "MISTRAL",
-          "fairValue": 0.4748,
-          "edgePp": -5.52
-        }
-      ]
-    },
-    {
-      "home": "France",
-      "away": "Morocco",
-      "homeCode": "FR",
-      "awayCode": "MA",
-      "game": "France vs Morocco",
-      "kickoffISO": "2026-07-09T20:00:00.000Z",
-      "kickoff": "Thu, Jul 9 · 4:00 PM EDT",
-      "competition": "FIFA World Cup 2026",
-      "stage": "Group Stage",
-      "venue": "Gillette Stadium, Boston",
-      "upcoming": true,
-      "marketType": "totals",
-      "line": 2.5,
-      "selection": "Over",
-      "marketPrice": 0.4783,
-      "consensus": 0.5257,
-      "spread": [
-        0.5252,
-        0.5282
-      ],
-      "edgePp": 4.7,
-      "agentsN": 6,
-      "agentsTotal": 8,
-      "perAgent": [
-        {
-          "handle": "GEMINI",
-          "fairValue": 0.5252,
-          "edgePp": 4.52
-        },
-        {
-          "handle": "KIMI",
-          "fairValue": 0.5252,
-          "edgePp": 4.52
-        },
-        {
-          "handle": "MISTRAL",
-          "fairValue": 0.5252,
-          "edgePp": 4.52
-        },
-        {
-          "handle": "QWEN",
-          "fairValue": 0.5252,
-          "edgePp": 4.52
-        },
-        {
-          "handle": "GPT",
-          "fairValue": 0.5282,
-          "edgePp": 3.82
         },
         {
           "handle": "DEEPSEEK",
-          "fairValue": 0.5252,
-          "edgePp": 3.52
+          "fairValue": 0.4958,
+          "edgePp": -8.67
         }
       ]
     },
@@ -228,14 +112,14 @@
       "marketType": "btts",
       "line": null,
       "selection": "No",
-      "marketPrice": 0.405,
-      "consensus": 0.4503,
+      "marketPrice": 0.4067,
+      "consensus": 0.4504,
       "spread": [
         0.4427,
         0.4709
       ],
-      "edgePp": 4.5,
-      "agentsN": 5,
+      "edgePp": 4.4,
+      "agentsN": 6,
       "agentsTotal": 8,
       "perAgent": [
         {
@@ -247,6 +131,11 @@
           "handle": "KIMI",
           "fairValue": 0.4527,
           "edgePp": 4.27
+        },
+        {
+          "handle": "DEEPSEEK",
+          "fairValue": 0.4509,
+          "edgePp": 4.09
         },
         {
           "handle": "GPT",
@@ -280,7 +169,7 @@
       "marketType": "totals",
       "line": 2.5,
       "selection": "Over",
-      "marketPrice": 0.5233,
+      "marketPrice": 0.5227,
       "consensus": 0.5631,
       "spread": [
         0.5609,
@@ -332,21 +221,31 @@
       "kickoff": "Sat, Jul 11 · 9:00 PM EDT",
       "competition": "FIFA World Cup 2026",
       "stage": "Group Stage",
-      "venue": "GEHA Field at Arrowhead Stadium",
+      "venue": "Arrowhead Stadium, Kansas City",
       "upcoming": true,
       "marketType": "btts",
       "line": null,
       "selection": "Yes",
-      "marketPrice": 0.4617,
-      "consensus": 0.4975,
+      "marketPrice": 0.459,
+      "consensus": 0.4966,
       "spread": [
-        0.4975,
+        0.4952,
         0.4975
       ],
-      "edgePp": 3.6,
-      "agentsN": 3,
+      "edgePp": 3.8,
+      "agentsN": 5,
       "agentsTotal": 8,
       "perAgent": [
+        {
+          "handle": "GPT",
+          "fairValue": 0.4952,
+          "edgePp": 3.52
+        },
+        {
+          "handle": "MISTRAL",
+          "fairValue": 0.4952,
+          "edgePp": 3.52
+        },
         {
           "handle": "DEEPSEEK",
           "fairValue": 0.4975,
@@ -374,7 +273,7 @@
       "kickoff": "Sat, Jul 11 · 9:00 PM EDT",
       "competition": "FIFA World Cup 2026",
       "stage": "Group Stage",
-      "venue": "GEHA Field at Arrowhead Stadium",
+      "venue": "Arrowhead Stadium, Kansas City",
       "upcoming": true,
       "marketType": "btts",
       "line": null,
@@ -462,6 +361,38 @@
           "handle": "DEEPSEEK",
           "fairValue": 0.1471,
           "edgePp": -2.29
+        }
+      ]
+    },
+    {
+      "home": "Norway",
+      "away": "England",
+      "homeCode": "NO",
+      "awayCode": "GB",
+      "game": "Norway vs England",
+      "kickoffISO": "2026-07-11T21:00:00.000Z",
+      "kickoff": "Sat, Jul 11 · 5:00 PM EDT",
+      "competition": "FIFA World Cup 2026",
+      "stage": "Group Stage",
+      "venue": "Hard Rock Stadium, Miami",
+      "upcoming": true,
+      "marketType": "btts",
+      "line": null,
+      "selection": "Yes",
+      "marketPrice": 0.585,
+      "consensus": 0.5691,
+      "spread": [
+        0.5691,
+        0.5691
+      ],
+      "edgePp": -1.6,
+      "agentsN": 1,
+      "agentsTotal": 8,
+      "perAgent": [
+        {
+          "handle": "DEEPSEEK",
+          "fairValue": 0.5691,
+          "edgePp": -2.09
         }
       ]
     },
@@ -604,75 +535,6 @@
       ]
     },
     {
-      "home": "France",
-      "away": "Morocco",
-      "homeCode": "FR",
-      "awayCode": "MA",
-      "game": "France vs Morocco",
-      "kickoffISO": "2026-07-09T20:00:00.000Z",
-      "kickoff": "Thu, Jul 9 · 4:00 PM EDT",
-      "competition": "FIFA World Cup 2026",
-      "stage": "Group Stage",
-      "venue": "Gillette Stadium, Boston",
-      "upcoming": true,
-      "marketType": "moneyline",
-      "line": null,
-      "selection": "Home",
-      "marketPrice": 0.615,
-      "consensus": 0.603,
-      "spread": [
-        0.603,
-        0.603
-      ],
-      "edgePp": -1.2,
-      "agentsN": 1,
-      "agentsTotal": 8,
-      "perAgent": [
-        {
-          "handle": "MISTRAL",
-          "fairValue": 0.603,
-          "edgePp": -1.7
-        }
-      ]
-    },
-    {
-      "home": "France",
-      "away": "Morocco",
-      "homeCode": "FR",
-      "awayCode": "MA",
-      "game": "France vs Morocco",
-      "kickoffISO": "2026-07-09T20:00:00.000Z",
-      "kickoff": "Thu, Jul 9 · 4:00 PM EDT",
-      "competition": "FIFA World Cup 2026",
-      "stage": "Group Stage",
-      "venue": "Gillette Stadium, Boston",
-      "upcoming": true,
-      "marketType": "moneyline",
-      "line": null,
-      "selection": "Away",
-      "marketPrice": 0.145,
-      "consensus": 0.1514,
-      "spread": [
-        0.1477,
-        0.1551
-      ],
-      "edgePp": 0.6,
-      "agentsN": 2,
-      "agentsTotal": 8,
-      "perAgent": [
-        {
-          "handle": "DEEPSEEK",
-          "fairValue": 0.1551,
-          "edgePp": 0.51
-        },
-        {
-          "handle": "MISTRAL",
-          "fairValue": 0.1477,
-          "edgePp": -0.23
-        }
-      ]
-    },
-    {
       "home": "Spain",
       "away": "Belgium",
       "homeCode": "ES",
@@ -714,21 +576,26 @@
       "kickoff": "Sat, Jul 11 · 9:00 PM EDT",
       "competition": "FIFA World Cup 2026",
       "stage": "Group Stage",
-      "venue": "GEHA Field at Arrowhead Stadium",
+      "venue": "Arrowhead Stadium, Kansas City",
       "upcoming": true,
       "marketType": "moneyline",
       "line": null,
       "selection": "Home",
-      "marketPrice": 0.565,
-      "consensus": 0.5599,
+      "marketPrice": 0.5669,
+      "consensus": 0.5633,
       "spread": [
         0.5599,
-        0.5599
+        0.5667
       ],
-      "edgePp": -0.5,
-      "agentsN": 1,
+      "edgePp": -0.4,
+      "agentsN": 2,
       "agentsTotal": 8,
       "perAgent": [
+        {
+          "handle": "DEEPSEEK",
+          "fairValue": 0.5667,
+          "edgePp": -0.33
+        },
         {
           "handle": "MISTRAL",
           "fairValue": 0.5599,
@@ -765,6 +632,43 @@
           "handle": "MISTRAL",
           "fairValue": 0.447,
           "edgePp": -0.3
+        }
+      ]
+    },
+    {
+      "home": "Argentina",
+      "away": "Switzerland",
+      "homeCode": "AR",
+      "awayCode": "CH",
+      "game": "Argentina vs Switzerland",
+      "kickoffISO": "2026-07-12T01:00:00.000Z",
+      "kickoff": "Sat, Jul 11 · 9:00 PM EDT",
+      "competition": "FIFA World Cup 2026",
+      "stage": "Group Stage",
+      "venue": "Arrowhead Stadium, Kansas City",
+      "upcoming": true,
+      "marketType": "moneyline",
+      "line": null,
+      "selection": "Draw",
+      "marketPrice": 0.2687,
+      "consensus": 0.2685,
+      "spread": [
+        0.2683,
+        0.2687
+      ],
+      "edgePp": 0,
+      "agentsN": 2,
+      "agentsTotal": 8,
+      "perAgent": [
+        {
+          "handle": "MISTRAL",
+          "fairValue": 0.2687,
+          "edgePp": -0.13
+        },
+        {
+          "handle": "DEEPSEEK",
+          "fairValue": 0.2683,
+          "edgePp": -0.17
         }
       ]
     }
