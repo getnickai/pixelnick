@@ -1,7 +1,7 @@
 {
-  "generatedAt": "2026-07-10T10:34:36.450Z",
+  "generatedAt": "2026-07-11T11:48:49.197Z",
   "source": "R2 match-reader agents + matches mirror",
-  "count": 17,
+  "count": 14,
   "records": [
     {
       "home": "Argentina",
@@ -18,7 +18,7 @@
       "marketType": "totals",
       "line": 2.5,
       "selection": "Over",
-      "marketPrice": 0.424,
+      "marketPrice": 0.4235,
       "consensus": 0.5025,
       "spread": [
         0.4942,
@@ -112,13 +112,13 @@
       "marketType": "btts",
       "line": null,
       "selection": "No",
-      "marketPrice": 0.4067,
+      "marketPrice": 0.4033,
       "consensus": 0.4504,
       "spread": [
         0.4427,
         0.4709
       ],
-      "edgePp": 4.4,
+      "edgePp": 4.7,
       "agentsN": 6,
       "agentsTotal": 8,
       "perAgent": [
@@ -155,59 +155,49 @@
       ]
     },
     {
-      "home": "Spain",
-      "away": "Belgium",
-      "homeCode": "ES",
-      "awayCode": "BE",
-      "game": "Spain vs Belgium",
-      "kickoffISO": "2026-07-10T19:00:00.000Z",
-      "kickoff": "Fri, Jul 10 · 3:00 PM EDT",
+      "home": "Norway",
+      "away": "England",
+      "homeCode": "NO",
+      "awayCode": "GB",
+      "game": "Norway vs England",
+      "kickoffISO": "2026-07-11T21:00:00.000Z",
+      "kickoff": "Sat, Jul 11 · 5:00 PM EDT",
       "competition": "FIFA World Cup 2026",
       "stage": "Group Stage",
-      "venue": "SoFi Stadium, Los Angeles",
+      "venue": "Hard Rock Stadium, Miami",
       "upcoming": true,
-      "marketType": "totals",
-      "line": 2.5,
-      "selection": "Over",
-      "marketPrice": 0.5227,
-      "consensus": 0.5631,
+      "marketType": "moneyline",
+      "line": null,
+      "selection": "Draw",
+      "marketPrice": 0.2612,
+      "consensus": 0.3005,
       "spread": [
-        0.5609,
-        0.5653
+        0.262,
+        0.3236
       ],
-      "edgePp": 4,
-      "agentsN": 6,
+      "edgePp": 3.9,
+      "agentsN": 4,
       "agentsTotal": 8,
       "perAgent": [
         {
-          "handle": "KIMI",
-          "fairValue": 0.5639,
-          "edgePp": 4.39
-        },
-        {
-          "handle": "MISTRAL",
-          "fairValue": 0.5639,
-          "edgePp": 4.39
-        },
-        {
-          "handle": "QWEN",
-          "fairValue": 0.5639,
-          "edgePp": 4.39
-        },
-        {
           "handle": "DEEPSEEK",
-          "fairValue": 0.5609,
-          "edgePp": 4.09
+          "fairValue": 0.3196,
+          "edgePp": 6.21
         },
         {
-          "handle": "GEMINI",
-          "fairValue": 0.5609,
-          "edgePp": 4.09
+          "handle": "KIMI",
+          "fairValue": 0.3236,
+          "edgePp": 6.11
         },
         {
           "handle": "GPT",
-          "fairValue": 0.5653,
-          "edgePp": 2.53
+          "fairValue": 0.297,
+          "edgePp": 2.7
+        },
+        {
+          "handle": "MISTRAL",
+          "fairValue": 0.262,
+          "edgePp": -0.8
         }
       ]
     },
@@ -333,38 +323,6 @@
       ]
     },
     {
-      "home": "Spain",
-      "away": "Belgium",
-      "homeCode": "ES",
-      "awayCode": "BE",
-      "game": "Spain vs Belgium",
-      "kickoffISO": "2026-07-10T19:00:00.000Z",
-      "kickoff": "Fri, Jul 10 · 3:00 PM EDT",
-      "competition": "FIFA World Cup 2026",
-      "stage": "Group Stage",
-      "venue": "SoFi Stadium, Los Angeles",
-      "upcoming": true,
-      "marketType": "moneyline",
-      "line": null,
-      "selection": "Away",
-      "marketPrice": 0.165,
-      "consensus": 0.1471,
-      "spread": [
-        0.1471,
-        0.1471
-      ],
-      "edgePp": -1.8,
-      "agentsN": 1,
-      "agentsTotal": 8,
-      "perAgent": [
-        {
-          "handle": "DEEPSEEK",
-          "fairValue": 0.1471,
-          "edgePp": -2.29
-        }
-      ]
-    },
-    {
       "home": "Norway",
       "away": "England",
       "homeCode": "NO",
@@ -379,57 +337,25 @@
       "marketType": "btts",
       "line": null,
       "selection": "Yes",
-      "marketPrice": 0.585,
-      "consensus": 0.5691,
+      "marketPrice": 0.59,
+      "consensus": 0.5716,
       "spread": [
         0.5691,
-        0.5691
+        0.574
       ],
-      "edgePp": -1.6,
-      "agentsN": 1,
+      "edgePp": -1.8,
+      "agentsN": 2,
       "agentsTotal": 8,
       "perAgent": [
         {
           "handle": "DEEPSEEK",
           "fairValue": 0.5691,
           "edgePp": -2.09
-        }
-      ]
-    },
-    {
-      "home": "Spain",
-      "away": "Belgium",
-      "homeCode": "ES",
-      "awayCode": "BE",
-      "game": "Spain vs Belgium",
-      "kickoffISO": "2026-07-10T19:00:00.000Z",
-      "kickoff": "Fri, Jul 10 · 3:00 PM EDT",
-      "competition": "FIFA World Cup 2026",
-      "stage": "Group Stage",
-      "venue": "SoFi Stadium, Los Angeles",
-      "upcoming": true,
-      "marketType": "btts",
-      "line": null,
-      "selection": "Yes",
-      "marketPrice": 0.52,
-      "consensus": 0.535,
-      "spread": [
-        0.5344,
-        0.5356
-      ],
-      "edgePp": 1.5,
-      "agentsN": 2,
-      "agentsTotal": 8,
-      "perAgent": [
-        {
-          "handle": "MISTRAL",
-          "fairValue": 0.5356,
-          "edgePp": 1.56
         },
         {
-          "handle": "DEEPSEEK",
-          "fairValue": 0.5344,
-          "edgePp": 0.44
+          "handle": "MISTRAL",
+          "fairValue": 0.574,
+          "edgePp": -2.6
         }
       ]
     },
@@ -447,122 +373,53 @@
       "upcoming": true,
       "marketType": "moneyline",
       "line": null,
-      "selection": "Draw",
-      "marketPrice": 0.265,
-      "consensus": 0.2795,
+      "selection": "Away",
+      "marketPrice": 0.5112,
+      "consensus": 0.5227,
       "spread": [
-        0.262,
-        0.297
+        0.5227,
+        0.5227
       ],
-      "edgePp": 1.4,
-      "agentsN": 2,
-      "agentsTotal": 8,
-      "perAgent": [
-        {
-          "handle": "GPT",
-          "fairValue": 0.297,
-          "edgePp": 2.7
-        },
-        {
-          "handle": "MISTRAL",
-          "fairValue": 0.262,
-          "edgePp": -0.8
-        }
-      ]
-    },
-    {
-      "home": "Spain",
-      "away": "Belgium",
-      "homeCode": "ES",
-      "awayCode": "BE",
-      "game": "Spain vs Belgium",
-      "kickoffISO": "2026-07-10T19:00:00.000Z",
-      "kickoff": "Fri, Jul 10 · 3:00 PM EDT",
-      "competition": "FIFA World Cup 2026",
-      "stage": "Group Stage",
-      "venue": "SoFi Stadium, Los Angeles",
-      "upcoming": true,
-      "marketType": "moneyline",
-      "line": null,
-      "selection": "Home",
-      "marketPrice": 0.605,
-      "consensus": 0.5921,
-      "spread": [
-        0.5921,
-        0.5921
-      ],
-      "edgePp": -1.3,
+      "edgePp": 1.1,
       "agentsN": 1,
       "agentsTotal": 8,
       "perAgent": [
         {
           "handle": "MISTRAL",
-          "fairValue": 0.5921,
-          "edgePp": -1.79
+          "fairValue": 0.5227,
+          "edgePp": 1.02
         }
       ]
     },
     {
-      "home": "Spain",
-      "away": "Belgium",
-      "homeCode": "ES",
-      "awayCode": "BE",
-      "game": "Spain vs Belgium",
-      "kickoffISO": "2026-07-10T19:00:00.000Z",
-      "kickoff": "Fri, Jul 10 · 3:00 PM EDT",
+      "home": "Norway",
+      "away": "England",
+      "homeCode": "NO",
+      "awayCode": "GB",
+      "game": "Norway vs England",
+      "kickoffISO": "2026-07-11T21:00:00.000Z",
+      "kickoff": "Sat, Jul 11 · 5:00 PM EDT",
       "competition": "FIFA World Cup 2026",
       "stage": "Group Stage",
-      "venue": "SoFi Stadium, Los Angeles",
+      "venue": "Hard Rock Stadium, Miami",
       "upcoming": true,
-      "marketType": "btts",
-      "line": null,
-      "selection": "No",
-      "marketPrice": 0.475,
-      "consensus": 0.4627,
+      "marketType": "totals",
+      "line": 2.5,
+      "selection": "Over",
+      "marketPrice": 0.5613,
+      "consensus": 0.5688,
       "spread": [
-        0.4627,
-        0.4627
+        0.5688,
+        0.5688
       ],
-      "edgePp": -1.2,
-      "agentsN": 1,
-      "agentsTotal": 8,
-      "perAgent": [
-        {
-          "handle": "DEEPSEEK",
-          "fairValue": 0.4627,
-          "edgePp": -1.7300000000000002
-        }
-      ]
-    },
-    {
-      "home": "Spain",
-      "away": "Belgium",
-      "homeCode": "ES",
-      "awayCode": "BE",
-      "game": "Spain vs Belgium",
-      "kickoffISO": "2026-07-10T19:00:00.000Z",
-      "kickoff": "Fri, Jul 10 · 3:00 PM EDT",
-      "competition": "FIFA World Cup 2026",
-      "stage": "Group Stage",
-      "venue": "SoFi Stadium, Los Angeles",
-      "upcoming": true,
-      "marketType": "moneyline",
-      "line": null,
-      "selection": "Draw",
-      "marketPrice": 0.245,
-      "consensus": 0.2401,
-      "spread": [
-        0.2401,
-        0.2401
-      ],
-      "edgePp": -0.5,
+      "edgePp": 0.8,
       "agentsN": 1,
       "agentsTotal": 8,
       "perAgent": [
         {
           "handle": "MISTRAL",
-          "fairValue": 0.2401,
-          "edgePp": -0.99
+          "fairValue": 0.5688,
+          "edgePp": 0.63
         }
       ]
     },
@@ -632,6 +489,38 @@
           "handle": "MISTRAL",
           "fairValue": 0.447,
           "edgePp": -0.3
+        }
+      ]
+    },
+    {
+      "home": "Argentina",
+      "away": "Switzerland",
+      "homeCode": "AR",
+      "awayCode": "CH",
+      "game": "Argentina vs Switzerland",
+      "kickoffISO": "2026-07-12T01:00:00.000Z",
+      "kickoff": "Sat, Jul 11 · 9:00 PM EDT",
+      "competition": "FIFA World Cup 2026",
+      "stage": "Group Stage",
+      "venue": "Arrowhead Stadium, Kansas City",
+      "upcoming": true,
+      "marketType": "moneyline",
+      "line": null,
+      "selection": "Away",
+      "marketPrice": 0.1613,
+      "consensus": 0.1637,
+      "spread": [
+        0.1637,
+        0.1637
+      ],
+      "edgePp": 0.2,
+      "agentsN": 1,
+      "agentsTotal": 8,
+      "perAgent": [
+        {
+          "handle": "MISTRAL",
+          "fairValue": 0.1637,
+          "edgePp": 0.12
         }
       ]
     },
