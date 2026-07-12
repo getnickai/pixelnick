@@ -1,5 +1,5 @@
 {
-  "generatedAt": "2026-07-11T23:48:06.924Z",
+  "generatedAt": "2026-07-12T00:32:36.411Z",
   "source": "R2 match-reader closed_trades + matches mirror (FT)",
   "count": 50,
   "records": [
@@ -1668,48 +1668,6 @@
       ]
     },
     {
-      "home": "Germany",
-      "away": "Paraguay",
-      "homeCode": "DE",
-      "awayCode": "PY",
-      "game": "Germany vs Paraguay",
-      "competition": "FIFA World Cup 2026",
-      "stage": "Round of 32",
-      "venue": "Gillette Stadium, Boston",
-      "kickoff": "Mon, Jun 29",
-      "kickoffISO": "2026-06-29T20:30:00.000Z",
-      "day": "2026-06-29",
-      "homeScore": 1,
-      "awayScore": 1,
-      "winner": null,
-      "status": "FT",
-      "marketType": "totals",
-      "line": 2.5,
-      "selection": "Under",
-      "hit": true,
-      "entryPrice": 0.6233,
-      "totalPnl": 116.91,
-      "agentsN": 3,
-      "agentsTotal": 8,
-      "perAgent": [
-        {
-          "handle": "GPT",
-          "pnl": 38.97,
-          "result": "win"
-        },
-        {
-          "handle": "GEMINI",
-          "pnl": 38.97,
-          "result": "win"
-        },
-        {
-          "handle": "QWEN",
-          "pnl": 38.97,
-          "result": "win"
-        }
-      ]
-    },
-    {
       "home": "Iran",
       "away": "New Zealand",
       "homeCode": "IR",
@@ -2043,6 +2001,38 @@
         {
           "handle": "GEMINI",
           "pnl": 87.65,
+          "result": "win"
+        }
+      ]
+    },
+    {
+      "home": "Norway",
+      "away": "England",
+      "homeCode": "NO",
+      "awayCode": "GB",
+      "game": "Norway vs England",
+      "competition": "FIFA World Cup 2026",
+      "stage": "Quarter · finals",
+      "venue": "Hard Rock Stadium, Miami",
+      "kickoff": "Sat, Jul 11",
+      "kickoffISO": "2026-07-11T21:00:00.000Z",
+      "day": "2026-07-11",
+      "homeScore": 1,
+      "awayScore": 2,
+      "winner": "Draw",
+      "status": "FT",
+      "marketType": "moneyline",
+      "line": null,
+      "selection": "Draw",
+      "hit": true,
+      "entryPrice": 0.265,
+      "totalPnl": 83.21,
+      "agentsN": 1,
+      "agentsTotal": 8,
+      "perAgent": [
+        {
+          "handle": "GPT",
+          "pnl": 83.21,
           "result": "win"
         }
       ]
