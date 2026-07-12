@@ -1,5 +1,5 @@
 {
-  "generatedAt": "2026-07-12T04:27:53.178Z",
+  "generatedAt": "2026-07-12T09:25:30.590Z",
   "source": "R2 match-reader closed_trades + matches mirror (FT)",
   "count": 50,
   "records": [
@@ -333,53 +333,6 @@
         {
           "handle": "QWEN",
           "pnl": 110.48,
-          "result": "win"
-        }
-      ]
-    },
-    {
-      "home": "Argentina",
-      "away": "Switzerland",
-      "homeCode": "AR",
-      "awayCode": "CH",
-      "game": "Argentina vs Switzerland",
-      "competition": "FIFA World Cup 2026",
-      "stage": "Quarter · finals",
-      "venue": "Arrowhead Stadium, Kansas City",
-      "kickoff": "Sat, Jul 11",
-      "kickoffISO": "2026-07-12T01:00:00.000Z",
-      "day": "2026-07-11",
-      "homeScore": 3,
-      "awayScore": 1,
-      "winner": "Draw",
-      "status": "FT",
-      "marketType": "totals",
-      "line": 2.5,
-      "selection": "Over",
-      "hit": true,
-      "entryPrice": 0.425,
-      "totalPnl": 432.96,
-      "agentsN": 4,
-      "agentsTotal": 8,
-      "perAgent": [
-        {
-          "handle": "GPT",
-          "pnl": 108.24,
-          "result": "win"
-        },
-        {
-          "handle": "GEMINI",
-          "pnl": 108.24,
-          "result": "win"
-        },
-        {
-          "handle": "KIMI",
-          "pnl": 108.24,
-          "result": "win"
-        },
-        {
-          "handle": "QWEN",
-          "pnl": 108.24,
           "result": "win"
         }
       ]
@@ -904,6 +857,43 @@
       ]
     },
     {
+      "home": "Argentina",
+      "away": "Switzerland",
+      "homeCode": "AR",
+      "awayCode": "CH",
+      "game": "Argentina vs Switzerland",
+      "competition": "FIFA World Cup 2026",
+      "stage": "Quarter · finals",
+      "venue": "Arrowhead Stadium, Kansas City",
+      "kickoff": "Sat, Jul 11",
+      "kickoffISO": "2026-07-12T01:00:00.000Z",
+      "day": "2026-07-11",
+      "homeScore": 3,
+      "awayScore": 1,
+      "winner": "Draw",
+      "status": "FT",
+      "marketType": "totals",
+      "line": 2.5,
+      "selection": "Over",
+      "hit": true,
+      "entryPrice": 0.425,
+      "totalPnl": 216.48,
+      "agentsN": 2,
+      "agentsTotal": 8,
+      "perAgent": [
+        {
+          "handle": "GEMINI",
+          "pnl": 108.24,
+          "result": "win"
+        },
+        {
+          "handle": "KIMI",
+          "pnl": 108.24,
+          "result": "win"
+        }
+      ]
+    },
+    {
       "home": "Paraguay",
       "away": "France",
       "homeCode": "PY",
@@ -1357,12 +1347,12 @@
           "result": "win"
         },
         {
-          "handle": "KIMI",
+          "handle": "QWEN",
           "pnl": 34.52,
           "result": "win"
         },
         {
-          "handle": "QWEN",
+          "handle": "KIMI",
           "pnl": 34.52,
           "result": "win"
         }
@@ -1799,48 +1789,6 @@
       ]
     },
     {
-      "home": "Germany",
-      "away": "Paraguay",
-      "homeCode": "DE",
-      "awayCode": "PY",
-      "game": "Germany vs Paraguay",
-      "competition": "FIFA World Cup 2026",
-      "stage": "Round of 32",
-      "venue": "Gillette Stadium, Boston",
-      "kickoff": "Mon, Jun 29",
-      "kickoffISO": "2026-06-29T20:30:00.000Z",
-      "day": "2026-06-29",
-      "homeScore": 1,
-      "awayScore": 1,
-      "winner": null,
-      "status": "FT",
-      "marketType": "totals",
-      "line": 2.5,
-      "selection": "Under",
-      "hit": true,
-      "entryPrice": 0.6233,
-      "totalPnl": 116.91,
-      "agentsN": 3,
-      "agentsTotal": 8,
-      "perAgent": [
-        {
-          "handle": "GPT",
-          "pnl": 38.97,
-          "result": "win"
-        },
-        {
-          "handle": "GEMINI",
-          "pnl": 38.97,
-          "result": "win"
-        },
-        {
-          "handle": "QWEN",
-          "pnl": 38.97,
-          "result": "win"
-        }
-      ]
-    },
-    {
       "home": "Iran",
       "away": "New Zealand",
       "homeCode": "IR",
@@ -2174,6 +2122,43 @@
         {
           "handle": "GEMINI",
           "pnl": 87.65,
+          "result": "win"
+        }
+      ]
+    },
+    {
+      "home": "Canada",
+      "away": "Morocco",
+      "homeCode": "CA",
+      "awayCode": "MA",
+      "game": "Canada vs Morocco",
+      "competition": "FIFA World Cup 2026",
+      "stage": "Round of 16",
+      "venue": "NRG Stadium, Houston",
+      "kickoff": "Sat, Jul 4",
+      "kickoffISO": "2026-07-04T17:00:00.000Z",
+      "day": "2026-07-04",
+      "homeScore": 0,
+      "awayScore": 3,
+      "winner": "Morocco",
+      "status": "FT",
+      "marketType": "moneyline",
+      "line": null,
+      "selection": "Away",
+      "hit": true,
+      "entryPrice": 0.7675,
+      "totalPnl": 71.71,
+      "agentsN": 2,
+      "agentsTotal": 8,
+      "perAgent": [
+        {
+          "handle": "GPT",
+          "pnl": 43.46,
+          "result": "win"
+        },
+        {
+          "handle": "GEMINI",
+          "pnl": 28.25,
           "result": "win"
         }
       ]
