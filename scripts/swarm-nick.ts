@@ -138,13 +138,21 @@ function settleResult(marketType: string, selection: string, line: number | null
   }
   return null; // moneyline handled by winner name (see settleMoneyline)
 }
-/** Moneyline settle by selection team name vs the fixture winner. */
+/**
+ * Moneyline settle: map the bet to the fixture's home/away side by NAME, decide
+ * the winning side by SCORE (unambiguous, and independent of the `winner`
+ * field's format — some rows store a code like "ARG", some a name, some null),
+ * and fall back to the `winner` field only for a level FT score (knockout pens).
+ */
 function settleMoneyline(selection: string, home: string, away: string, winner: string | null, hs: number, as: number): "win" | "loss" | null {
-  const sel = canonTeam(selection);
   if (/^draw$/i.test(selection)) return hs === as ? "win" : "loss";
-  const w = winner ? canonTeam(winner) : hs > as ? canonTeam(home) : as > hs ? canonTeam(away) : null;
-  if (!w) return null;
-  return sel === w ? "win" : "loss";
+  const betHome = refersTo(selection, home);
+  const betAway = refersTo(selection, away);
+  if (!betHome && !betAway) return null;
+  let winnerSide: "home" | "away" | null = hs > as ? "home" : as > hs ? "away" : null;
+  if (!winnerSide && winner) winnerSide = refersTo(winner, home) ? "home" : refersTo(winner, away) ? "away" : null;
+  if (!winnerSide) return null; // level FT and no usable winner → can't settle
+  return (betHome && winnerSide === "home") || (betAway && winnerSide === "away") ? "win" : "loss";
 }
 const pnlOf = (result: "win" | "loss", size: number, price: number): number =>
   !Number.isFinite(size) || !Number.isFinite(price) || price <= 0 ? 0 : result === "win" ? size * (1 / price - 1) : -size;
