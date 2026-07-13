@@ -11,10 +11,12 @@
  */
 import {
   AbsoluteFill,
+  Audio,
   Easing,
   interpolate,
   staticFile,
   useCurrentFrame,
+  useVideoConfig,
 } from "remotion";
 import { SlidingDigitCount } from "../_shared/sliding-digit-count";
 import {
@@ -40,6 +42,7 @@ export const GamePickCardComposition: React.FC<GamePickCardProps> = ({
   slide = true,
 }) => {
   const frame = useCurrentFrame();
+  const { durationInFrames } = useVideoConfig();
 
   const blink = 0.35 + 0.65 * (0.5 + 0.5 * Math.sin((2 * Math.PI * frame) / BLINK_PERIOD));
 
@@ -77,6 +80,18 @@ export const GamePickCardComposition: React.FC<GamePickCardProps> = ({
 
   return (
     <AbsoluteFill className="overflow-clip font-sans">
+      {/* Soundtrack — same pre-game stadium groove as the game/matchday cards;
+          fades in at the start and out over the settle hold so it never clips.
+          Stills carry no audio; the MP4 render must pass muted:false. */}
+      <Audio
+        src={staticFile("audio/stadium-groove.mp3")}
+        volume={(f) =>
+          interpolate(f, [0, 10, durationInFrames - 26, durationInFrames - 1], [0, 1, 1, 0], {
+            extrapolateLeft: "clamp",
+            extrapolateRight: "clamp",
+          })
+        }
+      />
       <GamePickCardView data={data} assetBase={ASSET} variant="analysis" anim={anim} />
     </AbsoluteFill>
   );

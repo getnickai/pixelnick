@@ -12,6 +12,7 @@
  */
 import {
   AbsoluteFill,
+  Audio,
   Easing,
   interpolate,
   spring,
@@ -57,7 +58,7 @@ export const ResultPortfolioCardComposition: React.FC<ResultPortfolioCardProps> 
   data = SAMPLE_RESULT_PORTFOLIO_CARD,
 }) => {
   const frame = useCurrentFrame();
-  const { fps } = useVideoConfig();
+  const { fps, durationInFrames } = useVideoConfig();
 
   const fade = (w: readonly [number, number]) =>
     interpolate(frame, w, [0, 1], {
@@ -125,6 +126,18 @@ export const ResultPortfolioCardComposition: React.FC<ResultPortfolioCardProps> 
 
   return (
     <AbsoluteFill className="overflow-clip font-sans">
+      {/* Soundtrack — same "decisive moment" track as the result card; fades in
+          at the start and out over the settle hold so it never clips. Stills
+          carry no audio; the MP4 render must pass muted:false. */}
+      <Audio
+        src={staticFile("audio/decisive-moment.mp3")}
+        volume={(f) =>
+          interpolate(f, [0, 10, durationInFrames - 26, durationInFrames - 1], [0, 1, 1, 0], {
+            extrapolateLeft: "clamp",
+            extrapolateRight: "clamp",
+          })
+        }
+      />
       <ResultPortfolioCardView data={data} assetBase={ASSET} anim={anim} />
     </AbsoluteFill>
   );
