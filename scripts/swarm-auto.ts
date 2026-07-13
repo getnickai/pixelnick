@@ -53,6 +53,8 @@ const OUT_ROOT = path.join(process.cwd(), "out", "auto");
 const CHANNEL = process.env.SLACK_CHANNEL_SWARM_ARENA ?? process.env.SLACK_CHANNEL_ID ?? "";
 const CONSENSUS_FEED = path.join(process.cwd(), "public", "swarm-arena-cards", "consensus.json");
 const RESULTS_FEED = path.join(process.cwd(), "public", "swarm-arena-cards", "results.json");
+const NICK_UPCOMING_FEED = path.join(process.cwd(), "public", "swarm-arena-cards", "nick-upcoming.json");
+const NICK_RESULTS_FEED = path.join(process.cwd(), "public", "swarm-arena-cards", "nick-results.json");
 const LIVE_DECK = path.join(process.cwd(), "public", "swarm-arena-cards", "live-deck.json");
 const AUDIO_GAME = path.join(process.cwd(), "public", "audio", "stadium-groove.mp3"); // pre-game game cards
 const AUDIO_RESULT = path.join(process.cwd(), "public", "audio", "decisive-moment.mp3"); // post-game result cards
@@ -84,6 +86,9 @@ const FORCE_POST = forceFlag("--force-postgame=");
 const FORCE_LB = argv.includes("--force-leaderboard");
 const BUNDLE_TODAY = argv.includes("--bundle-today");
 const FORCE_MATCHDAY = argv.includes("--force-matchday");
+// Season 2 (single agent "Nick"): render + post Nick's upcoming Game Pick cards
+// and last-N Result+Portfolio cards. Ignores timing/ledger (manual/dispatch).
+const FORCE_NICK = argv.includes("--nick");
 
 // ── Types ─────────────────────────────────────────────────────────────────--
 type Match = {
@@ -750,10 +755,78 @@ async function forceMatchday(): Promise<void> {
   await fireMatchday(cfg);
 }
 
+/** Manual (--nick): build the single-agent feed, then render + post Nick's
+ *  upcoming Game Pick cards and last-N Result+Portfolio cards to Slack. Season 2
+ *  (one agent). Mirrors the bundle / matchday force paths; each MP4 gets the same
+ *  soundtrack as its Season-1 sibling (game groove / decisive moment). */
+async function forceNick(): Promise<void> {
+  // In the CI gate (--dry-run), don't build/render — just tell the gate a card is
+  // due so the heavy render step (with Chromium + ffmpeg) runs the real --nick.
+  if (DRY) {
+    console.log("--dry-run: would build the Nick feed + render/post upcoming + result cards.");
+    console.log("gate-due=1");
+    return;
+  }
+  const token = slackTokenFromEnv();
+  const cfg: SlackConfig | null = token && CHANNEL && !NO_SLACK ? { token, channelId: CHANNEL } : null;
+  if (!cfg) console.log("(Slack token/channel not set or --no-slack — rendering only, not posting.)");
+
+  console.log("→ building Nick feed (world-cup-agent decisions + FT scores)…");
+  if (!(await sh(["bun", "scripts/swarm-nick.ts", "--results-limit=4"]))) {
+    console.error("  ✗ nick feed build failed.");
+    return;
+  }
+  const readFeed = (p: string): any[] => (fs.existsSync(p) ? JSON.parse(fs.readFileSync(p, "utf8")).records ?? [] : []);
+  const upcoming = readFeed(NICK_UPCOMING_FEED);
+  const results = readFeed(NICK_RESULTS_FEED);
+  console.log(`  Nick feed: ${upcoming.length} upcoming, ${results.length} settled result(s).`);
+
+  // 1) Upcoming → Game Pick cards.
+  if (upcoming.length) {
+    const outDir = path.join(OUT_ROOT, "nick-upcoming");
+    fs.rmSync(outDir, { recursive: true, force: true });
+    console.log(`→ rendering ${upcoming.length} Game Pick card(s)…`);
+    if (await sh(["bun", "scripts/render-game-pick.ts", "--all", `--out=${outDir}`])) {
+      const mp4s = fs.readdirSync(outDir).filter((f) => f.endsWith(".mp4")).sort().map((f) => path.join(outDir, f));
+      for (const mp4 of mp4s) await muxAudio(mp4, AUDIO_GAME);
+      const lines = upcoming.map((r) => `• ${r.game}: ${r.pick.selection}${r.pick.marketType === "totals" && r.pick.line ? " " + r.pick.line : ""} ($${r.pick.stakeUsd} @ ${Math.round(r.pick.price * 100)}%, Nick ${Math.round(r.pick.agentProb * 100)}%)`);
+      const caption = ["*Nick's picks · upcoming games · Swarm Arena*", "One agent, multi-model consensus:", ...lines, CTA].join("\n");
+      if (cfg && mp4s.length) {
+        await postBundle(cfg.token, cfg.channelId, mp4s, caption);
+        console.log(`  ⤴ posted ${mp4s.length} upcoming Game Pick card(s).`);
+      } else console.log(`  ✓ rendered ${mp4s.length} upcoming card(s)${cfg ? "" : " (no post)"}.`);
+    }
+  } else console.log("· no upcoming Nick picks — skipping Game Pick cards.");
+
+  // 2) Past → Result + Portfolio cards (last N settled, newest first).
+  if (results.length) {
+    const outDir = path.join(OUT_ROOT, "nick-results");
+    fs.rmSync(outDir, { recursive: true, force: true });
+    console.log(`→ rendering ${results.length} Result + Portfolio card(s)…`);
+    if (await sh(["bun", "scripts/render-result-portfolio.ts", "--all", `--out=${outDir}`])) {
+      const mp4s = fs.readdirSync(outDir).filter((f) => f.endsWith(".mp4")).sort().map((f) => path.join(outDir, f));
+      for (const mp4 of mp4s) await muxAudio(mp4, AUDIO_RESULT);
+      const portfolio = results[0]?.portfolioUsd;
+      const lines = results.map((r) => `• ${r.home} ${r.homeScore}-${r.awayScore} ${r.away}: ${r.hit ? "HIT" : "MISS"} ${r.totalPnl >= 0 ? "+" : ""}$${Math.round(r.totalPnl)}`);
+      const caption = [
+        "*Nick's results · recent games · Swarm Arena*",
+        ...(portfolio != null ? [`Portfolio now $${Math.round(portfolio).toLocaleString("en-US")} (from $1,000 start).`] : []),
+        ...lines,
+        CTA,
+      ].join("\n");
+      if (cfg && mp4s.length) {
+        await postBundle(cfg.token, cfg.channelId, mp4s, caption);
+        console.log(`  ⤴ posted ${mp4s.length} Result + Portfolio card(s).`);
+      } else console.log(`  ✓ rendered ${mp4s.length} result card(s)${cfg ? "" : " (no post)"}.`);
+    }
+  } else console.log("· no settled Nick results — skipping Result cards.");
+}
+
 // ── Main tick ───────────────────────────────────────────────────────────────
 async function main() {
   if (BUNDLE_TODAY) return bundleToday();
   if (FORCE_MATCHDAY) return forceMatchday();
+  if (FORCE_NICK) return forceNick();
 
   const now = Date.now();
   const matches = await fetchMatches();

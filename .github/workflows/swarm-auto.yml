@@ -39,6 +39,10 @@ on:
         description: "Force the leaderboard card"
         type: boolean
         default: false
+      nick:
+        description: "Season 2: post Nick's upcoming Game Pick + last-4 Result/Portfolio cards"
+        type: boolean
+        default: false
 
 # Never let two ticks render at once (would race the ledger). Queue instead.
 concurrency:
@@ -68,6 +72,7 @@ jobs:
       IN_FPRE: ${{ inputs.force_pregame }}
       IN_FPOST: ${{ inputs.force_postgame }}
       IN_FLB: ${{ inputs.force_leaderboard }}
+      IN_NICK: ${{ inputs.nick }}
     steps:
       - uses: actions/checkout@v4
 
@@ -104,6 +109,7 @@ jobs:
           [ -n "$IN_FPRE" ] && ARGS+=("--force-pregame=$IN_FPRE")
           [ -n "$IN_FPOST" ] && ARGS+=("--force-postgame=$IN_FPOST")
           [ "$IN_FLB" = "true" ] && ARGS+=("--force-leaderboard")
+          [ "$IN_NICK" = "true" ] && ARGS+=("--nick")
           OUT=$(bun scripts/swarm-auto.ts --dry-run "${ARGS[@]}")
           echo "$OUT"
           DUE=$(echo "$OUT" | grep -oE 'gate-due=[0-9]+' | tail -1 | cut -d= -f2)
@@ -127,6 +133,7 @@ jobs:
           [ -n "$IN_FPRE" ] && ARGS+=("--force-pregame=$IN_FPRE")
           [ -n "$IN_FPOST" ] && ARGS+=("--force-postgame=$IN_FPOST")
           [ "$IN_FLB" = "true" ] && ARGS+=("--force-leaderboard")
+          [ "$IN_NICK" = "true" ] && ARGS+=("--nick")
           [ "$IN_NOSLACK" = "true" ] && ARGS+=("--no-slack")
           bun scripts/swarm-auto.ts "${ARGS[@]}"
 
@@ -139,7 +146,7 @@ jobs:
         run: |
           git config user.name "swarm-auto"
           git config user.email "swarm-auto@users.noreply.github.com"
-          git add public/swarm-arena-cards/results.json public/swarm-arena-cards/consensus.json public/swarm-arena-cards/fixtures.json 2>/dev/null || true
+          git add public/swarm-arena-cards/results.json public/swarm-arena-cards/consensus.json public/swarm-arena-cards/fixtures.json public/swarm-arena-cards/nick-upcoming.json public/swarm-arena-cards/nick-results.json 2>/dev/null || true
           if git diff --cached --quiet; then echo "no feed changes to publish"; exit 0; fi
           git commit -m "chore(swarm-auto): refresh history feeds"
           git push origin HEAD:main || echo "push raced; next card run will catch up"
