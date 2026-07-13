@@ -66,6 +66,30 @@ export const staticManifest: StaticEntryMeta[] = [
     width: 650,
     height: 1156,
   },
+  {
+    id: "game-pick-card",
+    label: "Game Pick Card",
+    width: 650,
+    height: 1156,
+  },
+  {
+    id: "game-pick-card-analysis-start",
+    label: "Game Pick (Analysis · Start)",
+    width: 650,
+    height: 1156,
+  },
+  {
+    id: "game-pick-card-analysis-final",
+    label: "Game Pick (Analysis · Final)",
+    width: 650,
+    height: 1156,
+  },
+  {
+    id: "result-portfolio-card",
+    label: "Result + Portfolio Card",
+    width: 650,
+    height: 1110,
+  },
 ];
 
 export function getStaticEntryMeta(id: string): StaticEntryMeta | undefined {

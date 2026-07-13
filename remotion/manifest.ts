@@ -14,6 +14,7 @@
  */
 import { TEMPLATES } from "./compositions/workflow-template-card/data/templates.generated";
 import { wtcDuration } from "./compositions/workflow-template-card/timeline";
+import { gamePickDuration } from "./compositions/game-pick-card/props";
 
 export type MotionEntryMeta = {
   id: string;
@@ -125,6 +126,30 @@ export const motionManifest: MotionEntryMeta[] = [
     height: 1156,
     fps: 30,
     durationInFrames: 4 * 135 + 90,
+  },
+  {
+    // Animated Game Pick card — the single-game, single-agent sibling of the
+    // matchday slate. The "AI analysis" buffer fills then resolves into Nick's
+    // pick with slot-machine numbers. ~7s (210f = bar 2s + fade 0.5s + slot 2s
+    // + hold 2.5s).
+    id: "game-pick-card",
+    label: "Game Pick Card",
+    width: 650,
+    height: 1156,
+    fps: 30,
+    durationInFrames: gamePickDuration,
+  },
+  {
+    // Animated Result + Portfolio card — the single-agent sibling of the
+    // per-agent result card. Same cascade + final score + HIT chip + "banked
+    // +$X" payout hero, then Nick's current portfolio spins + lands on the
+    // running bankroll. ~8.7s (262f).
+    id: "result-portfolio-card",
+    label: "Result + Portfolio Card",
+    width: 650,
+    height: 1110,
+    fps: 30,
+    durationInFrames: 262,
   },
   {
     // NickAI social card (STA-473) — brand-dark frame for the weekly X

@@ -30,6 +30,10 @@ import { SwarmArenaLeaderboardCardComposition } from "./compositions/swarm-arena
 import { swarmArenaLeaderboardCardDefaultProps } from "./compositions/swarm-arena-leaderboard-card/props";
 import { MatchdayAnalysisComposition } from "./compositions/matchday-analysis/composition";
 import { matchdayAnalysisDefaultProps } from "./compositions/matchday-analysis/props";
+import { GamePickCardComposition } from "./compositions/game-pick-card/composition";
+import { gamePickCardDefaultProps } from "./compositions/game-pick-card/props";
+import { ResultPortfolioCardComposition } from "./compositions/result-portfolio-card/composition";
+import { resultPortfolioCardDefaultProps } from "./compositions/result-portfolio-card/props";
 import { NickaiSocialCardComposition } from "./compositions/nickai-social-card/composition";
 import { nickaiSocialCardDefaultProps } from "./compositions/nickai-social-card/props";
 import { WorkflowTemplateCardCard } from "./compositions/workflow-template-card/card-with-font";
@@ -47,6 +51,8 @@ const consensus = getMotionEntryMeta("consensus-card")!;
 const result = getMotionEntryMeta("result-card")!;
 const leaderboardAnim = getMotionEntryMeta("swarm-arena-leaderboard-card")!;
 const matchdayAnim = getMotionEntryMeta("matchday-analysis")!;
+const gamePickAnim = getMotionEntryMeta("game-pick-card")!;
+const resultPortfolioAnim = getMotionEntryMeta("result-portfolio-card")!;
 const nickaiSocial = getMotionEntryMeta("nickai-social-card")!;
 const workflowTemplate = getMotionEntryMeta("workflow-template-card")!;
 
@@ -136,6 +142,30 @@ export const RemotionRoot: React.FC = () => {
         width={matchdayAnim.width}
         height={matchdayAnim.height}
         defaultProps={matchdayAnalysisDefaultProps}
+      />
+      {/* Animated Game Pick — single-game, single-agent sibling of the matchday
+          slate; the "AI analysis" buffer fills then resolves into Nick's pick
+          with slot-machine numbers. */}
+      <Composition
+        id="game-pick-card"
+        component={GamePickCardComposition}
+        durationInFrames={gamePickAnim.durationInFrames}
+        fps={gamePickAnim.fps}
+        width={gamePickAnim.width}
+        height={gamePickAnim.height}
+        defaultProps={gamePickCardDefaultProps}
+      />
+      {/* Animated Result + Portfolio — single-agent sibling of the result card;
+          final score + HIT chip + banked-$ payout, then Nick's current
+          portfolio spins + lands on the running bankroll. */}
+      <Composition
+        id="result-portfolio-card"
+        component={ResultPortfolioCardComposition}
+        durationInFrames={resultPortfolioAnim.durationInFrames}
+        fps={resultPortfolioAnim.fps}
+        width={resultPortfolioAnim.width}
+        height={resultPortfolioAnim.height}
+        defaultProps={resultPortfolioCardDefaultProps}
       />
       {/* NickAI social card (STA-473) — brand-dark frame for the weekly X
           content calendar, rendered to PNG/MP4 by render-nickai-social. */}
