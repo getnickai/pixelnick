@@ -41,6 +41,16 @@ import {
   matchdayAnalysisDefaultProps,
   type MatchdayAnalysisProps,
 } from "./compositions/matchday-analysis/props";
+import { GamePickCardComposition } from "./compositions/game-pick-card/composition";
+import {
+  gamePickCardDefaultProps,
+  type GamePickCardProps,
+} from "./compositions/game-pick-card/props";
+import { ResultPortfolioCardComposition } from "./compositions/result-portfolio-card/composition";
+import {
+  resultPortfolioCardDefaultProps,
+  type ResultPortfolioCardProps,
+} from "./compositions/result-portfolio-card/props";
 import { NickaiSocialCardComposition } from "./compositions/nickai-social-card/composition";
 import {
   nickaiSocialCardDefaultProps,
@@ -116,6 +126,14 @@ const componentBindings: Record<string, ComponentBinding> = {
     component: MatchdayAnalysisComposition,
     defaultProps: matchdayAnalysisDefaultProps,
   } as ComponentBinding<MatchdayAnalysisProps> as ComponentBinding,
+  "game-pick-card": {
+    component: GamePickCardComposition,
+    defaultProps: gamePickCardDefaultProps,
+  } as ComponentBinding<GamePickCardProps> as ComponentBinding,
+  "result-portfolio-card": {
+    component: ResultPortfolioCardComposition,
+    defaultProps: resultPortfolioCardDefaultProps,
+  } as ComponentBinding<ResultPortfolioCardProps> as ComponentBinding,
   "nickai-social-card": {
     component: NickaiSocialCardComposition,
     defaultProps: nickaiSocialCardDefaultProps,

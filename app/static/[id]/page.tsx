@@ -6,6 +6,8 @@ import ConsensusCard from "@/components/consensus-card-view";
 import ResultCard from "@/components/result-card-view";
 import SwarmArenaLeaderboardCard from "@/components/swarm-arena-leaderboard-card";
 import MatchdayCard from "@/components/matchday-card-view";
+import GamePickCard from "@/components/game-pick-card-view";
+import ResultPortfolioCard from "@/components/result-portfolio-card-view";
 import { StaticVisualHost } from "@/components/static-visual-host";
 import { getStaticEntryMeta } from "@/static/manifest";
 
@@ -86,6 +88,38 @@ export default async function StaticVisualPage({
     return (
       <StaticVisualHost entry={entry}>
         <MatchdayCard variant="analysis" phase="final" />
+      </StaticVisualHost>
+    );
+  }
+
+  if (id === "game-pick-card") {
+    return (
+      <StaticVisualHost entry={entry}>
+        <GamePickCard />
+      </StaticVisualHost>
+    );
+  }
+
+  if (id === "game-pick-card-analysis-start") {
+    return (
+      <StaticVisualHost entry={entry}>
+        <GamePickCard variant="analysis" phase="start" />
+      </StaticVisualHost>
+    );
+  }
+
+  if (id === "game-pick-card-analysis-final") {
+    return (
+      <StaticVisualHost entry={entry}>
+        <GamePickCard variant="analysis" phase="final" />
+      </StaticVisualHost>
+    );
+  }
+
+  if (id === "result-portfolio-card") {
+    return (
+      <StaticVisualHost entry={entry}>
+        <ResultPortfolioCard />
       </StaticVisualHost>
     );
   }
