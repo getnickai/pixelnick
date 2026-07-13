@@ -92,18 +92,35 @@ function splitMatchup(matchup: string): [string, string] | null {
   return [parts[0], parts[1]];
 }
 
-/** Classify a bet selection string → { marketType, selection, line } for the card. */
-function inferMarket(raw: string): { marketType: "moneyline" | "btts" | "totals"; selection: string; line: number | null } {
-  const s = String(raw ?? "").trim();
+const norm = (s: string) => String(s ?? "").normalize("NFD").replace(/[̀-ͯ]/g, "").toLowerCase().trim();
+/** Does the selection text refer to this team (full name or canon alias)? */
+function refersTo(sel: string, team: string): boolean {
+  const n = norm(sel);
+  return n.includes(norm(team)) || n.includes(canonTeam(team));
+}
+
+/**
+ * Classify a bet selection → { marketType, selection, line } for the card.
+ * Moneyline is resolved to the actual TEAM NAME (not the raw "Spain to advance"
+ * / "Argentina win (reg)" phrasing), so the chip reads right and — critically —
+ * it settles against the fixture winner. In a knockout, "to advance" = win the
+ * tie, so the fixture winner is who advanced.
+ */
+function classifyBet(raw: string, home: string, away: string): { marketType: "moneyline" | "btts" | "totals"; selection: string; line: number | null } {
+  const s = String(raw ?? "").replace(/^\s*(back|lay)\s+/i, "").replace(/\s*@.*$/, "").trim();
   const over = s.match(/over\s+([\d.]+)/i);
   const under = s.match(/under\s+([\d.]+)/i);
   if (over) return { marketType: "totals", selection: "Over", line: Number(over[1]) };
   if (under) return { marketType: "totals", selection: "Under", line: Number(under[1]) };
-  if (/^(back\s+|lay\s+)?yes\b/i.test(s)) return { marketType: "btts", selection: "Yes", line: null };
-  if (/^(back\s+|lay\s+)?no\b/i.test(s)) return { marketType: "btts", selection: "No", line: null };
-  // team / moneyline: strip BACK/LAY prefix and "@ price" suffix.
-  const team = s.replace(/^\s*(back|lay)\s+/i, "").replace(/\s*@.*$/, "").trim();
-  return { marketType: "moneyline", selection: team, line: null };
+  if (/^yes\b/i.test(s) || /both teams/i.test(s)) return { marketType: "btts", selection: "Yes", line: null };
+  if (/^no\b/i.test(s)) return { marketType: "btts", selection: "No", line: null };
+  if (/\bdraw\b/i.test(s)) return { marketType: "moneyline", selection: "Draw", line: null };
+  // Resolve to the fixture team the selection names.
+  if (refersTo(s, home) && !refersTo(s, away)) return { marketType: "moneyline", selection: home, line: null };
+  if (refersTo(s, away) && !refersTo(s, home)) return { marketType: "moneyline", selection: away, line: null };
+  if (/\bhome\b/i.test(s)) return { marketType: "moneyline", selection: home, line: null };
+  if (/\baway\b/i.test(s)) return { marketType: "moneyline", selection: away, line: null };
+  return { marketType: "moneyline", selection: s, line: null }; // unresolved (rare) — won't settle
 }
 
 /** Settle a selection against a final score. Null for market types we can't settle. */
@@ -162,7 +179,7 @@ function toPick(pk: Record<string, unknown>, date: string): Pick | null {
   const bet = (pk.bet ?? {}) as Record<string, unknown>;
   const stake = num(bet.size_usd) ?? num(bet.stake_usd) ?? 0;
   if (!(stake > 0) || !bet.selection) return null; // no real staked bet → not a card
-  const m = inferMarket(String(bet.selection));
+  const m = classifyBet(String(bet.selection), teams[0], teams[1]);
   const price = num(bet.market_implied_prob) ?? num(bet.entry_price) ?? 0;
   const edgePp = num(bet.edge_pct);
   const probs = (pk.probs ?? {}) as Record<string, unknown>;
