@@ -1,5 +1,5 @@
 {
-  "generatedAt": "2026-07-13T17:55:10.097Z",
+  "generatedAt": "2026-07-13T18:00:23.151Z",
   "source": "R2 world-cup-agent decisions settled vs FT scores",
   "count": 4,
   "records": [
@@ -19,12 +19,12 @@
       "winner": "Draw",
       "status": "FT",
       "marketType": "moneyline",
-      "selection": "Argentina to advance",
+      "selection": "Argentina",
       "line": null,
       "hit": false,
       "entryPrice": 0.735,
       "totalPnl": -200,
-      "portfolioUsd": 230,
+      "portfolioUsd": 722.87,
       "startingUsd": 1000
     },
     {
@@ -43,12 +43,12 @@
       "winner": "Draw",
       "status": "FT",
       "marketType": "moneyline",
-      "selection": "England to advance",
+      "selection": "England",
       "line": null,
       "hit": false,
       "entryPrice": 0.645,
       "totalPnl": -200,
-      "portfolioUsd": 430,
+      "portfolioUsd": 922.87,
       "startingUsd": 1000
     },
     {
@@ -67,12 +67,12 @@
       "winner": "Spain",
       "status": "FT",
       "marketType": "moneyline",
-      "selection": "Spain to advance",
+      "selection": "Spain",
       "line": null,
-      "hit": false,
+      "hit": true,
       "entryPrice": 0.735,
-      "totalPnl": -220,
-      "portfolioUsd": 630,
+      "totalPnl": 79.32,
+      "portfolioUsd": 1122.87,
       "startingUsd": 1000
     },
     {
@@ -91,12 +91,12 @@
       "winner": "France",
       "status": "FT",
       "marketType": "moneyline",
-      "selection": "France to advance",
+      "selection": "France",
       "line": null,
-      "hit": false,
+      "hit": true,
       "entryPrice": 0.775,
-      "totalPnl": -150,
-      "portfolioUsd": 850,
+      "totalPnl": 43.55,
+      "portfolioUsd": 1043.55,
       "startingUsd": 1000
     }
   ]

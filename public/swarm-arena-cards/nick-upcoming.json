@@ -1,5 +1,5 @@
 {
-  "generatedAt": "2026-07-13T17:55:10.097Z",
+  "generatedAt": "2026-07-13T18:00:23.151Z",
   "source": "R2 world-cup-agent decisions + matches mirror",
   "count": 2,
   "records": [
@@ -18,7 +18,7 @@
       "kickoffISO": "2026-07-14T19:00:00.000Z",
       "pick": {
         "marketType": "moneyline",
-        "selection": "Spain to advance",
+        "selection": "Spain",
         "line": null,
         "stakeUsd": 200,
         "price": 0.405,
@@ -41,7 +41,7 @@
       "kickoffISO": "2026-07-15T19:00:00.000Z",
       "pick": {
         "marketType": "moneyline",
-        "selection": "Argentina win (reg)",
+        "selection": "Argentina",
         "line": null,
         "stakeUsd": 200,
         "price": 0.3088,
