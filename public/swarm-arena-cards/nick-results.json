@@ -1,5 +1,5 @@
 {
-  "generatedAt": "2026-07-13T18:00:23.151Z",
+  "generatedAt": "2026-07-13T18:04:14.535Z",
   "source": "R2 world-cup-agent decisions settled vs FT scores",
   "count": 4,
   "records": [
@@ -21,10 +21,10 @@
       "marketType": "moneyline",
       "selection": "Argentina",
       "line": null,
-      "hit": false,
+      "hit": true,
       "entryPrice": 0.735,
-      "totalPnl": -200,
-      "portfolioUsd": 722.87,
+      "totalPnl": 72.11,
+      "portfolioUsd": 1305.05,
       "startingUsd": 1000
     },
     {
@@ -45,10 +45,10 @@
       "marketType": "moneyline",
       "selection": "England",
       "line": null,
-      "hit": false,
+      "hit": true,
       "entryPrice": 0.645,
-      "totalPnl": -200,
-      "portfolioUsd": 922.87,
+      "totalPnl": 110.08,
+      "portfolioUsd": 1232.95,
       "startingUsd": 1000
     },
     {
