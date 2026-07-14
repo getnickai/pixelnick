@@ -30,7 +30,6 @@ function parseFlags(argv: string[]) {
   const flags = {
     theme: "light" as NickaiOgCoverTheme,
     headline: nickaiOgCoverDefaultProps.headline,
-    subhead: nickaiOgCoverDefaultProps.subhead,
     out: "",
   };
   for (let i = 0; i < argv.length; i++) {
@@ -42,7 +41,6 @@ function parseFlags(argv: string[]) {
       }
       flags.theme = v;
     } else if (argv[i] === "--headline") flags.headline = argv[++i] ?? flags.headline;
-    else if (argv[i] === "--subhead") flags.subhead = argv[++i] ?? flags.subhead;
     else if (argv[i] === "--out") flags.out = argv[++i] ?? "";
   }
   if (!flags.out) flags.out = `out/cover-${flags.theme}.png`;
@@ -54,7 +52,6 @@ async function main() {
   const props: NickaiOgCoverProps = {
     theme: flags.theme,
     headline: flags.headline,
-    subhead: flags.subhead,
   };
 
   fs.mkdirSync(path.dirname(path.resolve(flags.out)), { recursive: true });
