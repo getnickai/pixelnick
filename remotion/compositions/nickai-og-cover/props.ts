@@ -16,15 +16,12 @@ export type NickaiOgCoverTheme = "light" | "dark";
 export type NickaiOgCoverProps = {
   /** Color skin. "light" reproduces og.png; "dark" is the zinc-950 variant. */
   theme: NickaiOgCoverTheme;
-  /** Display headline. Wraps to ~2 lines; keep it short and punchy. */
+  /** The single line of cover text. One sentence, no subtext; the rest of the
+   * context lives in the post/blog, not on the cover card. */
   headline: string;
-  /** One-line subhead under the headline. */
-  subhead: string;
 };
 
-/** Reference text from the current getnick.ai/og.png. */
 export const nickaiOgCoverDefaultProps: NickaiOgCoverProps = {
   theme: "light",
   headline: "Your AI trading agent, across every market.",
-  subhead: "For crypto, stocks, and prediction markets. Non-custodial.",
 };

@@ -89,7 +89,6 @@ const LogoMark: React.FC<{ size: number; color?: string }> = ({
 export const NickaiOgCoverComposition: React.FC<NickaiOgCoverProps> = ({
   theme = "light",
   headline,
-  subhead,
 }) => {
   const skin = SKINS[theme] ?? SKINS.light;
 
@@ -170,19 +169,6 @@ export const NickaiOgCoverComposition: React.FC<NickaiOgCoverProps> = ({
           }}
         >
           {headline}
-        </div>
-        <div
-          style={{
-            fontFamily: fontSans,
-            fontWeight: 400,
-            fontSize: 23,
-            lineHeight: 1.4,
-            letterSpacing: -0.2,
-            color: skin.subhead,
-            maxWidth: 640,
-          }}
-        >
-          {subhead}
         </div>
       </div>
 
