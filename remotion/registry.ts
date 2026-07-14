@@ -66,6 +66,11 @@ import {
   workflowTemplateCardDefaultProps,
   type WorkflowTemplateCardProps,
 } from "./compositions/workflow-template-card/props";
+import { LaunchVideoComposition } from "./compositions/launch-video/composition";
+import {
+  launchVideoDefaultProps,
+  type LaunchVideoProps,
+} from "./compositions/launch-video/props";
 import {
   motionManifest,
   type MotionEntryMeta,
@@ -151,6 +156,10 @@ const componentBindings: Record<string, ComponentBinding> = {
     component: NickaiOgCoverComposition,
     defaultProps: nickaiOgCoverDefaultProps,
   } as ComponentBinding<NickaiOgCoverProps> as ComponentBinding,
+  "launch-video": {
+    component: LaunchVideoComposition,
+    defaultProps: launchVideoDefaultProps,
+  } as ComponentBinding<LaunchVideoProps> as ComponentBinding,
 };
 
 export const motionRegistry: MotionEntry[] = motionManifest

@@ -9,13 +9,23 @@ import {
   useRef,
   useState,
 } from "react";
-import { ChevronsUpDown, Hash, Pause, Play } from "lucide-react";
+import {
+  ChevronsUpDown,
+  Hash,
+  Maximize,
+  Minimize,
+  Pause,
+  Play,
+} from "lucide-react";
 import { cn } from "@/lib/utils";
 import type { MotionEntry } from "@/remotion/registry";
 
 export function PlayerHost({ entry }: { entry: MotionEntry }) {
   const playerRef = useRef<PlayerRef>(null);
+  const frameRef = useRef<HTMLDivElement>(null);
   const [playing, setPlaying] = useState(false);
+  const [fullscreen, setFullscreen] = useState(false);
+  const [controlsVisible, setControlsVisible] = useState(true);
 
   // Live preview controls. These overlay the Player and write back into the
   // composition via `inputProps`. Currently only the Performance Card reads
@@ -35,6 +45,17 @@ export function PlayerHost({ entry }: { entry: MotionEntry }) {
     };
   }, []);
 
+  useEffect(() => {
+    const onFullscreenChange = () => {
+      const active = document.fullscreenElement === frameRef.current;
+      setFullscreen(active);
+    };
+    document.addEventListener("fullscreenchange", onFullscreenChange);
+    return () => {
+      document.removeEventListener("fullscreenchange", onFullscreenChange);
+    };
+  }, []);
+
   const toggle = useCallback(() => {
     const p = playerRef.current;
     if (!p) return;
@@ -44,6 +65,70 @@ export function PlayerHost({ entry }: { entry: MotionEntry }) {
       p.play();
     }
   }, []);
+
+  const toggleFullscreen = useCallback(async () => {
+    const frame = frameRef.current;
+    if (!frame) return;
+    try {
+      if (document.fullscreenElement === frame) {
+        await document.exitFullscreen();
+      } else {
+        await frame.requestFullscreen();
+      }
+    } catch {
+      // Fullscreen can be blocked by the browser; leave preview as-is.
+    }
+  }, []);
+
+  // Canvas shortcuts: Space = play/pause, F = fullscreen. Active while the
+  // frame is hovered, focused, or in fullscreen — not while typing elsewhere.
+  const canvasActiveRef = useRef(false);
+
+  useEffect(() => {
+    const onKeyDown = (e: KeyboardEvent) => {
+      const frame = frameRef.current;
+      if (!frame) return;
+
+      const target = e.target as HTMLElement | null;
+      if (
+        target &&
+        (target.tagName === "INPUT" ||
+          target.tagName === "TEXTAREA" ||
+          target.tagName === "SELECT" ||
+          target.isContentEditable)
+      ) {
+        return;
+      }
+
+      const active =
+        canvasActiveRef.current ||
+        document.fullscreenElement === frame ||
+        frame === document.activeElement ||
+        (document.activeElement != null &&
+          frame.contains(document.activeElement));
+      if (!active) return;
+
+      if (e.code === "Space") {
+        e.preventDefault();
+        e.stopPropagation();
+        toggle();
+        return;
+      }
+
+      if (
+        (e.key === "f" || e.key === "F") &&
+        !e.metaKey &&
+        !e.ctrlKey &&
+        !e.altKey
+      ) {
+        e.preventDefault();
+        void toggleFullscreen();
+      }
+    };
+
+    document.addEventListener("keydown", onKeyDown);
+    return () => document.removeEventListener("keydown", onKeyDown);
+  }, [toggle, toggleFullscreen]);
 
   // Memoise inputProps so the Player only re-renders when toggle state changes,
   // not on every parent render. `entry.defaultProps` is captured once via the
@@ -63,7 +148,9 @@ export function PlayerHost({ entry }: { entry: MotionEntry }) {
   // not the shrink-wrapped toggle width.
   return (
     <div className="flex w-full flex-col items-center gap-4">
-      <ModeToggle slide={slide} onSlideChange={setSlide} />
+      {!fullscreen ? (
+        <ModeToggle slide={slide} onSlideChange={setSlide} />
+      ) : null}
 
       <div
         className="relative"
@@ -72,52 +159,123 @@ export function PlayerHost({ entry }: { entry: MotionEntry }) {
           aspectRatio: `${entry.width} / ${entry.height}`,
         }}
       >
-        <div className="group absolute inset-0 overflow-hidden rounded-2xl shadow-2xl shadow-black/50 ring-1 ring-zinc-800">
-          <Player
-            ref={playerRef}
-            component={entry.component}
-            inputProps={inputProps}
-            durationInFrames={entry.durationInFrames}
-            fps={entry.fps}
-            compositionWidth={entry.width}
-            compositionHeight={entry.height}
-            style={{ width: "100%", height: "100%" }}
-            // This composition has no audio. numberOfSharedAudioTags={0} prevents
-            // Remotion from creating a Web Audio AudioContext, which otherwise blocks
-            // the animation loop waiting for AudioContext.resume() to be confirmed
-            // via requestAnimationFrame — a confirmation gated behind a user gesture.
-            numberOfSharedAudioTags={0}
-            loop
-            spaceKeyToPlayOrPause
-            acknowledgeRemotionLicense
-          />
-
-          {/* Play / pause overlay */}
-          <button
-            onClick={toggle}
-            aria-label={playing ? "Pause" : "Play"}
-            className="absolute inset-0 flex items-end justify-end p-4"
-            style={{ opacity: playing ? 0 : 1, transition: "opacity 0.2s" }}
-            onMouseEnter={(e) => {
-              (e.currentTarget as HTMLButtonElement).style.opacity = "1";
-            }}
-            onMouseLeave={(e) => {
-              (e.currentTarget as HTMLButtonElement).style.opacity = playing
-                ? "0"
-                : "1";
-            }}
+        <div
+          ref={frameRef}
+          tabIndex={0}
+          role="application"
+          aria-label={`${entry.label} player. Space plays or pauses. F toggles fullscreen.`}
+          className={cn(
+            "group absolute inset-0 overflow-hidden rounded-2xl shadow-2xl shadow-black/50 ring-1 ring-zinc-800 outline-none focus-visible:ring-2 focus-visible:ring-primary-500",
+            fullscreen &&
+              "fixed inset-0 z-50 flex items-center justify-center rounded-none bg-black shadow-none ring-0",
+          )}
+          onMouseEnter={() => {
+            canvasActiveRef.current = true;
+            setControlsVisible(true);
+          }}
+          onMouseLeave={() => {
+            canvasActiveRef.current = fullscreen;
+            setControlsVisible(!playing || fullscreen);
+          }}
+          onFocus={() => {
+            canvasActiveRef.current = true;
+          }}
+          onBlur={(e) => {
+            if (!e.currentTarget.contains(e.relatedTarget as Node | null)) {
+              canvasActiveRef.current = fullscreen;
+            }
+          }}
+          onClick={() => frameRef.current?.focus()}
+        >
+          <div
+            className="relative size-full"
+            style={
+              fullscreen
+                ? {
+                    aspectRatio: `${entry.width} / ${entry.height}`,
+                    width: `min(100dvw, calc(100dvh * ${aspect}))`,
+                    height: `min(100dvh, calc(100dvw / ${aspect}))`,
+                  }
+                : undefined
+            }
           >
-            <div className="flex h-10 w-10 items-center justify-center rounded-full bg-white/10 ring-1 ring-white/20 backdrop-blur-sm transition-colors hover:bg-white/20">
+            <Player
+              ref={playerRef}
+              component={entry.component}
+              inputProps={inputProps}
+              durationInFrames={entry.durationInFrames}
+              fps={entry.fps}
+              compositionWidth={entry.width}
+              compositionHeight={entry.height}
+              style={{ width: "100%", height: "100%" }}
+              // This composition has no audio. numberOfSharedAudioTags={0} prevents
+              // Remotion from creating a Web Audio AudioContext, which otherwise blocks
+              // the animation loop waiting for AudioContext.resume() to be confirmed
+              // via requestAnimationFrame — a confirmation gated behind a user gesture.
+              numberOfSharedAudioTags={0}
+              loop
+              // Space is handled on the canvas frame below so it works while
+              // hovered/focused without Remotion double-toggling.
+              spaceKeyToPlayOrPause={false}
+              acknowledgeRemotionLicense
+            />
+          </div>
+
+          {/* Play / pause + fullscreen controls */}
+          <div
+            className="absolute inset-x-0 bottom-0 flex items-end justify-end gap-2 p-4 transition-opacity duration-200"
+            style={{
+              opacity: controlsVisible || !playing ? 1 : 0,
+              pointerEvents: controlsVisible || !playing ? "auto" : "none",
+            }}
+            onMouseEnter={() => setControlsVisible(true)}
+          >
+            <ControlButton
+              onClick={toggle}
+              label={playing ? "Pause" : "Play"}
+            >
               {playing ? (
                 <Pause className="size-4 fill-white text-white" />
               ) : (
                 <Play className="size-4 fill-white text-white" />
               )}
-            </div>
-          </button>
+            </ControlButton>
+            <ControlButton
+              onClick={toggleFullscreen}
+              label={fullscreen ? "Exit fullscreen" : "Enter fullscreen"}
+            >
+              {fullscreen ? (
+                <Minimize className="size-4 text-white" />
+              ) : (
+                <Maximize className="size-4 text-white" />
+              )}
+            </ControlButton>
+          </div>
         </div>
       </div>
     </div>
+  );
+}
+
+function ControlButton({
+  onClick,
+  label,
+  children,
+}: {
+  onClick: () => void;
+  label: string;
+  children: React.ReactNode;
+}) {
+  return (
+    <button
+      type="button"
+      onClick={onClick}
+      aria-label={label}
+      title={label}
+      className="flex size-10 cursor-pointer items-center justify-center rounded-full bg-white/10 ring-1 ring-white/20 backdrop-blur-sm transition-colors hover:bg-white/20"
+    >
+      {children}
+    </button>
   );
 }
 

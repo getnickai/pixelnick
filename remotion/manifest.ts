@@ -15,6 +15,12 @@
 import { TEMPLATES } from "./compositions/workflow-template-card/data/templates.generated";
 import { wtcDuration } from "./compositions/workflow-template-card/timeline";
 import { gamePickDuration } from "./compositions/game-pick-card/props";
+import {
+  LAUNCH_VIDEO_DURATION,
+  LAUNCH_VIDEO_FPS,
+  LAUNCH_VIDEO_HEIGHT,
+  LAUNCH_VIDEO_WIDTH,
+} from "./compositions/launch-video/timeline";
 
 export type MotionEntryMeta = {
   id: string;
@@ -173,6 +179,17 @@ export const motionManifest: MotionEntryMeta[] = [
     height: 630,
     fps: 30,
     durationInFrames: 1,
+  },
+  {
+    // Launch Video — widescreen product-launch canvas. "Introducing Nick"
+    // cascades out directly into the blue-accented product statement, then the
+    // Nick chat composer focuses, types a prompt, and submits. ~6.7s @ 30fps.
+    id: "launch-video",
+    label: "Launch Video",
+    width: LAUNCH_VIDEO_WIDTH,
+    height: LAUNCH_VIDEO_HEIGHT,
+    fps: LAUNCH_VIDEO_FPS,
+    durationInFrames: LAUNCH_VIDEO_DURATION,
   },
   {
     // Workflow Template Card — the library "Blueprint" video: a first-person

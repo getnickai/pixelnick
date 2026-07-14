@@ -43,6 +43,8 @@ import {
   workflowTemplateCardDefaultProps,
   calcWorkflowTemplateMetadata,
 } from "./compositions/workflow-template-card/props";
+import { LaunchVideoComposition } from "./compositions/launch-video/composition";
+import { launchVideoDefaultProps } from "./compositions/launch-video/props";
 import { getMotionEntryMeta } from "./manifest";
 
 const perf = getMotionEntryMeta("performance-card")!;
@@ -58,6 +60,7 @@ const resultPortfolioAnim = getMotionEntryMeta("result-portfolio-card")!;
 const nickaiSocial = getMotionEntryMeta("nickai-social-card")!;
 const nickaiOgCover = getMotionEntryMeta("nickai-og-cover")!;
 const workflowTemplate = getMotionEntryMeta("workflow-template-card")!;
+const launchVideo = getMotionEntryMeta("launch-video")!;
 
 export const RemotionRoot: React.FC = () => {
   return (
@@ -203,6 +206,17 @@ export const RemotionRoot: React.FC = () => {
         height={workflowTemplate.height}
         defaultProps={workflowTemplateCardDefaultProps}
         calculateMetadata={calcWorkflowTemplateMetadata}
+      />
+      {/* Launch Video — 16:10 campaign film. The Duplet title and product
+          statement flow into Nick's focused, typing chat composer. */}
+      <Composition
+        id="launch-video"
+        component={LaunchVideoComposition}
+        durationInFrames={launchVideo.durationInFrames}
+        fps={launchVideo.fps}
+        width={launchVideo.width}
+        height={launchVideo.height}
+        defaultProps={launchVideoDefaultProps}
       />
     </>
   );
