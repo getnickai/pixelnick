@@ -76,6 +76,13 @@ const FINAL_STATUSES = new Set(["FT", "AET", "PEN", "AWD", "WO"]);
 
 const CTA = "Follow the agents on swarmarena.ai";
 
+// Season 1 (the 8-model roster: bundle / consensus / result / leaderboard /
+// matchday / top-agent) is archived — Season 2 runs ONE agent ("Nick"). With
+// this off, SCHEDULED ticks fire nothing; only the Nick cards post, via the
+// --nick path (workflow_dispatch input `nick`). The old --force-* paths still
+// work for manual one-offs. Flip to true (or set SEASON1_JOBS=1) to re-enable.
+const SEASON1_SCHEDULED = process.env.SEASON1_JOBS === "1";
+
 // ── Flags ─────────────────────────────────────────────────────────────────--
 const argv = process.argv.slice(2);
 const DRY = argv.includes("--dry-run");
@@ -827,6 +834,15 @@ async function main() {
   if (BUNDLE_TODAY) return bundleToday();
   if (FORCE_MATCHDAY) return forceMatchday();
   if (FORCE_NICK) return forceNick();
+
+  // Season 1 scheduled cards are disabled: a normal (non-forced) tick does
+  // nothing, so only Nick posts (via --nick). Manual --force-* paths still run.
+  const forcedS1 = !!(FORCE_PRE || FORCE_POST || FORCE_LB);
+  if (!forcedS1 && !SEASON1_SCHEDULED) {
+    console.log("[swarm-auto] Season 1 scheduled cards are disabled — only Nick posts (run with --nick). Nothing due.");
+    console.log("gate-due=0");
+    return;
+  }
 
   const now = Date.now();
   const matches = await fetchMatches();
