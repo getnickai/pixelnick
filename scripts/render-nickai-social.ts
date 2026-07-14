@@ -24,11 +24,16 @@ const COMPOSITION_ID = "nickai-social-card";
 type Job = { slug: string; props: NickaiSocialCardProps };
 
 const SAMPLE_JOBS: Job[] = [
-  { slug: "sample-use-case", props: nickaiSocialCardDefaultProps },
+  { slug: "sample-use-case-dark", props: nickaiSocialCardDefaultProps },
   {
-    slug: "sample-live-results",
+    slug: "sample-use-case-light",
+    props: { ...nickaiSocialCardDefaultProps, theme: "light" },
+  },
+  {
+    slug: "sample-live-results-dark",
     props: {
-      eyebrow: "Live Results",
+      theme: "dark",
+      eyebrow: "Trading analysis",
       headline: "One momentum agent, thirty days of live capital",
       chips: [],
       fill: {
@@ -38,7 +43,23 @@ const SAMPLE_JOBS: Job[] = [
         caption: "recorded on-platform, Jun 3 to Jul 3",
         tone: "positive",
       },
-      meta: "sample data, not for posting",
+      wave: 2,
+    },
+  },
+  {
+    slug: "sample-live-results-light",
+    props: {
+      theme: "light",
+      eyebrow: "Trading analysis",
+      headline: "One momentum agent, thirty days of live capital",
+      chips: [],
+      fill: {
+        kind: "bigNumber",
+        value: "+18.4%",
+        label: "30 days, live capital",
+        caption: "recorded on-platform, Jun 3 to Jul 3",
+        tone: "positive",
+      },
       wave: 2,
     },
   },
@@ -62,10 +83,10 @@ function parseFlags(argv: string[]) {
  */
 function normalize(props: NickaiSocialCardProps): NickaiSocialCardProps {
   const merged: NickaiSocialCardProps = {
+    theme: "dark",
     subline: "",
     chips: [],
     fill: { kind: "none" },
-    meta: "",
     wave: 1,
     animate: false,
     ...props,
@@ -73,6 +94,7 @@ function normalize(props: NickaiSocialCardProps): NickaiSocialCardProps {
   // A hand-written props file with an unknown wave variant would 404 the
   // staticFile mid-render; clamp to the default motif instead.
   if (![0, 1, 2].includes(merged.wave as number)) merged.wave = 1;
+  if (merged.theme !== "light" && merged.theme !== "dark") merged.theme = "dark";
   return merged;
 }
 
