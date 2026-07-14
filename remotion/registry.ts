@@ -56,6 +56,11 @@ import {
   nickaiSocialCardDefaultProps,
   type NickaiSocialCardProps,
 } from "./compositions/nickai-social-card/props";
+import { NickaiOgCoverComposition } from "./compositions/nickai-og-cover/composition";
+import {
+  nickaiOgCoverDefaultProps,
+  type NickaiOgCoverProps,
+} from "./compositions/nickai-og-cover/props";
 import { WorkflowTemplateCardComposition } from "./compositions/workflow-template-card/composition";
 import {
   workflowTemplateCardDefaultProps,
@@ -142,6 +147,10 @@ const componentBindings: Record<string, ComponentBinding> = {
     component: WorkflowTemplateCardComposition,
     defaultProps: workflowTemplateCardDefaultProps,
   } as ComponentBinding<WorkflowTemplateCardProps> as ComponentBinding,
+  "nickai-og-cover": {
+    component: NickaiOgCoverComposition,
+    defaultProps: nickaiOgCoverDefaultProps,
+  } as ComponentBinding<NickaiOgCoverProps> as ComponentBinding,
 };
 
 export const motionRegistry: MotionEntry[] = motionManifest
