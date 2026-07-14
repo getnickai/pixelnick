@@ -31,14 +31,14 @@ const SKINS: Record<NickaiOgCoverTheme, Skin> = {
     headline: "#0a0a0a",
     subhead: "#5c5c5c",
     wordmark: "#0a0a0a",
-    wave: "nickai-og/wave-light.png",
+    wave: "nickai-og/wave-og.png",
   },
   dark: {
     bg: "#09090b",
     headline: "#fafafa",
     subhead: "#a1a1aa",
     wordmark: "#ffffff",
-    wave: "nickai-og/wave-dark.png",
+    wave: "nickai-og/wave-og.png",
   },
 };
 
@@ -101,8 +101,10 @@ export const NickaiOgCoverComposition: React.FC<NickaiOgCoverProps> = ({
 
   const PAD_LEFT = 88;
   const PAD_TOP = 80;
-  // Right wave panel: inset from top/right/bottom, fixed width.
-  const PANEL = { top: 80, right: 74, bottom: 80, width: 402, radius: 32 };
+  // Right wave panel: exact og.png geometry (panel bbox 726..1127 x 86..543,
+  // radius 34), so the light theme is a byte-match and the wave is the original
+  // og.png crop rather than a re-created one.
+  const PANEL = { top: 86, right: 72, bottom: 86, width: 402, radius: 34 };
   const COL_WIDTH = 620;
 
   return (
