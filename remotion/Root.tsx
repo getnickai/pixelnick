@@ -208,7 +208,8 @@ export const RemotionRoot: React.FC = () => {
         calculateMetadata={calcWorkflowTemplateMetadata}
       />
       {/* Launch Video — 16:10 campaign film. The Duplet title and product
-          statement flow into Nick's focused, typing chat composer. */}
+          statement flow through market data, workflow responses, and the
+          standalone four-node workflow build. */}
       <Composition
         id="launch-video"
         component={LaunchVideoComposition}

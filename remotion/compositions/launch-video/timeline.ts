@@ -57,7 +57,7 @@ export const LAUNCH_VIDEO_TIMELINE = {
   chatComposer: {
     // Begins as the last product-statement words complete their fast exit.
     from: 122,
-    durationInFrames: 78,
+    durationInFrames: 72,
     shell: {
       start: 0,
       duration: 12,
@@ -75,16 +75,148 @@ export const LAUNCH_VIDEO_TIMELINE = {
       duration: 36,
     },
     send: {
-      start: 43,
+      // Typing completes at frame 47. The cursor then enters, travels, and
+      // reaches the send control before the click begins at frame 59.
+      start: 55,
       duration: 10,
     },
     outro: {
-      start: 66,
+      // Begins on the exact frame the click ripple completes.
+      start: 65,
+      duration: 6,
+    },
+  },
+  chatResponse: {
+    // Starts as soon as the composer click ripple completes. Durations mirror
+    // the first result-thread beat in NicksiteV2 at playbackRate: 2.
+    from: 187,
+    durationInFrames: 95,
+    shell: {
+      start: 0,
+      duration: 10,
+    },
+    userMessage: {
+      start: 0,
       duration: 8,
+    },
+    reasoning: {
+      start: 20,
+      duration: 7,
+    },
+    resultCard: {
+      start: 31,
+      duration: 10,
+    },
+    chartFill: {
+      start: 36,
+      duration: 11,
+    },
+    chartLine: {
+      start: 33,
+      duration: 23,
+    },
+    outro: {
+      start: 82,
+      duration: 8,
+    },
+  },
+  workflowComposer: {
+    // NicksiteV2's second focus/typing beat. The original 3400ms type-on runs
+    // at playbackRate 2, which maps to 51 frames at 30fps.
+    from: 275,
+    durationInFrames: 82,
+    shell: {
+      start: 0,
+      duration: 10,
+    },
+    focus: {
+      start: 4,
+      duration: 5,
+    },
+    placeholder: {
+      start: 0,
+      duration: 1,
+    },
+    typing: {
+      start: 6,
+      duration: 51,
+    },
+    send: {
+      // Typing completes at frame 57. The cursor enters only afterward and
+      // reaches the send control before the click begins at frame 69.
+      start: 65,
+      duration: 10,
+    },
+    outro: {
+      // Begins on the exact frame the click ripple completes.
+      start: 75,
+      duration: 6,
+    },
+  },
+  workflowResponse: {
+    // Workflow-thread responses only. Sidebar/panel/node reveals deliberately
+    // remain out of this sequence so they can become the next product beat.
+    from: 350,
+    durationInFrames: 112,
+    shell: {
+      start: 0,
+      duration: 10,
+    },
+    userMessage: {
+      start: 0,
+      duration: 8,
+    },
+    beforeCreationSteps: {
+      start: 20,
+      stagger: 4,
+      duration: 7,
+    },
+    createdWorkflow: {
+      start: 32,
+      duration: 8,
+    },
+    afterCreationSteps: {
+      start: 45,
+      stagger: 4,
+      duration: 7,
+    },
+    outro: {
+      start: 96,
+      duration: 8,
+    },
+  },
+  workflowBuild: {
+    // The workflow canvas begins while the response thread is completing its
+    // fast fade, keeping the creation result and visual build in one motion.
+    from: 454,
+    durationInFrames: 105,
+    shell: {
+      start: 0,
+      duration: 11,
+    },
+    header: {
+      start: 2,
+      duration: 10,
+    },
+    nodes: {
+      // Each node begins only after the connector leading into it has
+      // completed: node → connector → node → connector.
+      start: 8,
+      stagger: 20,
+      duration: 12,
+    },
+    edges: {
+      start: 20,
+      stagger: 20,
+      duration: 8,
+    },
+    outro: {
+      start: 90,
+      duration: 10,
     },
   },
 } as const;
 
 export const LAUNCH_VIDEO_DURATION =
-  LAUNCH_VIDEO_TIMELINE.chatComposer.from +
-  LAUNCH_VIDEO_TIMELINE.chatComposer.durationInFrames;
+  LAUNCH_VIDEO_TIMELINE.workflowBuild.from +
+  LAUNCH_VIDEO_TIMELINE.workflowBuild.durationInFrames;

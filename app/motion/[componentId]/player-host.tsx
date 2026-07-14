@@ -11,7 +11,9 @@ import {
 } from "react";
 import {
   ChevronsUpDown,
+  Download,
   Hash,
+  LoaderCircle,
   Maximize,
   Minimize,
   Pause,
@@ -26,6 +28,8 @@ export function PlayerHost({ entry }: { entry: MotionEntry }) {
   const [playing, setPlaying] = useState(false);
   const [fullscreen, setFullscreen] = useState(false);
   const [controlsVisible, setControlsVisible] = useState(true);
+  const [exporting, setExporting] = useState(false);
+  const [exportError, setExportError] = useState<string | null>(null);
 
   // Live preview controls. These overlay the Player and write back into the
   // composition via `inputProps`. Currently only the Performance Card reads
@@ -139,6 +143,44 @@ export function PlayerHost({ entry }: { entry: MotionEntry }) {
     [entry.defaultProps, slide],
   );
 
+  const exportVideo = useCallback(async () => {
+    if (exporting) return;
+
+    setExporting(true);
+    setExportError(null);
+
+    try {
+      const response = await fetch("/api/motion/export", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ id: entry.id, inputProps }),
+      });
+
+      if (!response.ok) {
+        const payload = (await response.json().catch(() => null)) as {
+          error?: string;
+        } | null;
+        throw new Error(payload?.error ?? "The video could not be rendered.");
+      }
+
+      const video = await response.blob();
+      const url = URL.createObjectURL(video);
+      const download = document.createElement("a");
+      download.href = url;
+      download.download = `${entry.id}.mp4`;
+      document.body.appendChild(download);
+      download.click();
+      download.remove();
+      window.setTimeout(() => URL.revokeObjectURL(url), 1_000);
+    } catch (error) {
+      setExportError(
+        error instanceof Error ? error.message : "The video could not be rendered.",
+      );
+    } finally {
+      setExporting(false);
+    }
+  }, [entry.id, exporting, inputProps]);
+
   const aspect = entry.width / entry.height;
   // Cap at the composition's intrinsic frame width (e.g. 650px) so wide-aspect
   // entries don't blow up to the full main column; still shrink on narrow viewports.
@@ -149,7 +191,29 @@ export function PlayerHost({ entry }: { entry: MotionEntry }) {
   return (
     <div className="flex w-full flex-col items-center gap-4">
       {!fullscreen ? (
-        <ModeToggle slide={slide} onSlideChange={setSlide} />
+        <div className="flex flex-wrap items-center justify-center gap-3">
+          <ModeToggle slide={slide} onSlideChange={setSlide} />
+          <button
+            type="button"
+            onClick={() => void exportVideo()}
+            disabled={exporting}
+            aria-describedby={exportError ? "motion-export-error" : undefined}
+            className="inline-flex h-9 cursor-pointer items-center gap-2 rounded-full border border-zinc-700 bg-zinc-900 px-4 text-sm font-medium text-zinc-100 transition-colors hover:border-zinc-600 hover:bg-zinc-800 disabled:cursor-wait disabled:opacity-70"
+          >
+            {exporting ? (
+              <LoaderCircle className="size-4 animate-spin" />
+            ) : (
+              <Download className="size-4" />
+            )}
+            {exporting ? "Rendering…" : "Export video"}
+          </button>
+        </div>
+      ) : null}
+
+      {exportError && !fullscreen ? (
+        <p id="motion-export-error" role="alert" className="text-sm text-red-400">
+          {exportError}
+        </p>
       ) : null}
 
       <div

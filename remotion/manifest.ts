@@ -183,7 +183,9 @@ export const motionManifest: MotionEntryMeta[] = [
   {
     // Launch Video — widescreen product-launch canvas. "Introducing Nick"
     // cascades out directly into the blue-accented product statement, then the
-    // Nick chat composer focuses, types a prompt, and submits. ~6.7s @ 30fps.
+    // Nick chat composer focuses and submits, then the user message, reasoning,
+    // NVDA result, and chart reveal before the composer returns for a workflow
+    // request, validation response flow, and four-node workflow build. ~18.6s.
     id: "launch-video",
     label: "Launch Video",
     width: LAUNCH_VIDEO_WIDTH,
