@@ -76,3 +76,21 @@ Assets with no source file (regenerate manually if needed): `brand/banner.png` (
 
 - Venue and brand logos render as black wordmarks on white for cross-client consistency.
 - Keep source files in `sources/` so every asset stays reproducible at any size.
+
+## Brand system + social/video covers
+
+Design-system assets pulled from the live site (`getnickai/nicksitev2`) so everything matches the real brand, plus a one-line cover renderer for social and video.
+
+- `brand/fonts/` — Duplet Regular / Semibold / Bold (`.woff`). Semibold is the heading/wordmark face, Regular is body.
+- `brand/logos/` — `mark-blue.svg` (NickAI node mark in brand blue `#0178FF`) and `mark-white-N-on-blue.svg` (the white-N app icon). Note: brand blue is `#0178FF`, not the favicon square `#0892F5`.
+- `brand/textures/` — `silk-deco.jpg` (the "Got questions?" blue silk) and `silk-dark.jpg`.
+- `covers/` — a text-swappable social / video cover template.
+
+### Covers: make one in one line
+
+```bash
+cd asset-library/covers
+./make-cover.sh "Title" "Subtitle" [og|wide|square] [output.png] [cta]
+```
+
+Sizes: `og` 1200x630 (social share / OpenGraph), `wide` 1920x1080 (16:9 video / YouTube), `square` 1080x1080 (Instagram). The CTA chip defaults to `Try for free at getnick.ai`. The design lives on a fixed 1200x630 stage that scales to any size, so editing `covers/cover-template.html` updates every format. Requires macOS with Google Chrome (renders headless). The site OG image (`public/og.png` in nicksitev2) is produced from this template at `og` size.
