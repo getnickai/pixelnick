@@ -36,6 +36,8 @@ import { ResultPortfolioCardComposition } from "./compositions/result-portfolio-
 import { resultPortfolioCardDefaultProps } from "./compositions/result-portfolio-card/props";
 import { NickaiSocialCardComposition } from "./compositions/nickai-social-card/composition";
 import { nickaiSocialCardDefaultProps } from "./compositions/nickai-social-card/props";
+import { NickaiOgCoverComposition } from "./compositions/nickai-og-cover/composition";
+import { nickaiOgCoverDefaultProps } from "./compositions/nickai-og-cover/props";
 import { WorkflowTemplateCardCard } from "./compositions/workflow-template-card/card-with-font";
 import {
   workflowTemplateCardDefaultProps,
@@ -54,6 +56,7 @@ const matchdayAnim = getMotionEntryMeta("matchday-analysis")!;
 const gamePickAnim = getMotionEntryMeta("game-pick-card")!;
 const resultPortfolioAnim = getMotionEntryMeta("result-portfolio-card")!;
 const nickaiSocial = getMotionEntryMeta("nickai-social-card")!;
+const nickaiOgCover = getMotionEntryMeta("nickai-og-cover")!;
 const workflowTemplate = getMotionEntryMeta("workflow-template-card")!;
 
 export const RemotionRoot: React.FC = () => {
@@ -177,6 +180,17 @@ export const RemotionRoot: React.FC = () => {
         width={nickaiSocial.width}
         height={nickaiSocial.height}
         defaultProps={nickaiSocialCardDefaultProps}
+      />
+      {/* NickAI OG cover — reusable 1200x630 cover-image template (light +
+          dark, no CTA) reproducing getnick.ai/og.png. Still (1 frame). */}
+      <Composition
+        id="nickai-og-cover"
+        component={NickaiOgCoverComposition}
+        durationInFrames={nickaiOgCover.durationInFrames}
+        fps={nickaiOgCover.fps}
+        width={nickaiOgCover.width}
+        height={nickaiOgCover.height}
+        defaultProps={nickaiOgCoverDefaultProps}
       />
       {/* Workflow Template Card (library "Blueprint" video) — prompt types in →
           lifts to headline → node conveyor (accelerando) → CP3 zoom-out. */}

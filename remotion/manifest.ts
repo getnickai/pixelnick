@@ -164,6 +164,17 @@ export const motionManifest: MotionEntryMeta[] = [
     durationInFrames: 240,
   },
   {
+    // NickAI OG cover (nickai-og-cover) — reusable 1200x630 cover-image
+    // template (light + dark, no CTA) reproducing getnick.ai/og.png. A still,
+    // so durationInFrames = 1.
+    id: "nickai-og-cover",
+    label: "NickAI OG Cover",
+    width: 1200,
+    height: 630,
+    fps: 30,
+    durationInFrames: 1,
+  },
+  {
     // Workflow Template Card — the library "Blueprint" video: a first-person
     // prompt types in, lifts into the headline, then the template's nodes ride
     // a conveyor (pop centre → slide left → dim → spill) with accelerando
