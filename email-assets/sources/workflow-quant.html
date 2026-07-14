@@ -1,0 +1,165 @@
+<!doctype html>
+<html>
+<head>
+<meta charset="utf-8">
+<style>
+  :root{
+    --bg:#fbfbfc;
+    --card:#ffffff;
+    --stroke-soft:#eceef1;
+    --stroke:#e2e5ea;
+    --edge:#c4c9d2;
+    --dot:#c4c9d2;
+    --title:#0d0f14;
+    --sub:#6b7280;
+    --grid:rgba(15,18,25,0.055);
+  }
+  *{box-sizing:border-box;margin:0;padding:0;}
+  html,body{background:var(--bg);}
+  body{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;-webkit-font-smoothing:antialiased;}
+  .wrap{padding:22px 26px 26px;background:var(--bg);display:inline-block;}
+  /* header */
+  .hdr{display:flex;align-items:center;gap:10px;padding:0 4px 14px;}
+  .avatar{width:22px;height:22px;border-radius:50%;background:linear-gradient(135deg,#fdba74,#f472b6);}
+  .wname{font-size:14px;font-weight:700;color:var(--title);}
+  .pill{display:inline-flex;align-items:center;gap:5px;border:1px solid var(--stroke);border-radius:999px;padding:3px 9px;font-size:11px;font-weight:500;color:var(--sub);background:#fff;}
+  .pill .dotm{width:5px;height:5px;border-radius:50%;background:#22c55e;}
+  .canvas{position:relative;border:1px solid var(--stroke-soft);border-radius:16px;background:var(--card);overflow:hidden;}
+  .grid{position:absolute;inset:0;background-image:radial-gradient(circle,var(--grid) 1px,transparent 1px);background-size:19px 19px;opacity:.9;}
+  svg{position:absolute;left:0;top:0;overflow:visible;pointer-events:none;}
+  .node{position:absolute;border:1px solid var(--stroke);background:var(--card);border-radius:12px;padding:9px 11px 10px;box-shadow:0 1px 2px rgba(15,18,25,.05),0 1px 1px rgba(15,18,25,.03);}
+  .node .h{width:6px;height:6px;border-radius:50%;background:var(--dot);position:absolute;top:50%;transform:translateY(-50%);}
+  .node .h.l{left:-3px;} .node .h.r{right:-3px;}
+  .badge{display:inline-block;border-radius:6px;padding:2px 6px;font-size:8.5px;font-weight:700;letter-spacing:.04em;text-transform:uppercase;}
+  .title{margin-top:6px;font-size:12px;font-weight:650;color:var(--title);line-height:1.22;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden;}
+  .elabel{fill:#8b91a0;font-size:9.5px;font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,sans-serif;font-weight:600;}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <div class="hdr">
+    <span class="avatar"></span>
+    <span class="wname">Disciplined BTC Paper Trader</span>
+    <span class="pill">12 nodes</span>
+    <span class="pill">13 connections</span>
+    <span class="pill"><span class="dotm"></span>Every 6 hours</span>
+  </div>
+  <div class="canvas" id="canvas">
+    <div class="grid"></div>
+    <svg id="edges"></svg>
+    <div id="nodes"></div>
+  </div>
+</div>
+
+<script>
+const COLORS = {
+  "start":                {bg:"#e7f7ee", fg:"#0f9d58"},
+  "price-data":           {bg:"#e9ebfb", fg:"#4f56d6"},
+  "storage":              {bg:"#e4f4fb", fg:"#0e8fbf"},
+  "function":             {bg:"#eef0f3", fg:"#5b6472"},
+  "conditional":          {bg:"#fdf1dd", fg:"#c98a12"},
+  "exchange":             {bg:"#e6effd", fg:"#2563eb"},
+  "telegram-notification":{bg:"#f2ebfc", fg:"#8b46d9"},
+};
+const BADGE = {
+  "start":"START","price-data":"PRICE DATA","storage":"STORAGE",
+  "function":"FUNCTION","conditional":"CONDITIONAL","exchange":"EXCHANGE",
+  "telegram-notification":"NOTIFICATION",
+};
+
+// nodes: normalized coords (origin at min x/y of the real fixture positions)
+const NODES = [
+  {id:"start",   type:"start",                 label:"Every 6 Hours",          nx:0,    ny:200},
+  {id:"price",   type:"price-data",            label:"BTC Price + Indicators", nx:470,  ny:100},
+  {id:"loadts",  type:"storage",               label:"Load Last Trade Time",   nx:470,  ny:300},
+  {id:"eval",    type:"function",              label:"Evaluate Setup & Risk",  nx:940,  ny:200},
+  {id:"gate",    type:"conditional",           label:"Should Trade?",          nx:1410, ny:200},
+  {id:"ls",      type:"conditional",           label:"Long or Short?",         nx:1880, ny:100},
+  {id:"buy",     type:"exchange",              label:"Paper Buy BTC",          nx:2350, ny:0},
+  {id:"sell",    type:"exchange",              label:"Paper Sell BTC",         nx:2350, ny:200},
+  {id:"merge",   type:"function",              label:"Merge Order Result",     nx:2820, ny:100},
+  {id:"savets",  type:"storage",               label:"Save Last Trade Time",   nx:3290, ny:0},
+  {id:"noset",   type:"telegram-notification", label:"No Setup Telegram",      nx:1880, ny:300},
+  {id:"alert",   type:"telegram-notification", label:"Trade Alert Telegram",   nx:3290, ny:200},
+];
+
+// edges: source -> target (+ optional branch label)
+const EDGES = [
+  {s:"start", t:"price"},
+  {s:"start", t:"loadts"},
+  {s:"price", t:"eval"},
+  {s:"loadts",t:"eval"},
+  {s:"eval",  t:"gate"},
+  {s:"gate",  t:"ls",    l:"true"},
+  {s:"gate",  t:"noset", l:"false"},
+  {s:"ls",    t:"buy",   l:"true"},
+  {s:"ls",    t:"sell",  l:"false"},
+  {s:"buy",   t:"merge"},
+  {s:"sell",  t:"merge"},
+  {s:"merge", t:"savets"},
+  {s:"merge", t:"alert"},
+];
+
+const PAD = 26;          // inner padding of canvas board
+const XS = 0.328;        // x scale
+const YS = 0.78;         // y scale
+const CW = 172;          // chip width
+const CH = 58;           // chip height
+
+const pos = {};
+NODES.forEach(n => {
+  n.x = PAD + n.nx * XS;
+  n.y = PAD + n.ny * YS;
+  pos[n.id] = n;
+});
+
+const maxX = Math.max(...NODES.map(n => n.x + CW));
+const maxY = Math.max(...NODES.map(n => n.y + CH));
+const BW = maxX + PAD;
+const BH = maxY + PAD;
+
+const canvas = document.getElementById("canvas");
+canvas.style.width  = BW + "px";
+canvas.style.height = BH + "px";
+
+const svg = document.getElementById("edges");
+svg.setAttribute("width", BW);
+svg.setAttribute("height", BH);
+svg.setAttribute("viewBox", `0 0 ${BW} ${BH}`);
+
+// edges
+let sHTML = "";
+EDGES.forEach(e => {
+  const s = pos[e.s], t = pos[e.t];
+  const sx = s.x + CW, sy = s.y + CH/2;
+  const tx = t.x,      ty = t.y + CH/2;
+  const dx = Math.max(40, (tx - sx) * 0.5);
+  const d = `M ${sx} ${sy} C ${sx+dx} ${sy}, ${tx-dx} ${ty}, ${tx} ${ty}`;
+  sHTML += `<path d="${d}" fill="none" stroke="var(--edge)" stroke-width="1.6" stroke-linecap="round"/>`;
+  if (e.l){
+    const mx = (sx + tx)/2, my = (sy + ty)/2 - 5;
+    sHTML += `<rect x="${mx-15}" y="${my-9}" width="30" height="14" rx="7" fill="#fbfbfc" opacity="0.9"/>`;
+    sHTML += `<text x="${mx}" y="${my+1.5}" text-anchor="middle" class="elabel">${e.l}</text>`;
+  }
+});
+svg.innerHTML = sHTML;
+
+// nodes
+const nodesEl = document.getElementById("nodes");
+NODES.forEach(n => {
+  const c = COLORS[n.type];
+  const el = document.createElement("div");
+  el.className = "node";
+  el.style.left = n.x + "px";
+  el.style.top  = n.y + "px";
+  el.style.width = CW + "px";
+  el.style.height = CH + "px";
+  el.innerHTML =
+    `<span class="h l"></span><span class="h r"></span>` +
+    `<span class="badge" style="background:${c.bg};color:${c.fg}">${BADGE[n.type]}</span>` +
+    `<div class="title">${n.label}</div>`;
+  nodesEl.appendChild(el);
+});
+</script>
+</body>
+</html>

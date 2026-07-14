@@ -1,0 +1,163 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<style>
+  :root {
+    --bg-white-0: #ffffff;
+    --stroke-soft-200: #e4e4e7;   /* zinc-200 */
+    --stroke-sub-300: #d4d4d8;    /* zinc-300 */
+    --text-strong-950: #09090b;   /* zinc-950 */
+    --text-sub-600: #52525b;      /* zinc-600 */
+    --text-soft-400: #a1a1aa;     /* zinc-400 */
+  }
+  * { box-sizing: border-box; }
+  html, body { margin: 0; padding: 0; }
+  body {
+    font-family: Inter, -apple-system, "Helvetica Neue", Arial, sans-serif;
+    -webkit-font-smoothing: antialiased;
+  }
+
+  /* Overall email canvas: light, near-white, subtle dot grid */
+  .canvas {
+    width: 560px;
+    height: 454px;
+    padding: 30px;
+    background-color: #f8fafc;
+    background-image: radial-gradient(circle, rgba(0,0,0,0.06) 1px, transparent 1px);
+    background-size: 15px 15px;
+    background-position: center;
+  }
+
+  /* Scaled stage: board is 660x520 in its own coord space, shown at 0.75757x */
+  .stage {
+    position: relative;
+    width: 500px;   /* 660 * 0.75757 */
+    height: 394px;  /* 520 * 0.75757 */
+  }
+  .board {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 660px;
+    height: 520px;
+    transform: scale(0.75757);
+    transform-origin: top left;
+  }
+
+  .edges {
+    position: absolute;
+    left: 0;
+    top: 0;
+    width: 660px;
+    height: 520px;
+    overflow: visible;
+  }
+
+  .node {
+    position: absolute;
+    border-radius: 12px;              /* rounded-xl */
+    border: 1px solid var(--stroke-soft-200);
+    background: var(--bg-white-0);
+    padding: 10px 14px;               /* py-2.5 px-3.5 */
+    box-shadow: 0 1px 2px 0 rgba(0,0,0,0.05); /* shadow-sm */
+  }
+  .node .row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 8px;
+  }
+  .node .title {
+    font-size: 13px;                  /* text-smd */
+    font-weight: 600;
+    color: var(--text-strong-950);
+    line-height: 1.2;
+  }
+  .badge {
+    flex-shrink: 0;
+    border-radius: 6px;               /* rounded-md */
+    padding: 2px 6px;                 /* py-0.5 px-1.5 */
+    font-size: 9px;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.025em;          /* tracking-wide */
+    line-height: 1.3;
+  }
+  .badge.start        { background: rgba(16,185,129,0.12);  color: #059669; }  /* emerald */
+  .badge.price-data   { background: rgba(99,102,241,0.12);  color: #4f46e5; }  /* indigo */
+  .badge.condition    { background: rgba(113,113,122,0.12); color: #71717a; }  /* zinc */
+  .badge.notification { background: rgba(168,85,247,0.12);  color: #9333ea; }  /* purple */
+
+  .node .subtitle {
+    margin: 4px 0 0 0;
+    font-size: 11px;
+    color: var(--text-soft-400);
+    line-height: 1.3;
+  }
+
+  /* connector dots */
+  .dot {
+    position: absolute;
+    top: 50%;
+    width: 6px;
+    height: 6px;
+    transform: translateY(-50%);
+    border-radius: 9999px;
+    background: var(--stroke-sub-300);
+  }
+  .dot.left  { left: -3px; }
+  .dot.right { right: -3px; }
+</style>
+</head>
+<body>
+  <div class="canvas">
+    <div class="stage">
+      <div class="board">
+        <svg class="edges" viewBox="0 0 660 520" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <path d="M 203 84 C 203 150 158 150 158 210" stroke="#d4d4d8" stroke-width="1.75" stroke-linecap="round"/>
+          <path d="M 276 243 C 330 243 340 243 386 243" stroke="#d4d4d8" stroke-width="1.75" stroke-linecap="round"/>
+          <path d="M 493 276 C 493 360 300 336 268 402" stroke="#d4d4d8" stroke-width="1.75" stroke-linecap="round"/>
+          <text x="404" y="340" fill="#a1a1aa" font-size="11" text-anchor="middle" font-family="Inter, -apple-system, Arial, sans-serif">true</text>
+        </svg>
+
+        <div class="node" style="left:96px; top:18px; width:214px;">
+          <span class="dot left"></span><span class="dot right"></span>
+          <div class="row">
+            <span class="title">Start</span>
+            <span class="badge start">START</span>
+          </div>
+          <p class="subtitle">Runs every 5 minutes</p>
+        </div>
+
+        <div class="node" style="left:40px; top:210px; width:236px;">
+          <span class="dot left"></span><span class="dot right"></span>
+          <div class="row">
+            <span class="title">BTC Price</span>
+            <span class="badge price-data">PRICE-DATA</span>
+          </div>
+          <p class="subtitle">Fetches BTC/USD from CoinGecko</p>
+        </div>
+
+        <div class="node" style="left:386px; top:210px; width:214px;">
+          <span class="dot left"></span><span class="dot right"></span>
+          <div class="row">
+            <span class="title">Below $80K?</span>
+            <span class="badge condition">CONDITION</span>
+          </div>
+          <p class="subtitle">price &lt; 80,000</p>
+        </div>
+
+        <div class="node" style="left:150px; top:402px; width:236px;">
+          <span class="dot left"></span><span class="dot right"></span>
+          <div class="row">
+            <span class="title">BTC Alert Email</span>
+            <span class="badge notification">NOTIFICATION</span>
+          </div>
+          <p class="subtitle">Send price + 24h stats</p>
+        </div>
+      </div>
+    </div>
+  </div>
+</body>
+</html>
