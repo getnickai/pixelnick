@@ -8,6 +8,12 @@
 # DRY_RUN=1 bash scripts/run-weekly-social.sh   # plumbing test, no Claude run
 set -u
 
+# launchd runs with a minimal PATH (/usr/bin:/bin:/usr/sbin:/sbin) that omits
+# Homebrew's bin, so `claude` (at /opt/homebrew/bin) wasn't found and the job
+# died with exit 127 (STA-473, first real Friday run 2026-07-10). Prepend the
+# Homebrew bin so the CLI resolves under launchd.
+export PATH="/opt/homebrew/bin:$PATH"
+
 PIXELNICK_DIR="${PIXELNICK_DIR:-/Users/badi/claude/pixelnick-social-cards}"
 LOG_DIR="/Users/badi/nickai-content/social-calendar/logs"
 CHANNEL="${SLACK_CHANNEL_SOCIAL_POSTS:-C0BEUBTTTJ7}"
