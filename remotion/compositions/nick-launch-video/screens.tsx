@@ -250,10 +250,31 @@ function LogLine({ row }: { row: LogRow }) {
   );
 }
 
-/** Bottom "Execution Logs" panel — streams INFO rows as the agent runs. */
-function ExecutionLogs({ height, count = 105 }: { height: number; count?: number }) {
+/** Synthetic older rows so the streaming log has depth to scroll through. */
+const LEAD_ROWS: LogRow[] = Array.from({ length: 16 }, (_, i) => LOG_ROWS[i % LOG_ROWS.length]);
+
+/** Bottom "Execution Logs" panel, streams INFO rows as the agent runs.
+ *  `reveal` slides the panel up from the bottom (0 = below frame, 1 = settled),
+ *  `scroll` translates the rows down in px (older rows into view), and
+ *  `streaming` prepends older rows so there is depth to scroll. All default so
+ *  the settled still renders identically. */
+function ExecutionLogs({
+  height,
+  count = 105,
+  reveal = 1,
+  scroll = 0,
+  streaming = false,
+}: {
+  height: number;
+  count?: number;
+  reveal?: number;
+  scroll?: number;
+  streaming?: boolean;
+}) {
+  const rows = streaming ? [...LEAD_ROWS, ...LOG_ROWS] : LOG_ROWS;
+  const shownReveal = Math.max(0, Math.min(1, reveal));
   return (
-    <div style={{ position: "absolute", left: 0, right: 0, bottom: 0, height, backgroundColor: "#080b10", borderTop: `1px solid ${LINE}`, display: "flex", flexDirection: "column", fontFamily: SANS }}>
+    <div style={{ position: "absolute", left: 0, right: 0, bottom: 0, height, backgroundColor: "#080b10", borderTop: `1px solid ${LINE}`, display: "flex", flexDirection: "column", fontFamily: SANS, transform: `translateY(${(1 - shownReveal) * height}px)` }}>
       {/* header */}
       <div style={{ height: 46, display: "flex", alignItems: "center", justifyContent: "space-between", padding: "0 24px", borderBottom: `1px solid ${LINE}` }}>
         <div style={{ display: "flex", alignItems: "center", gap: 12 }}>
@@ -273,15 +294,50 @@ function ExecutionLogs({ height, count = 105 }: { height: number; count?: number
       </div>
       {/* rows */}
       <div style={{ flex: 1, overflow: "hidden", padding: "10px 24px", display: "flex", flexDirection: "column", justifyContent: "flex-end" }}>
-        {LOG_ROWS.map((r, i) => (
-          <LogLine key={i} row={r} />
-        ))}
+        <div style={{ display: "flex", flexDirection: "column", flexShrink: 0, transform: `translateY(${scroll}px)` }}>
+          {rows.map((r, i) => (
+            <LogLine key={i} row={r} />
+          ))}
+        </div>
       </div>
     </div>
   );
 }
 
-export function ProductScreen({ running = false, logs = false }: { running?: boolean; logs?: boolean } = {}) {
+export function ProductScreen({
+  running = false,
+  logs = false,
+  chatReveal = 1,
+  canvasReveal = 1,
+  introReveal = 1,
+  cardReveal = [1, 1, 1],
+  runNowPress = 0,
+  logsReveal = 1,
+  logScroll = 0,
+  logStreaming = false,
+  logCount,
+}: {
+  running?: boolean;
+  logs?: boolean;
+  /** Left rail + chat panel wipe-in: 0 = off-screen left, 1 = settled. */
+  chatReveal?: number;
+  /** Workspace graph dock-in: 0 = larger/softer, 1 = settled. */
+  canvasReveal?: number;
+  /** Assistant intro line fade-in: 0 = hidden, 1 = shown. */
+  introReveal?: number;
+  /** Per-card stream-in [spacex, nvda, portfolio]: 0 = hidden, 1 = settled. */
+  cardReveal?: number[];
+  /** Run Now button press pulse: 0 = idle, 1 = fully pressed. */
+  runNowPress?: number;
+  /** Execution Logs panel slide-up: 0 = below frame, 1 = settled. */
+  logsReveal?: number;
+  /** Execution Logs vertical row offset in px (older rows into view). */
+  logScroll?: number;
+  /** Prepend older log rows so there is depth to scroll through. */
+  logStreaming?: boolean;
+  /** Override the logs header execution count. */
+  logCount?: number;
+} = {}) {
   const w = LAUNCH_WORKFLOWS[2]; // 3rd workflow, expanded into the builder
   const railW = 68;
   const chatW = 700;
@@ -292,6 +348,20 @@ export function ProductScreen({ running = false, logs = false }: { running?: boo
   const canvasBottom = 72;
   const canvasH = NICK_LAUNCH_H - canvasTop - canvasBottom;
   const logsH = 420;
+
+  // ── Optional entrance drivers (all default to the settled still). ──
+  const chatShift = -(railW + chatW) * (1 - chatReveal);
+  const chatOpacity = Math.max(0, Math.min(1, chatReveal));
+  const canvasScale = 1 + 0.12 * (1 - canvasReveal);
+  const canvasOpacity = Math.max(0, Math.min(1, canvasReveal));
+  const introOpacity = Math.max(0, Math.min(1, introReveal));
+  const cardStyle = (i: number): React.CSSProperties => {
+    const r = cardReveal[i] ?? 1;
+    return {
+      opacity: Math.max(0, Math.min(1, r)),
+      transform: `translateY(${16 * (1 - r)}px) scale(${0.98 + 0.02 * r})`,
+    };
+  };
 
   // Running state: most nodes completed (green), a few mid-graph still running (blue).
   let statusById: Record<string, RunStatus> | undefined;
@@ -310,7 +380,7 @@ export function ProductScreen({ running = false, logs = false }: { running?: boo
       <AbsoluteFill style={{ backgroundColor: APP_BG, fontFamily: SANS }} />
 
       {/* far-left rail */}
-      <div style={{ position: "absolute", left: 0, top: 0, width: railW, height: NICK_LAUNCH_H, borderRight: `1px solid ${LINE}`, display: "flex", flexDirection: "column", alignItems: "center", paddingTop: 24, gap: 26 }}>
+      <div style={{ position: "absolute", left: 0, top: 0, width: railW, height: NICK_LAUNCH_H, borderRight: `1px solid ${LINE}`, display: "flex", flexDirection: "column", alignItems: "center", paddingTop: 24, gap: 26, transform: `translateX(${chatShift}px)`, opacity: chatOpacity }}>
         <NickMark size={30} />
         {["squares", "book", "gear", "flow"].map((k) => (
           <div key={k} style={{ width: 36, height: 36, borderRadius: 10, backgroundColor: "rgba(255,255,255,0.05)" }} />
@@ -318,7 +388,7 @@ export function ProductScreen({ running = false, logs = false }: { running?: boo
       </div>
 
       {/* ── CHAT PANEL ── */}
-      <div style={{ position: "absolute", left: chatX, top: 0, width: chatW, height: NICK_LAUNCH_H, borderRight: `1px solid ${LINE}` }}>
+      <div style={{ position: "absolute", left: chatX, top: 0, width: chatW, height: NICK_LAUNCH_H, borderRight: `1px solid ${LINE}`, transform: `translateX(${chatShift}px)`, opacity: chatOpacity }}>
         {/* header */}
         <div style={{ height: 68, display: "flex", alignItems: "center", justifyContent: "space-between", padding: "0 28px", borderBottom: `1px solid ${LINE}` }}>
           <div style={{ display: "flex", alignItems: "center", gap: 8, color: "#fff", fontSize: 19, fontWeight: 600 }}>
@@ -328,14 +398,20 @@ export function ProductScreen({ running = false, logs = false }: { running?: boo
         </div>
         {/* messages */}
         <div style={{ position: "absolute", top: 68, left: 0, right: 0, bottom: 176, padding: "24px 28px", display: "flex", flexDirection: "column", gap: 16, overflow: "hidden" }}>
-          <div style={{ color: "#c7ccd6", fontSize: 16, lineHeight: 1.5 }}>
+          <div style={{ color: "#c7ccd6", fontSize: 16, lineHeight: 1.5, opacity: introOpacity, transform: `translateY(${10 * (1 - introReveal)}px)` }}>
             Here's your book right now. SpaceX and NVDA are your two biggest movers today.
           </div>
           <div style={{ display: "flex", gap: 16 }}>
-            <PriceCardMock data={SPACEX_CARD} width={314} />
-            <PriceCardMock data={NVIDIA_CARD} width={314} />
+            <div style={cardStyle(0)}>
+              <PriceCardMock data={SPACEX_CARD} width={314} />
+            </div>
+            <div style={cardStyle(1)}>
+              <PriceCardMock data={NVIDIA_CARD} width={314} />
+            </div>
           </div>
-          <PortfolioCardMock data={PORTFOLIO_CARD} width={644} />
+          <div style={cardStyle(2)}>
+            <PortfolioCardMock data={PORTFOLIO_CARD} width={644} />
+          </div>
         </div>
         {/* input */}
         <div style={{ position: "absolute", left: 24, right: 24, bottom: 28, borderRadius: 20, border: `1.5px solid ${BLUE}`, backgroundColor: "#0e131b", padding: 16, boxShadow: "0 0 0 3px rgba(1,120,255,0.08)" }}>
@@ -364,7 +440,7 @@ export function ProductScreen({ running = false, logs = false }: { running?: boo
               Badi Badkoube
             </span>
           </div>
-          <div style={{ display: "flex", alignItems: "center", gap: 8, backgroundColor: "#1fc16b", color: "#04140a", fontWeight: 700, fontSize: 14, padding: "8px 14px", borderRadius: 10 }}>
+          <div style={{ display: "flex", alignItems: "center", gap: 8, backgroundColor: "#1fc16b", color: "#04140a", fontWeight: 700, fontSize: 14, padding: "8px 14px", borderRadius: 10, transform: `scale(${1 - runNowPress * 0.08})`, boxShadow: runNowPress > 0.01 ? `0 0 0 ${Math.round(6 * runNowPress)}px rgba(31,193,107,0.30)` : undefined }}>
             <Play size={14} fill="#04140a" /> Run Now
           </div>
         </div>
@@ -391,7 +467,9 @@ export function ProductScreen({ running = false, logs = false }: { running?: boo
             overflow: "hidden",
           }}
         >
-          <WorkflowGraph template={w.template} vw={wsW} vh={canvasH} cw={CANVAS_W} ch={CANVAS_H} camera={fitCamera(wsW, canvasH, CANVAS_W, CANVAS_H, 0.82)} statusById={statusById} />
+          <div style={{ width: wsW, height: canvasH, opacity: canvasOpacity, transform: `scale(${canvasScale})`, transformOrigin: "center center" }}>
+            <WorkflowGraph template={w.template} vw={wsW} vh={canvasH} cw={CANVAS_W} ch={CANVAS_H} camera={fitCamera(wsW, canvasH, CANVAS_W, CANVAS_H, 0.82)} statusById={statusById} />
+          </div>
           {running ? (
             <div style={{ position: "absolute", top: 24, left: "50%", transform: "translateX(-50%)", display: "flex", alignItems: "center", gap: 8, backgroundColor: "rgba(1,120,255,0.14)", border: `1px solid ${BLUE}`, color: BLUE, fontWeight: 600, fontSize: 15, padding: "8px 18px", borderRadius: 999 }}>
               <Loader2 size={15} /> Running
@@ -413,14 +491,14 @@ export function ProductScreen({ running = false, logs = false }: { running?: boo
             </div>
           )}
         </div>
-        {logs ? <ExecutionLogs height={logsH} /> : null}
+        {logs ? <ExecutionLogs height={logsH} reveal={logsReveal} scroll={logScroll} streaming={logStreaming} count={logCount} /> : null}
       </div>
     </>
   );
 }
 
 /** Camera-zoom wrapper for a still: scales content about an origin, clips to frame. */
-function ZoomInto({ ox, oy, scale, children }: { ox: string; oy: string; scale: number; children: React.ReactNode }) {
+export function ZoomInto({ ox, oy, scale, children }: { ox: string; oy: string; scale: number; children: React.ReactNode }) {
   return (
     <AbsoluteFill style={{ overflow: "hidden" }}>
       <div style={{ width: "100%", height: "100%", transform: `scale(${scale})`, transformOrigin: `${ox} ${oy}` }}>{children}</div>
