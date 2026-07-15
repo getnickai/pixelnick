@@ -320,10 +320,11 @@ const IntroTitle: React.FC<{
   const enterBlur = (1 - enter) * 6;
   const enterY = (1 - enter) * 34;
 
-  // "Introducing" fades out as it slides off-left; "trades anything" fade in as
-  // they slide into center. "Nick" is always solid (it just slides).
-  const introOpacity = enter * (1 - slide);
-  const tailOpacity = enter * slide;
+  // Staggered so the two never strongly co-exist (a full 4-word ghost mid-slide
+  // read as a blink): "Introducing" is gone by ~40% of the slide, and "trades
+  // anything" only fade in from ~45% on — leaving a beat where just "Nick" slides.
+  const introOpacity = enter * (1 - Math.min(1, slide / 0.4));
+  const tailOpacity = enter * Math.max(0, Math.min(1, (slide - 0.45) / 0.5));
 
   return (
     <div
@@ -371,11 +372,13 @@ const OpeningSequence: React.FC<LaunchVideoProps> = ({
   const { icons, reflow } = LAUNCH_VIDEO_TIMELINE.opening;
   const words = introWords(headline, productHeadline, productHeadlineAccent);
 
+  // Smooth (non-overshooting) fade-in — POP_EASE overshoots past 1, which read
+  // as a tiny bounce/blink on the opening title.
   const enter = progress(
     frame,
     reflow.enterStart,
     reflow.enterDuration,
-    POP_EASE,
+    FAST_FADE_EASE,
   );
   // The whole reflow is one smooth slide: from centering "Introducing Nick" to
   // centering "Nick trades anything". Runs from the old collapse start through
@@ -1803,11 +1806,11 @@ const ExecuteFinaleSequence: React.FC<LaunchVideoProps> = ({
   //   row 0 → workflows (GRID_WORKFLOWS)
   //   row 1 → widgets (SpaceX price, NVDA price, portfolio, AAPL trade)
   //   row 2 → more workflows (GRID_WORKFLOWS_2)
-  const GRID_CARD_W = 400;
-  const GRID_CARD_H = 236;
-  const GRID_GAP_X = 20;
-  const GRID_GAP_Y = 22;
-  const GRID_TOP = 150;
+  const GRID_CARD_W = 420;
+  const GRID_CARD_H = 250;
+  const GRID_GAP_X = 22;
+  const GRID_GAP_Y = 24;
+  const GRID_TOP = 122;
   const gridTotalW = GRID_CARD_W * 4 + GRID_GAP_X * 3;
   const gridStartX = (1920 - gridTotalW) / 2;
   const GRID_GRAPH_H = GRID_CARD_H - 58;
@@ -1825,15 +1828,39 @@ const ExecuteFinaleSequence: React.FC<LaunchVideoProps> = ({
     { kind: "trade" as const, data: SAMPLE_TRADE_AAPL },
   ];
   const TRADE_IDX = 7;
-  // Widget cards render at a uniform height; width follows each card's aspect.
-  const WIDGET_H = GRID_CARD_H - 26;
-  const widgetW = (kind: string) =>
-    Math.round(WIDGET_H * (kind === "price" ? 1.271 : kind === "portfolio" ? 1.15 : 1.74));
+  // Widget cards fit inside the cell: sized by height, capped to the cell width
+  // (the wide trade card would otherwise overrun its column).
+  const widgetAspect = (kind: string) =>
+    kind === "price" ? 1.271 : kind === "portfolio" ? 1.15 : 1.74;
+  const widgetDims = (kind: string) => {
+    const asp = widgetAspect(kind);
+    const maxW = GRID_CARD_W - 16;
+    let h = GRID_CARD_H - 26;
+    let w = Math.round(h * asp);
+    if (w > maxW) {
+      w = maxW;
+      h = Math.round(maxW / asp);
+    }
+    return { w, h };
+  };
+
+  // Supported-venue logos fill the band below the grid.
+  const EXCHANGES = [
+    "coinbase.svg",
+    "hyperliquid.svg",
+    "okx.svg",
+    "revolut.svg",
+    "alpaca.svg",
+    "polymarket.png",
+    "kalshi.svg",
+    "tradexyz.svg",
+  ];
+  const bandIn = progress(frame, 56, 16, FAST_FADE_EASE);
 
   // The trade card flies from screen center (width 560, as the execution beat
   // left it) into its widget-row slot.
   const flyP = progress(frame, heroFly.start, heroFly.duration, Easing.inOut(Easing.cubic));
-  const tradeW = interpolate(flyP, [0, 1], [560, widgetW("trade")]);
+  const tradeW = interpolate(flyP, [0, 1], [560, widgetDims("trade").w]);
   const tradeCX = interpolate(flyP, [0, 1], [960, cellCX(TRADE_IDX)]);
   const tradeCY = interpolate(flyP, [0, 1], [630, cellCY(TRADE_IDX)]);
 
@@ -1980,7 +2007,7 @@ const ExecuteFinaleSequence: React.FC<LaunchVideoProps> = ({
           const pop = `translateY(${(1 - cardSettle) * 22}px) scale(${0.95 + cardSettle * 0.05})`;
 
           if (cell.type === "widget") {
-            const w = widgetW(cell.kind);
+            const { w, h } = widgetDims(cell.kind);
             return (
               <div
                 key={`widget-${index}`}
@@ -1989,7 +2016,7 @@ const ExecuteFinaleSequence: React.FC<LaunchVideoProps> = ({
                   left: cellCX(index),
                   top: cellCY(index),
                   width: w,
-                  height: WIDGET_H,
+                  height: h,
                   opacity: cardOpacity,
                   transform: `translate(-50%, calc(-50% + ${(1 - cardSettle) * 22}px)) scale(${0.95 + cardSettle * 0.05})`,
                   transformOrigin: "center center",
@@ -2068,6 +2095,53 @@ const ExecuteFinaleSequence: React.FC<LaunchVideoProps> = ({
           }}
         >
           <TradeConfirmationCardView data={SAMPLE_TRADE_AAPL} width={tradeW} anim={1} />
+        </div>
+
+        {/* Supported-venue logos filling the band below the grid. */}
+        <div
+          style={{
+            position: "absolute",
+            left: 0,
+            right: 0,
+            top: 964,
+            display: "flex",
+            flexDirection: "column",
+            alignItems: "center",
+            gap: 26,
+            opacity: bandIn,
+            transform: `translateY(${(1 - bandIn) * 16}px)`,
+          }}
+        >
+          <span
+            style={{
+              fontFamily: MANROPE,
+              fontSize: 23,
+              fontWeight: 600,
+              letterSpacing: 0.3,
+              color: "rgba(255, 255, 255, 0.55)",
+            }}
+          >
+            Nick trades on the venues you already use
+          </span>
+          <div style={{ display: "flex", alignItems: "center", justifyContent: "center", gap: 60 }}>
+            {EXCHANGES.map((file) => (
+              <Img
+                key={file}
+                src={staticFile(`brand/exchanges/${file}`)}
+                style={{
+                  height: 44,
+                  width: "auto",
+                  maxWidth: 180,
+                  objectFit: "contain",
+                  // Matches the site's own dark-mode treatment (dark:invert): the
+                  // marks are black, invert renders them white while keeping
+                  // internal detail (e.g. the Alpaca head cut-outs).
+                  filter: "invert(1)",
+                  opacity: 0.9,
+                }}
+              />
+            ))}
+          </div>
         </div>
       </div>
 
