@@ -2040,6 +2040,13 @@ const ExecuteFinaleSequence: React.FC<LaunchVideoProps> = ({
   );
   const urlIn = progress(frame, url.start, url.duration, POP_EASE);
   const exit = progress(frame, outro.start, outro.duration, OUTRO_EASE);
+  const finaleLayout = progress(
+    frame,
+    cta.start - 8,
+    18,
+    Easing.inOut(Easing.cubic),
+  );
+  const finaleLift = finaleLayout * 130;
 
   const buttonTextOpacity = 1 - progress(
     frame,
@@ -2151,7 +2158,7 @@ const ExecuteFinaleSequence: React.FC<LaunchVideoProps> = ({
             "radial-gradient(ellipse, rgba(1, 120, 255, 0.16) 0%, rgba(1, 120, 255, 0.055) 44%, transparent 72%)",
           opacity: logoReveal * (1 - seamOut * 0.35),
           filter: "blur(22px)",
-          transform: `translate(-50%, -50%) scale(${0.76 + logoReveal * 0.24})`,
+          transform: `translate(-50%, calc(-50% - ${finaleLift}px)) scale(${0.76 + logoReveal * 0.24})`,
         }}
       />
 
@@ -2165,7 +2172,7 @@ const ExecuteFinaleSequence: React.FC<LaunchVideoProps> = ({
           opacity: logoReveal,
           clipPath: `inset(0 ${50 - logoReveal * 50}% 0 ${50 - logoReveal * 50}%)`,
           filter: `blur(${(1 - logoReveal) * 13}px)`,
-          transform: `translate(-50%, -50%) scale(${0.975 + logoSpring * 0.025})`,
+          transform: `translate(-50%, calc(-50% - ${finaleLift}px)) scale(${0.975 + logoSpring * 0.025})`,
         }}
       >
         <Img
@@ -2179,7 +2186,7 @@ const ExecuteFinaleSequence: React.FC<LaunchVideoProps> = ({
           position: "absolute",
           left: 100,
           right: 100,
-          top: "64%",
+          top: `calc(64% - ${finaleLift}px)`,
           display: "flex",
           alignItems: "center",
           justifyContent: "center",
@@ -2220,7 +2227,7 @@ const ExecuteFinaleSequence: React.FC<LaunchVideoProps> = ({
       <div
         style={{
           position: "absolute",
-          top: "75%",
+          top: `calc(75% - ${finaleLift}px)`,
           color: "#4b9cff",
           fontSize: 32,
           fontWeight: 650,
