@@ -6,6 +6,10 @@
  *   bun scripts/render-nickai-social.ts --props <file.json> [--out <dir>] [--mp4]
  *   bun scripts/render-nickai-social.ts --sample            # built-in samples
  *
+ * --mp4 renders a video with the baked landing-page silk loop
+ * (public/nickai-social/wave-loop-{dark|light}.mp4). Rebake via:
+ *   bun scripts/bake-wave-loop/bake.ts [--theme both] [--seconds 5]
+ *
  * The props file is either a single NickaiSocialCardProps object or an array
  * of { slug, props } jobs. Follows the generate-swarm-cards render path:
  * bundle → mirror public/ → selectComposition → renderStill (+ renderMedia).

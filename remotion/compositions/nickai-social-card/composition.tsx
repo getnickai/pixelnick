@@ -13,10 +13,17 @@ import {
   Easing,
   Img,
   interpolate,
+  Loop,
+  OffthreadVideo,
   staticFile,
   useCurrentFrame,
 } from "remotion";
 import type { NickaiSocialCardProps, NickaiSocialCardTheme } from "./props";
+
+/** Baked hero-silk loop length (see scripts/bake-wave-loop/bake.ts). */
+const WAVE_LOOP_FPS = 30;
+const WAVE_LOOP_SECONDS = 5;
+const WAVE_LOOP_FRAMES = WAVE_LOOP_FPS * WAVE_LOOP_SECONDS;
 
 const BLUE = "#0178ff";
 const BLUE_LIGHT = "#4da0ff";
@@ -147,30 +154,51 @@ export const NickaiSocialCardComposition: React.FC<NickaiSocialCardProps> = ({
     transform: `translateY(${(1 - p) * distance}px)`,
   });
 
+  const waveStyle: React.CSSProperties = {
+    position: "absolute",
+    // Full-bleed height: baked loop is 1284×900 (wave motif 1 size).
+    top: 0,
+    right: -120,
+    width: 1284,
+    height: 900,
+    // Dark: screen drops the black plate. Light baked loop is on black too —
+    // screen keeps the silk and clears the plate into the light canvas.
+    mixBlendMode: "screen",
+    opacity: (hasSideFill ? 0.4 : theme === "light" ? 0.85 : 0.9) * enter(0, 45),
+    transform: `translateX(${(1 - enter(0, 45)) * 60}px)`,
+  };
+
+  const waveLoopSrc = staticFile(
+    theme === "light"
+      ? "nickai-social/wave-loop-light.mp4"
+      : "nickai-social/wave-loop-dark.mp4",
+  );
+  const waveStillSrc = staticFile(
+    theme === "light"
+      ? `nickai-social/wave-light-${wave}.png`
+      : `nickai-social/wave-dark-${wave}.png`,
+  );
+
   return (
     <AbsoluteFill style={{ backgroundColor: skin.bg, fontFamily: fontSans }}>
-      {wave !== 0 && (
-        <Img
-          src={staticFile(
-            theme === "light"
-              ? `nickai-social/wave-light-${wave}.png`
-              : `nickai-social/wave-dark-${wave}.png`,
-          )}
-          style={{
-            position: "absolute",
-            // Full-bleed height: scale the motif so it touches top + bottom.
-            top: 0,
-            right: -120,
-            ...WAVE_DISPLAY[wave],
-            // Dark assets keep a black plate — screen dissolves it into the canvas.
-            // Light assets are pre-keyed (black → transparent) so normal blend works.
-            mixBlendMode: theme === "light" ? "normal" : "screen",
-            // Recede behind data modules so numbers stay legible.
-            opacity: (hasSideFill ? 0.4 : theme === "light" ? 0.85 : 0.9) * enter(0, 45),
-            transform: `translateX(${(1 - enter(0, 45)) * 60}px)`,
-          }}
-        />
-      )}
+      {wave !== 0 &&
+        (animate ? (
+          // MP4 path: baked landing-page silk loop (scripts/bake-wave-loop).
+          <Loop durationInFrames={WAVE_LOOP_FRAMES}>
+            <OffthreadVideo src={waveLoopSrc} muted style={waveStyle} />
+          </Loop>
+        ) : (
+          // PNG still — same placement/blend as the loop for a matched pair.
+          <Img
+            src={waveStillSrc}
+            style={{
+              ...waveStyle,
+              // Still light assets are pre-keyed (transparent plate).
+              ...(theme === "light" ? { mixBlendMode: "normal" as const } : null),
+              ...(wave === 2 ? WAVE_DISPLAY[2] : null),
+            }}
+          />
+        ))}
 
       <AbsoluteFill style={{ padding: PAD, justifyContent: "space-between" }}>
         {/* Header: wordmark left, series eyebrow right. */}

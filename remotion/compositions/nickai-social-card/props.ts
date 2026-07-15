@@ -44,9 +44,12 @@ export type NickaiSocialCardProps = {
    * JSON still parses. Ignored at render time.
    */
   meta?: string;
-  /** Wave motif variant; 0 hides it. */
+  /** Wave motif variant for stills; 0 hides it. MP4 always uses the baked silk loop. */
   wave?: 0 | 1 | 2;
-  /** CP2 motion contract: false/undefined renders the settled still. */
+  /**
+   * false/undefined → PNG still (settled).
+   * true → MP4 with the baked landing-page silk loop behind settled/entering copy.
+   */
   animate?: boolean;
 };
 
