@@ -54,6 +54,13 @@ export const engineManifest: EngineEntryMeta[] = [
     meta: "21 templates",
   },
   {
+    id: "nickai-widget-library",
+    label: "NickAI Widget Library",
+    group: "NickAI",
+    shortLabel: "Widget Library",
+    meta: "32 cards",
+  },
+  {
     id: "x-signals",
     label: "X Signals",
     group: "X Engine",

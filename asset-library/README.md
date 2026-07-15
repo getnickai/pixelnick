@@ -10,6 +10,8 @@ Organized by asset category:
 - `brand/` — brand elements (gradient banner).
 - `sources/` — render HTML/CSS/JS, Python compositors, and TypeScript fixtures used to generate the assets.
 
+Meta-agent chat **widgets** (the cards Nick renders inline in chat — price, portfolio, prediction markets, data readouts, trade confirmations) live in the app itself, not here, because there are 64 files (32 designs × light/dark) and the app serves them directly: `public/widget-library/{light,dark}/<slug>.png` (2× retina). Browse and download them in the pixelnick UI at **Engine → NickAI → Widget Library** (`/engine/nickai-widget-library`); each tile has copy-path and download. They are static captures of the REAL components from the nickai `/dev/cards` harness — re-capture after a design change with `scripts/capture-widget-library.ts` (see that file's header). Catalog + labels: `app/engine/nickai-widget-library/manifest.ts`.
+
 The "email / customer.io CDN URL" column holds a permanent URL already hosted on customer.io's image CDN. It works in any channel (it is a plain HTTPS image URL), but it was created for email; see per-channel guidance below.
 
 customer.io CDN prefix: `https://userimg-assets.customeriomail.com/images/client-env-208004/<id>.png`
