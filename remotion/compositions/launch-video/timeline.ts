@@ -57,7 +57,7 @@ export const LAUNCH_VIDEO_TIMELINE = {
   chatComposer: {
     // Begins as the last product-statement words complete their fast exit.
     from: 122,
-    durationInFrames: 72,
+    durationInFrames: 110,
     shell: {
       start: 0,
       duration: 12,
@@ -75,21 +75,21 @@ export const LAUNCH_VIDEO_TIMELINE = {
       duration: 36,
     },
     send: {
-      // Typing completes at frame 47. The cursor then enters, travels, and
-      // reaches the send control before the click begins at frame 59.
-      start: 55,
+      // Typing completes at frame 47. Hold the completed prompt cleanly for
+      // 36 frames (1.2s), then let the cursor enter and travel for 10 frames.
+      start: 93,
       duration: 10,
     },
     outro: {
       // Begins on the exact frame the click ripple completes.
-      start: 65,
+      start: 103,
       duration: 6,
     },
   },
   chatResponse: {
     // Starts as soon as the composer click ripple completes. Durations mirror
     // the first result-thread beat in NicksiteV2 at playbackRate: 2.
-    from: 187,
+    from: 225,
     durationInFrames: 95,
     shell: {
       start: 0,
@@ -123,8 +123,8 @@ export const LAUNCH_VIDEO_TIMELINE = {
   workflowComposer: {
     // NicksiteV2's second focus/typing beat. The original 3400ms type-on runs
     // at playbackRate 2, which maps to 51 frames at 30fps.
-    from: 275,
-    durationInFrames: 82,
+    from: 313,
+    durationInFrames: 138,
     shell: {
       start: 0,
       duration: 10,
@@ -142,21 +142,21 @@ export const LAUNCH_VIDEO_TIMELINE = {
       duration: 51,
     },
     send: {
-      // Typing completes at frame 57. The cursor enters only afterward and
-      // reaches the send control before the click begins at frame 69.
-      start: 65,
+      // The long request completes at frame 57. Give it a 54-frame (1.8s)
+      // cursor-free reading hold before the pointer approaches Send.
+      start: 121,
       duration: 10,
     },
     outro: {
       // Begins on the exact frame the click ripple completes.
-      start: 75,
+      start: 131,
       duration: 6,
     },
   },
   workflowResponse: {
     // Workflow-thread responses only. Sidebar/panel/node reveals deliberately
     // remain out of this sequence so they can become the next product beat.
-    from: 350,
+    from: 444,
     durationInFrames: 112,
     shell: {
       start: 0,
@@ -188,7 +188,7 @@ export const LAUNCH_VIDEO_TIMELINE = {
   workflowBuild: {
     // The workflow canvas begins while the response thread is completing its
     // fast fade, keeping the creation result and visual build in one motion.
-    from: 454,
+    from: 548,
     durationInFrames: 105,
     shell: {
       start: 0,
@@ -218,7 +218,7 @@ export const LAUNCH_VIDEO_TIMELINE = {
   executeFinale: {
     // The button enters while the workflow canvas is completing its outro.
     // Its click is the transition: button -> energy core -> NickAI lockup.
-    from: 544,
+    from: 638,
     durationInFrames: 148,
     button: {
       start: 3,

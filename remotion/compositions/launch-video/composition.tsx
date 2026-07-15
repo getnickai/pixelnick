@@ -576,7 +576,7 @@ const FakeCursor: React.FC<{
   opacity,
   origin = { x: 680, y: 300 },
   target = { x: 1004, y: 166 },
-  size = 32,
+  size = 48,
 }) => {
   // Coordinates are relative to the composer shell. The send control sits
   // in the compact action row above the footer strip.
@@ -649,6 +649,7 @@ const ChatComposerSequence: React.FC<ChatComposerSequenceProps> = ({
   const typedCharacterCount = Math.floor(prompt.length * typingProgress);
   const typedPrompt = prompt.slice(0, typedCharacterCount);
   const typingEnd = typing.start + typing.duration;
+  const cursorStart = Math.max(typingEnd + 1, send.start - 10);
   const sendActive = progress(
     frame,
     send.start,
@@ -667,7 +668,7 @@ const ChatComposerSequence: React.FC<ChatComposerSequenceProps> = ({
   );
   const cursorMove = progress(
     frame,
-    typingEnd + 1,
+    cursorStart,
     10,
     Easing.out(Easing.cubic),
   );
@@ -683,7 +684,7 @@ const ChatComposerSequence: React.FC<ChatComposerSequenceProps> = ({
       ? (1 - clickRipple) * (1 - exit)
       : 0;
   const cursorOpacity =
-    progress(frame, typingEnd, 3, FAST_FADE_EASE) * (1 - exit);
+    progress(frame, cursorStart - 1, 3, FAST_FADE_EASE) * (1 - exit);
   const caretVisible =
     frame >= focus.start &&
     frame < send.start + send.duration &&
@@ -2245,7 +2246,7 @@ const ExecuteFinaleSequence: React.FC<LaunchVideoProps> = ({
         opacity={cursorIn * (1 - cursorOut) * (1 - exit)}
         origin={{ x: 1280, y: 830 }}
         target={{ x: 960, y: 600 }}
-        size={44}
+        size={66}
       />
     </AbsoluteFill>
   );

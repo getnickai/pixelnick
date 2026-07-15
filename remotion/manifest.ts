@@ -186,7 +186,8 @@ export const motionManifest: MotionEntryMeta[] = [
     // Nick chat composer focuses and submits, then the user message, reasoning,
     // NVDA result, and chart reveal before the composer returns for a workflow
     // request, validation response flow, four-node workflow build, and an
-    // Execute -> NickAI brand/CTA finale. ~23.1s.
+    // Execute -> NickAI brand/CTA finale. Read holds after both typed prompts
+    // keep the click beats legible. ~26.2s.
     id: "launch-video",
     label: "Launch Video",
     width: LAUNCH_VIDEO_WIDTH,
