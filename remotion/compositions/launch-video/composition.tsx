@@ -1166,7 +1166,7 @@ const ChatResponseSequence: React.FC<LaunchVideoProps> = ({ chatPrompt }) => {
                 fontWeight: 500,
               }}
             >
-              1d · Apr 13 – Jul 9
+              1d · Apr 13 to Jul 9
             </div>
           </div>
         </div>
@@ -1523,7 +1523,7 @@ const WorkflowResponseSequence: React.FC<LaunchVideoProps> = ({
               lineHeight: 1.45,
             }}
           >
-            Done — I created and validated the workflow for buying $50 of NVDA
+            Done. I created and validated the workflow for buying $50 of NVDA
             on paper trading every 12 hours when NVDA is below $200.
           </div>
         </div>
