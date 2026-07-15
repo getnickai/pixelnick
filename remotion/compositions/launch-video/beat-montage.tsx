@@ -1,26 +1,38 @@
 /* eslint-disable @next/next/no-img-element */
 /**
  * Beat 8, Workflow montage (STA-494). After the NVDA hero build, the composer
- * prompt swaps and two MORE workflows finalize fast: each new graph pops in
- * already-finalized (a quick per-node stagger, not a slow node-by-node build),
- * establishing "any strategy, in seconds".
+ * prompt swaps and two MORE workflows build fast, each with a zoom-in-on-first-
+ * nodes then pull-back-to-full arc (via `zoomIntroCamera` + `buildReveal`),
+ * establishing "any strategy, in seconds". The composer is the SAME chat box
+ * shown at the start of the video (Onur's ChatComposerSequence chrome), now
+ * carrying each workflow's own prompt as it swaps.
  *
  * Timeline (local frames, from LAUNCH_VIDEO_TIMELINE.workflowMontage):
- *   intro  {0,10}   whole beat fades in, composer + BTC canvas present
- *   build2 {20,22}  BTC (workflow #0) graph finalizes fast (per-node pop)
- *   swap3  {74,12}  composer prompt swaps to Multi-LLM; canvas cross-fades
- *   build3 {88,22}  Multi-LLM (workflow #1) graph finalizes fast
+ *   intro  {0,10}   whole beat fades in, composer + graph A present
+ *   build2 {20,22}  workflow A (Multi-LLM) builds fast, zoomed on first nodes
+ *   swap3  {74,12}  composer prompt + title swap to workflow B; canvas cross-fades
+ *   build3 {88,22}  workflow B (Mag 7) builds fast
  *   outro  {146,10} quick fade out, hands off to the grid
  */
 import { AbsoluteFill, staticFile, useCurrentFrame } from "remotion";
-import { ArrowUp, Plus } from "lucide-react";
+import {
+  ArrowUp,
+  ChevronDown,
+  Folder,
+  MessageCircle,
+  Mic,
+  MoreHorizontal,
+  Plus,
+} from "lucide-react";
 import { WorkflowGraph } from "../nick-launch-video/graph";
-import { LAUNCH_WORKFLOWS } from "../nick-launch-video/props";
+import { MONTAGE_WORKFLOWS, wfName } from "../nick-launch-video/props";
 import { LAUNCH_VIDEO_TIMELINE } from "./timeline";
 import { progress, POP_EASE, FAST_FADE_EASE, OUTRO_EASE } from "./motion";
 import { buildReveal, zoomIntroCamera } from "./graph-anim";
 
 const SANS = "var(--font-manrope), ui-sans-serif, system-ui, sans-serif";
+// Matches ChatComposerSequence (composition.tsx) so the composer reads identical.
+const MANROPE = "Manrope, ui-sans-serif, system-ui, sans-serif";
 const BG = "#070b14";
 const BLUE = "#0178FF";
 
@@ -28,8 +40,13 @@ const BLUE = "#0178FF";
 const CANVAS_W = 3600;
 const CANVAS_H = 1700;
 const VW = 1720;
-const VH = 720;
-const WF_TOP = 200;
+const VH = 680;
+const WF_TOP = 158;
+
+/* Chat box (mirrors the beginning composer's 1050px shell). */
+const CHAT_W = 1050;
+const CHAT_LEFT = (1920 - CHAT_W) / 2;
+const CHAT_TOP = 882;
 
 /* ── Shared chrome ────────────────────────────────────────────────────────── */
 
@@ -55,35 +72,156 @@ function Logo() {
   );
 }
 
-/** Simplified composer pill (matches ChatBox look): plus, prompt, Nick, send. */
-function Composer({ prompt, cx, cy, width = 1160 }: { prompt: React.ReactNode; cx: number; cy: number; width?: number }) {
-  const H = 84;
+/** Two cross-fading spans (old lifts out, new drops in) sharing one anchor.
+ *  Reused for the workflow title and the composer prompt so both swap in sync. */
+function Swap({
+  a,
+  b,
+  outP,
+  inP,
+  center = false,
+  style,
+}: {
+  a: React.ReactNode;
+  b: React.ReactNode;
+  outP: number;
+  inP: number;
+  center?: boolean;
+  style?: React.CSSProperties;
+}) {
+  // Absolute spans share one anchor. When centered they span the full width so
+  // textAlign centers the (out-of-flow) text; otherwise they left-align.
+  const anchor: React.CSSProperties = center
+    ? { position: "absolute", left: 0, right: 0, top: 0, textAlign: "center", whiteSpace: "nowrap" }
+    : { position: "absolute", left: 0, top: 0, whiteSpace: "nowrap" };
   return (
-    <div
-      style={{
-        position: "absolute",
-        left: cx - width / 2,
-        top: cy - H / 2,
-        width,
-        height: H,
-        borderRadius: 22,
-        border: "1.5px solid rgba(1,120,255,0.75)",
-        backgroundColor: "rgba(6,10,16,0.92)",
-        boxShadow: "0 0 0 3px rgba(1,120,255,0.08), 0 34px 90px -34px rgba(1,120,255,0.45)",
-        display: "flex",
-        alignItems: "center",
-        padding: "0 20px",
-        gap: 18,
-        fontFamily: SANS,
-      }}
-    >
-      <Plus size={30} color="#c7ccd6" strokeWidth={2.2} />
-      <div style={{ position: "relative", flex: 1, minWidth: 0, height: 44, fontSize: 32, color: "#fff" }}>
-        {prompt}
-      </div>
-      <span style={{ fontSize: 26, fontWeight: 600, color: "#e6e8ec" }}>Nick</span>
-      <div style={{ width: 56, height: 56, borderRadius: 999, backgroundColor: BLUE, display: "flex", alignItems: "center", justifyContent: "center" }}>
-        <ArrowUp size={28} color="#fff" strokeWidth={2.6} />
+    <div style={{ position: "relative", ...style }}>
+      <span style={{ ...anchor, opacity: 1 - outP, transform: `translateY(${-outP * 12}px)` }}>
+        {a}
+      </span>
+      <span style={{ ...anchor, opacity: inP, transform: `translateY(${(1 - inP) * 12}px)` }}>
+        {b}
+      </span>
+    </div>
+  );
+}
+
+/**
+ * The beginning chat box, faithfully reproduced: rounded #18181b shell, blue
+ * focus border, big prompt line, action row (+, Opus 4.8 chip, mic, send arrow),
+ * and the Chat / Agent tab strip. Sizing/colors match ChatComposerSequence; only
+ * the prompt area height is trimmed to a single line for this in-flow use.
+ */
+function ChatBox({ prompt }: { prompt: React.ReactNode }) {
+  const action48 = {
+    width: 48,
+    height: 48,
+    display: "grid",
+    placeItems: "center",
+  } as const;
+  return (
+    <div style={{ position: "absolute", left: CHAT_LEFT, top: CHAT_TOP, width: CHAT_W, fontFamily: MANROPE }}>
+      <div
+        style={{
+          position: "relative",
+          padding: 4,
+          borderRadius: 31,
+          border: "1px solid #27272a",
+          backgroundColor: "#18181b",
+          boxShadow: "0 28px 80px rgba(0, 0, 0, 0.46), 0 2px 8px rgba(0, 0, 0, 0.28)",
+        }}
+      >
+        <div
+          style={{
+            position: "relative",
+            overflow: "hidden",
+            borderRadius: 28,
+            border: `3px solid ${BLUE}`,
+            backgroundColor: "#09090b",
+            boxShadow: "0 1px 3px rgba(0, 0, 0, 0.24)",
+          }}
+        >
+          <div
+            style={{
+              position: "relative",
+              minHeight: 44,
+              padding: "30px 32px 30px",
+              color: "#fafafa",
+              fontSize: 29,
+              fontWeight: 500,
+              lineHeight: 1.35,
+              letterSpacing: -0.45,
+            }}
+          >
+            {prompt}
+          </div>
+
+          <div
+            style={{
+              display: "flex",
+              alignItems: "center",
+              gap: 14,
+              padding: "0 20px 19px",
+              color: "#a1a1aa",
+            }}
+          >
+            <div style={{ ...action48, borderRadius: "50%", border: "1px solid #3f3f46", backgroundColor: "#18181b" }}>
+              <Plus size={25} strokeWidth={1.8} />
+            </div>
+            <div style={{ display: "flex", alignItems: "center", gap: 7, padding: "0 10px", fontSize: 22, fontWeight: 600 }}>
+              Opus 4.8 <ChevronDown size={19} strokeWidth={1.8} />
+            </div>
+            <div style={{ flex: 1 }} />
+            <div style={action48}>
+              <Mic size={25} strokeWidth={1.8} />
+            </div>
+            <div
+              style={{
+                ...action48,
+                position: "relative",
+                borderRadius: "50%",
+                color: "rgb(113, 113, 113)",
+                backgroundColor: "rgb(24, 24, 27)",
+                boxShadow: "inset 0 0 0 1px rgba(63, 63, 70, 1)",
+              }}
+            >
+              <ArrowUp size={25} strokeWidth={2} />
+            </div>
+          </div>
+        </div>
+
+        <div
+          style={{
+            height: 70,
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "space-between",
+            padding: "0 22px 0 10px",
+            color: "#a1a1aa",
+            fontSize: 20,
+            fontWeight: 500,
+          }}
+        >
+          <div style={{ display: "flex", alignItems: "center", gap: 5, padding: 4, borderRadius: 25 }}>
+            <div style={{ display: "flex", alignItems: "center", gap: 9, padding: "10px 15px" }}>
+              <MessageCircle size={22} strokeWidth={1.8} /> Chat
+            </div>
+            <div
+              style={{
+                display: "flex",
+                alignItems: "center",
+                gap: 9,
+                padding: "10px 15px",
+                borderRadius: 23,
+                color: "#4da0ff",
+                backgroundColor: "rgba(1, 120, 255, 0.16)",
+              }}
+            >
+              <Folder size={22} strokeWidth={1.8} /> Agent
+            </div>
+          </div>
+          <MoreHorizontal size={24} strokeWidth={1.8} />
+        </div>
       </div>
     </div>
   );
@@ -95,14 +233,14 @@ export const WorkflowMontageSequence: React.FC = () => {
   const frame = useCurrentFrame();
   const { intro, build2, swap3, build3, outro } = LAUNCH_VIDEO_TIMELINE.workflowMontage;
 
-  const wA = LAUNCH_WORKFLOWS[0]; // BTC Buy the Dip
-  const wB = LAUNCH_WORKFLOWS[1]; // Multi-LLM Consensus
+  const wA = MONTAGE_WORKFLOWS[0]; // Multi-LLM Consensus Trader
+  const wB = MONTAGE_WORKFLOWS[1]; // Mag 7 Stock Rotator
 
   const beatIn = progress(frame, intro.start, intro.duration, FAST_FADE_EASE);
   const beatOut = progress(frame, outro.start, outro.duration, OUTRO_EASE);
   const beatOpacity = beatIn * (1 - beatOut);
 
-  // Canvas A (BTC) is on screen until the swap, then cross-fades to canvas B.
+  // Canvas A is on screen until the swap, then cross-fades to canvas B.
   const swapP = progress(frame, swap3.start, swap3.duration, FAST_FADE_EASE);
   const canvasAOpacity = 1 - swapP;
   const canvasBOpacity = swapP;
@@ -110,8 +248,8 @@ export const WorkflowMontageSequence: React.FC = () => {
   const revealA = buildReveal(wA.template, frame, build2.start, build2.duration);
   const revealB = buildReveal(wB.template, frame, build3.start, build3.duration);
 
-  // Each workflow opens zoomed on its first 2 nodes during its build window,
-  // then pulls the camera back to the whole graph before the swap / beat end.
+  // Each workflow opens framed on its first 2 nodes (fully in view) during its
+  // build window, then pulls the camera back to the whole graph.
   const cameraA = zoomIntroCamera({
     template: wA.template,
     vw: VW,
@@ -137,10 +275,27 @@ export const WorkflowMontageSequence: React.FC = () => {
     zoomOutDur: 28,
   });
 
-  // Prompt swap: old text lifts out over the first half of the swap, new text
-  // drops in over the second half.
+  // Prompt + title swap: old text lifts out over the first half of the swap, new
+  // text drops in over the second half.
   const promptOut = progress(frame, swap3.start, swap3.duration * 0.5, FAST_FADE_EASE);
   const promptIn = progress(frame, swap3.start + swap3.duration * 0.5, swap3.duration * 0.5, POP_EASE);
+
+  // Steady caret blink, like the live composer.
+  const caretVisible = Math.floor(frame / 8) % 2 === 0;
+  const Caret = (
+    <span
+      aria-hidden
+      style={{
+        display: "inline-block",
+        width: 2,
+        height: 26,
+        marginLeft: 3,
+        verticalAlign: -4,
+        backgroundColor: BLUE,
+        opacity: caretVisible ? 1 : 0,
+      }}
+    />
+  );
 
   const canvasLeft = (1920 - VW) / 2;
 
@@ -148,6 +303,28 @@ export const WorkflowMontageSequence: React.FC = () => {
     <AbsoluteFill style={{ backgroundColor: BG, fontFamily: SANS, opacity: beatOpacity }}>
       <Background />
       <Logo />
+
+      {/* Workflow name (clean, no parentheticals), swapping with the build. */}
+      <Swap
+        a={wfName(wA)}
+        b={wfName(wB)}
+        outP={promptOut}
+        inP={promptIn}
+        center
+        style={{
+          position: "absolute",
+          left: 0,
+          right: 0,
+          top: 66,
+          height: 44,
+          textAlign: "center",
+          color: "#fff",
+          fontFamily: SANS,
+          fontSize: 34,
+          fontWeight: 600,
+          letterSpacing: "-0.02em",
+        }}
+      />
 
       {/* Workflow canvas: both graphs stacked, cross-fading on the swap. */}
       <div style={{ position: "absolute", left: canvasLeft, top: WF_TOP, width: VW, height: VH }}>
@@ -159,37 +336,16 @@ export const WorkflowMontageSequence: React.FC = () => {
         </div>
       </div>
 
-      {/* Composer with the current prompt (swaps mid-beat). */}
-      <Composer
-        cx={960}
-        cy={1010}
+      {/* Composer (same chat box as the video's opening), prompt swaps mid-beat. */}
+      <ChatBox
         prompt={
-          <>
-            <span
-              style={{
-                position: "absolute",
-                left: 0,
-                top: 2,
-                whiteSpace: "nowrap",
-                opacity: 1 - promptOut,
-                transform: `translateY(${-promptOut * 12}px)`,
-              }}
-            >
-              {wA.prompt}
-            </span>
-            <span
-              style={{
-                position: "absolute",
-                left: 0,
-                top: 2,
-                whiteSpace: "nowrap",
-                opacity: promptIn,
-                transform: `translateY(${(1 - promptIn) * 12}px)`,
-              }}
-            >
-              {wB.prompt}
-            </span>
-          </>
+          <Swap
+            a={<>{wA.prompt}{Caret}</>}
+            b={<>{wB.prompt}{Caret}</>}
+            outP={promptOut}
+            inP={promptIn}
+            style={{ display: "block", height: 40 }}
+          />
         }
       />
     </AbsoluteFill>
