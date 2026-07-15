@@ -12,7 +12,7 @@ import { ArrowRight, Check } from "lucide-react";
 import { ProductScreen, ZoomInto } from "../nick-launch-video/screens";
 import { TradeConfirmationCardView } from "../chat-cards/trade-confirmation-card-view";
 import { SAMPLE_TRADE_AAPL } from "../chat-cards/props";
-import { LAUNCH_VIDEO_TIMELINE } from "./timeline";
+import { FINALE_GRID, LAUNCH_VIDEO_TIMELINE } from "./timeline";
 import { FAST_FADE_EASE, POP_EASE, progress } from "./motion";
 
 const CAM_EASE = Easing.inOut(Easing.cubic);
@@ -42,9 +42,15 @@ export const ExecutionSequence: React.FC = () => {
   const oy = interpolate(frame, camFrames, [50, 50, 50, 60, 60, 50, 50], camOpts);
   const scale = interpolate(frame, camFrames, [1, 1, 1, 1.5, 1.5, 1, 1], camOpts);
 
-  // Run state: begins on the click, completes at the finish slot.
+  // Run state: begins on the click, completes at the finish slot. runProgress
+  // drives the green wave gradually across that window (~2 nodes lit at a time,
+  // propagating in topo order) instead of the graph flipping green at once.
   const running = frame >= click.start + 4 && frame < finish.start;
   const completed = frame >= finish.start;
+  const runProgress = interpolate(frame, [click.start + 4, finish.start], [0, 1], {
+    extrapolateLeft: "clamp",
+    extrapolateRight: "clamp",
+  });
   const logsShown = frame >= logsOpen.start;
 
   const logsReveal = progress(frame, logsOpen.start, logsOpen.duration, FAST_FADE_EASE);
@@ -97,6 +103,7 @@ export const ExecutionSequence: React.FC = () => {
       <ZoomInto ox={`${ox}%`} oy={`${oy}%`} scale={scale}>
         <ProductScreen
           running={running}
+          runProgress={runProgress}
           completed={completed}
           logs={logsShown}
           logsReveal={logsReveal}
@@ -111,7 +118,9 @@ export const ExecutionSequence: React.FC = () => {
         style={{
           position: "absolute",
           inset: 0,
-          backgroundColor: "#04070d",
+          // Neutral near-black (was #04070d, a dark-blue tint that read as the
+          // background going blue before returning to black at s32-33).
+          backgroundColor: "#09090b",
           opacity: scrim,
           pointerEvents: "none",
         }}
@@ -169,13 +178,14 @@ export const ExecutionSequence: React.FC = () => {
         />
       </svg>
 
-      {/* "Workflow executed successfully" banner — sits just above the card. */}
+      {/* "Workflow executed successfully" banner — sits just above the card,
+          RIGHT-aligned to the card's right edge (card right = cxAapl + wAapl/2). */}
       <div
         style={{
           position: "absolute",
-          top: 340,
-          left: "50%",
-          transform: `translate(-50%, ${(1 - bannerP) * -20}px)`,
+          top: 258,
+          left: FINALE_GRID.cxAapl + FINALE_GRID.wAapl / 2,
+          transform: `translate(-100%, ${(1 - bannerP) * -20}px)`,
           display: "flex",
           alignItems: "center",
           gap: 14,
@@ -208,19 +218,22 @@ export const ExecutionSequence: React.FC = () => {
         </span>
       </div>
 
-      {/* AAPL trade-fill confirmation card, centered. Persists into the finale. */}
+      {/* AAPL trade-fill confirmation card. Placed at its EXACT final-grid slot
+          (position + size from FINALE_GRID) so the execution → finale hand-off
+          has no move: the finale opens on it already sitting here. */}
       <div
         style={{
           position: "absolute",
-          top: "50%",
-          left: "50%",
-          width: 560,
-          transform: `translate(-50%, calc(-50% + 30px)) translateY(${(1 - cardIn) * 26}px) scale(${0.96 + cardIn * 0.04})`,
+          left: FINALE_GRID.cxAapl,
+          top: FINALE_GRID.midCy,
+          width: FINALE_GRID.wAapl,
+          height: FINALE_GRID.midH,
+          transform: `translate(-50%, calc(-50% + ${(1 - cardIn) * 26}px)) scale(${0.96 + cardIn * 0.04})`,
           opacity: cardIn,
           filter: cardIn >= 1 ? undefined : `blur(${(1 - cardIn) * 6}px)`,
         }}
       >
-        <TradeConfirmationCardView data={SAMPLE_TRADE_AAPL} width={560} anim={cardIn} />
+        <TradeConfirmationCardView data={SAMPLE_TRADE_AAPL} width={FINALE_GRID.wAapl} anim={cardIn} />
       </div>
     </>
   );

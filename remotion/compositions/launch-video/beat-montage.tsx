@@ -106,7 +106,7 @@ function Swap({
  * and the Chat / Agent tab strip. Sizing/colors match ChatComposerSequence; only
  * the prompt area height is trimmed to a single line for this in-flow use.
  */
-function ChatBox({
+export function ChatBox({
   prompt,
   sendPress = 0,
   ripple = 0,
@@ -382,8 +382,21 @@ export const WorkflowMontageSequence: React.FC = () => {
         }}
       />
 
-      {/* Workflow canvas: both graphs stacked, cross-fading on the swap. */}
-      <div style={{ position: "absolute", left: canvasLeft, top: WF_TOP, width: VW, height: VH }}>
+      {/* Workflow canvas: both graphs stacked, cross-fading on the swap. Same
+          dotted grid as the s17 build beat sits behind them, so the "grid behind
+          the workflow" carries through every build until the product UX (s24). */}
+      <div
+        style={{
+          position: "absolute",
+          left: canvasLeft,
+          top: WF_TOP,
+          width: VW,
+          height: VH,
+          backgroundImage:
+            "radial-gradient(circle, rgba(255, 255, 255, 0.065) 2px, transparent 2px)",
+          backgroundSize: "48px 48px",
+        }}
+      >
         <div style={{ position: "absolute", inset: 0, opacity: canvasAOpacity }}>
           <WorkflowGraph template={wA.template} vw={VW} vh={VH} cw={CANVAS_W} ch={CANVAS_H} camera={cameraA} nodeReveal={revealA.nodeReveal} edgeReveal={revealA.edgeReveal} />
         </div>

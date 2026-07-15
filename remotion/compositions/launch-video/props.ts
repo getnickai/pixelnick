@@ -26,7 +26,8 @@ export const launchVideoDefaultProps: LaunchVideoProps = {
   headline: "Introducing Nick",
   productHeadline: "Nick trades",
   productHeadlineAccent: "anything",
-  productSubline: "Crypto, stocks, prediction markets. One agent.",
+  productSubline:
+    "One Agent. Crypto, stocks, prediction markets, commodities, perps, indexes.",
   chatPrompt: "Pull NVDA, price and the daily chart",
   workflowPrompt:
     "Create a workflow to buy $50 of shares every 12 hours when NVDA is below $200. Use my paper trading wallet",

@@ -8,6 +8,42 @@ export const LAUNCH_VIDEO_WIDTH = 1920;
 export const LAUNCH_VIDEO_HEIGHT = 1200;
 export const LAUNCH_VIDEO_FPS = 30;
 
+// ── Finale grid layout ───────────────────────────────────────────────────────
+// Shared so the execution beat can pre-place the AAPL confirmation at its EXACT
+// final resting slot (so there is no move at the execution → finale hand-off).
+// The middle row of three widgets shares one height; each width follows its card
+// aspect; the four-workflow rows above/below span the same width + edges.
+const FG_MID_H = 360;
+const FG_MID_GAP = 48;
+const FG_ASPECT = { portfolio: 1.15, trade: 1.74, price: 1.271 };
+const FG_WP = Math.round(FG_MID_H * FG_ASPECT.portfolio); // 414
+const FG_WA = Math.round(FG_MID_H * FG_ASPECT.trade); // 626
+const FG_WS = Math.round(FG_MID_H * FG_ASPECT.price); // 458
+const FG_ROW_W = FG_WP + FG_WA + FG_WS + FG_MID_GAP * 2; // 1594
+const FG_LEFT = Math.round((1920 - FG_ROW_W) / 2); // 163
+const FG_WF_GAP = 22;
+export const FINALE_GRID = {
+  midH: FG_MID_H,
+  midGap: FG_MID_GAP,
+  // Whole arrangement sits low enough that the top-left NickAI lockup never
+  // overlaps the first workflow card (free space at the bottom absorbs it).
+  midCy: 540,
+  wPortfolio: FG_WP,
+  wAapl: FG_WA,
+  wSpacex: FG_WS,
+  rowW: FG_ROW_W,
+  left: FG_LEFT,
+  cxPortfolio: FG_LEFT + FG_WP / 2,
+  cxAapl: FG_LEFT + FG_WP + FG_MID_GAP + FG_WA / 2,
+  cxSpacex: FG_LEFT + FG_WP + FG_MID_GAP + FG_WA + FG_MID_GAP + FG_WS / 2,
+  wfGap: FG_WF_GAP,
+  wfW: (FG_ROW_W - FG_WF_GAP * 3) / 4, // 382
+  wfH: 214,
+  topY: 116,
+  botY: 750,
+  bandTop: 1008,
+} as const;
+
 export const LAUNCH_VIDEO_TIMELINE = {
   opening: {
     // Half of one continuous reflow: "Introducing Nick" lands centered, then
@@ -229,13 +265,14 @@ export const LAUNCH_VIDEO_TIMELINE = {
     // workflows finalize fast: swap the composer prompt, the new graph pops in
     // already-built (no slow node-by-node build), twice.
     from: 576,
-    durationInFrames: 156,
+    // +30f (1s) of extra hold so each fully-built workflow lingers on screen.
+    durationInFrames: 186,
     intro: { start: 0, duration: 10 },
     swap2: { start: 6, duration: 12 }, // prompt swaps to workflow #2
     build2: { start: 20, duration: 22 }, // workflow #2 finalizes (fast pop)
-    swap3: { start: 74, duration: 12 }, // prompt swaps to workflow #3
-    build3: { start: 88, duration: 22 }, // workflow #3 finalizes
-    outro: { start: 146, duration: 10 },
+    swap3: { start: 89, duration: 12 }, // prompt swaps to workflow #3 (+15 hold on A)
+    build3: { start: 103, duration: 22 }, // workflow #3 finalizes
+    outro: { start: 176, duration: 10 }, // +15 hold on B before handoff
   },
   // Deprecated: the standalone three-workflow grid beat has been folded into the
   // finale (executeFinale now opens on a four-workflow grid). This slot is no
@@ -254,16 +291,19 @@ export const LAUNCH_VIDEO_TIMELINE = {
     // chat rail wipes in from the left and the widget cards stream into the
     // thread (SpaceX + NVDA price cards, then the portfolio card). Trimmed hold:
     // the UX settles then hands straight to the execution zoom (no long linger).
-    from: 725,
-    durationInFrames: 96,
+    // Shifted +30 (montage got longer). Ends exactly on execution.from (869) —
+    // NO overlap (that overlap was the residual s24 blink). The dock is also
+    // slowed by ~1s (see beat-product-shell) so the workflow slide reads clearly.
+    from: 755,
+    durationInFrames: 114,
     // Workflow-first: the docked workflow canvas settles in immediately (it is
     // the montage graph arriving at its final position), THEN the product UX
     // wipes in around it (chat rail + panel), then the thread + cards stream.
     canvas: { start: 0, duration: 10 }, // workflow settles in the right pane first
-    shell: { start: 8, duration: 16 }, // chat rail + panel wipe in around it
-    intro: { start: 22, duration: 10 }, // assistant line
-    cards: { start: 30, stagger: 12, duration: 14 }, // spacex, nvda, portfolio
-    outro: { start: 86, duration: 10 },
+    shell: { start: 40, duration: 16 }, // chat rail + panel wipe in (after the slow dock)
+    intro: { start: 58, duration: 10 }, // assistant line
+    cards: { start: 68, stagger: 12, duration: 14 }, // spacex, nvda, portfolio
+    outro: { start: 104, duration: 10 },
   },
   execution: {
     // The full product UX is visible, then a big blue "Execute" button appears
@@ -272,7 +312,7 @@ export const LAUNCH_VIDEO_TIMELINE = {
     // completes → the camera pulls back and a "Workflow executed successfully"
     // banner + an AAPL trade-fill confirmation card animate in → the product UX
     // fades to dark around the trade card, handing off to the finale grid.
-    from: 809,
+    from: 869,
     durationInFrames: 196,
     button: { start: 6, duration: 14 }, // blue Execute button fades in, centered
     cursor: { start: 22, duration: 16 }, // pointer moves to the button
@@ -290,8 +330,10 @@ export const LAUNCH_VIDEO_TIMELINE = {
     // price/portfolio widgets flank it, and the supported-venue logos band sits
     // beneath. The wall then softens + fades, a two-line strategy statement
     // resolves, and finally the NickAI lockup + CTA.
-    from: 997,
-    durationInFrames: 344,
+    // Shifted +60 (montage +30, dock +30). Extended +78 for the "Backed by
+    // Galaxy" credit that now plays between the lockup and the CTA.
+    from: 1057,
+    durationInFrames: 437,
     grid: {
       // The workflows + widgets stagger in around the centered AAPL card.
       start: 20,
@@ -299,31 +341,42 @@ export const LAUNCH_VIDEO_TIMELINE = {
       duration: 14,
     },
     soften: {
-      // The settled wall dims + desaturates before fading out.
-      start: 92,
-      duration: 16,
+      // The settled full wall HOLDS (+0.5s), then fades out in ONE smooth eased
+      // ramp (30f) — dim + desaturate + fade together, no two-stage hitch.
+      start: 107,
+      duration: 30,
     },
     statement: {
-      // Two-line strategy line: "Describe any strategy you want, / Nick builds,
-      // tests and runs it for you."
-      start: 130,
-      duration: 18,
+      // Two lines resolve one AFTER the other: line 1 ("Describe any strategy
+      // you want") first, then line 2 ("Nick builds, tests and runs it for you").
+      start: 145,
+      duration: 16,
+      line2Start: 171,
+      line2Duration: 16,
     },
     logo: {
-      start: 218,
+      start: 233,
       duration: 26,
     },
+    galaxy: {
+      // "Backed by Galaxy" credit: fades in after the lockup resolves, holds,
+      // then retires as the CTA fades in.
+      start: 267,
+      duration: 18,
+      out: 331,
+      outDuration: 14,
+    },
     cta: {
-      start: 250,
+      start: 351,
       stagger: 2,
       duration: 14,
     },
     url: {
-      start: 262,
+      start: 363,
       duration: 12,
     },
     outro: {
-      start: 332,
+      start: 425,
       duration: 12,
     },
   },

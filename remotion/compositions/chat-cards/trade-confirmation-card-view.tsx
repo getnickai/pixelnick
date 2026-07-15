@@ -79,7 +79,7 @@ export function TradeConfirmationCardView({
   const sideColor = data.side === "Buy" ? TOKENS.success : TOKENS.error;
 
   return (
-    <CardShell k={k} width={width} style={{ height: "100%" }}>
+    <CardShell k={k} width={width} style={{ height: "100%", justifyContent: "space-between" }}>
       {/* Header: check + symbol + filled pill */}
       <div style={{ display: "flex", alignItems: "center", gap: 12 * k }}>
         <CheckBadge k={k} draw={a} />

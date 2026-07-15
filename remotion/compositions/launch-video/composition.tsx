@@ -37,7 +37,7 @@ import {
   useVideoConfig,
 } from "remotion";
 import type { LaunchVideoProps } from "./props";
-import { LAUNCH_VIDEO_TIMELINE, LAUNCH_VIDEO_DURATION } from "./timeline";
+import { FINALE_GRID, LAUNCH_VIDEO_TIMELINE, LAUNCH_VIDEO_DURATION } from "./timeline";
 import { WorkflowMontageSequence } from "./beat-montage";
 import { ProductShellSequence } from "./beat-product-shell";
 import { ExecutionSequence } from "./beat-execution";
@@ -1885,31 +1885,42 @@ const ExecuteFinaleSequence: React.FC<LaunchVideoProps> = ({
 }) => {
   const frame = useCurrentFrame();
   const { fps } = useVideoConfig();
-  const { grid, soften, statement, logo, cta, url, outro } =
+  const { grid, soften, statement, logo, galaxy, cta, url, outro } =
     LAUNCH_VIDEO_TIMELINE.executeFinale;
 
-  // Layout: the AAPL confirmation stays CENTERED (handed off from the execution
-  // beat). Workflows sit in a row above and a row below it; the other product
-  // widgets flank it left and right. The supported-venue logos band sits at the
-  // bottom. Everything then softens + fades and the NickAI lockup + CTA resolve.
-  const WF_W = 400;
-  const WF_H = 155;
-  const WF_GAP = 22;
-  const WF_TOTAL = WF_W * 4 + WF_GAP * 3;
-  const WF_START_X = (1920 - WF_TOTAL) / 2;
+  // Layout comes from the shared FINALE_GRID (also used by the execution beat to
+  // pre-place the AAPL card). Middle row of three widgets shares one height; the
+  // four-workflow rows above/below span the same width + edges; the whole
+  // arrangement sits low enough that the top-left lockup never overlaps card #1.
+  const {
+    midH: MID_H,
+    midCy: MID_CY,
+    wPortfolio,
+    wAapl,
+    wSpacex,
+    left: MID_LEFT,
+    cxPortfolio,
+    cxAapl,
+    cxSpacex,
+    wfGap: WF_GAP,
+    wfW: WF_W,
+    wfH: WF_H,
+    topY: TOP_Y,
+    botY: BOT_Y,
+    bandTop: BAND_TOP,
+  } = FINALE_GRID;
+  const WF_START_X = MID_LEFT;
   const wfX = (i: number) => WF_START_X + i * (WF_W + WF_GAP);
-  const WF_GRAPH_H = WF_H - 52;
-  const TOP_Y = 84;
-  const BOT_Y = 760;
-
-  // AAPL card: eases from the execution hand-off (centered, w560) up to its
-  // resting spot as the arrangement assembles around it.
-  const set = progress(frame, 2, 16, Easing.inOut(Easing.cubic));
-  const aaplCY = interpolate(set, [0, 1], [630, 500]);
-  const aaplW = interpolate(set, [0, 1], [560, 430]);
-
+  const WF_GRAPH_H = WF_H - 44;
   const widgetAspect = (kind: string) =>
     kind === "price" ? 1.271 : kind === "portfolio" ? 1.15 : 1.74;
+
+  // AAPL is handed off from the execution beat ALREADY resting at this exact
+  // slot, so it is static here (no move at the seam).
+  const aaplCX = cxAapl;
+  const aaplCY = MID_CY;
+  const aaplW = wAapl;
+  const aaplH = MID_H;
 
   // Satellites (staggered in around the centered AAPL card).
   type Sat =
@@ -1921,20 +1932,27 @@ const ExecuteFinaleSequence: React.FC<LaunchVideoProps> = ({
   const SATELLITES: Sat[] = [
     ...GRID_WORKFLOWS.map((w, i) => ({ kind: "wf" as const, w, x: wfX(i), y: TOP_Y })),
     ...GRID_WORKFLOWS_2.map((w, i) => ({ kind: "wf" as const, w, x: wfX(i), y: BOT_Y })),
-    { kind: "portfolio", data: SAMPLE_PORTFOLIO, cx: 380, cy: 500, w: 430 },
-    { kind: "price", data: SAMPLE_PRICE_SPACEX, cx: 1540, cy: 500, w: 430 },
+    { kind: "portfolio", data: SAMPLE_PORTFOLIO, cx: cxPortfolio, cy: MID_CY, w: wPortfolio },
+    { kind: "price", data: SAMPLE_PRICE_SPACEX, cx: cxSpacex, cy: MID_CY, w: wSpacex },
   ];
 
   const bandIn = progress(frame, grid.start + 40, 16, FAST_FADE_EASE);
-  // The wall softens, then fades; a two-line strategy statement resolves; then
-  // the NickAI lockup + CTA.
-  const softenP = progress(frame, soften.start, soften.duration, FAST_FADE_EASE);
-  const arrangementFade = progress(frame, soften.start + soften.duration, 14, FAST_FADE_EASE);
+  // One smooth eased ramp fades the whole wall out (dim + desaturate + fade
+  // together). A single in-out curve avoids the two-stage slope change that read
+  // as a "block"/hitch in the fade-out.
+  const wallFade = progress(frame, soften.start, soften.duration, Easing.inOut(Easing.cubic));
 
-  // "Describe any strategy you want, / Nick builds, tests and runs it for you."
+  // Two lines resolve one after the other: line 1 first, then line 2.
   const statementIn = progress(frame, statement.start, statement.duration, POP_EASE);
+  const statementLine2In = progress(
+    frame,
+    statement.line2Start,
+    statement.line2Duration,
+    POP_EASE,
+  );
   const statementOut = progress(frame, logo.start - 24, 14, FAST_FADE_EASE);
-  const statementOpacity = statementIn * (1 - statementOut);
+  const line1Opacity = statementIn * (1 - statementOut);
+  const line2Opacity = statementLine2In * (1 - statementOut);
 
   const logoReveal = progress(frame, logo.start, logo.duration, Easing.out(Easing.cubic));
   const logoSpring = spring({
@@ -1943,6 +1961,11 @@ const ExecuteFinaleSequence: React.FC<LaunchVideoProps> = ({
     durationInFrames: logo.duration,
     config: { damping: 24, stiffness: 130, mass: 0.9 },
   });
+  // "Backed by Galaxy" credit: fades in after the lockup, holds, then retires as
+  // the CTA fades in.
+  const galaxyIn = progress(frame, galaxy.start, galaxy.duration, POP_EASE);
+  const galaxyOut = progress(frame, galaxy.out, galaxy.outDuration, FAST_FADE_EASE);
+  const galaxyOpacity = galaxyIn * (1 - galaxyOut);
   const urlIn = progress(frame, url.start, url.duration, POP_EASE);
   const exit = progress(frame, outro.start, outro.duration, OUTRO_EASE);
   const logoWords = ctaHeadline.split(" ");
@@ -1964,8 +1987,8 @@ const ExecuteFinaleSequence: React.FC<LaunchVideoProps> = ({
         style={{
           position: "absolute",
           inset: 0,
-          opacity: (1 - arrangementFade) * (1 - softenP * 0.45),
-          filter: `saturate(${1 - softenP * 0.4}) brightness(${1 - softenP * 0.18})`,
+          opacity: 1 - wallFade,
+          filter: `saturate(${1 - wallFade * 0.4}) brightness(${1 - wallFade * 0.18})`,
         }}
       >
         {SATELLITES.map((s, index) => {
@@ -2053,9 +2076,10 @@ const ExecuteFinaleSequence: React.FC<LaunchVideoProps> = ({
         <div
           style={{
             position: "absolute",
-            left: 960,
+            left: aaplCX,
             top: aaplCY,
             width: aaplW,
+            height: aaplH,
             transform: "translate(-50%, -50%)",
             zIndex: 4,
           }}
@@ -2069,25 +2093,25 @@ const ExecuteFinaleSequence: React.FC<LaunchVideoProps> = ({
             position: "absolute",
             left: 0,
             right: 0,
-            top: 968,
+            top: BAND_TOP,
             display: "flex",
             justifyContent: "center",
             opacity: bandIn,
             transform: `translateY(${(1 - bandIn) * 16}px)`,
           }}
         >
-          <VenuesBand caption="Nick trades on the venues you already use" logoHeight={38} gap={46} />
+          <VenuesBand caption="Connect Nick to your preferred venue" logoHeight={38} gap={46} />
         </div>
       </div>
 
-      {/* Two-line strategy statement, between the wall and the lockup. */}
+      {/* Two-line strategy statement: line 1 resolves first, then line 2. */}
       <div
         style={{
           position: "absolute",
           left: 120,
           right: 120,
           top: "50%",
-          transform: `translateY(calc(-50% + ${(1 - statementIn) * 26}px))`,
+          transform: "translateY(-50%)",
           textAlign: "center",
           color: "#fafafa",
           fontFamily: DUPLET,
@@ -2095,13 +2119,26 @@ const ExecuteFinaleSequence: React.FC<LaunchVideoProps> = ({
           fontWeight: 500,
           lineHeight: 1.28,
           letterSpacing: 0.3,
-          opacity: statementOpacity,
-          filter: statementIn >= 1 ? undefined : `blur(${(1 - statementIn) * 5}px)`,
         }}
       >
-        Describe any strategy you want,
-        <br />
-        Nick builds, tests and runs it for you
+        <div
+          style={{
+            opacity: line1Opacity,
+            filter: statementIn >= 1 ? undefined : `blur(${(1 - statementIn) * 5}px)`,
+            transform: `translateY(${(1 - statementIn) * 26}px)`,
+          }}
+        >
+          Describe any strategy you want
+        </div>
+        <div
+          style={{
+            opacity: line2Opacity,
+            filter: statementLine2In >= 1 ? undefined : `blur(${(1 - statementLine2In) * 5}px)`,
+            transform: `translateY(${(1 - statementLine2In) * 26}px)`,
+          }}
+        >
+          Nick builds, tests and runs it for you
+        </div>
       </div>
 
       {/* Energy-core glow behind the resolving lockup. */}
@@ -2136,6 +2173,49 @@ const ExecuteFinaleSequence: React.FC<LaunchVideoProps> = ({
         }}
       >
         <Img src={staticFile("figma/logo.svg")} style={{ width: "100%", height: "100%" }} />
+      </div>
+
+      {/* "Backed by Galaxy" credit — plays after the lockup, before the CTA. */}
+      <div
+        style={{
+          position: "absolute",
+          left: 0,
+          right: 0,
+          top: "64%",
+          display: "flex",
+          alignItems: "center",
+          justifyContent: "center",
+          gap: 20,
+          opacity: galaxyOpacity,
+          transform: `translateY(${(1 - galaxyIn) * 16}px)`,
+        }}
+      >
+        <span
+          style={{
+            fontFamily: MANROPE,
+            fontSize: 40,
+            fontWeight: 500,
+            color: "rgba(255, 255, 255, 0.6)",
+            letterSpacing: 0.3,
+          }}
+        >
+          Backed by
+        </span>
+        <Img
+          src={staticFile("brand/galaxy.svg")}
+          style={{ height: 46, width: "auto", filter: "invert(1)" }}
+        />
+        <span
+          style={{
+            fontFamily: MANROPE,
+            fontSize: 44,
+            fontWeight: 600,
+            color: "#ffffff",
+            letterSpacing: 0.2,
+          }}
+        >
+          Galaxy
+        </span>
       </div>
 
       <div

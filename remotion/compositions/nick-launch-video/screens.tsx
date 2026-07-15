@@ -339,6 +339,7 @@ function ExecutionLogs({
 
 export function ProductScreen({
   running = false,
+  runProgress = 0,
   completed = false,
   logs = false,
   chatReveal = 1,
@@ -352,6 +353,9 @@ export function ProductScreen({
   logCount,
 }: {
   running?: boolean;
+  /** Run progress 0..1 while running: drives how far the green wave has
+   * propagated through the graph (topo order), ~2 nodes lit at the frontier. */
+  runProgress?: number;
   /** Run finished: all nodes green, the pills flip to "Completed". */
   completed?: boolean;
   logs?: boolean;
@@ -416,12 +420,16 @@ export function ProductScreen({
       statusById![n.id] = "completed";
     });
   } else if (running) {
+    // The green wave propagates in topo order over runProgress (0..1): nodes
+    // behind the frontier are completed (green), the next ~2 are still running
+    // (blue), so roughly two nodes light up at a time and cascade downstream
+    // rather than the whole graph flipping green at once.
     const order = topoOrder(w.template.nodes, w.template.edges);
-    const doneCut = Math.floor(order.length * 0.6);
+    const doneCount = Math.floor(order.length * Math.max(0, Math.min(1, runProgress)));
     statusById = {};
     order.forEach((id, i) => {
-      if (i < doneCut) statusById![id] = "completed";
-      else if (i < doneCut + 3) statusById![id] = "running";
+      if (i < doneCount) statusById![id] = "completed";
+      else if (i < doneCount + 2) statusById![id] = "running";
     });
   }
 
