@@ -40,13 +40,24 @@ export const MONTAGE_WORKFLOWS: LaunchWorkflow[] = [
   LAUNCH_WORKFLOWS[2], // Mag 7 Stock Rotator
 ];
 
-/** The four workflows shown side by side in the finale grid: the built hero
- *  (NVDA) plus the library trio. */
+/** Top row of the finale grid: the built hero (NVDA) plus the library trio.
+ *  The hero (index 0) is the workflow that enters big + centered, then flies to
+ *  its top-left slot while the rest of the grid populates around it. */
 export const GRID_WORKFLOWS: LaunchWorkflow[] = [
   { template: NVDA_HERO_TEMPLATE, prompt: NVDA_HERO_TEMPLATE.prompt, name: "NVDA · Buy below $200" },
   LAUNCH_WORKFLOWS[0], // BTC Buy the Dip
   LAUNCH_WORKFLOWS[1], // Multi-LLM Consensus Trader
   LAUNCH_WORKFLOWS[2], // Mag 7 Stock Rotator
+];
+
+/** Second row of the finale grid: four MORE workflows across other domains, to
+ *  show the breadth ("Nick trades anything"). Distinct graph shapes, clean
+ *  domain names: two prediction-market, one copy-trading, one news. */
+export const GRID_WORKFLOWS_2: LaunchWorkflow[] = [
+  { template: TEMPLATES["polymarket-signal-scanner"], prompt: "", name: "Polymarket Election Edge" },
+  { template: TEMPLATES["top-movers-scanner-paper-trading"], prompt: "", name: "Kalshi Event Trader" },
+  { template: TEMPLATES["btc-momentum-consensus"], prompt: "", name: "Copy the Whales" },
+  { template: TEMPLATES["equity-news-catalyst-monitor"], prompt: "", name: "News Catalyst Alerts" },
 ];
 
 /** Intro copy. */

@@ -54,12 +54,15 @@ import {
 import {
   ChatPriceCardComposition,
   ChatPortfolioCardComposition,
+  ChatTradeCardComposition,
 } from "./compositions/chat-cards/composition";
 import {
   chatPriceCardDefaultProps,
   chatPortfolioCardDefaultProps,
+  chatTradeCardDefaultProps,
   type ChatPriceCardProps,
   type ChatPortfolioCardProps,
+  type ChatTradeCardProps,
 } from "./compositions/chat-cards/props";
 import { NickaiSocialCardComposition } from "./compositions/nickai-social-card/composition";
 import {
@@ -162,6 +165,10 @@ const componentBindings: Record<string, ComponentBinding> = {
     component: ChatPortfolioCardComposition,
     defaultProps: chatPortfolioCardDefaultProps,
   } as ComponentBinding<ChatPortfolioCardProps> as ComponentBinding,
+  "chat-trade-card": {
+    component: ChatTradeCardComposition,
+    defaultProps: chatTradeCardDefaultProps,
+  } as ComponentBinding<ChatTradeCardProps> as ComponentBinding,
   "nickai-social-card": {
     component: NickaiSocialCardComposition,
     defaultProps: nickaiSocialCardDefaultProps,

@@ -23,13 +23,17 @@ import { loadFont } from "@remotion/google-fonts/Manrope";
 import { TOKENS } from "./card-primitives";
 import { PriceCardView } from "./price-card-view";
 import { PortfolioCardView } from "./portfolio-card-view";
+import { TradeConfirmationCardView } from "./trade-confirmation-card-view";
 import {
   chatPortfolioCardDefaultProps,
   chatPriceCardDefaultProps,
+  chatTradeCardDefaultProps,
   type ChatPortfolioCardProps,
   type ChatPriceCardProps,
+  type ChatTradeCardProps,
   SAMPLE_PORTFOLIO,
   SAMPLE_PRICE_NVDA,
+  SAMPLE_TRADE_AAPL,
 } from "./props";
 
 const { fontFamily, waitUntilDone } = loadFont("normal", {
@@ -103,4 +107,17 @@ export const ChatPortfolioCardComposition: React.FC<ChatPortfolioCardProps> = ({
   );
 };
 
-export { chatPriceCardDefaultProps, chatPortfolioCardDefaultProps };
+export const ChatTradeCardComposition: React.FC<ChatTradeCardProps> = ({
+  data = SAMPLE_TRADE_AAPL,
+}) => {
+  useCardFonts();
+  const anim = useAnim();
+  const { width } = useVideoConfig();
+  return (
+    <Stage>
+      <TradeConfirmationCardView data={data} width={width - MARGIN * 2} anim={anim} />
+    </Stage>
+  );
+};
+
+export { chatPriceCardDefaultProps, chatPortfolioCardDefaultProps, chatTradeCardDefaultProps };

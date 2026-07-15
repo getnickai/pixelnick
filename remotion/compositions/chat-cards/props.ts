@@ -50,6 +50,23 @@ export type PortfolioCardData = {
   positions: PortfolioPosition[];
 };
 
+export type TradeConfirmationCardData = {
+  symbol: string;
+  /** Company / instrument name under the symbol. */
+  name: string;
+  side: "Buy" | "Sell";
+  /** e.g. "Filled". */
+  status: string;
+  shares: number;
+  /** Average fill price per share. */
+  avgPrice: number;
+  /** Order total (shares × avgPrice). */
+  total: number;
+  account: string;
+  /** Filled-at display string. */
+  filledAt: string;
+};
+
 // ── Seeded generators (deterministic) ─────────────────────────────────────────
 // A tiny sine-based pseudo-random walk. Same seed → same series every render,
 // so a still is byte-stable and the launch video can reuse it. No RNG, no clock.
@@ -161,10 +178,25 @@ export const SAMPLE_PORTFOLIO: PortfolioCardData = {
   ],
 };
 
+// A filled Apple buy — the payoff of the executed workflow.
+export const SAMPLE_TRADE_AAPL: TradeConfirmationCardData = {
+  symbol: "AAPL",
+  name: "Apple Inc.",
+  side: "Buy",
+  status: "Filled",
+  shares: 27,
+  avgPrice: 232.15,
+  total: 6268.05,
+  account: "papernick2",
+  filledAt: "Jun 25, 2026, 7:42 PM",
+};
+
 // ── Composition props ─────────────────────────────────────────────────────────
 
 export type ChatPriceCardProps = { data?: PriceCardData };
 export type ChatPortfolioCardProps = { data?: PortfolioCardData };
+export type ChatTradeCardProps = { data?: TradeConfirmationCardData };
 
 export const chatPriceCardDefaultProps: ChatPriceCardProps = { data: SAMPLE_PRICE_NVDA };
 export const chatPortfolioCardDefaultProps: ChatPortfolioCardProps = { data: SAMPLE_PORTFOLIO };
+export const chatTradeCardDefaultProps: ChatTradeCardProps = { data: SAMPLE_TRADE_AAPL };

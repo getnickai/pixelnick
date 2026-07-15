@@ -180,6 +180,18 @@ export const motionManifest: MotionEntryMeta[] = [
     durationInFrames: 90,
   },
   {
+    // NickAI in-chat Trade-fill confirmation — the reusable "order filled" widget
+    // Nick renders when a workflow executes a trade (buy/sell · filled, shares,
+    // avg fill, order total). Card-native 2x canvas (880x520). ~1.5s check draw +
+    // total count-up, then a hold. 3s.
+    id: "chat-trade-card",
+    label: "Chat Trade Card",
+    width: 880,
+    height: 520,
+    fps: 30,
+    durationInFrames: 90,
+  },
+  {
     // NickAI social card (STA-473) — brand-dark frame for the weekly X
     // content calendar. ~2.4s staggered entrance (wave → header → headline →
     // subline → chips/module → footer) + hold. Stills render settled at any

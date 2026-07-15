@@ -43,7 +43,7 @@ import { ProductShellSequence } from "./beat-product-shell";
 import { ExecutionSequence } from "./beat-execution";
 import { WorkflowGraph, fitCamera } from "../nick-launch-video/graph";
 import { NVDA_HERO_TEMPLATE } from "../nick-launch-video/nvda-template";
-import { GRID_WORKFLOWS, wfName } from "../nick-launch-video/props";
+import { GRID_WORKFLOWS, GRID_WORKFLOWS_2, wfName } from "../nick-launch-video/props";
 import type { TemplateGraph } from "../workflow-template-card/props";
 import { PriceCardView } from "../chat-cards/price-card-view";
 import { SAMPLE_PRICE_NVDA } from "../chat-cards/props";
@@ -316,9 +316,13 @@ const IntroTitle: React.FC<{
   // looking like clipped letters mid-transition.
   const widthReveal = Math.min(1, expand * 2.4);
 
+  // Clip the horizontal reveal only. overflow:hidden clips BOTH axes, and with
+  // this tight lineHeight it sliced descenders (the "g" in Introducing/anything).
+  // clip-path insets left/right at the box edge (the reveal) but extends past the
+  // top/bottom so ascenders and descenders stay fully visible.
   const collapsibleClip = {
     display: "inline-block",
-    overflow: "hidden",
+    clipPath: "inset(-0.35em 0 -0.35em 0)",
     whiteSpace: "nowrap",
     verticalAlign: "baseline",
   } as const;
@@ -536,7 +540,7 @@ const ProductStatementSequence: React.FC<LaunchVideoProps> = ({
           fontFamily: MANROPE,
           fontSize: 43,
           fontWeight: 500,
-          lineHeight: 1.1,
+          lineHeight: 1.3,
           letterSpacing: -1.35,
           whiteSpace: "nowrap",
           opacity: 1 - sublineExit,
@@ -1822,17 +1826,35 @@ const ExecuteFinaleSequence: React.FC<LaunchVideoProps> = ({
 }) => {
   const frame = useCurrentFrame();
   const { fps } = useVideoConfig();
-  const { grid, button, cursor, click, logo, cta, url, outro } =
+  const { heroIn, heroFly, grid, soften, button, cursor, click, logo, cta, url, outro } =
     LAUNCH_VIDEO_TIMELINE.executeFinale;
 
-  // Grid geometry: four framed workflow cards across the top band.
-  const GRID_CARD_W = 420;
-  const GRID_CARD_H = 320;
-  const GRID_GAP = 24;
-  const GRID_TOP = 190;
-  const gridTotalW = GRID_CARD_W * 4 + GRID_GAP * 3;
+  // Grid geometry: eight framed workflow cards, 4 columns × 2 rows.
+  const GRID_CARD_W = 400;
+  const GRID_CARD_H = 300;
+  const GRID_GAP_X = 22;
+  const GRID_GAP_Y = 28;
+  const GRID_TOP = 150;
+  const gridTotalW = GRID_CARD_W * 4 + GRID_GAP_X * 3;
   const gridStartX = (1920 - gridTotalW) / 2;
-  const GRID_GRAPH_H = GRID_CARD_H - 74;
+  const GRID_GRAPH_H = GRID_CARD_H - 64;
+  const ALL_GRID = [...GRID_WORKFLOWS, ...GRID_WORKFLOWS_2];
+  const slotX = (i: number) => gridStartX + (i % 4) * (GRID_CARD_W + GRID_GAP_X);
+  const slotY = (i: number) => GRID_TOP + Math.floor(i / 4) * (GRID_CARD_H + GRID_GAP_Y);
+
+  // Hero (index 0) entrance + fly-to-slot.
+  const heroInP = progress(frame, heroIn.start, heroIn.duration, POP_EASE);
+  const heroFlyP = progress(frame, heroFly.start, heroFly.duration, Easing.inOut(Easing.cubic));
+  // Center of the hero's settled slot vs. screen center — the fly delta.
+  const heroSlotCX = slotX(0) + GRID_CARD_W / 2;
+  const heroSlotCY = slotY(0) + GRID_CARD_H / 2;
+  const heroDX = (960 - heroSlotCX) * (1 - heroFlyP);
+  const heroDY = (600 - heroSlotCY) * (1 - heroFlyP);
+  const heroScale = 1 + (1 - heroFlyP) * 1.25;
+
+  // The grid softens (dims + desaturates) once settled, then the whole grid
+  // fades on the Execute click.
+  const softenP = progress(frame, soften.start, soften.duration, FAST_FADE_EASE);
 
   const buttonOpacity = progress(
     frame,
@@ -1943,26 +1965,39 @@ const ExecuteFinaleSequence: React.FC<LaunchVideoProps> = ({
         transform: `translateY(${exit * 24}px)`,
       }}
     >
-      {/* Grid of four workflows across the top band. Fades on the Execute
-          click so the centered NickAI lockup can own the frame. */}
-      <div style={{ position: "absolute", inset: 0, opacity: 1 - gridFade }}>
-        {GRID_WORKFLOWS.map((w, index) => {
-          const start = grid.start + index * grid.stagger;
-          const cardOpacity = progress(
-            frame,
-            start,
-            grid.duration,
-            FAST_FADE_EASE,
-          );
-          const cardSettle = progress(frame, start, grid.duration, POP_EASE);
+      {/* Two-row (4×2) grid of workflows. The hero (index 0) enters large +
+          centered then flies to its top-left slot while the other seven
+          populate. The whole grid softens (dim + desaturate) so the Execute
+          button reads on top, then fades on the click. */}
+      <div
+        style={{
+          position: "absolute",
+          inset: 0,
+          opacity: (1 - gridFade) * (1 - softenP * 0.5),
+          filter: `saturate(${1 - softenP * 0.45}) brightness(${1 - softenP * 0.2})`,
+        }}
+      >
+        {ALL_GRID.map((w, index) => {
+          const isHero = index === 0;
+          // Non-hero cards stagger in; the hero uses its own entrance + fly.
+          const start = grid.start + (index - 1) * grid.stagger;
+          const cardOpacity = isHero
+            ? heroInP
+            : progress(frame, start, grid.duration, FAST_FADE_EASE);
+          const cardSettle = isHero
+            ? 1
+            : progress(frame, start, grid.duration, POP_EASE);
+          const transform = isHero
+            ? `translate(${heroDX}px, ${heroDY}px) scale(${heroScale})`
+            : `translateY(${(1 - cardSettle) * 26}px) scale(${0.95 + cardSettle * 0.05})`;
 
           return (
             <div
               key={wfName(w)}
               style={{
                 position: "absolute",
-                left: gridStartX + index * (GRID_CARD_W + GRID_GAP),
-                top: GRID_TOP,
+                left: slotX(index),
+                top: slotY(index),
                 width: GRID_CARD_W,
                 height: GRID_CARD_H,
                 borderRadius: 26,
@@ -1971,8 +2006,9 @@ const ExecuteFinaleSequence: React.FC<LaunchVideoProps> = ({
                 boxShadow: "0 40px 90px -40px rgba(0, 0, 0, 0.8)",
                 overflow: "hidden",
                 opacity: cardOpacity,
-                transform: `translateY(${(1 - cardSettle) * 26}px) scale(${0.95 + cardSettle * 0.05})`,
+                transform,
                 transformOrigin: "center center",
+                zIndex: isHero ? 3 : 1,
               }}
             >
               <div
@@ -1996,11 +2032,11 @@ const ExecuteFinaleSequence: React.FC<LaunchVideoProps> = ({
               <div
                 style={{
                   position: "absolute",
-                  bottom: 20,
-                  left: 24,
-                  right: 24,
+                  bottom: 18,
+                  left: 22,
+                  right: 22,
                   fontFamily: MANROPE,
-                  fontSize: 24,
+                  fontSize: 22,
                   fontWeight: 600,
                   color: "#fff",
                   whiteSpace: "nowrap",

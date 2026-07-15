@@ -37,10 +37,12 @@ import { resultPortfolioCardDefaultProps } from "./compositions/result-portfolio
 import {
   ChatPriceCardComposition,
   ChatPortfolioCardComposition,
+  ChatTradeCardComposition,
 } from "./compositions/chat-cards/composition";
 import {
   chatPriceCardDefaultProps,
   chatPortfolioCardDefaultProps,
+  chatTradeCardDefaultProps,
 } from "./compositions/chat-cards/props";
 import { NickaiSocialCardComposition } from "./compositions/nickai-social-card/composition";
 import { nickaiSocialCardDefaultProps } from "./compositions/nickai-social-card/props";
@@ -67,6 +69,7 @@ const gamePickAnim = getMotionEntryMeta("game-pick-card")!;
 const resultPortfolioAnim = getMotionEntryMeta("result-portfolio-card")!;
 const chatPrice = getMotionEntryMeta("chat-price-card")!;
 const chatPortfolio = getMotionEntryMeta("chat-portfolio-card")!;
+const chatTrade = getMotionEntryMeta("chat-trade-card")!;
 const nickaiSocial = getMotionEntryMeta("nickai-social-card")!;
 const nickaiOgCover = getMotionEntryMeta("nickai-og-cover")!;
 const workflowTemplate = getMotionEntryMeta("workflow-template-card")!;
@@ -205,6 +208,18 @@ export const RemotionRoot: React.FC = () => {
         width={chatPortfolio.width}
         height={chatPortfolio.height}
         defaultProps={chatPortfolioCardDefaultProps}
+      />
+      {/* NickAI in-chat Trade-fill confirmation — reusable "order filled" widget
+          Nick renders when a workflow executes a trade. Check draw + total
+          count-up, then hold. */}
+      <Composition
+        id="chat-trade-card"
+        component={ChatTradeCardComposition}
+        durationInFrames={chatTrade.durationInFrames}
+        fps={chatTrade.fps}
+        width={chatTrade.width}
+        height={chatTrade.height}
+        defaultProps={chatTradeCardDefaultProps}
       />
       {/* NickAI social card (STA-473) — brand-dark frame for the weekly X
           content calendar, rendered to PNG/MP4 by render-nickai-social. */}

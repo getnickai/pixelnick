@@ -252,69 +252,89 @@ export const LAUNCH_VIDEO_TIMELINE = {
   productShell: {
     // Match-cut: the hero workflow docks into the right builder pane while the
     // chat rail wipes in from the left and the widget cards stream into the
-    // thread (SpaceX + NVDA price cards, then the portfolio card).
+    // thread (SpaceX + NVDA price cards, then the portfolio card). Trimmed hold:
+    // the UX settles then hands straight to the execution zoom (no long linger).
     from: 713,
-    durationInFrames: 150,
+    durationInFrames: 92,
     shell: { start: 0, duration: 14 }, // panels wipe in
     canvas: { start: 2, duration: 16 }, // workflow settles in the right pane
     intro: { start: 16, duration: 10 }, // assistant line
     cards: { start: 22, stagger: 12, duration: 14 }, // spacex, nvda, portfolio
-    outro: { start: 140, duration: 10 },
+    outro: { start: 82, duration: 10 },
   },
   execution: {
-    // Zoom on the top-right "Run Now" control → it presses → the Execution Logs
-    // panel opens → rows stream upward (more and more executions) → the camera
-    // pulls back to the full product UX.
-    from: 855,
-    durationInFrames: 168,
-    zoomIn: { start: 0, duration: 18 }, // camera pushes toward Run Now
-    press: { start: 16, duration: 8 }, // Run Now clicked
-    logsOpen: { start: 24, duration: 14 }, // logs panel slides up, nodes light
-    scroll: { start: 40, duration: 96 }, // rows stream up while running
-    zoomOut: { start: 138, duration: 20 }, // pull back to full UX
-    outro: { start: 160, duration: 8 },
+    // The full product UX is briefly visible, then the camera pushes onto the
+    // top-right "Run Now" control → it presses → the Execution Logs panel opens
+    // and rows stream → the run completes: the camera pulls back to center and a
+    // "Workflow executed successfully" banner + an AAPL trade-fill confirmation
+    // card animate in on top.
+    from: 797,
+    durationInFrames: 176,
+    zoomIn: { start: 0, duration: 16 }, // camera pushes toward Run Now
+    press: { start: 14, duration: 8 }, // Run Now clicked
+    logsOpen: { start: 22, duration: 16 }, // logs panel slides up, nodes light
+    scroll: { start: 40, duration: 60 }, // rows stream up while running
+    finish: { start: 100, duration: 22 }, // run completes; camera pulls back to center
+    confirm: { start: 118, duration: 20 }, // success banner + AAPL trade card in
+    outro: { start: 166, duration: 10 },
   },
   executeFinale: {
-    // The finale folds in the old standalone grid: it opens by revealing the
-    // four GRID_WORKFLOWS side by side, then the Execute button appears below
-    // the grid. Its click is the transition: grid fades, button -> energy core
-    // -> NickAI lockup + CTA.
-    from: 1015,
-    durationInFrames: 240,
-    grid: {
-      // Four framed workflow cards stagger in across the top band.
+    // The finale opens on the hero workflow (NVDA) large + centered; it then
+    // flies to its top-left slot while the other seven workflows populate a
+    // 2-row × 4-col grid around it. The whole grid then softens (contrast down)
+    // and the Execute button layers in on top. Its click is the transition:
+    // grid + button -> energy core -> NickAI lockup + CTA.
+    from: 965,
+    durationInFrames: 262,
+    heroIn: {
+      // Hero workflow enters large + centered.
       start: 2,
-      stagger: 6,
       duration: 16,
     },
+    heroFly: {
+      // Hero flies from center to its top-left grid slot.
+      start: 18,
+      duration: 24,
+    },
+    grid: {
+      // The other seven cards stagger in (both rows) as the hero flies.
+      start: 22,
+      stagger: 5,
+      duration: 16,
+    },
+    soften: {
+      // The settled grid dims + desaturates so the button reads on top.
+      start: 58,
+      duration: 14,
+    },
     button: {
-      // Enters below the settled grid.
-      start: 46,
+      // Layers in on top of the softened grid, screen-centered.
+      start: 62,
       duration: 14,
     },
     cursor: {
-      start: 66,
+      start: 84,
       duration: 16,
     },
     click: {
-      start: 88,
+      start: 106,
       duration: 9,
     },
     logo: {
-      start: 98,
+      start: 116,
       duration: 26,
     },
     cta: {
-      start: 130,
+      start: 148,
       stagger: 2,
       duration: 14,
     },
     url: {
-      start: 142,
+      start: 160,
       duration: 12,
     },
     outro: {
-      start: 228,
+      start: 250,
       duration: 12,
     },
   },

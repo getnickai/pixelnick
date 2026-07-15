@@ -5,7 +5,7 @@
  * Inline-styled so stills render identically headless.
  */
 import { AbsoluteFill, staticFile } from "remotion";
-import { ArrowRight, ArrowUp, ChevronDown, Download, Loader2, Maximize2, Play, Plus, Sparkles, Square, Trash2, X } from "lucide-react";
+import { ArrowRight, ArrowUp, Check, ChevronDown, Download, Loader2, Maximize2, Play, Plus, Sparkles, Square, Trash2, X } from "lucide-react";
 import { fitCamera, focusCamera, WorkflowGraph, type RunStatus } from "./graph";
 import { PriceCardView } from "../chat-cards/price-card-view";
 import { PortfolioCardView } from "../chat-cards/portfolio-card-view";
@@ -267,12 +267,14 @@ function ExecutionLogs({
   reveal = 1,
   scroll = 0,
   streaming = false,
+  done = false,
 }: {
   height: number;
   count?: number;
   reveal?: number;
   scroll?: number;
   streaming?: boolean;
+  done?: boolean;
 }) {
   const rows = streaming ? [...LEAD_ROWS, ...LOG_ROWS] : LOG_ROWS;
   const shownReveal = Math.max(0, Math.min(1, reveal));
@@ -283,9 +285,15 @@ function ExecutionLogs({
         <div style={{ display: "flex", alignItems: "center", gap: 12 }}>
           <span style={{ color: "#6a7180", fontFamily: MONO, fontWeight: 700 }}>❯_</span>
           <span style={{ color: "#fff", fontWeight: 700, fontSize: 16 }}>Execution Logs</span>
-          <span style={{ display: "flex", alignItems: "center", gap: 6, backgroundColor: "rgba(1,120,255,0.14)", color: BLUE, fontWeight: 600, fontSize: 13, padding: "3px 10px", borderRadius: 999 }}>
-            <Loader2 size={12} /> Running
-          </span>
+          {done ? (
+            <span style={{ display: "flex", alignItems: "center", gap: 6, backgroundColor: "rgba(31,193,107,0.16)", color: "#1fc16b", fontWeight: 600, fontSize: 13, padding: "3px 10px", borderRadius: 999 }}>
+              <Check size={12} strokeWidth={3} /> Completed
+            </span>
+          ) : (
+            <span style={{ display: "flex", alignItems: "center", gap: 6, backgroundColor: "rgba(1,120,255,0.14)", color: BLUE, fontWeight: 600, fontSize: 13, padding: "3px 10px", borderRadius: 999 }}>
+              <Loader2 size={12} /> Running
+            </span>
+          )}
           <span style={{ color: "#6a7180", fontFamily: MONO, fontSize: 13 }}>{count}</span>
         </div>
         <div style={{ display: "flex", alignItems: "center", gap: 16, color: "#6a7180" }}>
@@ -309,6 +317,7 @@ function ExecutionLogs({
 
 export function ProductScreen({
   running = false,
+  completed = false,
   logs = false,
   chatReveal = 1,
   canvasReveal = 1,
@@ -321,6 +330,8 @@ export function ProductScreen({
   logCount,
 }: {
   running?: boolean;
+  /** Run finished: all nodes green, the pills flip to "Completed". */
+  completed?: boolean;
   logs?: boolean;
   /** Left rail + chat panel wipe-in: 0 = off-screen left, 1 = settled. */
   chatReveal?: number;
@@ -375,9 +386,15 @@ export function ProductScreen({
   const baseFit = fitCamera(wsW, canvasH, CANVAS_W, CANVAS_H, 0.82);
   const wsCamera = { ...baseFit, scale: baseFit.scale * 1.3, fx: baseFit.fx - 175 };
 
-  // Running state: most nodes completed (green), a few mid-graph still running (blue).
+  // Running state: most nodes completed (green), a few mid-graph still running
+  // (blue). Completed state: every node green.
   let statusById: Record<string, RunStatus> | undefined;
-  if (running) {
+  if (completed) {
+    statusById = {};
+    w.template.nodes.forEach((n) => {
+      statusById![n.id] = "completed";
+    });
+  } else if (running) {
     const order = topoOrder(w.template.nodes, w.template.edges);
     const doneCut = Math.floor(order.length * 0.6);
     statusById = {};
@@ -431,7 +448,7 @@ export function ProductScreen({
           <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between" }}>
             <div style={{ display: "flex", alignItems: "center", gap: 14, color: "#9aa3b2", fontSize: 14 }}>
               <Plus size={20} color="#9aa3b2" />
-              <span style={{ display: "flex", alignItems: "center", gap: 5 }}>Grok 4.5 <ChevronDown size={14} /></span>
+              <span style={{ display: "flex", alignItems: "center", gap: 5 }}>Opus 4.8 <ChevronDown size={14} /></span>
               <span style={{ display: "flex", alignItems: "center", gap: 5 }}><Sparkles size={13} /> Low <ChevronDown size={14} /></span>
             </div>
             <div style={{ width: 40, height: 40, borderRadius: 999, backgroundColor: BLUE, display: "flex", alignItems: "center", justifyContent: "center" }}>
@@ -447,10 +464,6 @@ export function ProductScreen({
         <div style={{ height: 68, display: "flex", alignItems: "center", justifyContent: "space-between", padding: "0 28px", borderBottom: `1px solid ${LINE}` }}>
           <div style={{ display: "flex", alignItems: "center", gap: 12, color: "#fff", fontSize: 19, fontWeight: 600 }}>
             {wfName(w)}
-            <span style={{ display: "flex", alignItems: "center", gap: 6, color: "#9aa3b2", fontSize: 14, fontWeight: 500 }}>
-              <span style={{ width: 20, height: 20, borderRadius: 999, backgroundColor: "#2b7fff", fontSize: 10, color: "#fff", display: "inline-flex", alignItems: "center", justifyContent: "center", fontWeight: 700 }}>BB</span>
-              Badi Badkoube
-            </span>
           </div>
           <div style={{ display: "flex", alignItems: "center", gap: 8, backgroundColor: "#1fc16b", color: "#04140a", fontWeight: 700, fontSize: 14, padding: "8px 14px", borderRadius: 10, transform: `scale(${1 - runNowPress * 0.08})`, boxShadow: runNowPress > 0.01 ? `0 0 0 ${Math.round(6 * runNowPress)}px rgba(31,193,107,0.30)` : undefined }}>
             <Play size={14} fill="#04140a" /> Run Now
@@ -482,7 +495,11 @@ export function ProductScreen({
           <div style={{ width: wsW, height: canvasH, opacity: canvasOpacity, transform: `scale(${canvasScale})`, transformOrigin: "center center" }}>
             <WorkflowGraph template={w.template} vw={wsW} vh={canvasH} cw={CANVAS_W} ch={CANVAS_H} camera={wsCamera} statusById={statusById} />
           </div>
-          {running ? (
+          {completed ? (
+            <div style={{ position: "absolute", top: 24, left: "50%", transform: "translateX(-50%)", display: "flex", alignItems: "center", gap: 8, backgroundColor: "rgba(31,193,107,0.16)", border: "1px solid #1fc16b", color: "#1fc16b", fontWeight: 600, fontSize: 15, padding: "8px 18px", borderRadius: 999 }}>
+              <Check size={15} strokeWidth={3} /> Completed
+            </div>
+          ) : running ? (
             <div style={{ position: "absolute", top: 24, left: "50%", transform: "translateX(-50%)", display: "flex", alignItems: "center", gap: 8, backgroundColor: "rgba(1,120,255,0.14)", border: `1px solid ${BLUE}`, color: BLUE, fontWeight: 600, fontSize: 15, padding: "8px 18px", borderRadius: 999 }}>
               <Loader2 size={15} /> Running
             </div>
@@ -503,7 +520,7 @@ export function ProductScreen({
             </div>
           )}
         </div>
-        {logs ? <ExecutionLogs height={logsH} reveal={logsReveal} scroll={logScroll} streaming={logStreaming} count={logCount} /> : null}
+        {logs ? <ExecutionLogs height={logsH} reveal={logsReveal} scroll={logScroll} streaming={logStreaming} count={logCount} done={completed} /> : null}
       </div>
     </>
   );
