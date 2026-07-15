@@ -27,9 +27,11 @@ export function PlayerHost({ entry }: { entry: MotionEntry }) {
   const frameRef = useRef<HTMLDivElement>(null);
   const [playing, setPlaying] = useState(false);
   const [fullscreen, setFullscreen] = useState(false);
-  const [controlsVisible, setControlsVisible] = useState(true);
+  const [controlsVisible, setControlsVisible] = useState(false);
   const [exporting, setExporting] = useState(false);
   const [exportError, setExportError] = useState<string | null>(null);
+  const [currentFrame, setCurrentFrame] = useState(0);
+  const [scrubbing, setScrubbing] = useState(false);
 
   // Live preview controls. These overlay the Player and write back into the
   // composition via `inputProps`. Currently only the Performance Card reads
@@ -41,13 +43,24 @@ export function PlayerHost({ entry }: { entry: MotionEntry }) {
     if (!p) return;
     const onPlay = () => setPlaying(true);
     const onPause = () => setPlaying(false);
+    const onFrameUpdate = (e: { detail: { frame: number } }) => {
+      if (!scrubbing) setCurrentFrame(e.detail.frame);
+    };
+    const onSeeked = (e: { detail: { frame: number } }) => {
+      setCurrentFrame(e.detail.frame);
+    };
     p.addEventListener("play", onPlay);
     p.addEventListener("pause", onPause);
+    p.addEventListener("frameupdate", onFrameUpdate);
+    p.addEventListener("seeked", onSeeked);
+    setCurrentFrame(p.getCurrentFrame());
     return () => {
       p.removeEventListener("play", onPlay);
       p.removeEventListener("pause", onPause);
+      p.removeEventListener("frameupdate", onFrameUpdate);
+      p.removeEventListener("seeked", onSeeked);
     };
-  }, []);
+  }, [scrubbing, entry.id]);
 
   useEffect(() => {
     const onFullscreenChange = () => {
@@ -69,6 +82,20 @@ export function PlayerHost({ entry }: { entry: MotionEntry }) {
       p.play();
     }
   }, []);
+
+  const seekToFrame = useCallback(
+    (frame: number) => {
+      const p = playerRef.current;
+      if (!p) return;
+      const clamped = Math.max(
+        0,
+        Math.min(entry.durationInFrames - 1, Math.round(frame)),
+      );
+      p.seekTo(clamped);
+      setCurrentFrame(clamped);
+    },
+    [entry.durationInFrames],
+  );
 
   const toggleFullscreen = useCallback(async () => {
     const frame = frameRef.current;
@@ -227,7 +254,7 @@ export function PlayerHost({ entry }: { entry: MotionEntry }) {
           ref={frameRef}
           tabIndex={0}
           role="application"
-          aria-label={`${entry.label} player. Space plays or pauses. F toggles fullscreen.`}
+          aria-label={`${entry.label} player. Space plays or pauses. F toggles fullscreen. Drag the timeline to scrub.`}
           className={cn(
             "group absolute inset-0 overflow-hidden rounded-2xl shadow-2xl shadow-black/50 ring-1 ring-zinc-800 outline-none focus-visible:ring-2 focus-visible:ring-primary-500",
             fullscreen &&
@@ -239,7 +266,7 @@ export function PlayerHost({ entry }: { entry: MotionEntry }) {
           }}
           onMouseLeave={() => {
             canvasActiveRef.current = fullscreen;
-            setControlsVisible(!playing || fullscreen);
+            if (!scrubbing) setControlsVisible(false);
           }}
           onFocus={() => {
             canvasActiveRef.current = true;
@@ -285,38 +312,170 @@ export function PlayerHost({ entry }: { entry: MotionEntry }) {
             />
           </div>
 
-          {/* Play / pause + fullscreen controls */}
+          {/* Timeline + play / fullscreen — one row, hover-only */}
           <div
-            className="absolute inset-x-0 bottom-0 flex items-end justify-end gap-2 p-4 transition-opacity duration-200"
+            className="absolute inset-x-0 bottom-0 flex items-center gap-3 bg-gradient-to-t from-black/70 via-black/40 to-transparent px-4 pb-4 pt-8 transition-opacity duration-200"
             style={{
-              opacity: controlsVisible || !playing ? 1 : 0,
-              pointerEvents: controlsVisible || !playing ? "auto" : "none",
+              opacity: controlsVisible || scrubbing ? 1 : 0,
+              pointerEvents: controlsVisible || scrubbing ? "auto" : "none",
             }}
             onMouseEnter={() => setControlsVisible(true)}
+            onClick={(e) => e.stopPropagation()}
           >
-            <ControlButton
-              onClick={toggle}
-              label={playing ? "Pause" : "Play"}
-            >
-              {playing ? (
-                <Pause className="size-4 fill-white text-white" />
-              ) : (
-                <Play className="size-4 fill-white text-white" />
-              )}
-            </ControlButton>
-            <ControlButton
-              onClick={toggleFullscreen}
-              label={fullscreen ? "Exit fullscreen" : "Enter fullscreen"}
-            >
-              {fullscreen ? (
-                <Minimize className="size-4 text-white" />
-              ) : (
-                <Maximize className="size-4 text-white" />
-              )}
-            </ControlButton>
+            <p className="shrink-0 font-mono text-[11px] tabular-nums text-white/80">
+              {formatTimecode(currentFrame, entry.fps)}
+              <span className="text-white/40"> / </span>
+              {formatTimecode(entry.durationInFrames, entry.fps)}
+            </p>
+            <TimelineScrubber
+              frame={currentFrame}
+              durationInFrames={entry.durationInFrames}
+              fps={entry.fps}
+              onSeek={seekToFrame}
+              onScrubbingChange={(next) => {
+                setScrubbing(next);
+                if (!next && !canvasActiveRef.current) {
+                  setControlsVisible(false);
+                }
+              }}
+            />
+            <div className="flex shrink-0 items-center gap-2">
+              <ControlButton
+                onClick={toggle}
+                label={playing ? "Pause" : "Play"}
+              >
+                {playing ? (
+                  <Pause className="size-4 fill-white text-white" />
+                ) : (
+                  <Play className="size-4 fill-white text-white" />
+                )}
+              </ControlButton>
+              <ControlButton
+                onClick={toggleFullscreen}
+                label={fullscreen ? "Exit fullscreen" : "Enter fullscreen"}
+              >
+                {fullscreen ? (
+                  <Minimize className="size-4 text-white" />
+                ) : (
+                  <Maximize className="size-4 text-white" />
+                )}
+              </ControlButton>
+            </div>
           </div>
         </div>
       </div>
+    </div>
+  );
+}
+
+function formatTimecode(frame: number, fps: number): string {
+  const totalSeconds = Math.max(0, frame) / fps;
+  const minutes = Math.floor(totalSeconds / 60);
+  const seconds = Math.floor(totalSeconds % 60);
+  return `${minutes}:${seconds.toString().padStart(2, "0")}`;
+}
+
+function TimelineScrubber({
+  frame,
+  durationInFrames,
+  fps,
+  onSeek,
+  onScrubbingChange,
+}: {
+  frame: number;
+  durationInFrames: number;
+  fps: number;
+  onSeek: (frame: number) => void;
+  onScrubbingChange: (scrubbing: boolean) => void;
+}) {
+  const trackRef = useRef<HTMLDivElement>(null);
+  const draggingRef = useRef(false);
+
+  const progress =
+    durationInFrames <= 1
+      ? 0
+      : Math.min(1, Math.max(0, frame / (durationInFrames - 1)));
+
+  const seekFromClientX = useCallback(
+    (clientX: number) => {
+      const track = trackRef.current;
+      if (!track || durationInFrames <= 1) return;
+      const rect = track.getBoundingClientRect();
+      const ratio = Math.min(1, Math.max(0, (clientX - rect.left) / rect.width));
+      onSeek(ratio * (durationInFrames - 1));
+    },
+    [durationInFrames, onSeek],
+  );
+
+  useEffect(() => {
+    const onPointerMove = (e: PointerEvent) => {
+      if (!draggingRef.current) return;
+      seekFromClientX(e.clientX);
+    };
+    const onPointerUp = () => {
+      if (!draggingRef.current) return;
+      draggingRef.current = false;
+      onScrubbingChange(false);
+    };
+    window.addEventListener("pointermove", onPointerMove);
+    window.addEventListener("pointerup", onPointerUp);
+    window.addEventListener("pointercancel", onPointerUp);
+    return () => {
+      window.removeEventListener("pointermove", onPointerMove);
+      window.removeEventListener("pointerup", onPointerUp);
+      window.removeEventListener("pointercancel", onPointerUp);
+    };
+  }, [onScrubbingChange, seekFromClientX]);
+
+  return (
+    <div
+      ref={trackRef}
+      role="slider"
+      tabIndex={0}
+      aria-label="Timeline"
+      aria-valuemin={0}
+      aria-valuemax={durationInFrames - 1}
+      aria-valuenow={frame}
+      aria-valuetext={formatTimecode(frame, fps)}
+      className="group/scrubber relative flex h-5 min-w-0 flex-1 cursor-pointer items-center outline-none"
+      onPointerDown={(e) => {
+        e.preventDefault();
+        e.stopPropagation();
+        draggingRef.current = true;
+        onScrubbingChange(true);
+        (e.currentTarget as HTMLElement).setPointerCapture?.(e.pointerId);
+        seekFromClientX(e.clientX);
+      }}
+      onKeyDown={(e) => {
+        const step = e.shiftKey ? Math.round(fps) : Math.max(1, Math.round(fps / 10));
+        if (e.key === "ArrowLeft" || e.key === "ArrowDown") {
+          e.preventDefault();
+          e.stopPropagation();
+          onSeek(frame - step);
+        } else if (e.key === "ArrowRight" || e.key === "ArrowUp") {
+          e.preventDefault();
+          e.stopPropagation();
+          onSeek(frame + step);
+        } else if (e.key === "Home") {
+          e.preventDefault();
+          e.stopPropagation();
+          onSeek(0);
+        } else if (e.key === "End") {
+          e.preventDefault();
+          e.stopPropagation();
+          onSeek(durationInFrames - 1);
+        }
+      }}
+    >
+      <div className="absolute inset-x-0 h-1 rounded-full bg-white/25 transition-[height] group-hover/scrubber:h-1.5" />
+      <div
+        className="absolute left-0 h-1 rounded-full bg-primary-500 transition-[height] group-hover/scrubber:h-1.5"
+        style={{ width: `${progress * 100}%` }}
+      />
+      <div
+        className="absolute top-1/2 size-3.5 -translate-x-1/2 -translate-y-1/2 rounded-full bg-white shadow ring-2 ring-black/30 transition-transform group-hover/scrubber:scale-110"
+        style={{ left: `${progress * 100}%` }}
+      />
     </div>
   );
 }

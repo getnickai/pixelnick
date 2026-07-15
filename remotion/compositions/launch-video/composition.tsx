@@ -332,7 +332,7 @@ const OpeningSequence: React.FC<LaunchVideoProps> = ({
             whiteSpace: "nowrap",
             color: "#ffffff",
             fontFamily: DUPLET,
-            fontSize: 120,
+            fontSize: 100,
             fontWeight: 500,
             lineHeight: 1,
             letterSpacing: 0.5,
@@ -456,7 +456,7 @@ const ProductStatementSequence: React.FC<LaunchVideoProps> = ({
             whiteSpace: "nowrap",
             color: "#ffffff",
             fontFamily: DUPLET,
-            fontSize: 128,
+            fontSize: 100,
             fontWeight: 600,
             lineHeight: 0.92,
             letterSpacing: 0.5,
@@ -762,7 +762,7 @@ const ChatComposerSequence: React.FC<ChatComposerSequenceProps> = ({
                 aria-hidden
                 style={{
                   display: "inline-block",
-                  width: 2,
+                  width: 4,
                   height: 26,
                   marginLeft: 3,
                   verticalAlign: -4,
