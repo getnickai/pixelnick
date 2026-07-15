@@ -59,7 +59,13 @@ export function AgenticDrop() {
         {/* caption */}
         <div className="mt-4 max-w-3xl rounded-xl border border-sidebar-border bg-sidebar/40 p-4">
           <p className="mb-2 font-mono text-[11px] uppercase tracking-wider text-muted-foreground">Caption</p>
-          <p className="whitespace-pre-wrap text-[14px] leading-relaxed text-sidebar-foreground/90">{drop.caption}</p>
+          <p
+            className={`whitespace-pre-wrap text-[14px] leading-relaxed ${
+              drop.caption?.trim() ? "text-sidebar-foreground/90" : "text-muted-foreground"
+            }`}
+          >
+            {drop.caption?.trim() || "No caption yet — add one before posting."}
+          </p>
         </div>
       </div>
     </div>

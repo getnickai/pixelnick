@@ -26,15 +26,21 @@ export function DownloadSlidesButton({
   size?: "sm" | "md";
 }) {
   const [busy, setBusy] = useState(false);
+  const [error, setError] = useState<string | null>(null);
 
   async function handleDownload() {
     if (busy) return;
+    setError(null);
     setBusy(true);
     try {
       const root = targetId ? document.getElementById(targetId) : document;
       const nodes = root
         ? Array.from(root.querySelectorAll<HTMLElement>("[data-export-slide]"))
         : [];
+      if (nodes.length === 0) {
+        setError("No slides found to export");
+        return;
+      }
       // ensure web fonts are loaded so headlines rasterize, not fall back
       if (document.fonts?.ready) await document.fonts.ready;
 
@@ -53,6 +59,7 @@ export function DownloadSlidesButton({
       }
     } catch (err) {
       console.error("[agentic-drop] PNG export failed:", err);
+      setError(err instanceof Error ? err.message : "Export failed");
     } finally {
       setBusy(false);
     }
@@ -60,13 +67,20 @@ export function DownloadSlidesButton({
 
   const sizing = size === "sm" ? "px-3 py-1.5 text-xs" : "px-4 py-2 text-sm";
   return (
-    <button
-      type="button"
-      onClick={handleDownload}
-      disabled={busy}
-      className={`shrink-0 rounded-lg bg-primary-500 font-semibold text-zinc-950 transition hover:opacity-90 disabled:opacity-60 ${sizing}`}
-    >
-      {busy ? "Exporting…" : label}
-    </button>
+    <div className="inline-flex flex-col gap-1">
+      <button
+        type="button"
+        onClick={handleDownload}
+        disabled={busy}
+        className={`shrink-0 rounded-lg bg-primary-500 font-semibold text-zinc-950 transition hover:opacity-90 disabled:opacity-60 ${sizing}`}
+      >
+        {busy ? "Exporting…" : label}
+      </button>
+      {error ? (
+        <p role="alert" className="max-w-[16rem] text-xs text-destructive">
+          {error}
+        </p>
+      ) : null}
+    </div>
   );
 }

@@ -1,0 +1,152 @@
+{
+  "generated_at": "2026-06-28T12:00:00.000Z",
+  "edition": "June 28, 2026",
+  "source_folder": "Claude pixelnick",
+  "brand_mark": "NickAI",
+  "accent": "#E08A4D",
+  "slides": [
+    {
+      "kind": "cover",
+      "kicker": "THE AGENTIC DROP",
+      "date": "JUNE 28, 2026",
+      "headline": "*4* CRAZY THINGS IN AI *TODAY*",
+      "subtitle": "The *4 stories* you don't want to miss.",
+      "inset": "/x-engine/drop/2026-06-28/bg-1.png",
+      "art": {
+        "shot_type": "conceptual",
+        "bg_source": "generate",
+        "bg_prompt": "A cinematic editorial wide shot of a lone person seen from behind, silhouetted in awe, gazing up at three enormous glowing celestial bodies in a vast dark sky: a blazing golden sun, a luminous blue earth, and a pale glowing moon arranged like a cosmic trio. Premium, dramatic volumetric light, photorealistic, a sense of wonder. Vertical 4:5 with the bottom third darker and uncluttered for a headline overlay.",
+        "logos": []
+      },
+      "logo_images": [],
+      "image": "/x-engine/drop/2026-06-28/bg-0.png"
+    },
+    {
+      "kind": "story",
+      "index": 1,
+      "headline": "*OPENAI* UNVEILS *GPT-5.6*",
+      "subtitle": "Meet *Sol*, *Terra* and *Luna*.",
+      "body": "OpenAI's new frontier model *Sol* arrives alongside *Terra* for efficient everyday work and *Luna* for fast, high-volume jobs. One launch, three tiers, and the *frontier moves* again.",
+      "source": {
+        "handle": "OpenAI",
+        "name": "OpenAI"
+      },
+      "metrics": {
+        "impression_count": 15512232,
+        "like_count": 38052,
+        "bookmark_count": 6541
+      },
+      "art": {
+        "shot_type": "person_composite",
+        "bg_source": "generate",
+        "people": [
+          "Sam Altman"
+        ],
+        "bg_prompt": "A dramatic cinematic editorial portrait of Sam Altman (OpenAI CEO), accurate likeness, lit by the glow of three celestial orbs floating beside him: a blazing golden sun, a luminous blue earth, and a pale moon. Confident expression, premium magazine photography, framed from the chest up in the upper two thirds. Vertical 4:5 with the bottom third darker and uncluttered for a headline overlay.",
+        "bg_prompt_fallback": "A cinematic shot of three glowing celestial orbs (sun, earth, moon) over a dark premium tech backdrop, no text.",
+        "logos": []
+      },
+      "logo_images": [],
+      "image": "/x-engine/drop/2026-06-28/bg-1.png"
+    },
+    {
+      "kind": "story",
+      "index": 2,
+      "headline": "*AMERICA* JOINS THE *OPEN-SOURCE* RACE",
+      "subtitle": "*Ornith-1.0* codes at *frontier* level.",
+      "body": "Ornith-1.0 is the first model from a US lab to hit frontier-level coding with *open weights*, scaling from 9B all the way to 397B. The open frontier no longer belongs only to *China*.",
+      "source": {
+        "handle": "ryaneshea",
+        "name": "Ryan Shea"
+      },
+      "metrics": {
+        "impression_count": 597979,
+        "like_count": 3466,
+        "bookmark_count": 2396
+      },
+      "art": {
+        "shot_type": "conceptual",
+        "bg_source": "generate",
+        "bg_prompt": "A cinematic editorial photograph of a diverse team of American software engineers, a man and a woman in the foreground, celebrating a launch in a modern open-plan office, glowing lines of code and open-source motifs on large screens behind them, a subtle American flag accent in the background. Real natural human skin, premium photography, people framed in the upper two thirds. Vertical 4:5 with the bottom third darker and uncluttered for a headline overlay.",
+        "logos": []
+      },
+      "logo_images": [],
+      "brightness": 1.2,
+      "image": "/x-engine/drop/2026-06-28/bg-2.png"
+    },
+    {
+      "kind": "story",
+      "index": 3,
+      "headline": "*GOOGLE* SCRAMBLES TO CATCH *ANTHROPIC*",
+      "subtitle": "It's reorganizing an *AI-coding strike team*.",
+      "body": "Per The Information, Google is restructuring the team behind its AI coding tools to close the gap with *Anthropic's Claude*. Coding has quietly become the *front line* of the model wars.",
+      "source": {
+        "handle": "WhaleInsider",
+        "name": "Whale Insider"
+      },
+      "metrics": {
+        "impression_count": 61524,
+        "like_count": 356,
+        "bookmark_count": 11
+      },
+      "art": {
+        "shot_type": "person_composite",
+        "bg_source": "generate",
+        "people": [
+          "Dario Amodei",
+          "Sundar Pichai"
+        ],
+        "bg_prompt": "A dramatic cinematic editorial portrait of Dario Amodei (Anthropic CEO) and Sundar Pichai (Google CEO) facing each other in a tense, high-stakes face-off, split lighting, cool blue on one side and warm on the other, dark premium newsroom backdrop. Photorealistic, accurate likeness of both real men, serious expressions, framed from the chest up in the upper two thirds. Vertical 4:5 with the bottom third darker and uncluttered for a headline overlay.",
+        "bg_prompt_fallback": "A cinematic shot of two glowing AI logos facing off across a dark arena, dramatic rim light, premium editorial, no text.",
+        "logos": []
+      },
+      "logo_images": [],
+      "image": "/x-engine/drop/2026-06-28/bg-3.png",
+      "brightness": 1.35
+    },
+    {
+      "kind": "story",
+      "index": 4,
+      "headline": "*KALSHI* EYES A *$40B* VALUATION",
+      "subtitle": "*Doubling* its last round, pulling ahead of *Polymarket*.",
+      "body": "Per the FT, Kalshi is raising at roughly *$40B*, nearly *2x* its $22B last round, widening its lead over rival *Polymarket*. Founders Tarek Mansour and Luana Lopes Lara are scaling real-money prediction markets fast, with a public debut eyed for *2027*.",
+      "source": {
+        "handle": "CoinDesk",
+        "name": "CoinDesk"
+      },
+      "metrics": {
+        "impression_count": 30861,
+        "like_count": 70,
+        "bookmark_count": 9
+      },
+      "art": {
+        "shot_type": "person_composite",
+        "bg_source": "generate",
+        "people": [
+          "Tarek Mansour",
+          "Luana Lopes Lara"
+        ],
+        "bg_prompt": "A cinematic editorial portrait of the two young Kalshi co-founders, Tarek Mansour and Luana Lopes Lara, standing confidently in a sleek modern fintech office with subtle glowing market tickers in the background. Photorealistic, accurate likeness of both real people, natural human skin, premium magazine photography, framed from the chest up in the upper two thirds. Vertical 4:5 with the bottom third darker and uncluttered for a headline overlay.",
+        "bg_prompt_fallback": "A cinematic close-up of glowing green and red market probability bars rising on a dark screen, premium editorial, no text.",
+        "logos": []
+      },
+      "logo_images": [],
+      "image": "/x-engine/drop/2026-06-28/bg-4.png"
+    },
+    {
+      "kind": "outro",
+      "headline": "THAT'S THE *AGENTIC DROP*",
+      "body": "*4 stories*, every day. The AI moves that actually matter.",
+      "cta": "Follow for the daily drop",
+      "art": {
+        "shot_type": "conceptual",
+        "bg_source": "generate",
+        "bg_prompt": "A cinematic dark editorial backdrop of a softly glowing abstract neural constellation fading into black, premium and minimal, lots of negative space in the center and bottom for text overlay. No text, no logos.",
+        "logos": []
+      },
+      "logo_images": [],
+      "image": "/x-engine/drop/2026-06-28/bg-5.png"
+    }
+  ],
+  "date": "2026-06-28"
+}
