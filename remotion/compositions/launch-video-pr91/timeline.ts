@@ -5,19 +5,28 @@ export const LAUNCH_VIDEO_PR91_FPS = 30;
 
 export const LAUNCH_VIDEO_TIMELINE = {
   // The current launch-video is nested and cropped before its Execute finale.
-  core: { from: 0, durationInFrames: 638 },
+  core: {
+    from: 0,
+    durationInFrames: 658,
+    freezeAt: 634,
+    hold: { start: 634, duration: 12 },
+    outro: { start: 646, duration: 12 },
+  },
   workflowMontage: {
-    from: 628,
-    durationInFrames: 156,
+    from: 658,
+    durationInFrames: 340,
     intro: { start: 0, duration: 10 },
     swap2: { start: 6, duration: 12 },
-    build2: { start: 20, duration: 22 },
-    swap3: { start: 74, duration: 12 },
-    build3: { start: 88, duration: 22 },
-    outro: { start: 146, duration: 10 },
+    type2: { start: 8, duration: 38 },
+    dock2: { start: 46, duration: 16 },
+    build2: { start: 68, duration: 72 },
+    swap3: { start: 160, duration: 14 },
+    type3: { start: 176, duration: 38 },
+    build3: { start: 236, duration: 72 },
+    outro: { start: 328, duration: 12 },
   },
   productShell: {
-    from: 777,
+    from: 998,
     durationInFrames: 96,
     canvas: { start: 0, duration: 10 },
     shell: { start: 8, duration: 16 },
@@ -26,7 +35,7 @@ export const LAUNCH_VIDEO_TIMELINE = {
     outro: { start: 86, duration: 10 },
   },
   execution: {
-    from: 861,
+    from: 1082,
     durationInFrames: 196,
     button: { start: 6, duration: 14 },
     cursor: { start: 22, duration: 16 },
@@ -39,7 +48,7 @@ export const LAUNCH_VIDEO_TIMELINE = {
     outro: { start: 188, duration: 8 },
   },
   finale: {
-    from: 1049,
+    from: 1270,
     durationInFrames: 344,
     grid: { start: 20, stagger: 4, duration: 14 },
     soften: { start: 92, duration: 16 },

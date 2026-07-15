@@ -30,10 +30,11 @@ const RUN_BLUE = "#2b7fff";
 /** Node card design. `compact` = our icon-tile + type + name (scaled up for
  *  readability). `rich` = Onur's second-20 look: title + colored type badge +
  *  a one-line subtitle. Both draw inside the same camera engine. */
-export type NodeVariant = "compact" | "rich";
+export type NodeVariant = "compact" | "rich" | "cinematic";
 const NODE_DIMS: Record<NodeVariant, { w: number; h: number }> = {
   compact: { w: 300, h: 96 },
   rich: { w: 392, h: 120 },
+  cinematic: { w: 520, h: 142 },
 };
 export const nodeDims = (variant: NodeVariant = "compact") => NODE_DIMS[variant];
 
@@ -72,6 +73,106 @@ export function WorkflowNodeCard({
     backgroundColor: "#0f1216",
     boxShadow: `0 16px 44px -18px ${glow}66, inset 0 0 0 1px rgba(255,255,255,0.05)`,
   };
+
+  if (variant === "cinematic") {
+    const cinematicShell: React.CSSProperties = {
+      ...shell,
+      borderRadius: 28,
+      border: `2px solid ${status ? border : "#242832"}`,
+      backgroundColor: "#05070b",
+      boxShadow: status
+        ? `0 18px 42px -22px ${glow}80`
+        : "0 20px 45px rgba(0, 0, 0, 0.22)",
+      padding: "28px 34px 24px",
+    };
+
+    return (
+      <div style={cinematicShell}>
+        {StatusBadge}
+        <span
+          aria-hidden
+          style={{
+            position: "absolute",
+            left: -10,
+            top: "50%",
+            width: 18,
+            height: 18,
+            borderRadius: "50%",
+            backgroundColor: "#626673",
+            transform: "translateY(-50%)",
+          }}
+        />
+        <span
+          aria-hidden
+          style={{
+            position: "absolute",
+            right: -10,
+            top: "50%",
+            width: 18,
+            height: 18,
+            borderRadius: "50%",
+            backgroundColor: "#626673",
+            transform: "translateY(-50%)",
+          }}
+        />
+        <div
+          style={{
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "space-between",
+            gap: 18,
+          }}
+        >
+          <div
+            style={{
+              minWidth: 0,
+              overflow: "hidden",
+              color: "#fafafa",
+              fontSize: 32,
+              fontWeight: 600,
+              lineHeight: 1,
+              whiteSpace: "nowrap",
+              textOverflow: "ellipsis",
+            }}
+          >
+            {node.label}
+          </div>
+          <span
+            style={{
+              flexShrink: 0,
+              padding: "8px 14px",
+              borderRadius: 13,
+              color: g.icon,
+              backgroundColor: `${g.icon}20`,
+              fontSize: 18,
+              fontWeight: 650,
+              lineHeight: 1,
+              letterSpacing: 0.3,
+              textTransform: "uppercase",
+            }}
+          >
+            {g.typeLabel}
+          </span>
+        </div>
+        {node.subtitle ? (
+          <div
+            style={{
+              marginTop: 22,
+              overflow: "hidden",
+              color: "#777985",
+              fontSize: 25,
+              fontWeight: 500,
+              lineHeight: 1,
+              whiteSpace: "nowrap",
+              textOverflow: "ellipsis",
+            }}
+          >
+            {node.subtitle}
+          </div>
+        ) : null}
+      </div>
+    );
+  }
 
   if (variant === "rich") {
     const tile = 54;
@@ -191,7 +292,12 @@ export function WorkflowGraph({
             return (
               <path
                 key={e.id}
-                d={edgePath(src.cx, src.cy, tgt.cx, tgt.cy)}
+                d={edgePath(
+                  src.cx + NW / 2,
+                  src.cy,
+                  tgt.cx - NW / 2,
+                  tgt.cy,
+                )}
                 fill="none"
                 stroke="rgba(255,255,255,0.20)"
                 strokeWidth={2.5}
@@ -205,6 +311,12 @@ export function WorkflowGraph({
         </svg>
         {layout.nodes.map((n) => {
           const reveal = nodeReveal?.[n.id] ?? 1;
+          const entranceScale =
+            nodeVariant === "cinematic"
+              ? 0.955 + 0.045 * reveal
+              : 0.7 + 0.3 * reveal;
+          const entranceY =
+            nodeVariant === "cinematic" ? (1 - reveal) * 24 : 0;
           return (
             <div
               key={n.id}
@@ -213,7 +325,11 @@ export function WorkflowGraph({
                 left: n.cx - NW / 2,
                 top: n.cy - NH / 2,
                 opacity: reveal,
-                transform: `scale(${0.7 + 0.3 * reveal})`,
+                filter:
+                  nodeVariant === "cinematic" && reveal < 1
+                    ? `blur(${(1 - reveal) * 5}px)`
+                    : undefined,
+                transform: `translateY(${entranceY}px) scale(${entranceScale})`,
                 transformOrigin: "center center",
               }}
             >

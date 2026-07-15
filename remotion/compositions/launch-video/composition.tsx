@@ -1284,7 +1284,7 @@ const WorkflowResponseSequence: React.FC<LaunchVideoProps> = ({
     >
       <div
         style={{
-          width: 1120,
+          width: 960,
           padding: "0 24px",
           color: "#f4f4f5",
           fontFamily: MANROPE,
@@ -1683,17 +1683,17 @@ const WorkflowBuildSequence: React.FC = () => {
       opacity: progress(
         frame,
         start,
-        Math.min(7, nodes.duration),
-        FAST_FADE_EASE,
+        Math.min(14, nodes.duration),
+        Easing.out(Easing.cubic),
       ),
       settle: spring({
         frame: Math.max(0, frame - start),
         fps,
         durationInFrames: nodes.duration,
         config: {
-          damping: 12,
-          stiffness: 165,
-          mass: 0.72,
+          damping: 20,
+          stiffness: 145,
+          mass: 0.9,
         },
       }),
       complete: frame >= start + nodes.duration,
@@ -1706,22 +1706,22 @@ const WorkflowBuildSequence: React.FC = () => {
         frame,
         edges.start + index * edges.stagger,
         edges.duration,
-        Easing.inOut(Easing.quad),
+        Easing.out(Easing.cubic),
       ),
   );
   const originDotStyles = WORKFLOW_CONNECTION_ORIGINS.map((_, index) => {
     const start = edges.start + index * edges.stagger - 2;
 
     return {
-      opacity: progress(frame, start, 4, FAST_FADE_EASE),
+      opacity: progress(frame, start, 7, Easing.out(Easing.cubic)),
       scale: spring({
         frame: Math.max(0, frame - start),
         fps,
-        durationInFrames: 7,
+        durationInFrames: 12,
         config: {
-          damping: 11,
-          stiffness: 220,
-          mass: 0.6,
+          damping: 20,
+          stiffness: 170,
+          mass: 0.8,
         },
       }),
     };
@@ -1731,19 +1731,69 @@ const WorkflowBuildSequence: React.FC = () => {
       edges.start + index * edges.stagger + edges.duration - 2;
 
     return {
-      opacity: progress(frame, start, 4, FAST_FADE_EASE),
+      opacity: progress(frame, start, 7, Easing.out(Easing.cubic)),
       scale: spring({
         frame: Math.max(0, frame - start),
         fps,
-        durationInFrames: 7,
+        durationInFrames: 12,
         config: {
-          damping: 11,
-          stiffness: 220,
-          mass: 0.6,
+          damping: 20,
+          stiffness: 170,
+          mass: 0.8,
         },
       }),
     };
   });
+
+  // Product-film camera choreography: each node gets its own brief, readable
+  // close-up as it arrives. The camera eases from the previous node to the
+  // next one while the node/connector stagger continues underneath, then pulls
+  // back slightly for the completed graph handoff.
+  const cameraTargets = WORKFLOW_NODES.map((node) => ({
+    x: node.x + node.width / 2,
+    y: node.y + WORKFLOW_NODE_HEIGHT / 2,
+  }));
+  const cameraBase = { x: WORKFLOW_BOARD.width / 2, y: WORKFLOW_BOARD.height / 2, scale: 1 };
+  let camera = cameraBase;
+  const cameraZoom = 1.16;
+  const cameraSegments = cameraTargets.map((target, index) => {
+    const start = nodes.start + index * nodes.stagger - (index === 0 ? 8 : 0);
+    const duration = index === 0 ? 18 : 16;
+    const from = index === 0 ? cameraBase : { ...cameraTargets[index - 1], scale: cameraZoom };
+    return { start, duration, from, to: { ...target, scale: cameraZoom } };
+  });
+
+  for (const segment of cameraSegments) {
+    if (frame < segment.start) continue;
+    // Anime.js-style spring easing, kept deliberately overdamped so the camera
+    // has physical weight with only a trace of overshoot.
+    const p = spring({
+      frame: Math.max(0, frame - segment.start),
+      fps,
+      durationInFrames: segment.duration,
+      config: {
+        damping: 22,
+        stiffness: 115,
+        mass: 0.85,
+      },
+    });
+    camera = {
+      x: interpolate(p, [0, 1], [segment.from.x, segment.to.x]),
+      y: interpolate(p, [0, 1], [segment.from.y, segment.to.y]),
+      scale: interpolate(p, [0, 1], [segment.from.scale, segment.to.scale]),
+    };
+  }
+
+  const pullBackStart = nodes.start + (WORKFLOW_NODES.length - 1) * nodes.stagger + nodes.duration + 4;
+  const pullBack = progress(frame, pullBackStart, 18, Easing.inOut(Easing.cubic));
+  if (frame >= pullBackStart) {
+    camera = {
+      x: interpolate(pullBack, [0, 1], [cameraTargets[cameraTargets.length - 1].x, cameraBase.x]),
+      y: interpolate(pullBack, [0, 1], [cameraTargets[cameraTargets.length - 1].y, cameraBase.y]),
+      scale: interpolate(pullBack, [0, 1], [cameraZoom, 1.04]),
+    };
+  }
+  const cameraTransform = `translate(${WORKFLOW_BOARD.width / 2 - camera.x * camera.scale}px, ${WORKFLOW_BOARD.height / 2 - camera.y * camera.scale}px) scale(${camera.scale})`;
 
   return (
     <AbsoluteFill
@@ -1867,6 +1917,15 @@ const WorkflowBuildSequence: React.FC = () => {
             backgroundSize: "48px 48px",
           }}
         >
+          <div
+            style={{
+              position: "absolute",
+              inset: 0,
+              transform: cameraTransform,
+              transformOrigin: "0 0",
+              willChange: "transform",
+            }}
+          >
           <svg
             aria-hidden="true"
             viewBox={`0 0 ${WORKFLOW_BOARD.width} ${WORKFLOW_BOARD.height}`}
@@ -1965,6 +2024,35 @@ const WorkflowBuildSequence: React.FC = () => {
               }}
             />
           ))}
+          </div>
+          <div
+            aria-hidden
+            style={{
+              position: "absolute",
+              zIndex: 8,
+              inset: 0,
+              pointerEvents: "none",
+              background: [
+                "linear-gradient(to bottom, #09090b 0%, rgba(9, 9, 11, 0.88) 34px, rgba(9, 9, 11, 0) 112px, rgba(9, 9, 11, 0) calc(100% - 112px), rgba(9, 9, 11, 0.88) calc(100% - 34px), #09090b 100%)",
+                "linear-gradient(to right, #09090b 0%, rgba(9, 9, 11, 0.78) 30px, rgba(9, 9, 11, 0) 96px, rgba(9, 9, 11, 0) calc(100% - 96px), rgba(9, 9, 11, 0.78) calc(100% - 30px), #09090b 100%)",
+              ].join(", "),
+            }}
+          />
+          <div
+            aria-hidden
+            style={{
+              position: "absolute",
+              zIndex: 9,
+              inset: 0,
+              pointerEvents: "none",
+              boxShadow: [
+                "inset 3px 0 0 #09090b",
+                "inset -3px 0 0 #09090b",
+                "inset 0 3px 0 #09090b",
+                "inset 0 -3px 0 #09090b",
+              ].join(", "),
+            }}
+          />
         </div>
       </div>
     </AbsoluteFill>

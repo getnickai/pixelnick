@@ -7,11 +7,14 @@
  * carrying each workflow's own prompt as it swaps.
  *
  * Timeline (local frames, from LAUNCH_VIDEO_TIMELINE.workflowMontage):
- *   intro  {0,10}   whole beat fades in, composer + graph A present
- *   build2 {20,22}  workflow A (Multi-LLM) builds fast, zoomed on first nodes
- *   swap3  {74,12}  composer prompt + title swap to workflow B; canvas cross-fades
- *   build3 {88,22}  workflow B (Mag 7) builds fast
- *   outro  {146,10} quick fade out, hands off to the grid
+ *   intro  {0,10}    whole beat fades in, composer + graph A present
+ *   type2  {8,38}   centered composer types workflow A's prompt
+ *   dock2  {46,16}  composer settles to the bottom action position
+ *   build2 {68,72}  workflow A builds with five deliberate close nodes, then overview
+ *   swap3  {160,14} first graph clears while the composer stays docked
+ *   type3  {176,38} composer types workflow B's prompt in place at the bottom
+ *   build3 {236,72} workflow B repeats the same measured camera grammar
+ *   outro  {328,12} clean fade out after a readable settled hold
  */
 import { AbsoluteFill, Easing, interpolate, useCurrentFrame } from "remotion";
 import {
@@ -24,10 +27,12 @@ import {
   Plus,
 } from "lucide-react";
 import { WorkflowGraph } from "../nick-launch-video/graph";
-import { MONTAGE_WORKFLOWS, wfName } from "../nick-launch-video/props";
+import { MONTAGE_WORKFLOWS } from "../nick-launch-video/props";
 import { LAUNCH_VIDEO_TIMELINE } from "./timeline";
 import { progress, POP_EASE, FAST_FADE_EASE, OUTRO_EASE } from "./motion";
-import { buildReveal, zoomIntroCamera } from "./graph-anim";
+import { buildReveal, progressiveBuildCamera } from "./graph-anim";
+import { topoOrder } from "../workflow-template-card/layout";
+import type { TemplateGraph } from "../workflow-template-card/props";
 
 const SANS = "var(--font-manrope), ui-sans-serif, system-ui, sans-serif";
 // Matches ChatComposerSequence (composition.tsx) so the composer reads identical.
@@ -38,16 +43,15 @@ const BG = "#09090b";
 const BLUE = "#0178FF";
 
 /* Canvas geometry, matches WorkflowWide (screens.tsx). */
-const CANVAS_W = 3600;
-const CANVAS_H = 1700;
 const VW = 1720;
-const VH = 680;
-const WF_TOP = 158;
+const VH = 820;
+const WF_TOP = 28;
 
 /* Chat box (mirrors the beginning composer's 1050px shell). */
 const CHAT_W = 1050;
 const CHAT_LEFT = (1920 - CHAT_W) / 2;
 const CHAT_TOP = 882;
+const CHAT_CENTER_TOP = 430;
 
 /* ── Shared chrome ────────────────────────────────────────────────────────── */
 
@@ -55,6 +59,89 @@ function Background() {
   // Plain near-black to match the opening/finale beats (no blue glow overlay).
   return <AbsoluteFill style={{ backgroundColor: BG }} />;
 }
+
+/**
+ * The source templates carry editor coordinates, including intentional overlap.
+ * For this product-film montage, arrange the same graph into even topological
+ * lanes. Original vertical order is retained inside each lane to reduce edge
+ * crossings while every card receives a consistent amount of breathing room.
+ */
+function leanOutTemplate(template: TemplateGraph): TemplateGraph {
+  const order = topoOrder(template.nodes, template.edges);
+  const rankById = new Map(template.nodes.map((node) => [node.id, 0]));
+  const sourceIndex = new Map(template.nodes.map((node, index) => [node.id, index]));
+
+  for (const id of order) {
+    const rank = rankById.get(id) ?? 0;
+    for (const edge of template.edges) {
+      if (edge.source !== id) continue;
+      rankById.set(edge.target, Math.max(rankById.get(edge.target) ?? 0, rank + 1));
+    }
+  }
+
+  const layers = new Map<number, typeof template.nodes>();
+  for (const node of template.nodes) {
+    const rank = rankById.get(node.id) ?? 0;
+    const layer = layers.get(rank) ?? [];
+    layer.push(node);
+    layers.set(rank, layer);
+  }
+
+  const positioned = new Map<string, { x: number; y: number }>();
+  const ranks = [...layers.keys()].sort((a, b) => a - b);
+  let column = 0;
+  const maxRowsPerColumn = 4;
+  ranks.forEach((rank) => {
+    const layer = [...(layers.get(rank) ?? [])].sort((a, b) => {
+      const byY = a.position.y - b.position.y;
+      return byY || (sourceIndex.get(a.id) ?? 0) - (sourceIndex.get(b.id) ?? 0);
+    });
+    layer.forEach((node, index) => {
+      const subcolumn = Math.floor(index / maxRowsPerColumn);
+      const withinColumn = index % maxRowsPerColumn;
+      const columnSize = Math.min(
+        maxRowsPerColumn,
+        layer.length - subcolumn * maxRowsPerColumn,
+      );
+      positioned.set(node.id, {
+        x: column + subcolumn,
+        // Keep a constant row unit across lanes instead of stretching every
+        // lane independently from top to bottom. Dense fan-outs wrap after five
+        // rows so the readable overview never has to shrink for one tall lane.
+        y: withinColumn - (columnSize - 1) / 2,
+      });
+    });
+    column += Math.max(1, Math.ceil(layer.length / maxRowsPerColumn));
+  });
+
+  return {
+    ...template,
+    nodes: template.nodes.map((node) => ({
+      ...node,
+      position: positioned.get(node.id) ?? node.position,
+    })),
+  };
+}
+
+const LEAN_MONTAGE_WORKFLOWS = MONTAGE_WORKFLOWS.map((workflow) => ({
+  ...workflow,
+  template: leanOutTemplate(workflow.template),
+})).map((workflow) => {
+  const ranks = new Set(workflow.template.nodes.map((node) => node.position.x));
+  const layerCounts = new Map<number, number>();
+  workflow.template.nodes.forEach((node) => {
+    layerCounts.set(node.position.x, (layerCounts.get(node.position.x) ?? 0) + 1);
+  });
+  const maxLayerSize = Math.max(1, ...layerCounts.values());
+
+  return {
+    ...workflow,
+    // Cinematic cards are 520×142. These dimensions preserve ~100px of
+    // horizontal and ~78px of vertical air between every neighbouring card.
+    canvasW: 728 + Math.max(0, ranks.size - 1) * 620,
+    canvasH: 728 + Math.max(0, maxLayerSize - 1) * 220,
+  };
+});
 
 /** Two cross-fading spans (old lifts out, new drops in) sharing one anchor.
  *  Reused for the workflow title and the composer prompt so both swap in sync. */
@@ -98,11 +185,14 @@ function Swap({
  */
 function ChatBox({
   prompt,
+  top = CHAT_TOP,
   sendPress = 0,
   ripple = 0,
   rippleShown = false,
 }: {
   prompt: React.ReactNode;
+  /** Animated vertical anchor: centered while typing, bottom while building. */
+  top?: number;
   /** Send-button press pulse (0 idle, 1 fully pressed). */
   sendPress?: number;
   /** Click ripple progress (0..1). */
@@ -121,7 +211,7 @@ function ChatBox({
   const sendBg = `rgb(${Math.round(24 - sendActive * 23)}, ${Math.round(24 + sendActive * 96)}, ${Math.round(27 + sendActive * 228)})`;
   const sendFg = Math.round(113 + sendActive * 142);
   return (
-    <div style={{ position: "absolute", left: CHAT_LEFT, top: CHAT_TOP, width: CHAT_W, fontFamily: MANROPE }}>
+    <div style={{ position: "absolute", left: CHAT_LEFT, top, width: CHAT_W, fontFamily: MANROPE }}>
       <div
         style={{
           position: "relative",
@@ -245,10 +335,11 @@ function ChatBox({
 
 export const WorkflowMontageSequence: React.FC = () => {
   const frame = useCurrentFrame();
-  const { intro, build2, swap3, build3, outro } = LAUNCH_VIDEO_TIMELINE.workflowMontage;
+  const { intro, type2, dock2, build2, swap3, type3, build3, outro } =
+    LAUNCH_VIDEO_TIMELINE.workflowMontage;
 
-  const wA = MONTAGE_WORKFLOWS[0]; // Multi-LLM Consensus Trader
-  const wB = MONTAGE_WORKFLOWS[1]; // Mag 7 Stock Rotator
+  const wA = LEAN_MONTAGE_WORKFLOWS[0]; // Multi-LLM Consensus Trader
+  const wB = LEAN_MONTAGE_WORKFLOWS[1]; // Mag 7 Stock Rotator
 
   const beatIn = progress(frame, intro.start, intro.duration, FAST_FADE_EASE);
   const beatOut = progress(frame, outro.start, outro.duration, OUTRO_EASE);
@@ -264,35 +355,49 @@ export const WorkflowMontageSequence: React.FC = () => {
 
   // Each workflow opens framed on its first 2 nodes (fully in view) during its
   // build window, then pulls the camera back to the whole graph.
-  const cameraA = zoomIntroCamera({
+  const cameraA = progressiveBuildCamera({
     template: wA.template,
     vw: VW,
     vh: VH,
-    cw: CANVAS_W,
-    ch: CANVAS_H,
+    cw: wA.canvasW,
+    ch: wA.canvasH,
     frame,
     buildStart: build2.start,
     buildDur: build2.duration,
-    holdDur: 2,
-    zoomOutDur: 28,
+    variant: "cinematic",
   });
-  const cameraB = zoomIntroCamera({
+  const cameraB = progressiveBuildCamera({
     template: wB.template,
     vw: VW,
     vh: VH,
-    cw: CANVAS_W,
-    ch: CANVAS_H,
+    cw: wB.canvasW,
+    ch: wB.canvasH,
     frame,
     buildStart: build3.start,
     buildDur: build3.duration,
-    holdDur: 2,
-    zoomOutDur: 28,
+    variant: "cinematic",
   });
 
   // Prompt + title swap: old text lifts out over the first half of the swap, new
   // text drops in over the second half.
   const promptOut = progress(frame, swap3.start, swap3.duration * 0.5, FAST_FADE_EASE);
   const promptIn = progress(frame, swap3.start + swap3.duration * 0.5, swap3.duration * 0.5, POP_EASE);
+
+  const typedPrompt = (text: string, start: number, duration: number) => {
+    const chars = Math.floor(
+      interpolate(frame, [start, start + duration], [0, text.length], {
+        extrapolateLeft: "clamp",
+        extrapolateRight: "clamp",
+      }),
+    );
+    return text.slice(0, chars);
+  };
+  const promptA = typedPrompt(wA.prompt, type2.start, type2.duration);
+  const promptB = typedPrompt(wB.prompt, type3.start, type3.duration);
+
+  const firstDock = progress(frame, dock2.start, dock2.duration, Easing.inOut(Easing.cubic));
+  const firstComposerTop = interpolate(firstDock, [0, 1], [CHAT_CENTER_TOP, CHAT_TOP]);
+  const composerTop = firstComposerTop;
 
   // A send-arrow click precedes each workflow build (like the opening composer):
   // the pointer arrives, presses the send arrow, and that "triggers" the build.
@@ -322,7 +427,7 @@ export const WorkflowMontageSequence: React.FC = () => {
     : progress(frame, clickAStart - 4, 7, Easing.out(Easing.cubic));
   // Send-arrow center (screen px), inside the montage ChatBox action row.
   const SEND_X = 1434;
-  const SEND_Y = 1016;
+  const SEND_Y = composerTop + 134;
   const curX = SEND_X + (1 - cursorApproach) * 34;
   const curY = SEND_Y + (1 - cursorApproach) * 40;
 
@@ -349,47 +454,47 @@ export const WorkflowMontageSequence: React.FC = () => {
     <AbsoluteFill style={{ backgroundColor: BG, fontFamily: SANS, opacity: beatOpacity }}>
       <Background />
 
-      {/* Workflow name (clean, no parentheticals), swapping with the build. */}
-      <Swap
-        a={wfName(wA)}
-        b={wfName(wB)}
-        outP={promptOut}
-        inP={promptIn}
-        center
+      {/* Workflow canvas: both graphs stacked, cross-fading on the swap. */}
+      <div
         style={{
           position: "absolute",
-          left: 0,
-          right: 0,
-          top: 66,
-          height: 44,
-          textAlign: "center",
-          color: "#fff",
-          fontFamily: SANS,
-          fontSize: 34,
-          fontWeight: 600,
-          letterSpacing: "-0.02em",
+          left: canvasLeft,
+          top: WF_TOP,
+          width: VW,
+          height: VH,
+          overflow: "hidden",
         }}
-      />
-
-      {/* Workflow canvas: both graphs stacked, cross-fading on the swap. */}
-      <div style={{ position: "absolute", left: canvasLeft, top: WF_TOP, width: VW, height: VH }}>
+      >
         <div style={{ position: "absolute", inset: 0, opacity: canvasAOpacity }}>
-          <WorkflowGraph template={wA.template} vw={VW} vh={VH} cw={CANVAS_W} ch={CANVAS_H} camera={cameraA} nodeReveal={revealA.nodeReveal} edgeReveal={revealA.edgeReveal} />
+          <WorkflowGraph template={wA.template} vw={VW} vh={VH} cw={wA.canvasW} ch={wA.canvasH} camera={cameraA} nodeReveal={revealA.nodeReveal} edgeReveal={revealA.edgeReveal} nodeVariant="cinematic" />
         </div>
         <div style={{ position: "absolute", inset: 0, opacity: canvasBOpacity }}>
-          <WorkflowGraph template={wB.template} vw={VW} vh={VH} cw={CANVAS_W} ch={CANVAS_H} camera={cameraB} nodeReveal={revealB.nodeReveal} edgeReveal={revealB.edgeReveal} />
+          <WorkflowGraph template={wB.template} vw={VW} vh={VH} cw={wB.canvasW} ch={wB.canvasH} camera={cameraB} nodeReveal={revealB.nodeReveal} edgeReveal={revealB.edgeReveal} nodeVariant="cinematic" />
         </div>
+        <div
+          aria-hidden
+          style={{
+            position: "absolute",
+            inset: 0,
+            pointerEvents: "none",
+            background:
+              "linear-gradient(to right, transparent 0%, transparent calc(100% - 150px), rgba(9, 9, 11, 0.72) calc(100% - 54px), #09090b 100%)",
+            boxShadow:
+              "inset 3px 0 #09090b, inset -3px 0 #09090b, inset 0 3px #09090b, inset 0 -3px #09090b",
+          }}
+        />
       </div>
 
       {/* Composer (same chat box as the video's opening), prompt swaps mid-beat. */}
       <ChatBox
+        top={composerTop}
         sendPress={sendPress}
         ripple={ripple}
         rippleShown={rippleShown}
         prompt={
           <Swap
-            a={<>{wA.prompt}{Caret}</>}
-            b={<>{wB.prompt}{Caret}</>}
+            a={<>{promptA}{Caret}</>}
+            b={<>{promptB}{Caret}</>}
             outP={promptOut}
             inP={promptIn}
             style={{ display: "block", height: 40 }}

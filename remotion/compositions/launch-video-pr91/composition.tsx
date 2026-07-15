@@ -1,4 +1,4 @@
-import { AbsoluteFill, Sequence } from "remotion";
+import { AbsoluteFill, Freeze, Sequence, useCurrentFrame } from "remotion";
 import { LaunchVideoComposition } from "../launch-video/composition";
 import { ExecutionSequence } from "./beat-execution";
 import { WorkflowMontageSequence } from "./beat-montage";
@@ -6,8 +6,23 @@ import { ProductShellSequence } from "./beat-product-shell";
 import { ProductCutFinaleSequence } from "./finale";
 import type { LaunchVideoProductCutProps } from "./props";
 import { LAUNCH_VIDEO_TIMELINE } from "./timeline";
+import { OUTRO_EASE, progress } from "./motion";
 
 const CANVAS = "#09090b";
+
+const ProductCutCoreSequence: React.FC<LaunchVideoProductCutProps> = (props) => {
+  const frame = useCurrentFrame();
+  const { freezeAt, outro } = LAUNCH_VIDEO_TIMELINE.core;
+  const fadeOut = progress(frame, outro.start, outro.duration, OUTRO_EASE);
+
+  return (
+    <AbsoluteFill style={{ opacity: 1 - fadeOut }}>
+      <Freeze frame={Math.min(frame, freezeAt)}>
+        <LaunchVideoComposition {...props} />
+      </Freeze>
+    </AbsoluteFill>
+  );
+};
 
 /**
  * Expanded launch film based on PR #91. The original Launch Video is nested
@@ -27,7 +42,7 @@ export const LaunchVideoProductCutComposition: React.FC<
         durationInFrames={core.durationInFrames}
         name="Original launch-video spine"
       >
-        <LaunchVideoComposition {...props} />
+        <ProductCutCoreSequence {...props} />
       </Sequence>
       <Sequence
         from={workflowMontage.from}

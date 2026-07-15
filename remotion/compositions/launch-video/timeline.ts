@@ -203,7 +203,7 @@ export const LAUNCH_VIDEO_TIMELINE = {
       // completed: node → connector → node → connector.
       start: 8,
       stagger: 20,
-      duration: 12,
+      duration: 18,
     },
     edges: {
       start: 20,
