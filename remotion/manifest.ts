@@ -158,10 +158,10 @@ export const motionManifest: MotionEntryMeta[] = [
     durationInFrames: 262,
   },
   {
-    // NickAI social card (STA-473) — brand-dark frame for the weekly X
-    // content calendar. ~2.4s staggered entrance (wave → header → headline →
-    // subline → chips/module → footer) + hold. Stills render settled at any
-    // frame because the entrance pins to 1 when `animate` is off.
+    // NickAI social card (STA-473) — free-wave frame for the weekly X content
+    // calendar (light + dark). Full-height wave, no footer. ~2.4s staggered
+    // entrance (wave → header → headline → subline → chips/module) + hold.
+    // Stills settle at any frame when `animate` is off.
     id: "nickai-social-card",
     label: "NickAI Social Card",
     width: 1600,

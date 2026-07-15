@@ -1,10 +1,12 @@
 /**
- * Props for the NickAI social card (STA-473) — the brand frame for the weekly
- * X content calendar. Brand-dark variant of the V2 system: zinc-950 canvas,
- * #0178FF primary, Duplet headlines, Manrope UI, blue-wave motif.
+ * Props for the NickAI social card (STA-473) — the free-wave brand frame for
+ * the weekly X content calendar (distinct from `nickai-og-cover`, which crops
+ * the wave into a rounded panel). Light + dark skins; no footer CTA.
  *
  * Must be JSON-serializable (Remotion v4 requirement).
  */
+export type NickaiSocialCardTheme = "light" | "dark";
+
 export type NickaiSocialCardFill =
   | {
       kind: "bigNumber";
@@ -24,29 +26,44 @@ export type NickaiSocialCardFill =
   | { kind: "none" };
 
 export type NickaiSocialCardProps = {
-  /** Series label, e.g. "NEW IN NICK", "BLUEPRINT", "LIVE RESULTS". */
+  /** Color skin. "dark" is the classic zinc-950 card; "light" is the slate-50 twin. */
+  theme?: NickaiSocialCardTheme;
+  /**
+   * Series label for text-card covers. Canonical set:
+   * "Product drop" | "Trading guide" | "Trading analysis" | "Trading insights".
+   * Blog posts are not a series — they inherit one of the four above.
+   */
   eyebrow: string;
   headline: string;
   subline?: string;
-  /** Small pill labels, e.g. the enabling nodes. Keep to ≤3. */
+  /**
+   * @deprecated Series label is `eyebrow` (rendered as the sole chip under
+   * the subline). Kept optional so older props JSON still parses; ignored.
+   */
   chips?: string[];
   fill?: NickaiSocialCardFill;
-  /** Footer-left small print, e.g. source note. */
+  /**
+   * @deprecated Footer removed from the layout; kept optional so older props
+   * JSON still parses. Ignored at render time.
+   */
   meta?: string;
-  /** Wave motif variant; 0 hides it. */
+  /** Wave motif variant for stills; 0 hides it. MP4 always uses the baked silk loop. */
   wave?: 0 | 1 | 2;
-  /** CP2 motion contract: false/undefined renders the settled still. */
+  /**
+   * false/undefined → PNG still (settled).
+   * true → MP4 with the baked landing-page silk loop behind settled/entering copy.
+   */
   animate?: boolean;
 };
 
 export const nickaiSocialCardDefaultProps: NickaiSocialCardProps = {
-  eyebrow: "New in Nick",
+  theme: "dark",
+  eyebrow: "Product drop",
   headline: "Trade the same event across Kalshi and Polymarket from one workflow",
   subline:
     "Confidence-gated venue matching finds the same market on both books and routes the better price.",
-  chips: ["Kalshi node", "Polymarket node"],
+  chips: [],
   fill: { kind: "none" },
-  meta: "Nick v0.2.1",
   wave: 1,
   animate: false,
 };

@@ -2,7 +2,18 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { Bot, FileText, Hexagon, History, LayoutGrid, Library, Radar, Shapes, TrendingUp } from "lucide-react";
+import {
+  Bot,
+  FileText,
+  Hexagon,
+  History,
+  ImageIcon,
+  LayoutGrid,
+  Library,
+  Radar,
+  Shapes,
+  TrendingUp,
+} from "lucide-react";
 import { cn } from "@/lib/utils";
 import { engineManifest } from "@/engine/manifest";
 
@@ -13,6 +24,7 @@ const ICONS: Record<string, typeof Hexagon> = {
   "nickai-history": History,
   "nickai-template-library": Library,
   "nickai-widget-library": Shapes,
+  "nickai-blog-covers": ImageIcon,
   "x-signals": Radar,
   "x-posts": FileText,
   "x-performance": TrendingUp,

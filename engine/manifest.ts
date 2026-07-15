@@ -61,6 +61,13 @@ export const engineManifest: EngineEntryMeta[] = [
     meta: "32 cards",
   },
   {
+    id: "nickai-blog-covers",
+    label: "Blog & Covers",
+    group: "NickAI",
+    shortLabel: "Blog & Covers",
+    meta: "social + OG",
+  },
+  {
     id: "x-signals",
     label: "X Signals",
     group: "X Engine",
