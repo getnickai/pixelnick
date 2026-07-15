@@ -185,7 +185,8 @@ export const motionManifest: MotionEntryMeta[] = [
     // cascades out directly into the blue-accented product statement, then the
     // Nick chat composer focuses and submits, then the user message, reasoning,
     // NVDA result, and chart reveal before the composer returns for a workflow
-    // request, validation response flow, and four-node workflow build. ~18.6s.
+    // request, validation response flow, four-node workflow build, and an
+    // Execute -> NickAI brand/CTA finale. ~23.1s.
     id: "launch-video",
     label: "Launch Video",
     width: LAUNCH_VIDEO_WIDTH,

@@ -215,8 +215,43 @@ export const LAUNCH_VIDEO_TIMELINE = {
       duration: 10,
     },
   },
+  executeFinale: {
+    // The button enters while the workflow canvas is completing its outro.
+    // Its click is the transition: button -> energy core -> NickAI lockup.
+    from: 544,
+    durationInFrames: 148,
+    button: {
+      start: 3,
+      duration: 13,
+    },
+    cursor: {
+      start: 19,
+      duration: 15,
+    },
+    click: {
+      start: 34,
+      duration: 9,
+    },
+    logo: {
+      start: 43,
+      duration: 24,
+    },
+    cta: {
+      start: 72,
+      stagger: 2,
+      duration: 12,
+    },
+    url: {
+      start: 82,
+      duration: 11,
+    },
+    outro: {
+      start: 137,
+      duration: 10,
+    },
+  },
 } as const;
 
 export const LAUNCH_VIDEO_DURATION =
-  LAUNCH_VIDEO_TIMELINE.workflowBuild.from +
-  LAUNCH_VIDEO_TIMELINE.workflowBuild.durationInFrames;
+  LAUNCH_VIDEO_TIMELINE.executeFinale.from +
+  LAUNCH_VIDEO_TIMELINE.executeFinale.durationInFrames;

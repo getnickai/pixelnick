@@ -152,6 +152,24 @@ const WORKFLOW_CONNECTION_ORIGINS = [
   },
 ] as const;
 
+const WORKFLOW_CONNECTION_TARGETS = [
+  {
+    id: "price-input",
+    x: priceNode.x + priceNode.width / 2,
+    y: priceNode.y,
+  },
+  {
+    id: "condition-input",
+    x: conditionNode.x,
+    y: conditionNode.y + WORKFLOW_NODE_HEIGHT / 2,
+  },
+  {
+    id: "trade-input",
+    x: tradeNode.x + tradeNode.width * 0.74,
+    y: tradeNode.y,
+  },
+] as const;
+
 const WORKFLOW_EDGE_COUNT = WORKFLOW_CONNECTORS.length;
 
 const WORKFLOW_BADGES: Record<
@@ -549,12 +567,20 @@ const FakeCursor: React.FC<{
   move: number;
   press: number;
   opacity: number;
-}> = ({ move, press, opacity }) => {
+  origin?: { x: number; y: number };
+  target?: { x: number; y: number };
+  size?: number;
+}> = ({
+  move,
+  press,
+  opacity,
+  origin = { x: 680, y: 300 },
+  target = { x: 1004, y: 166 },
+  size = 32,
+}) => {
   // Coordinates are relative to the composer shell. The send control sits
   // in the compact action row above the footer strip.
-  const target = { x: 1004, y: 166 };
-  const origin = { x: 680, y: 300 };
-  const cursorSize = 32;
+  const cursorSize = size;
   const cursorHotspot = (3.5 / 20) * cursorSize;
   const x = interpolate(move, [0, 1], [origin.x, target.x]);
   const y = interpolate(move, [0, 1], [origin.y, target.y]);
@@ -1679,6 +1705,24 @@ const WorkflowBuildSequence: React.FC = () => {
       }),
     };
   });
+  const targetDotStyles = WORKFLOW_CONNECTION_TARGETS.map((_, index) => {
+    const start =
+      edges.start + index * edges.stagger + edges.duration - 2;
+
+    return {
+      opacity: progress(frame, start, 4, FAST_FADE_EASE),
+      scale: spring({
+        frame: Math.max(0, frame - start),
+        fps,
+        durationInFrames: 7,
+        config: {
+          damping: 11,
+          stiffness: 220,
+          mass: 0.6,
+        },
+      }),
+    };
+  });
 
   return (
     <AbsoluteFill
@@ -1879,8 +1923,323 @@ const WorkflowBuildSequence: React.FC = () => {
               }}
             />
           ))}
+
+          {WORKFLOW_CONNECTION_TARGETS.map((target, index) => (
+            <span
+              key={target.id}
+              aria-hidden
+              style={{
+                position: "absolute",
+                zIndex: 3,
+                left: target.x - 9,
+                top: target.y - 9,
+                width: 18,
+                height: 18,
+                borderRadius: "50%",
+                backgroundColor: "#0178ff",
+                boxShadow:
+                  "0 0 0 4px rgba(1, 120, 255, 0.13), 0 0 18px rgba(1, 120, 255, 0.42)",
+                opacity: targetDotStyles[index].opacity,
+                transform: `scale(${targetDotStyles[index].scale})`,
+              }}
+            />
+          ))}
         </div>
       </div>
+    </AbsoluteFill>
+  );
+};
+
+const ExecuteFinaleSequence: React.FC<LaunchVideoProps> = ({
+  ctaHeadline,
+  ctaUrl,
+}) => {
+  const frame = useCurrentFrame();
+  const { fps } = useVideoConfig();
+  const { button, cursor, click, logo, cta, url, outro } =
+    LAUNCH_VIDEO_TIMELINE.executeFinale;
+
+  const buttonOpacity = progress(
+    frame,
+    button.start,
+    Math.min(7, button.duration),
+    FAST_FADE_EASE,
+  );
+  const buttonSettle = spring({
+    frame: Math.max(0, frame - button.start),
+    fps,
+    durationInFrames: button.duration,
+    config: {
+      damping: 12,
+      stiffness: 170,
+      mass: 0.7,
+    },
+  });
+  const cursorMove = progress(
+    frame,
+    cursor.start,
+    cursor.duration,
+    Easing.out(Easing.cubic),
+  );
+  const cursorIn = progress(frame, cursor.start - 2, 4, FAST_FADE_EASE);
+  const press = interpolate(
+    frame,
+    [click.start, click.start + 3, click.start + click.duration],
+    [0, 1, 0],
+    {
+      easing: Easing.inOut(Easing.quad),
+      extrapolateLeft: "clamp",
+      extrapolateRight: "clamp",
+    },
+  );
+  const clickProgress = progress(
+    frame,
+    click.start,
+    click.duration,
+    FAST_FADE_EASE,
+  );
+  const cursorOut = progress(
+    frame,
+    click.start + 3,
+    4,
+    FAST_FADE_EASE,
+  );
+  const buttonCollapse = progress(
+    frame,
+    click.start + 2,
+    9,
+    Easing.inOut(Easing.cubic),
+  );
+  const logoReveal = progress(
+    frame,
+    logo.start,
+    logo.duration,
+    Easing.out(Easing.cubic),
+  );
+  const logoSpring = spring({
+    frame: Math.max(0, frame - logo.start),
+    fps,
+    durationInFrames: logo.duration,
+    config: {
+      damping: 24,
+      stiffness: 130,
+      mass: 0.9,
+    },
+  });
+  const seamIn = progress(
+    frame,
+    click.start + 3,
+    8,
+    Easing.out(Easing.cubic),
+  );
+  const seamOut = progress(
+    frame,
+    logo.start + 7,
+    11,
+    FAST_FADE_EASE,
+  );
+  const urlIn = progress(frame, url.start, url.duration, POP_EASE);
+  const exit = progress(frame, outro.start, outro.duration, OUTRO_EASE);
+
+  const buttonTextOpacity = 1 - progress(
+    frame,
+    click.start + 2,
+    6,
+    FAST_FADE_EASE,
+  );
+  const seamOpacity = seamIn * (1 - seamOut);
+  const seamWidth = interpolate(seamIn, [0, 1], [180, 680]);
+  const sweepX = interpolate(clickProgress, [0, 1], [-160, 520]);
+  const logoWords = ctaHeadline.split(" ");
+
+  return (
+    <AbsoluteFill
+      style={{
+        alignItems: "center",
+        justifyContent: "center",
+        overflow: "hidden",
+        fontFamily: MANROPE,
+        opacity: 1 - exit,
+        transform: `translateY(${exit * 24}px)`,
+      }}
+    >
+      <div
+        style={{
+          position: "absolute",
+          left: "50%",
+          top: "50%",
+          width: 430,
+          height: 116,
+          display: "flex",
+          alignItems: "center",
+          justifyContent: "center",
+          gap: 16,
+          borderRadius: 58,
+          color: "white",
+          background:
+            "linear-gradient(180deg, #0b84ff 0%, #0178ff 58%, #006eea 100%)",
+          boxShadow: `0 18px 48px rgba(1, 120, 255, ${0.16 + press * 0.1}), inset 0 1px 0 rgba(255, 255, 255, 0.2)`,
+          opacity:
+            buttonOpacity *
+            (1 - progress(frame, click.start + 6, 5, FAST_FADE_EASE)),
+          overflow: "hidden",
+          transform: `translate(-50%, calc(-50% + ${(1 - buttonSettle) * 34}px)) scaleX(${0.86 + buttonSettle * 0.14 + buttonCollapse * 0.34}) scaleY(${0.86 + buttonSettle * 0.14 - press * 0.035 - buttonCollapse * 0.985})`,
+        }}
+      >
+        <span
+          aria-hidden
+          style={{
+            position: "absolute",
+            top: -30,
+            bottom: -30,
+            left: sweepX,
+            width: 96,
+            opacity:
+              frame >= click.start && frame <= click.start + click.duration
+                ? 0.7
+                : 0,
+            background:
+              "linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.72), transparent)",
+            filter: "blur(8px)",
+            transform: "skewX(-18deg)",
+          }}
+        />
+        <span
+          style={{
+            display: "flex",
+            alignItems: "center",
+            gap: 14,
+            opacity: buttonTextOpacity,
+            fontSize: 38,
+            fontWeight: 650,
+            letterSpacing: -0.5,
+            whiteSpace: "nowrap",
+          }}
+        >
+          Execute <ArrowRight size={36} strokeWidth={2.2} />
+        </span>
+      </div>
+
+      <div
+        aria-hidden
+        style={{
+          position: "absolute",
+          left: "50%",
+          top: "50%",
+          width: seamWidth,
+          height: 2,
+          borderRadius: 999,
+          background:
+            "linear-gradient(90deg, transparent, rgba(1, 120, 255, 0.72) 14%, white 50%, rgba(1, 120, 255, 0.72) 86%, transparent)",
+          boxShadow:
+            "0 0 12px rgba(255, 255, 255, 0.3), 0 0 38px rgba(1, 120, 255, 0.25)",
+          opacity: seamOpacity,
+          transform: "translate(-50%, -50%)",
+        }}
+      />
+
+      <div
+        aria-hidden
+        style={{
+          position: "absolute",
+          left: "50%",
+          top: "50%",
+          width: 760,
+          height: 230,
+          borderRadius: "50%",
+          background:
+            "radial-gradient(ellipse, rgba(1, 120, 255, 0.16) 0%, rgba(1, 120, 255, 0.055) 44%, transparent 72%)",
+          opacity: logoReveal * (1 - seamOut * 0.35),
+          filter: "blur(22px)",
+          transform: `translate(-50%, -50%) scale(${0.76 + logoReveal * 0.24})`,
+        }}
+      />
+
+      <div
+        style={{
+          position: "absolute",
+          left: "50%",
+          top: "50%",
+          width: 574,
+          height: 120,
+          opacity: logoReveal,
+          clipPath: `inset(0 ${50 - logoReveal * 50}% 0 ${50 - logoReveal * 50}%)`,
+          filter: `blur(${(1 - logoReveal) * 13}px)`,
+          transform: `translate(-50%, -50%) scale(${0.975 + logoSpring * 0.025})`,
+        }}
+      >
+        <Img
+          src={staticFile("figma/logo.svg")}
+          style={{ width: "100%", height: "100%" }}
+        />
+      </div>
+
+      <div
+        style={{
+          position: "absolute",
+          left: 100,
+          right: 100,
+          top: "64%",
+          display: "flex",
+          alignItems: "center",
+          justifyContent: "center",
+          gap: 18,
+          color: "#fafafa",
+          fontFamily: DUPLET,
+          fontSize: 68,
+          fontWeight: 500,
+          lineHeight: 1.08,
+          letterSpacing: 0.5,
+          whiteSpace: "nowrap",
+        }}
+      >
+        {logoWords.map((word, index) => {
+          const wordIn = progress(
+            frame,
+            cta.start + index * cta.stagger,
+            cta.duration,
+            POP_EASE,
+          );
+
+          return (
+            <span
+              key={`${word}-${index}`}
+              style={{
+                display: "inline-block",
+                opacity: wordIn,
+                filter: wordIn >= 1 ? undefined : `blur(${(1 - wordIn) * 5}px)`,
+                transform: `translateY(${(1 - wordIn) * 30}px) scale(${0.97 + wordIn * 0.03})`,
+              }}
+            >
+              {word}
+            </span>
+          );
+        })}
+      </div>
+
+      <div
+        style={{
+          position: "absolute",
+          top: "75%",
+          color: "#4b9cff",
+          fontSize: 32,
+          fontWeight: 650,
+          letterSpacing: 0.4,
+          opacity: urlIn,
+          transform: `translateY(${(1 - urlIn) * 20}px)`,
+        }}
+      >
+        {ctaUrl}
+      </div>
+
+      <FakeCursor
+        move={cursorMove}
+        press={press}
+        opacity={cursorIn * (1 - cursorOut) * (1 - exit)}
+        origin={{ x: 1280, y: 830 }}
+        target={{ x: 960, y: 600 }}
+        size={44}
+      />
     </AbsoluteFill>
   );
 };
@@ -1898,6 +2257,7 @@ export const LaunchVideoComposition: React.FC<LaunchVideoProps> = (props) => {
     workflowComposer,
     workflowResponse,
     workflowBuild,
+    executeFinale,
   } = LAUNCH_VIDEO_TIMELINE;
 
   return (
@@ -1957,6 +2317,13 @@ export const LaunchVideoComposition: React.FC<LaunchVideoProps> = (props) => {
         name="Workflow nodes build"
       >
         <WorkflowBuildSequence />
+      </Sequence>
+      <Sequence
+        from={executeFinale.from}
+        durationInFrames={executeFinale.durationInFrames}
+        name="Execute and NickAI finale"
+      >
+        <ExecuteFinaleSequence {...props} />
       </Sequence>
     </AbsoluteFill>
   );

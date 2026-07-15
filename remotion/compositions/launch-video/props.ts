@@ -12,6 +12,10 @@ export type LaunchVideoProps = {
   chatPrompt: string;
   /** Workflow request typed after the first market-data response. */
   workflowPrompt: string;
+  /** Final call-to-action shown after executing the workflow. */
+  ctaHeadline: string;
+  /** Final product URL. */
+  ctaUrl: string;
   /** Keep the preserved icon field available for later launch-video scenes. */
   showBackgroundIcons: boolean;
 };
@@ -24,5 +28,7 @@ export const launchVideoDefaultProps: LaunchVideoProps = {
   chatPrompt: "Pull NVDA — price and give me the daily chart",
   workflowPrompt:
     "Create a workflow to buy $50 of shares every 12 hour when NVDA is below $200. Use my paper trading wallet",
+  ctaHeadline: "Start your trading agent today",
+  ctaUrl: "getnick.ai",
   showBackgroundIcons: false,
 };
