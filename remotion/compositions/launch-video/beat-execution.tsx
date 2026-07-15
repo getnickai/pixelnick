@@ -173,7 +173,7 @@ export const ExecutionSequence: React.FC = () => {
       <div
         style={{
           position: "absolute",
-          top: 396,
+          top: 340,
           left: "50%",
           transform: `translate(-50%, ${(1 - bannerP) * -20}px)`,
           display: "flex",
@@ -181,9 +181,10 @@ export const ExecutionSequence: React.FC = () => {
           gap: 14,
           padding: "15px 30px",
           borderRadius: 999,
-          backgroundColor: "rgba(31,193,107,0.14)",
-          border: "1px solid rgba(31,193,107,0.5)",
-          boxShadow: "0 24px 60px -30px rgba(31,193,107,0.6)",
+          // Opaque so the workflow node behind never bleeds through the text.
+          backgroundColor: "#0c1f14",
+          border: "1px solid rgba(31,193,107,0.6)",
+          boxShadow: "0 20px 50px -28px rgba(0,0,0,0.7)",
           opacity: bannerOpacity,
           fontFamily: SANS,
           whiteSpace: "nowrap",

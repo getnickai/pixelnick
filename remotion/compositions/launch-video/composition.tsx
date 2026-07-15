@@ -1905,7 +1905,7 @@ const ExecuteFinaleSequence: React.FC<LaunchVideoProps> = ({
   // AAPL card: eases from the execution hand-off (centered, w560) up to its
   // resting spot as the arrangement assembles around it.
   const set = progress(frame, 2, 16, Easing.inOut(Easing.cubic));
-  const aaplCY = interpolate(set, [0, 1], [630, 478]);
+  const aaplCY = interpolate(set, [0, 1], [630, 500]);
   const aaplW = interpolate(set, [0, 1], [560, 430]);
 
   const widgetAspect = (kind: string) =>
@@ -1916,12 +1916,13 @@ const ExecuteFinaleSequence: React.FC<LaunchVideoProps> = ({
     | { kind: "wf"; w: (typeof GRID_WORKFLOWS)[number]; x: number; y: number }
     | { kind: "price"; data: typeof SAMPLE_PRICE_NVDA; cx: number; cy: number; w: number }
     | { kind: "portfolio"; data: typeof SAMPLE_PORTFOLIO; cx: number; cy: number; w: number };
+  // Middle row: one widget per side, all the same width as the AAPL card so the
+  // three align — portfolio left, AAPL centered, SpaceX price right.
   const SATELLITES: Sat[] = [
     ...GRID_WORKFLOWS.map((w, i) => ({ kind: "wf" as const, w, x: wfX(i), y: TOP_Y })),
     ...GRID_WORKFLOWS_2.map((w, i) => ({ kind: "wf" as const, w, x: wfX(i), y: BOT_Y })),
-    { kind: "portfolio", data: SAMPLE_PORTFOLIO, cx: 360, cy: 478, w: 300 },
-    { kind: "price", data: SAMPLE_PRICE_SPACEX, cx: 1558, cy: 368, w: 290 },
-    { kind: "price", data: SAMPLE_PRICE_NVDA, cx: 1558, cy: 600, w: 290 },
+    { kind: "portfolio", data: SAMPLE_PORTFOLIO, cx: 380, cy: 500, w: 430 },
+    { kind: "price", data: SAMPLE_PRICE_SPACEX, cx: 1540, cy: 500, w: 430 },
   ];
 
   const bandIn = progress(frame, grid.start + 40, 16, FAST_FADE_EASE);
