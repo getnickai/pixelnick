@@ -235,16 +235,16 @@ export const LAUNCH_VIDEO_TIMELINE = {
     logo: {
       // The pill completes its pressed state, shrinks into a circle, then the
       // mark and wordmark assemble in two distinct beats.
-      start: 54,
+      start: 58,
       duration: 24,
     },
     cta: {
-      start: 84,
+      start: 92,
       stagger: 2,
       duration: 12,
     },
     url: {
-      start: 96,
+      start: 104,
       duration: 11,
     },
     outro: {

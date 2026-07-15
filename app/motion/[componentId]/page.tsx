@@ -11,7 +11,7 @@ import { getMotionEntry } from "@/remotion/registry";
 // Player mounts fresh on the client only, so autoPlay fires cleanly.
 const PlayerHost = dynamic(
   () => import("./player-host").then((m) => m.PlayerHost),
-  { ssr: false }
+  { ssr: false },
 );
 
 export default function MotionPlayerPage({
@@ -23,5 +23,9 @@ export default function MotionPlayerPage({
   const entry = getMotionEntry(componentId);
   if (!entry) notFound();
 
-  return <PlayerHost key={componentId} entry={entry} />;
+  return (
+    <div className="flex min-h-full items-center justify-center p-8">
+      <PlayerHost key={componentId} entry={entry} />
+    </div>
+  );
 }

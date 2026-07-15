@@ -45,6 +45,8 @@ import {
 } from "./compositions/workflow-template-card/props";
 import { LaunchVideoComposition } from "./compositions/launch-video/composition";
 import { launchVideoDefaultProps } from "./compositions/launch-video/props";
+import { LaunchVideoProductCutComposition } from "./compositions/launch-video-pr91/composition";
+import { launchVideoProductCutDefaultProps } from "./compositions/launch-video-pr91/props";
 import { getMotionEntryMeta } from "./manifest";
 
 const perf = getMotionEntryMeta("performance-card")!;
@@ -61,6 +63,7 @@ const nickaiSocial = getMotionEntryMeta("nickai-social-card")!;
 const nickaiOgCover = getMotionEntryMeta("nickai-og-cover")!;
 const workflowTemplate = getMotionEntryMeta("workflow-template-card")!;
 const launchVideo = getMotionEntryMeta("launch-video")!;
+const launchVideoProductCut = getMotionEntryMeta("launch-video-pr91")!;
 
 export const RemotionRoot: React.FC = () => {
   return (
@@ -218,6 +221,15 @@ export const RemotionRoot: React.FC = () => {
         width={launchVideo.width}
         height={launchVideo.height}
         defaultProps={launchVideoDefaultProps}
+      />
+      <Composition
+        id="launch-video-pr91"
+        component={LaunchVideoProductCutComposition}
+        durationInFrames={launchVideoProductCut.durationInFrames}
+        fps={launchVideoProductCut.fps}
+        width={launchVideoProductCut.width}
+        height={launchVideoProductCut.height}
+        defaultProps={launchVideoProductCutDefaultProps}
       />
     </>
   );

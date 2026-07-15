@@ -619,6 +619,7 @@ const ChatComposerSequence: React.FC<ChatComposerSequenceProps> = ({
   showPlaceholder = true,
 }) => {
   const frame = useCurrentFrame();
+  const { fps } = useVideoConfig();
   const { shell, focus, placeholder, typing, send, outro } = timing;
 
   const shellOpacity = progress(
@@ -656,16 +657,36 @@ const ChatComposerSequence: React.FC<ChatComposerSequenceProps> = ({
     Math.max(1, send.duration * 0.35),
     FAST_FADE_EASE,
   );
-  const sendPress = interpolate(
+  const sendContactStart = send.start + 4;
+  const sendReleaseStart = sendContactStart + 3;
+  const sendPressDown = progress(
     frame,
-    [send.start + 4, send.start + 7, send.start + send.duration],
-    [0, 1, 0],
-    {
-      easing: Easing.inOut(Easing.quad),
-      extrapolateLeft: "clamp",
-      extrapolateRight: "clamp",
-    },
+    sendContactStart,
+    3,
+    Easing.out(Easing.cubic),
   );
+  const sendReleaseSpring = spring({
+    frame: Math.max(0, frame - sendReleaseStart),
+    fps,
+    durationInFrames: Math.max(1, send.duration - 3),
+    config: {
+      damping: 9,
+      stiffness: 280,
+      mass: 0.55,
+    },
+  });
+  const sendPress =
+    frame < sendReleaseStart
+      ? sendPressDown
+      : Math.max(0, Math.min(1, 1 - sendReleaseSpring));
+  const composerClickScale =
+    frame < sendReleaseStart
+      ? 1 - sendPressDown * 0.018
+      : 0.982 + sendReleaseSpring * 0.018;
+  const sendButtonClickScale =
+    frame < sendReleaseStart
+      ? 1 - sendPressDown * 0.055
+      : 0.945 + sendReleaseSpring * 0.055;
   const cursorMove = progress(
     frame,
     cursorStart,
@@ -708,7 +729,7 @@ const ChatComposerSequence: React.FC<ChatComposerSequenceProps> = ({
           position: "relative",
           opacity: shellOpacity * (1 - exit),
           filter: `blur(${(1 - shellSettle) * 5 + exit * 4}px)`,
-          transform: `translateY(${(1 - shellSettle) * 42 + exit * 36}px) scale(${0.96 + shellSettle * 0.04 - sendPress * 0.012})`,
+          transform: `translateY(${(1 - shellSettle) * 42 + exit * 36}px) scale(${(0.96 + shellSettle * 0.04) * composerClickScale})`,
           transformOrigin: "center",
         }}
       >
@@ -719,8 +740,7 @@ const ChatComposerSequence: React.FC<ChatComposerSequenceProps> = ({
             borderRadius: 31,
             border: "1px solid #27272a",
             backgroundColor: "#18181b",
-            boxShadow:
-              "0 28px 80px rgba(0, 0, 0, 0.46), 0 2px 8px rgba(0, 0, 0, 0.28)",
+            boxShadow: `0 ${28 - sendPress * 12}px ${80 - sendPress * 28}px rgba(0, 0, 0, ${0.46 - sendPress * 0.08}), 0 ${2 - sendPress}px ${8 - sendPress * 3}px rgba(0, 0, 0, 0.28)`,
           }}
         >
           <div
@@ -828,8 +848,8 @@ const ChatComposerSequence: React.FC<ChatComposerSequenceProps> = ({
                   borderRadius: "50%",
                   color: `rgb(${sendForeground}, ${sendForeground}, ${sendForeground})`,
                   backgroundColor: sendBackground,
-                  boxShadow: `inset 0 0 0 1px rgba(63, 63, 70, ${1 - sendActive})`,
-                  transform: `scale(${1 - sendPress * 0.1})`,
+                  boxShadow: `0 ${5 - sendPress * 3}px ${14 - sendPress * 7}px rgba(1, 120, 255, ${sendActive * (0.2 - sendPress * 0.06)}), inset 0 0 0 1px rgba(63, 63, 70, ${1 - sendActive})`,
+                  transform: `scale(${sendButtonClickScale})`,
                 }}
               >
                 <span
@@ -1993,12 +2013,27 @@ const ExecuteFinaleSequence: React.FC<LaunchVideoProps> = ({
       extrapolateRight: "clamp",
     },
   );
-  const clickProgress = progress(
+  const pressDown = progress(
     frame,
     click.start,
-    click.duration,
-    FAST_FADE_EASE,
+    3,
+    Easing.out(Easing.cubic),
   );
+  const releaseStart = click.start + 3;
+  const releaseSpring = spring({
+    frame: Math.max(0, frame - releaseStart),
+    fps,
+    durationInFrames: 12,
+    config: {
+      damping: 9,
+      stiffness: 280,
+      mass: 0.55,
+    },
+  });
+  const clickScale =
+    frame < releaseStart
+      ? 1 - pressDown * 0.055
+      : 0.945 + releaseSpring * 0.055;
   const cursorOut = progress(
     frame,
     click.start + 3,
@@ -2007,7 +2042,7 @@ const ExecuteFinaleSequence: React.FC<LaunchVideoProps> = ({
   );
   const circleMorph = progress(
     frame,
-    click.start + click.duration - 1,
+    click.start + click.duration + 3,
     12,
     Easing.inOut(Easing.cubic),
   );
@@ -2049,7 +2084,6 @@ const ExecuteFinaleSequence: React.FC<LaunchVideoProps> = ({
     6,
     FAST_FADE_EASE,
   );
-  const sweepX = interpolate(clickProgress, [0, 1], [-160, 520]);
   const pillWidth = interpolate(circleMorph, [0, 1], [430, 124]);
   const pillHeight = interpolate(circleMorph, [0, 1], [116, 124]);
   const circleShift = wordmarkReveal * 191;
@@ -2082,30 +2116,12 @@ const ExecuteFinaleSequence: React.FC<LaunchVideoProps> = ({
           color: "white",
           background:
             "linear-gradient(180deg, #0b84ff 0%, #0178ff 58%, #006eea 100%)",
-          boxShadow: `0 18px 48px rgba(1, 120, 255, ${0.16 + press * 0.1}), inset 0 1px 0 rgba(255, 255, 255, 0.2)`,
+          boxShadow: `0 ${18 - press * 10}px ${48 - press * 22}px rgba(1, 120, 255, ${0.16 - press * 0.04}), inset 0 1px 0 rgba(255, 255, 255, ${0.2 - press * 0.08})`,
           opacity: buttonOpacity,
           overflow: "hidden",
-          transform: `translate(calc(-50% - ${circleShift}px), calc(-50% + ${(1 - buttonSettle) * 34}px - ${finaleLift}px)) scale(${0.86 + buttonSettle * 0.14 - press * 0.035})`,
+          transform: `translate(calc(-50% - ${circleShift}px), calc(-50% + ${(1 - buttonSettle) * 34}px - ${finaleLift}px)) scale(${(0.86 + buttonSettle * 0.14) * clickScale})`,
         }}
       >
-        <span
-          aria-hidden
-          style={{
-            position: "absolute",
-            top: -30,
-            bottom: -30,
-            left: sweepX,
-            width: 96,
-            opacity:
-              frame >= click.start && frame <= click.start + click.duration
-                ? 0.7
-                : 0,
-            background:
-              "linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.72), transparent)",
-            filter: "blur(8px)",
-            transform: "skewX(-18deg)",
-          }}
-        />
         <span
           style={{
             display: "flex",

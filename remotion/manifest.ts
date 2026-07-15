@@ -21,6 +21,12 @@ import {
   LAUNCH_VIDEO_HEIGHT,
   LAUNCH_VIDEO_WIDTH,
 } from "./compositions/launch-video/timeline";
+import {
+  LAUNCH_VIDEO_PR91_DURATION,
+  LAUNCH_VIDEO_PR91_FPS,
+  LAUNCH_VIDEO_PR91_HEIGHT,
+  LAUNCH_VIDEO_PR91_WIDTH,
+} from "./compositions/launch-video-pr91/timeline";
 
 export type MotionEntryMeta = {
   id: string;
@@ -194,6 +200,16 @@ export const motionManifest: MotionEntryMeta[] = [
     height: LAUNCH_VIDEO_HEIGHT,
     fps: LAUNCH_VIDEO_FPS,
     durationInFrames: LAUNCH_VIDEO_DURATION,
+  },
+  {
+    // Expanded product cut: the original launch-video spine hands into the
+    // workflow montage, full product UX, execution, capability wall and CTA.
+    id: "launch-video-pr91",
+    label: "Launch Video — Product Cut",
+    width: LAUNCH_VIDEO_PR91_WIDTH,
+    height: LAUNCH_VIDEO_PR91_HEIGHT,
+    fps: LAUNCH_VIDEO_PR91_FPS,
+    durationInFrames: LAUNCH_VIDEO_PR91_DURATION,
   },
   {
     // Workflow Template Card — the library "Blueprint" video: a first-person

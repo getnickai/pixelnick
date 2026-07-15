@@ -1,5 +1,6 @@
 "use client";
 
+import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { ChevronRight } from "lucide-react";
 
@@ -12,9 +13,12 @@ type Crumb = { id: string; label: string };
  */
 export function DashboardBreadcrumb({
   root,
+  rootHref,
   items,
 }: {
   root: string;
+  /** When set, the root crumb links back to the section index (e.g. gallery). */
+  rootHref?: string;
   items: readonly Crumb[];
 }) {
   const pathname = usePathname();
@@ -26,7 +30,16 @@ export function DashboardBreadcrumb({
       aria-label="Breadcrumb"
       className="flex min-w-0 items-center gap-1.5 text-sm font-medium text-sidebar-foreground"
     >
-      <span className="shrink-0">{root}</span>
+      {rootHref && current ? (
+        <Link
+          href={rootHref}
+          className="shrink-0 transition-colors hover:text-foreground"
+        >
+          {root}
+        </Link>
+      ) : (
+        <span className="shrink-0">{root}</span>
+      )}
       {current ? (
         <>
           <ChevronRight

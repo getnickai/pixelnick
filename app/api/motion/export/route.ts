@@ -84,7 +84,8 @@ export async function POST(request: Request) {
       codec: "h264",
       outputLocation,
       inputProps,
-      muted: false,
+      // Product Cut is intentionally silent; avoid muxing an empty AAC track.
+      muted: body.id === "launch-video-pr91",
       concurrency: 1,
     });
 
