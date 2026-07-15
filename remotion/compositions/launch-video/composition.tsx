@@ -455,6 +455,74 @@ const OpeningSequence: React.FC<LaunchVideoProps> = ({
   );
 };
 
+// Supported trading venues. The three mark-only brands (Revolut, Alpaca,
+// Polymarket) carry their name in text so the "full logo" reads (people may not
+// recognise the R / mark alone). The rest are wordmark logos.
+const VENUES: { file: string; name?: string }[] = [
+  { file: "coinbase.svg" },
+  { file: "hyperliquid.svg" },
+  { file: "okx.svg" },
+  { file: "revolut.svg", name: "Revolut" },
+  { file: "alpaca.svg", name: "Alpaca" },
+  { file: "polymarket.png", name: "Polymarket" },
+  { file: "kalshi.svg" },
+  { file: "tradexyz.svg" },
+];
+
+const VenuesBand: React.FC<{
+  caption?: string;
+  logoHeight?: number;
+  gap?: number;
+  captionSize?: number;
+}> = ({ caption, logoHeight = 44, gap = 56, captionSize = 23 }) => (
+  <div style={{ display: "flex", flexDirection: "column", alignItems: "center", gap: 24 }}>
+    {caption ? (
+      <span
+        style={{
+          fontFamily: MANROPE,
+          fontSize: captionSize,
+          fontWeight: 600,
+          letterSpacing: 0.3,
+          color: "rgba(255, 255, 255, 0.55)",
+        }}
+      >
+        {caption}
+      </span>
+    ) : null}
+    <div style={{ display: "flex", alignItems: "center", justifyContent: "center", gap }}>
+      {VENUES.map((v) => (
+        <div key={v.file} style={{ display: "flex", alignItems: "center", gap: 10 }}>
+          <Img
+            src={staticFile(`brand/exchanges/${v.file}`)}
+            style={{
+              height: logoHeight,
+              width: "auto",
+              maxWidth: 150,
+              objectFit: "contain",
+              filter: "invert(1)",
+              opacity: 0.9,
+            }}
+          />
+          {v.name ? (
+            <span
+              style={{
+                fontFamily: MANROPE,
+                fontSize: Math.round(logoHeight * 0.6),
+                fontWeight: 600,
+                color: "#fff",
+                opacity: 0.9,
+                whiteSpace: "nowrap",
+              }}
+            >
+              {v.name}
+            </span>
+          ) : null}
+        </div>
+      ))}
+    </div>
+  </div>
+);
+
 const ProductStatementSequence: React.FC<LaunchVideoProps> = ({
   headline,
   productHeadline,
@@ -542,6 +610,24 @@ const ProductStatementSequence: React.FC<LaunchVideoProps> = ({
             </span>
           );
         })}
+      </div>
+
+      {/* Supported-venue logos under the subline. */}
+      <div
+        style={{
+          position: "absolute",
+          left: 0,
+          right: 0,
+          top: "calc(50% + 210px)",
+          display: "flex",
+          justifyContent: "center",
+          opacity:
+            progress(frame, subline.start + 10, 12, FAST_FADE_EASE) * (1 - sublineExit),
+          filter: `blur(${sublineExit * 2.5}px)`,
+          transform: `translateX(${-sublineExit * 34}px)`,
+        }}
+      >
+        <VenuesBand logoHeight={34} gap={40} />
       </div>
     </AbsoluteFill>
   );
@@ -1799,178 +1885,58 @@ const ExecuteFinaleSequence: React.FC<LaunchVideoProps> = ({
 }) => {
   const frame = useCurrentFrame();
   const { fps } = useVideoConfig();
-  const { heroFly, grid, soften, button, cursor, click, logo, cta, url, outro } =
-    LAUNCH_VIDEO_TIMELINE.executeFinale;
+  const { grid, logo, cta, url, outro } = LAUNCH_VIDEO_TIMELINE.executeFinale;
 
-  // Grid geometry: 4 columns × 3 rows.
-  //   row 0 → workflows (GRID_WORKFLOWS)
-  //   row 1 → widgets (SpaceX price, NVDA price, portfolio, AAPL trade)
-  //   row 2 → more workflows (GRID_WORKFLOWS_2)
-  const GRID_CARD_W = 420;
-  const GRID_CARD_H = 250;
-  const GRID_GAP_X = 22;
-  const GRID_GAP_Y = 24;
-  const GRID_TOP = 122;
-  const gridTotalW = GRID_CARD_W * 4 + GRID_GAP_X * 3;
-  const gridStartX = (1920 - gridTotalW) / 2;
-  const GRID_GRAPH_H = GRID_CARD_H - 58;
-  const slotX = (i: number) => gridStartX + (i % 4) * (GRID_CARD_W + GRID_GAP_X);
-  const slotY = (i: number) => GRID_TOP + Math.floor(i / 4) * (GRID_CARD_H + GRID_GAP_Y);
-  const cellCX = (i: number) => slotX(i) + GRID_CARD_W / 2;
-  const cellCY = (i: number) => slotY(i) + GRID_CARD_H / 2;
+  // Layout: the AAPL confirmation stays CENTERED (handed off from the execution
+  // beat). Workflows sit in a row above and a row below it; the other product
+  // widgets flank it left and right. The supported-venue logos band sits at the
+  // bottom. Everything then softens + fades and the NickAI lockup + CTA resolve.
+  const WF_W = 400;
+  const WF_H = 155;
+  const WF_GAP = 22;
+  const WF_TOTAL = WF_W * 4 + WF_GAP * 3;
+  const WF_START_X = (1920 - WF_TOTAL) / 2;
+  const wfX = (i: number) => WF_START_X + i * (WF_W + WF_GAP);
+  const WF_GRAPH_H = WF_H - 52;
+  const TOP_Y = 84;
+  const BOT_Y = 760;
 
-  // Row-2 widgets. The AAPL trade card (col 3, cell index 7) is the "hero" that
-  // persists from the execution beat, centered, then flies into this slot.
-  const WIDGETS = [
-    { kind: "price" as const, data: SAMPLE_PRICE_SPACEX },
-    { kind: "price" as const, data: SAMPLE_PRICE_NVDA },
-    { kind: "portfolio" as const, data: SAMPLE_PORTFOLIO },
-    { kind: "trade" as const, data: SAMPLE_TRADE_AAPL },
-  ];
-  const TRADE_IDX = 7;
-  // Widget cards fit inside the cell: sized by height, capped to the cell width
-  // (the wide trade card would otherwise overrun its column).
+  // AAPL card: eases from the execution hand-off (centered, w560) up to its
+  // resting spot as the arrangement assembles around it.
+  const set = progress(frame, 2, 16, Easing.inOut(Easing.cubic));
+  const aaplCY = interpolate(set, [0, 1], [630, 478]);
+  const aaplW = interpolate(set, [0, 1], [560, 430]);
+
   const widgetAspect = (kind: string) =>
     kind === "price" ? 1.271 : kind === "portfolio" ? 1.15 : 1.74;
-  const widgetDims = (kind: string) => {
-    const asp = widgetAspect(kind);
-    const maxW = GRID_CARD_W - 16;
-    let h = GRID_CARD_H - 26;
-    let w = Math.round(h * asp);
-    if (w > maxW) {
-      w = maxW;
-      h = Math.round(maxW / asp);
-    }
-    return { w, h };
-  };
 
-  // Supported-venue logos fill the band below the grid.
-  const EXCHANGES = [
-    "coinbase.svg",
-    "hyperliquid.svg",
-    "okx.svg",
-    "revolut.svg",
-    "alpaca.svg",
-    "polymarket.png",
-    "kalshi.svg",
-    "tradexyz.svg",
-  ];
-  const bandIn = progress(frame, 56, 16, FAST_FADE_EASE);
-
-  // The trade card flies from screen center (width 560, as the execution beat
-  // left it) into its widget-row slot.
-  const flyP = progress(frame, heroFly.start, heroFly.duration, Easing.inOut(Easing.cubic));
-  const tradeW = interpolate(flyP, [0, 1], [560, widgetDims("trade").w]);
-  const tradeCX = interpolate(flyP, [0, 1], [960, cellCX(TRADE_IDX)]);
-  const tradeCY = interpolate(flyP, [0, 1], [630, cellCY(TRADE_IDX)]);
-
-  // Twelve cells: row 0 workflows, row 1 widgets, row 2 more workflows.
-  const CELLS = [
-    ...GRID_WORKFLOWS.map((w) => ({ type: "workflow" as const, w })),
-    ...WIDGETS.map((wd) => ({ type: "widget" as const, ...wd })),
-    ...GRID_WORKFLOWS_2.map((w) => ({ type: "workflow" as const, w })),
+  // Satellites (staggered in around the centered AAPL card).
+  type Sat =
+    | { kind: "wf"; w: (typeof GRID_WORKFLOWS)[number]; x: number; y: number }
+    | { kind: "price"; data: typeof SAMPLE_PRICE_NVDA; cx: number; cy: number; w: number }
+    | { kind: "portfolio"; data: typeof SAMPLE_PORTFOLIO; cx: number; cy: number; w: number };
+  const SATELLITES: Sat[] = [
+    ...GRID_WORKFLOWS.map((w, i) => ({ kind: "wf" as const, w, x: wfX(i), y: TOP_Y })),
+    ...GRID_WORKFLOWS_2.map((w, i) => ({ kind: "wf" as const, w, x: wfX(i), y: BOT_Y })),
+    { kind: "portfolio", data: SAMPLE_PORTFOLIO, cx: 360, cy: 478, w: 300 },
+    { kind: "price", data: SAMPLE_PRICE_SPACEX, cx: 1558, cy: 368, w: 290 },
+    { kind: "price", data: SAMPLE_PRICE_NVDA, cx: 1558, cy: 600, w: 290 },
   ];
 
-  // The grid softens (dims + desaturates) once settled, then the whole grid
-  // fades on the Execute click.
-  const softenP = progress(frame, soften.start, soften.duration, FAST_FADE_EASE);
+  const bandIn = progress(frame, grid.start + 40, 16, FAST_FADE_EASE);
+  // The whole arrangement softens then fades just before the lockup resolves.
+  const softenP = progress(frame, logo.start - 30, 18, FAST_FADE_EASE);
+  const arrangementFade = progress(frame, logo.start - 12, 12, FAST_FADE_EASE);
 
-  const buttonOpacity = progress(
-    frame,
-    button.start,
-    Math.min(7, button.duration),
-    FAST_FADE_EASE,
-  );
-  const buttonSettle = spring({
-    frame: Math.max(0, frame - button.start),
-    fps,
-    durationInFrames: button.duration,
-    config: {
-      damping: 12,
-      stiffness: 170,
-      mass: 0.7,
-    },
-  });
-  const cursorMove = progress(
-    frame,
-    cursor.start,
-    cursor.duration,
-    Easing.out(Easing.cubic),
-  );
-  const cursorIn = progress(frame, cursor.start - 2, 4, FAST_FADE_EASE);
-  const press = interpolate(
-    frame,
-    [click.start, click.start + 3, click.start + click.duration],
-    [0, 1, 0],
-    {
-      easing: Easing.inOut(Easing.quad),
-      extrapolateLeft: "clamp",
-      extrapolateRight: "clamp",
-    },
-  );
-  const clickProgress = progress(
-    frame,
-    click.start,
-    click.duration,
-    FAST_FADE_EASE,
-  );
-  const cursorOut = progress(
-    frame,
-    click.start + 3,
-    4,
-    FAST_FADE_EASE,
-  );
-  const buttonCollapse = progress(
-    frame,
-    click.start + 2,
-    9,
-    Easing.inOut(Easing.cubic),
-  );
-  const logoReveal = progress(
-    frame,
-    logo.start,
-    logo.duration,
-    Easing.out(Easing.cubic),
-  );
+  const logoReveal = progress(frame, logo.start, logo.duration, Easing.out(Easing.cubic));
   const logoSpring = spring({
     frame: Math.max(0, frame - logo.start),
     fps,
     durationInFrames: logo.duration,
-    config: {
-      damping: 24,
-      stiffness: 130,
-      mass: 0.9,
-    },
+    config: { damping: 24, stiffness: 130, mass: 0.9 },
   });
-  const seamIn = progress(
-    frame,
-    click.start + 3,
-    8,
-    Easing.out(Easing.cubic),
-  );
-  const seamOut = progress(
-    frame,
-    logo.start + 7,
-    11,
-    FAST_FADE_EASE,
-  );
   const urlIn = progress(frame, url.start, url.duration, POP_EASE);
   const exit = progress(frame, outro.start, outro.duration, OUTRO_EASE);
-  // The grid holds the upper band; on click it fades so the centered lockup can
-  // own the frame. No vertical lift is needed: the logo lands where the button
-  // was (screen center), with the CTA + URL stacked beneath.
-  const gridFade = progress(frame, click.start, 12, FAST_FADE_EASE);
-  const finaleLift = 0;
-
-  const buttonTextOpacity = 1 - progress(
-    frame,
-    click.start + 2,
-    6,
-    FAST_FADE_EASE,
-  );
-  const seamOpacity = seamIn * (1 - seamOut);
-  const seamWidth = interpolate(seamIn, [0, 1], [180, 680]);
-  const sweepX = interpolate(clickProgress, [0, 1], [-160, 520]);
   const logoWords = ctaHeadline.split(" ");
 
   return (
@@ -1984,242 +1950,129 @@ const ExecuteFinaleSequence: React.FC<LaunchVideoProps> = ({
         transform: `translateY(${exit * 24}px)`,
       }}
     >
-      {/* 3-row × 4-col grid: workflows, then the product widgets, then more
-          workflows. The AAPL trade card (rendered last) persists from the
-          execution beat and flies from center into its widget-row slot while the
-          other eleven cells stagger in. The grid softens so the Execute button
-          reads on top, then fades on the click. */}
+      {/* The AAPL-centred arrangement: workflows above/below, widgets left/right,
+          venues band beneath. Softens + fades as the lockup takes over. */}
       <div
         style={{
           position: "absolute",
           inset: 0,
-          opacity: (1 - gridFade) * (1 - softenP * 0.5),
-          filter: `saturate(${1 - softenP * 0.45}) brightness(${1 - softenP * 0.2})`,
+          opacity: (1 - arrangementFade) * (1 - softenP * 0.45),
+          filter: `saturate(${1 - softenP * 0.4}) brightness(${1 - softenP * 0.18})`,
         }}
       >
-        {CELLS.map((cell, index) => {
-          // The trade card is drawn separately below (it flies from center).
-          if (index === TRADE_IDX) return null;
-          const order = index < TRADE_IDX ? index : index - 1;
-          const start = grid.start + order * grid.stagger;
-          const cardOpacity = progress(frame, start, grid.duration, FAST_FADE_EASE);
-          const cardSettle = progress(frame, start, grid.duration, POP_EASE);
-          const pop = `translateY(${(1 - cardSettle) * 22}px) scale(${0.95 + cardSettle * 0.05})`;
+        {SATELLITES.map((s, index) => {
+          const start = grid.start + index * grid.stagger;
+          const op = progress(frame, start, grid.duration, FAST_FADE_EASE);
+          const settle = progress(frame, start, grid.duration, POP_EASE);
 
-          if (cell.type === "widget") {
-            const { w, h } = widgetDims(cell.kind);
+          if (s.kind === "wf") {
             return (
               <div
-                key={`widget-${index}`}
+                key={`wf-${s.y}-${wfName(s.w)}`}
                 style={{
                   position: "absolute",
-                  left: cellCX(index),
-                  top: cellCY(index),
-                  width: w,
-                  height: h,
-                  opacity: cardOpacity,
-                  transform: `translate(-50%, calc(-50% + ${(1 - cardSettle) * 22}px)) scale(${0.95 + cardSettle * 0.05})`,
+                  left: s.x,
+                  top: s.y,
+                  width: WF_W,
+                  height: WF_H,
+                  borderRadius: 20,
+                  border: "1px solid #27272a",
+                  backgroundColor: "#18181b",
+                  boxShadow: "0 30px 70px -40px rgba(0, 0, 0, 0.8)",
+                  overflow: "hidden",
+                  opacity: op,
+                  transform: `translateY(${(1 - settle) * 20}px) scale(${0.95 + settle * 0.05})`,
                   transformOrigin: "center center",
                 }}
               >
-                {cell.kind === "price" ? (
-                  <PriceCardView data={cell.data} width={w} anim={1} />
-                ) : cell.kind === "portfolio" ? (
-                  <PortfolioCardView data={cell.data} width={w} anim={1} />
-                ) : (
-                  <TradeConfirmationCardView data={cell.data} width={w} anim={1} />
-                )}
+                <div style={{ position: "absolute", top: 8, left: 10, right: 10, height: WF_GRAPH_H }}>
+                  <WorkflowGraph
+                    template={s.w.template}
+                    vw={WF_W - 20}
+                    vh={WF_GRAPH_H}
+                    cw={3600}
+                    ch={1700}
+                    camera={fitCamera(WF_W - 20, WF_GRAPH_H, 3600, 1700)}
+                  />
+                </div>
+                <div
+                  style={{
+                    position: "absolute",
+                    bottom: 12,
+                    left: 12,
+                    right: 12,
+                    textAlign: "center",
+                    fontFamily: MANROPE,
+                    fontSize: 19,
+                    fontWeight: 600,
+                    color: "#fff",
+                    whiteSpace: "nowrap",
+                    overflow: "hidden",
+                    textOverflow: "ellipsis",
+                  }}
+                >
+                  {wfName(s.w)}
+                </div>
               </div>
             );
           }
 
+          const h = Math.round(s.w / widgetAspect(s.kind));
           return (
             <div
-              key={wfName(cell.w)}
+              key={`widget-${index}`}
               style={{
                 position: "absolute",
-                left: slotX(index),
-                top: slotY(index),
-                width: GRID_CARD_W,
-                height: GRID_CARD_H,
-                borderRadius: 22,
-                border: "1px solid rgba(255, 255, 255, 0.09)",
-                backgroundColor: "rgba(11, 16, 26, 0.85)",
-                boxShadow: "0 40px 90px -40px rgba(0, 0, 0, 0.8)",
-                overflow: "hidden",
-                opacity: cardOpacity,
-                transform: pop,
+                left: s.cx,
+                top: s.cy,
+                width: s.w,
+                height: h,
+                opacity: op,
+                transform: `translate(-50%, calc(-50% + ${(1 - settle) * 20}px)) scale(${0.95 + settle * 0.05})`,
                 transformOrigin: "center center",
               }}
             >
-              <div style={{ position: "absolute", top: 8, left: 10, right: 10, height: GRID_GRAPH_H }}>
-                <WorkflowGraph
-                  template={cell.w.template}
-                  vw={GRID_CARD_W - 20}
-                  vh={GRID_GRAPH_H}
-                  cw={3600}
-                  ch={1700}
-                  camera={fitCamera(GRID_CARD_W - 20, GRID_GRAPH_H, 3600, 1700)}
-                />
-              </div>
-              <div
-                style={{
-                  position: "absolute",
-                  bottom: 14,
-                  left: 20,
-                  right: 20,
-                  fontFamily: MANROPE,
-                  fontSize: 21,
-                  fontWeight: 600,
-                  color: "#fff",
-                  whiteSpace: "nowrap",
-                  overflow: "hidden",
-                  textOverflow: "ellipsis",
-                }}
-              >
-                {wfName(cell.w)}
-              </div>
+              {s.kind === "price" ? (
+                <PriceCardView data={s.data} width={s.w} anim={1} />
+              ) : (
+                <PortfolioCardView data={s.data} width={s.w} anim={1} />
+              )}
             </div>
           );
         })}
 
-        {/* AAPL trade card: persists from the execution beat, flies to its slot. */}
+        {/* AAPL confirmation — stays centered. */}
         <div
           style={{
             position: "absolute",
-            left: tradeCX,
-            top: tradeCY,
-            width: tradeW,
+            left: 960,
+            top: aaplCY,
+            width: aaplW,
             transform: "translate(-50%, -50%)",
             zIndex: 4,
           }}
         >
-          <TradeConfirmationCardView data={SAMPLE_TRADE_AAPL} width={tradeW} anim={1} />
+          <TradeConfirmationCardView data={SAMPLE_TRADE_AAPL} width={aaplW} anim={1} />
         </div>
 
-        {/* Supported-venue logos filling the band below the grid. */}
+        {/* Supported-venue logos band. */}
         <div
           style={{
             position: "absolute",
             left: 0,
             right: 0,
-            top: 964,
+            top: 968,
             display: "flex",
-            flexDirection: "column",
-            alignItems: "center",
-            gap: 26,
+            justifyContent: "center",
             opacity: bandIn,
             transform: `translateY(${(1 - bandIn) * 16}px)`,
           }}
         >
-          <span
-            style={{
-              fontFamily: MANROPE,
-              fontSize: 23,
-              fontWeight: 600,
-              letterSpacing: 0.3,
-              color: "rgba(255, 255, 255, 0.55)",
-            }}
-          >
-            Nick trades on the venues you already use
-          </span>
-          <div style={{ display: "flex", alignItems: "center", justifyContent: "center", gap: 60 }}>
-            {EXCHANGES.map((file) => (
-              <Img
-                key={file}
-                src={staticFile(`brand/exchanges/${file}`)}
-                style={{
-                  height: 44,
-                  width: "auto",
-                  maxWidth: 180,
-                  objectFit: "contain",
-                  // Matches the site's own dark-mode treatment (dark:invert): the
-                  // marks are black, invert renders them white while keeping
-                  // internal detail (e.g. the Alpaca head cut-outs).
-                  filter: "invert(1)",
-                  opacity: 0.9,
-                }}
-              />
-            ))}
-          </div>
+          <VenuesBand caption="Nick trades on the venues you already use" logoHeight={38} gap={46} />
         </div>
       </div>
 
-      <div
-        style={{
-          position: "absolute",
-          left: "50%",
-          top: "50%",
-          width: 430,
-          height: 116,
-          display: "flex",
-          alignItems: "center",
-          justifyContent: "center",
-          gap: 16,
-          borderRadius: 58,
-          color: "white",
-          background:
-            "linear-gradient(180deg, #0b84ff 0%, #0178ff 58%, #006eea 100%)",
-          boxShadow: `0 18px 48px rgba(1, 120, 255, ${0.16 + press * 0.1}), inset 0 1px 0 rgba(255, 255, 255, 0.2)`,
-          opacity:
-            buttonOpacity *
-            (1 - progress(frame, click.start + 6, 5, FAST_FADE_EASE)),
-          overflow: "hidden",
-          transform: `translate(-50%, calc(-50% + ${(1 - buttonSettle) * 34}px)) scaleX(${0.86 + buttonSettle * 0.14 + buttonCollapse * 0.34}) scaleY(${0.86 + buttonSettle * 0.14 - press * 0.035 - buttonCollapse * 0.985})`,
-        }}
-      >
-        <span
-          aria-hidden
-          style={{
-            position: "absolute",
-            top: -30,
-            bottom: -30,
-            left: sweepX,
-            width: 96,
-            opacity:
-              frame >= click.start && frame <= click.start + click.duration
-                ? 0.7
-                : 0,
-            background:
-              "linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.72), transparent)",
-            filter: "blur(8px)",
-            transform: "skewX(-18deg)",
-          }}
-        />
-        <span
-          style={{
-            display: "flex",
-            alignItems: "center",
-            gap: 14,
-            opacity: buttonTextOpacity,
-            fontSize: 38,
-            fontWeight: 650,
-            letterSpacing: -0.5,
-            whiteSpace: "nowrap",
-          }}
-        >
-          Execute <ArrowRight size={36} strokeWidth={2.2} />
-        </span>
-      </div>
-
-      <div
-        aria-hidden
-        style={{
-          position: "absolute",
-          left: "50%",
-          top: "50%",
-          width: seamWidth,
-          height: 2,
-          borderRadius: 999,
-          background:
-            "linear-gradient(90deg, transparent, rgba(1, 120, 255, 0.72) 14%, white 50%, rgba(1, 120, 255, 0.72) 86%, transparent)",
-          boxShadow:
-            "0 0 12px rgba(255, 255, 255, 0.3), 0 0 38px rgba(1, 120, 255, 0.25)",
-          opacity: seamOpacity,
-          transform: "translate(-50%, -50%)",
-        }}
-      />
-
+      {/* Energy-core glow behind the resolving lockup. */}
       <div
         aria-hidden
         style={{
@@ -2231,9 +2084,9 @@ const ExecuteFinaleSequence: React.FC<LaunchVideoProps> = ({
           borderRadius: "50%",
           background:
             "radial-gradient(ellipse, rgba(1, 120, 255, 0.16) 0%, rgba(1, 120, 255, 0.055) 44%, transparent 72%)",
-          opacity: logoReveal * (1 - seamOut * 0.35),
+          opacity: logoReveal,
           filter: "blur(22px)",
-          transform: `translate(-50%, calc(-50% - ${finaleLift}px)) scale(${0.76 + logoReveal * 0.24})`,
+          transform: `translate(-50%, -50%) scale(${0.76 + logoReveal * 0.24})`,
         }}
       />
 
@@ -2247,13 +2100,10 @@ const ExecuteFinaleSequence: React.FC<LaunchVideoProps> = ({
           opacity: logoReveal,
           clipPath: `inset(0 ${50 - logoReveal * 50}% 0 ${50 - logoReveal * 50}%)`,
           filter: `blur(${(1 - logoReveal) * 13}px)`,
-          transform: `translate(-50%, calc(-50% - ${finaleLift}px)) scale(${0.975 + logoSpring * 0.025})`,
+          transform: `translate(-50%, -50%) scale(${0.975 + logoSpring * 0.025})`,
         }}
       >
-        <Img
-          src={staticFile("figma/logo.svg")}
-          style={{ width: "100%", height: "100%" }}
-        />
+        <Img src={staticFile("figma/logo.svg")} style={{ width: "100%", height: "100%" }} />
       </div>
 
       <div
@@ -2261,7 +2111,7 @@ const ExecuteFinaleSequence: React.FC<LaunchVideoProps> = ({
           position: "absolute",
           left: 100,
           right: 100,
-          top: `calc(64% - ${finaleLift}px)`,
+          top: "64%",
           display: "flex",
           alignItems: "center",
           justifyContent: "center",
@@ -2276,13 +2126,7 @@ const ExecuteFinaleSequence: React.FC<LaunchVideoProps> = ({
         }}
       >
         {logoWords.map((word, index) => {
-          const wordIn = progress(
-            frame,
-            cta.start + index * cta.stagger,
-            cta.duration,
-            POP_EASE,
-          );
-
+          const wordIn = progress(frame, cta.start + index * cta.stagger, cta.duration, POP_EASE);
           return (
             <span
               key={`${word}-${index}`}
@@ -2302,7 +2146,7 @@ const ExecuteFinaleSequence: React.FC<LaunchVideoProps> = ({
       <div
         style={{
           position: "absolute",
-          top: `calc(75% - ${finaleLift}px)`,
+          top: "75%",
           color: "#4b9cff",
           fontSize: 32,
           fontWeight: 650,
@@ -2313,15 +2157,6 @@ const ExecuteFinaleSequence: React.FC<LaunchVideoProps> = ({
       >
         {ctaUrl}
       </div>
-
-      <FakeCursor
-        move={cursorMove}
-        press={press}
-        opacity={cursorIn * (1 - cursorOut) * (1 - exit)}
-        origin={{ x: 1280, y: 830 }}
-        target={{ x: 960, y: 600 }}
-        size={66}
-      />
     </AbsoluteFill>
   );
 };
@@ -2335,9 +2170,10 @@ const ExecuteFinaleSequence: React.FC<LaunchVideoProps> = ({
 const PersistentLogo: React.FC = () => {
   const frame = useCurrentFrame();
   const { productShell, execution, executeFinale } = LAUNCH_VIDEO_TIMELINE;
+  // Fades as the finale's centered lockup resolves.
   const fadeOut = progress(
     frame,
-    executeFinale.from + executeFinale.click.start,
+    executeFinale.from + executeFinale.logo.start - 10,
     16,
     FAST_FADE_EASE,
   );

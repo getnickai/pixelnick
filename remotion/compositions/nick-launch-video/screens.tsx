@@ -239,8 +239,8 @@ export function GridScreen() {
 
 /* ── Product UX (chat left + workspace right) ─────────────────────────────── */
 
-const APP_BG = "#0a0d12";
-const PANEL = "#0c1017";
+const APP_BG = "#09090b"; // neutral near-black (was #0a0d12, a blue tint)
+const PANEL = "#0e0e11"; // workspace panel, neutral (was #0c1017)
 const LINE = "rgba(255,255,255,0.08)";
 const MONO = 'ui-monospace, SFMono-Regular, "SF Mono", Menlo, monospace';
 
@@ -301,7 +301,7 @@ function ExecutionLogs({
   const rows = streaming ? [...LEAD_ROWS, ...LOG_ROWS] : LOG_ROWS;
   const shownReveal = Math.max(0, Math.min(1, reveal));
   return (
-    <div style={{ position: "absolute", left: 0, right: 0, bottom: 0, height, backgroundColor: "#080b10", borderTop: `1px solid ${LINE}`, display: "flex", flexDirection: "column", fontFamily: SANS, transform: `translateY(${(1 - shownReveal) * height}px)` }}>
+    <div style={{ position: "absolute", left: 0, right: 0, bottom: 0, height, backgroundColor: "#0a0a0c", borderTop: `1px solid ${LINE}`, display: "flex", flexDirection: "column", fontFamily: SANS, transform: `translateY(${(1 - shownReveal) * height}px)` }}>
       {/* header */}
       <div style={{ height: 46, display: "flex", alignItems: "center", justifyContent: "space-between", padding: "0 24px", borderBottom: `1px solid ${LINE}` }}>
         <div style={{ display: "flex", alignItems: "center", gap: 12 }}>
@@ -507,7 +507,7 @@ export function ProductScreen({
             left: 0,
             width: wsW,
             bottom: canvasBottom,
-            backgroundColor: "#080b10",
+            backgroundColor: "#0a0a0c",
             backgroundImage: "radial-gradient(rgba(255,255,255,0.06) 1.4px, transparent 1.4px)",
             backgroundSize: "34px 34px",
             overflow: "hidden",
