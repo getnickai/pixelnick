@@ -43,7 +43,7 @@ import { ProductShellSequence } from "./beat-product-shell";
 import { ExecutionSequence } from "./beat-execution";
 import { WorkflowGraph, fitCamera } from "../nick-launch-video/graph";
 import { NVDA_HERO_TEMPLATE } from "../nick-launch-video/nvda-template";
-import { LAUNCH_WORKFLOWS } from "../nick-launch-video/props";
+import { GRID_WORKFLOWS, wfName } from "../nick-launch-video/props";
 import type { TemplateGraph } from "../workflow-template-card/props";
 import { PriceCardView } from "../chat-cards/price-card-view";
 import { SAMPLE_PRICE_NVDA } from "../chat-cards/props";
@@ -57,25 +57,6 @@ const MANROPE = "Manrope, ui-sans-serif, system-ui, sans-serif";
 const WORKFLOW_BOARD = { width: 1600, height: 480 } as const;
 const WORKFLOW_NODE_HEIGHT = 142;
 
-/**
- * The four workflows shown side by side in the finale grid: the NVDA hero plus
- * the three cross-asset library workflows, in the order NVDA, BTC, Multi-LLM,
- * Mag 7. Each carries a template, its prompt, and a display name.
- */
-type GridWorkflow = { template: TemplateGraph; prompt: string; name: string };
-const GRID_WORKFLOWS: readonly GridWorkflow[] = [
-  {
-    template: NVDA_HERO_TEMPLATE,
-    prompt: NVDA_HERO_TEMPLATE.prompt,
-    name: NVDA_HERO_TEMPLATE.name,
-  },
-  ...LAUNCH_WORKFLOWS.map((w) => ({
-    template: w.template,
-    prompt: w.prompt,
-    name: w.template.name,
-  })),
-];
-const wfName = (w: GridWorkflow) => w.name;
 
 type WorkflowNodeKind = "start" | "price" | "condition" | "trade";
 
@@ -329,6 +310,12 @@ const IntroTitle: React.FC<{
   const enterBlur = (1 - enter) * 6;
   const enterY = (1 - enter) * 34;
 
+  // Reveal the incoming words by opening their box width FAST (so a partial,
+  // half-clipped glyph is never shown for long) while the eye reads the reveal
+  // through the slower opacity fade. This keeps "trades anything" from ever
+  // looking like clipped letters mid-transition.
+  const widthReveal = Math.min(1, expand * 2.4);
+
   const collapsibleClip = {
     display: "inline-block",
     overflow: "hidden",
@@ -372,8 +359,8 @@ const IntroTitle: React.FC<{
         aria-hidden
         style={{
           ...collapsibleClip,
-          maxWidth: TRADES_MAX * expand,
-          marginLeft: GAP * expand,
+          maxWidth: TRADES_MAX * widthReveal,
+          marginLeft: GAP * widthReveal,
           opacity: expand,
         }}
       >
@@ -383,8 +370,8 @@ const IntroTitle: React.FC<{
         aria-hidden
         style={{
           ...collapsibleClip,
-          maxWidth: ANY_MAX * expand,
-          marginLeft: GAP * expand,
+          maxWidth: ANY_MAX * widthReveal,
+          marginLeft: GAP * widthReveal,
           opacity: expand,
           color: "#0178ff",
         }}
@@ -2217,13 +2204,23 @@ const ExecuteFinaleSequence: React.FC<LaunchVideoProps> = ({
  */
 const PersistentLogo: React.FC = () => {
   const frame = useCurrentFrame();
-  const { executeFinale } = LAUNCH_VIDEO_TIMELINE;
+  const { productShell, execution, executeFinale } = LAUNCH_VIDEO_TIMELINE;
   const fadeOut = progress(
     frame,
     executeFinale.from + executeFinale.click.start,
     16,
     FAST_FADE_EASE,
   );
+  // Hide over the product-UI beats (they carry the app's own top-left chrome
+  // and the Nick mark in the left rail, so a second lockup would clash).
+  const hideIn = progress(frame, productShell.from, 10, FAST_FADE_EASE);
+  const showBack = progress(
+    frame,
+    execution.from + execution.durationInFrames - 8,
+    10,
+    FAST_FADE_EASE,
+  );
+  const productHidden = hideIn * (1 - showBack);
 
   return (
     <div
@@ -2235,7 +2232,7 @@ const PersistentLogo: React.FC = () => {
         display: "flex",
         alignItems: "center",
         gap: 12,
-        opacity: 1 - fadeOut,
+        opacity: (1 - fadeOut) * (1 - productHidden),
         pointerEvents: "none",
       }}
     >

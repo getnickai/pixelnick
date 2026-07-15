@@ -7,24 +7,46 @@
  */
 import { TEMPLATES } from "../workflow-template-card/data/templates.generated";
 import type { TemplateGraph } from "../workflow-template-card/props";
+import { NVDA_HERO_TEMPLATE } from "./nvda-template";
 
 export const NICK_LAUNCH_FPS = 30;
 export const NICK_LAUNCH_W = 1920;
 // 1200 to match Onur's launch-video canvas (16:10) that these screens graft into.
 export const NICK_LAUNCH_H = 1200;
 
-export type LaunchWorkflow = { template: TemplateGraph; prompt: string };
+export type LaunchWorkflow = { template: TemplateGraph; prompt: string; name?: string };
+
+/** Display name for a workflow (clean override, else the template's own name). */
+export const wfName = (w: LaunchWorkflow) => w.name ?? w.template.name;
 
 export const LAUNCH_WORKFLOWS: LaunchWorkflow[] = [
-  { template: TEMPLATES["btc-buy-the-dip"], prompt: "Automate my BTC dip buying" },
+  { template: TEMPLATES["btc-buy-the-dip"], prompt: "Automate my BTC dip buying", name: "BTC Buy the Dip" },
   {
     template: TEMPLATES["multi-llm-consensus-trader-paper-trading"],
     prompt: "Trade on multi-LLM consensus",
+    name: "Multi-LLM Consensus Trader",
   },
   {
     template: TEMPLATES["mag-7-stock-rotator-daily-paper-trading"],
     prompt: "Rotate the Magnificent 7 daily",
+    name: "Mag 7 Stock Rotator",
   },
+];
+
+/** The two workflows the montage builds (after the NVDA hero), each with the
+ *  same zoom-in-then-out build animation. Clean display names. */
+export const MONTAGE_WORKFLOWS: LaunchWorkflow[] = [
+  LAUNCH_WORKFLOWS[1], // Multi-LLM Consensus Trader
+  LAUNCH_WORKFLOWS[2], // Mag 7 Stock Rotator
+];
+
+/** The four workflows shown side by side in the finale grid: the built hero
+ *  (NVDA) plus the library trio. */
+export const GRID_WORKFLOWS: LaunchWorkflow[] = [
+  { template: NVDA_HERO_TEMPLATE, prompt: NVDA_HERO_TEMPLATE.prompt, name: "NVDA · Buy below $200" },
+  LAUNCH_WORKFLOWS[0], // BTC Buy the Dip
+  LAUNCH_WORKFLOWS[1], // Multi-LLM Consensus Trader
+  LAUNCH_WORKFLOWS[2], // Mag 7 Stock Rotator
 ];
 
 /** Intro copy. */

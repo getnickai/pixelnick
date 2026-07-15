@@ -20,6 +20,7 @@ import {
   NICK_LAUNCH_H,
   NICK_LAUNCH_W,
   TAGLINE,
+  wfName,
   type LaunchScreen,
 } from "./props";
 
@@ -445,7 +446,7 @@ export function ProductScreen({
         {/* header */}
         <div style={{ height: 68, display: "flex", alignItems: "center", justifyContent: "space-between", padding: "0 28px", borderBottom: `1px solid ${LINE}` }}>
           <div style={{ display: "flex", alignItems: "center", gap: 12, color: "#fff", fontSize: 19, fontWeight: 600 }}>
-            {w.template.name}
+            {wfName(w)}
             <span style={{ display: "flex", alignItems: "center", gap: 6, color: "#9aa3b2", fontSize: 14, fontWeight: 500 }}>
               <span style={{ width: 20, height: 20, borderRadius: 999, backgroundColor: "#2b7fff", fontSize: 10, color: "#fff", display: "inline-flex", alignItems: "center", justifyContent: "center", fontWeight: 700 }}>BB</span>
               Badi Badkoube
