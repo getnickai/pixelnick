@@ -10,8 +10,12 @@ export const LAUNCH_VIDEO_FPS = 30;
 
 export const LAUNCH_VIDEO_TIMELINE = {
   opening: {
+    // Half of one continuous reflow: "Introducing Nick" lands centered, then
+    // "Introducing" collapses out while "Nick" slides left and "trades" +
+    // "anything" expand in to its right, settling as "Nick trades anything".
+    // ProductStatement (below) picks up that settled title seamlessly.
     from: 0,
-    durationInFrames: 75,
+    durationInFrames: 78,
     icons: {
       start: 0,
       stagger: 0.7,
@@ -20,44 +24,40 @@ export const LAUNCH_VIDEO_TIMELINE = {
       outroStagger: 0.18,
       outroDuration: 6,
     },
-    headline: {
-      start: 5,
-      stagger: 0.5,
-      duration: 13,
-      // The final intro glyph settles at frame 25, giving an exact 30-frame
-      // (1-second) readable hold before the headline outro begins.
-      outroStart: 55,
-      outroStagger: 0.18,
-      outroDuration: 6,
+    // Local-frame beats for the reflow choreography (absolute within this beat).
+    reflow: {
+      // "Introducing Nick" pops in centered.
+      enterStart: 4,
+      enterDuration: 14,
+      // "Introducing" collapses + fades; "Nick" slides left (layout-driven).
+      collapseStart: 30,
+      collapseDuration: 18,
+      // "trades" + "anything" expand + fade in to the right of "Nick".
+      expandStart: 38,
+      expandDuration: 20,
     },
   },
   productStatement: {
-    // Starts as the last opening glyphs finish accelerating left. The slight
-    // overlap preserves one continuous product-film move without letting the
-    // two centred statements visibly collide.
-    from: 63,
-    durationInFrames: 66,
-    title: {
-      start: 0,
-      stagger: 2.2,
-      duration: 11,
-    },
+    // Second half of the same continuous reflow: opens on the already-settled
+    // "Nick trades anything" (identical layout to where opening handed off, so
+    // the overlap is seamless), reveals the subline, holds, then exits.
+    from: 66,
+    durationInFrames: 62,
     subline: {
-      start: 8,
+      start: 6,
       stagger: 0.8,
       duration: 10,
     },
-    // With the default six-word subline, the last word finishes at local
-    // frame 22, followed by an exact 30-frame (1-second) readable hold.
+    // Readable hold, then the whole title + subline group exits.
     outro: {
-      start: 52,
-      duration: 7,
+      start: 44,
+      duration: 8,
     },
   },
   chatComposer: {
-    // Begins as the last product-statement words complete their fast exit.
-    from: 122,
-    durationInFrames: 110,
+    // Begins as the product-statement title exits.
+    from: 120,
+    durationInFrames: 78,
     shell: {
       start: 0,
       duration: 12,
@@ -75,21 +75,21 @@ export const LAUNCH_VIDEO_TIMELINE = {
       duration: 36,
     },
     send: {
-      // Typing completes at frame 47. Hold the completed prompt cleanly for
-      // 36 frames (1.2s), then let the cursor enter and travel for 10 frames.
-      start: 93,
+      // Typing completes at frame 47. Cut the dead hold: the cursor enters and
+      // travels almost immediately, clicking Send at ~frame 60.
+      start: 60,
       duration: 10,
     },
     outro: {
       // Begins on the exact frame the click ripple completes.
-      start: 103,
+      start: 70,
       duration: 6,
     },
   },
   chatResponse: {
     // Starts as soon as the composer click ripple completes. Durations mirror
     // the first result-thread beat in NicksiteV2 at playbackRate: 2.
-    from: 225,
+    from: 190,
     durationInFrames: 95,
     shell: {
       start: 0,
@@ -123,8 +123,8 @@ export const LAUNCH_VIDEO_TIMELINE = {
   workflowComposer: {
     // NicksiteV2's second focus/typing beat. The original 3400ms type-on runs
     // at playbackRate 2, which maps to 51 frames at 30fps.
-    from: 313,
-    durationInFrames: 138,
+    from: 278,
+    durationInFrames: 90,
     shell: {
       start: 0,
       duration: 10,
@@ -142,21 +142,21 @@ export const LAUNCH_VIDEO_TIMELINE = {
       duration: 51,
     },
     send: {
-      // The long request completes at frame 57. Give it a 54-frame (1.8s)
-      // cursor-free reading hold before the pointer approaches Send.
-      start: 121,
+      // The long request completes at frame 57. Cut the dead hold: the pointer
+      // approaches and clicks Send at ~frame 72.
+      start: 72,
       duration: 10,
     },
     outro: {
       // Begins on the exact frame the click ripple completes.
-      start: 131,
+      start: 82,
       duration: 6,
     },
   },
   workflowResponse: {
     // Workflow-thread responses only. Sidebar/panel/node reveals deliberately
     // remain out of this sequence so they can become the next product beat.
-    from: 444,
+    from: 361,
     durationInFrames: 112,
     shell: {
       start: 0,
@@ -180,6 +180,12 @@ export const LAUNCH_VIDEO_TIMELINE = {
       stagger: 4,
       duration: 7,
     },
+    // A highlight-click on the "created workflow" widget card in the last
+    // frames of the beat: cursor arrives, ripple + glow, brief scale-down press.
+    widgetClick: {
+      start: 78,
+      duration: 16,
+    },
     outro: {
       start: 96,
       duration: 8,
@@ -188,7 +194,7 @@ export const LAUNCH_VIDEO_TIMELINE = {
   workflowBuild: {
     // The workflow canvas begins while the response thread is completing its
     // fast fade, keeping the creation result and visual build in one motion.
-    from: 548,
+    from: 466,
     durationInFrames: 105,
     shell: {
       start: 0,
@@ -222,7 +228,7 @@ export const LAUNCH_VIDEO_TIMELINE = {
     // The NVDA hero build (workflowBuild) is workflow #1. Here two MORE
     // workflows finalize fast: swap the composer prompt, the new graph pops in
     // already-built (no slow node-by-node build), twice.
-    from: 646,
+    from: 564,
     durationInFrames: 156,
     intro: { start: 0, duration: 10 },
     swap2: { start: 6, duration: 12 }, // prompt swaps to workflow #2
@@ -231,13 +237,15 @@ export const LAUNCH_VIDEO_TIMELINE = {
     build3: { start: 88, duration: 22 }, // workflow #3 finalizes
     outro: { start: 146, duration: 10 },
   },
+  // Deprecated: the standalone three-workflow grid beat has been folded into the
+  // finale (executeFinale now opens on a four-workflow grid). This slot is no
+  // longer sequenced in the composition; it remains only so the now-unused
+  // beat-grid.tsx module keeps type-checking.
   workflowGrid: {
-    // Camera pulls back to reveal all three workflows in their own framed
-    // cards, side by side, with the product tagline beneath.
     from: 794,
     durationInFrames: 96,
     shell: { start: 0, duration: 12 },
-    cards: { start: 4, stagger: 5, duration: 14 }, // three cards settle
+    cards: { start: 4, stagger: 5, duration: 14 },
     tagline: { start: 30, duration: 14 },
     outro: { start: 86, duration: 10 },
   },
@@ -245,7 +253,7 @@ export const LAUNCH_VIDEO_TIMELINE = {
     // Match-cut: the hero workflow docks into the right builder pane while the
     // chat rail wipes in from the left and the widget cards stream into the
     // thread (SpaceX + NVDA price cards, then the portfolio card).
-    from: 882,
+    from: 713,
     durationInFrames: 150,
     shell: { start: 0, duration: 14 }, // panels wipe in
     canvas: { start: 2, duration: 16 }, // workflow settles in the right pane
@@ -257,7 +265,7 @@ export const LAUNCH_VIDEO_TIMELINE = {
     // Zoom on the top-right "Run Now" control → it presses → the Execution Logs
     // panel opens → rows stream upward (more and more executions) → the camera
     // pulls back to the full product UX.
-    from: 1024,
+    from: 855,
     durationInFrames: 168,
     zoomIn: { start: 0, duration: 18 }, // camera pushes toward Run Now
     press: { start: 16, duration: 8 }, // Run Now clicked
@@ -267,38 +275,47 @@ export const LAUNCH_VIDEO_TIMELINE = {
     outro: { start: 160, duration: 8 },
   },
   executeFinale: {
-    // The button enters while the execution beat is completing its pull-back.
-    // Its click is the transition: button -> energy core -> NickAI lockup.
-    from: 1184,
-    durationInFrames: 148,
+    // The finale folds in the old standalone grid: it opens by revealing the
+    // four GRID_WORKFLOWS side by side, then the Execute button appears below
+    // the grid. Its click is the transition: grid fades, button -> energy core
+    // -> NickAI lockup + CTA.
+    from: 1015,
+    durationInFrames: 240,
+    grid: {
+      // Four framed workflow cards stagger in across the top band.
+      start: 2,
+      stagger: 6,
+      duration: 16,
+    },
     button: {
-      start: 3,
-      duration: 13,
+      // Enters below the settled grid.
+      start: 46,
+      duration: 14,
     },
     cursor: {
-      start: 19,
-      duration: 15,
+      start: 66,
+      duration: 16,
     },
     click: {
-      start: 34,
+      start: 88,
       duration: 9,
     },
     logo: {
-      start: 43,
-      duration: 24,
+      start: 98,
+      duration: 26,
     },
     cta: {
-      start: 72,
+      start: 130,
       stagger: 2,
-      duration: 12,
+      duration: 14,
     },
     url: {
-      start: 82,
-      duration: 11,
+      start: 142,
+      duration: 12,
     },
     outro: {
-      start: 137,
-      duration: 10,
+      start: 228,
+      duration: 12,
     },
   },
 } as const;

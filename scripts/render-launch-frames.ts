@@ -20,20 +20,22 @@ const PUBLIC_DIR = path.join(process.cwd(), "public");
 const OUT = path.join(process.cwd(), "out", "launch-frames");
 
 // Beat-center frames (see remotion/compositions/launch-video/timeline.ts).
+// Retimed after the intro reflow, composer speed-ups, grid removal, and the
+// grown grid+execute finale (STA-494 rework).
 const BEATS: Record<string, number> = {
-  opening: 35,
-  statement: 96,
-  "chat-composer": 188,
-  "chat-response": 285,
-  "workflow-composer": 403,
-  "workflow-response": 505,
-  "workflow-build": 643,
-  "montage-2": 700,
-  "montage-3": 760,
-  grid: 840,
-  product: 980,
-  execution: 1120,
-  finale: 1274,
+  opening: 62, // settled "Nick trades anything" reflow
+  statement: 96, // title + subline
+  "chat-composer": 178, // Send click (local ~60)
+  "chat-response": 258, // big NVDA price card settled
+  "workflow-composer": 350, // Send click (local ~72)
+  "workflow-response": 448, // widget highlight-click
+  "workflow-build": 520,
+  "montage-2": 596,
+  "montage-3": 662,
+  product: 800,
+  execution: 960,
+  "finale-grid": 1058, // four workflows revealed
+  finale: 1180, // NickAI lockup + CTA
 };
 
 async function main() {

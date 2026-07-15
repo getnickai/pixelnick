@@ -39,11 +39,12 @@ import {
 import type { LaunchVideoProps } from "./props";
 import { LAUNCH_VIDEO_TIMELINE, LAUNCH_VIDEO_DURATION } from "./timeline";
 import { WorkflowMontageSequence } from "./beat-montage";
-import { WorkflowGridSequence } from "./beat-grid";
 import { ProductShellSequence } from "./beat-product-shell";
 import { ExecutionSequence } from "./beat-execution";
-import { WorkflowGraph } from "../nick-launch-video/graph";
+import { WorkflowGraph, fitCamera } from "../nick-launch-video/graph";
 import { NVDA_HERO_TEMPLATE } from "../nick-launch-video/nvda-template";
+import { LAUNCH_WORKFLOWS } from "../nick-launch-video/props";
+import type { TemplateGraph } from "../workflow-template-card/props";
 import { PriceCardView } from "../chat-cards/price-card-view";
 import { SAMPLE_PRICE_NVDA } from "../chat-cards/props";
 import { buildReveal, zoomIntroCamera } from "./graph-anim";
@@ -55,6 +56,26 @@ const DUPLET =
 const MANROPE = "Manrope, ui-sans-serif, system-ui, sans-serif";
 const WORKFLOW_BOARD = { width: 1600, height: 480 } as const;
 const WORKFLOW_NODE_HEIGHT = 142;
+
+/**
+ * The four workflows shown side by side in the finale grid: the NVDA hero plus
+ * the three cross-asset library workflows, in the order NVDA, BTC, Multi-LLM,
+ * Mag 7. Each carries a template, its prompt, and a display name.
+ */
+type GridWorkflow = { template: TemplateGraph; prompt: string; name: string };
+const GRID_WORKFLOWS: readonly GridWorkflow[] = [
+  {
+    template: NVDA_HERO_TEMPLATE,
+    prompt: NVDA_HERO_TEMPLATE.prompt,
+    name: NVDA_HERO_TEMPLATE.name,
+  },
+  ...LAUNCH_WORKFLOWS.map((w) => ({
+    template: w.template,
+    prompt: w.prompt,
+    name: w.template.name,
+  })),
+];
+const wfName = (w: GridWorkflow) => w.name;
 
 type WorkflowNodeKind = "start" | "price" | "condition" | "trade";
 
@@ -251,18 +272,157 @@ const progress = (
   });
 };
 
+/** Split the intro copy into the four reflow words, driven by props. */
+const introWords = (
+  headline: string,
+  productHeadline: string,
+  accent: string,
+): { intro: string; nick: string; trades: string; anything: string } => {
+  const headlineParts = headline.trim().split(/\s+/).filter(Boolean);
+  const nick = headlineParts[headlineParts.length - 1] ?? "Nick";
+  const intro = headlineParts.slice(0, -1).join(" ") || "Introducing";
+  const trades =
+    productHeadline
+      .trim()
+      .split(/\s+/)
+      .filter(Boolean)
+      .filter((word) => word !== nick)
+      .join(" ") || "trades";
+  return { intro, nick, trades, anything: accent };
+};
+
+/**
+ * The one continuous intro reflow: "Introducing Nick" lands centered, then
+ * "Introducing" collapses out while "Nick" slides left (the shift is purely
+ * layout-driven: collapsing/expanding word boxes re-center the flex row) and
+ * "trades" + "anything" expand in to Nick's right, settling as
+ * "Nick trades anything". `enter` pops the whole title in; `collapse` retires
+ * "Introducing"; `expand` reveals "trades anything". The group transform lets
+ * ProductStatement exit the settled title.
+ */
+const IntroTitle: React.FC<{
+  words: { intro: string; nick: string; trades: string; anything: string };
+  enter: number;
+  collapse: number;
+  expand: number;
+  groupOpacity?: number;
+  groupBlur?: number;
+  groupShiftX?: number;
+}> = ({
+  words,
+  enter,
+  collapse,
+  expand,
+  groupOpacity = 1,
+  groupBlur = 0,
+  groupShiftX = 0,
+}) => {
+  // Generous max-widths (px): an inline-block caps at its content width, so any
+  // value >= the real glyph width fully reveals with no trailing gap. The word
+  // gap is carried on a margin that scales with the same progress, so spacing
+  // appears and disappears together with the word body.
+  const INTRO_MAX = 760;
+  const TRADES_MAX = 420;
+  const ANY_MAX = 520;
+  const GAP = 34;
+
+  const enterBlur = (1 - enter) * 6;
+  const enterY = (1 - enter) * 34;
+
+  const collapsibleClip = {
+    display: "inline-block",
+    overflow: "hidden",
+    whiteSpace: "nowrap",
+    verticalAlign: "baseline",
+  } as const;
+
+  return (
+    <div
+      role="img"
+      aria-label={`${words.nick} ${words.trades} ${words.anything}`}
+      style={{
+        display: "flex",
+        alignItems: "baseline",
+        justifyContent: "center",
+        whiteSpace: "nowrap",
+        color: "#ffffff",
+        fontFamily: DUPLET,
+        fontSize: 124,
+        fontWeight: 600,
+        lineHeight: 1,
+        letterSpacing: 0.5,
+        opacity: enter * groupOpacity,
+        filter: `blur(${enterBlur + groupBlur}px)`,
+        transform: `translate(${groupShiftX}px, ${enterY}px)`,
+      }}
+    >
+      <span
+        aria-hidden
+        style={{
+          ...collapsibleClip,
+          maxWidth: INTRO_MAX * (1 - collapse),
+          marginRight: GAP * (1 - collapse),
+          opacity: 1 - collapse,
+        }}
+      >
+        {words.intro}
+      </span>
+      <span style={{ display: "inline-block" }}>{words.nick}</span>
+      <span
+        aria-hidden
+        style={{
+          ...collapsibleClip,
+          maxWidth: TRADES_MAX * expand,
+          marginLeft: GAP * expand,
+          opacity: expand,
+        }}
+      >
+        {words.trades}
+      </span>
+      <span
+        aria-hidden
+        style={{
+          ...collapsibleClip,
+          maxWidth: ANY_MAX * expand,
+          marginLeft: GAP * expand,
+          opacity: expand,
+          color: "#0178ff",
+        }}
+      >
+        {words.anything}
+      </span>
+    </div>
+  );
+};
+
 const OpeningSequence: React.FC<LaunchVideoProps> = ({
   headline,
+  productHeadline,
+  productHeadlineAccent,
   showBackgroundIcons,
 }) => {
   const frame = useCurrentFrame();
-  const { icons, headline: headlineTiming } = LAUNCH_VIDEO_TIMELINE.opening;
+  const { icons, reflow } = LAUNCH_VIDEO_TIMELINE.opening;
+  const words = introWords(headline, productHeadline, productHeadlineAccent);
 
-  const characters = Array.from(headline);
-  const visibleCharacterCount = characters.filter(
-    (character) => !/\s/.test(character),
-  ).length;
-  let visibleCharacterIndex = 0;
+  const enter = progress(
+    frame,
+    reflow.enterStart,
+    reflow.enterDuration,
+    POP_EASE,
+  );
+  const collapse = progress(
+    frame,
+    reflow.collapseStart,
+    reflow.collapseDuration,
+    FAST_FADE_EASE,
+  );
+  const expand = progress(
+    frame,
+    reflow.expandStart,
+    reflow.expandDuration,
+    POP_EASE,
+  );
 
   return (
     <AbsoluteFill>
@@ -278,12 +438,7 @@ const OpeningSequence: React.FC<LaunchVideoProps> = ({
             icons.duration,
             FAST_FADE_EASE,
           );
-          const settle = progress(
-            frame,
-            start,
-            icons.duration,
-            POP_EASE,
-          );
+          const settle = progress(frame, start, icons.duration, POP_EASE);
           const exit = progress(
             frame,
             icons.outroStart + index * icons.outroStagger,
@@ -328,107 +483,31 @@ const OpeningSequence: React.FC<LaunchVideoProps> = ({
           overflow: "hidden",
         }}
       >
-        <div
-          role="img"
-          aria-label={headline}
-          style={{
-            display: "flex",
-            alignItems: "baseline",
-            justifyContent: "center",
-            maxWidth: "90%",
-            whiteSpace: "nowrap",
-            color: "#ffffff",
-            fontFamily: DUPLET,
-            fontSize: 120,
-            fontWeight: 500,
-            lineHeight: 1,
-            letterSpacing: 0.5,
-          }}
-        >
-          {characters.map((character, index) => {
-            if (/\s/.test(character)) {
-              return (
-                <span
-                  key={index}
-                  aria-hidden
-                  style={{ display: "inline-block", width: "0.3em" }}
-                />
-              );
-            }
-
-            // Reveal order runs from the rightmost visible glyph back to the
-            // left, while every glyph itself travels left into its final spot.
-            const characterIndex = visibleCharacterIndex;
-            const revealIndex = visibleCharacterCount - 1 - characterIndex;
-            const characterStart =
-              headlineTiming.start + revealIndex * headlineTiming.stagger;
-            visibleCharacterIndex += 1;
-
-            const opacity = progress(
-              frame,
-              characterStart,
-              headlineTiming.duration,
-              FAST_FADE_EASE,
-            );
-            const settle = progress(
-              frame,
-              characterStart,
-              headlineTiming.duration,
-              POP_EASE,
-            );
-            // The outro is intentionally quicker than the intro and sweeps
-            // left-to-right while each glyph accelerates off to the left.
-            const exit = progress(
-              frame,
-              headlineTiming.outroStart +
-                characterIndex * headlineTiming.outroStagger,
-              headlineTiming.outroDuration,
-              OUTRO_EASE,
-            );
-
-            const glyphOpacity = opacity * (1 - exit);
-            const focusBlur = (1 - settle) * 2 + exit * 2.5;
-            const glyphScale = 0.96 + settle * 0.04 - exit * 0.02;
-            const translateX = (1 - settle) * 32 - exit * 24;
-
-            return (
-              <span
-                key={index}
-                aria-hidden
-                style={{
-                  display: "inline-block",
-                  opacity: glyphOpacity,
-                  filter: `blur(${focusBlur}px)`,
-                  transform: `translateX(${translateX}px) scale(${glyphScale})`,
-                }}
-              >
-                {character}
-              </span>
-            );
-          })}
-        </div>
+        <IntroTitle
+          words={words}
+          enter={enter}
+          collapse={collapse}
+          expand={expand}
+        />
       </AbsoluteFill>
     </AbsoluteFill>
   );
 };
 
 const ProductStatementSequence: React.FC<LaunchVideoProps> = ({
+  headline,
   productHeadline,
   productHeadlineAccent,
   productSubline,
 }) => {
   const frame = useCurrentFrame();
-  const { title, subline, outro } =
-    LAUNCH_VIDEO_TIMELINE.productStatement;
-  const titleSegments = [
-    ...productHeadline
-      .trim()
-      .split(/\s+/)
-      .filter(Boolean)
-      .map((text) => ({ text, accent: false })),
-    { text: productHeadlineAccent, accent: true },
-  ];
+  const { subline, outro } = LAUNCH_VIDEO_TIMELINE.productStatement;
+  const words = introWords(headline, productHeadline, productHeadlineAccent);
   const sublineWords = productSubline.trim().split(/\s+/).filter(Boolean);
+
+  // Opens on the already-settled title (collapse + expand = 1) that the opening
+  // beat handed off, so the overlap is seamless. Only the group exit animates.
+  const titleExit = progress(frame, outro.start, outro.duration, OUTRO_EASE);
   const sublineExit = progress(
     frame,
     outro.start + 0.6,
@@ -444,112 +523,65 @@ const ProductStatementSequence: React.FC<LaunchVideoProps> = ({
         overflow: "hidden",
       }}
     >
+      <IntroTitle
+        words={words}
+        enter={1}
+        collapse={1}
+        expand={1}
+        groupOpacity={1 - titleExit}
+        groupBlur={titleExit * 3}
+        groupShiftX={-titleExit * 42}
+      />
+
       <div
+        role="img"
+        aria-label={productSubline}
         style={{
+          position: "absolute",
+          left: 0,
+          right: 0,
+          top: "calc(50% + 108px)",
           display: "flex",
-          flexDirection: "column",
-          alignItems: "center",
-          gap: 48,
-          maxWidth: "92%",
+          alignItems: "baseline",
+          justifyContent: "center",
+          columnGap: "0.24em",
+          color: "rgba(230, 235, 245, 0.64)",
+          fontFamily: MANROPE,
+          fontSize: 43,
+          fontWeight: 500,
+          lineHeight: 1.1,
+          letterSpacing: -1.35,
+          whiteSpace: "nowrap",
+          opacity: 1 - sublineExit,
+          filter: `blur(${sublineExit * 2.5}px)`,
+          transform: `translateX(${-sublineExit * 34}px)`,
         }}
       >
-        <div
-          role="img"
-          aria-label={`${productHeadline} ${productHeadlineAccent}`}
-          style={{
-            display: "flex",
-            alignItems: "baseline",
-            justifyContent: "center",
-            whiteSpace: "nowrap",
-            color: "#ffffff",
-            fontFamily: DUPLET,
-            fontSize: 128,
-            fontWeight: 600,
-            lineHeight: 0.92,
-            letterSpacing: 0.5,
-            columnGap: 30,
-          }}
-        >
-          {titleSegments.map(({ text, accent }, index) => {
-            const start = title.start + index * title.stagger;
-            const opacity = progress(
-              frame,
-              start,
-              title.duration,
-              FAST_FADE_EASE,
-            );
-            const settle = progress(frame, start, title.duration, POP_EASE);
-            const exit = progress(
-              frame,
-              outro.start + index * 0.55,
-              outro.duration,
-              OUTRO_EASE,
-            );
+        {sublineWords.map((word, index) => {
+          const start = subline.start + index * subline.stagger;
+          const opacity = progress(
+            frame,
+            start,
+            subline.duration,
+            FAST_FADE_EASE,
+          );
+          const settle = progress(frame, start, subline.duration, POP_EASE);
 
-            return (
-              <span
-                key={`${text}-${index}`}
-                aria-hidden
-                style={{
-                  display: "inline-block",
-                  color: accent ? "#0178ff" : "#ffffff",
-                  opacity: opacity * (1 - exit),
-                  filter: `blur(${(1 - settle) * 3 + exit * 3}px)`,
-                  transform: `translateX(${(1 - settle) * 52 - exit * 42}px) scale(${0.965 + settle * 0.035 - exit * 0.015})`,
-                }}
-              >
-                {text}
-              </span>
-            );
-          })}
-        </div>
-
-        <div
-          role="img"
-          aria-label={productSubline}
-          style={{
-            display: "flex",
-            alignItems: "baseline",
-            justifyContent: "center",
-            columnGap: "0.24em",
-            color: "rgba(230, 235, 245, 0.64)",
-            fontFamily: MANROPE,
-            fontSize: 43,
-            fontWeight: 500,
-            lineHeight: 1.1,
-            letterSpacing: -1.35,
-            whiteSpace: "nowrap",
-            opacity: 1 - sublineExit,
-            filter: `blur(${sublineExit * 2.5}px)`,
-            transform: `translateX(${-sublineExit * 34}px)`,
-          }}
-        >
-          {sublineWords.map((word, index) => {
-            const start = subline.start + index * subline.stagger;
-            const opacity = progress(
-              frame,
-              start,
-              subline.duration,
-              FAST_FADE_EASE,
-            );
-            const settle = progress(frame, start, subline.duration, POP_EASE);
-
-            return (
-              <span
-                key={`${word}-${index}`}
-                aria-hidden
-                style={{
-                  display: "inline-block",
-                  opacity,
-                  filter: `blur(${(1 - settle) * 2.5}px)`,
-                  transform: `translateY(${(1 - settle) * 26}px) scale(${0.98 + settle * 0.02})`,
-                }}
-              >
-                {word}
-              </span>
-            );
-          })}
-        </div>
+          return (
+            <span
+              key={`${word}-${index}`}
+              aria-hidden
+              style={{
+                display: "inline-block",
+                opacity,
+                filter: `blur(${(1 - settle) * 2.5}px)`,
+                transform: `translateY(${(1 - settle) * 26}px) scale(${0.98 + settle * 0.02})`,
+              }}
+            >
+              {word}
+            </span>
+          );
+        })}
       </div>
     </AbsoluteFill>
   );
@@ -1071,14 +1103,17 @@ const ChatResponseSequence: React.FC<LaunchVideoProps> = ({ chatPrompt }) => {
           <div
             style={{
               marginTop: 18,
-              width: 560,
-              height: 440,
+              // Same left edge; extends right so the card's right edge meets the
+              // user-message avatar's right edge (inner content width ~1124).
+              // Scaled 2x from 560x440 so the price card design keeps its look.
+              width: 1120,
+              height: 880,
               opacity: cardOpacity,
               filter: `blur(${(1 - cardSettle) * 2.5}px)`,
               transform: `translateY(${(1 - cardSettle) * 16}px) scale(${0.985 + cardSettle * 0.015})`,
             }}
           >
-            <PriceCardView data={SAMPLE_PRICE_NVDA} width={560} anim={lineDraw} />
+            <PriceCardView data={SAMPLE_PRICE_NVDA} width={1120} anim={lineDraw} />
           </div>
         </div>
       </div>
@@ -1096,6 +1131,7 @@ const WorkflowResponseSequence: React.FC<LaunchVideoProps> = ({
     beforeCreationSteps,
     createdWorkflow,
     afterCreationSteps,
+    widgetClick,
     outro,
   } = LAUNCH_VIDEO_TIMELINE.workflowResponse;
 
@@ -1131,6 +1167,46 @@ const WorkflowResponseSequence: React.FC<LaunchVideoProps> = ({
     POP_EASE,
   );
   const exit = progress(frame, outro.start, outro.duration, OUTRO_EASE);
+
+  // Highlight-click on the "created workflow" widget card in the final frames:
+  // the cursor arrives, a ripple + border glow fire, and the card presses down.
+  const wcCursorMove = progress(
+    frame,
+    widgetClick.start,
+    9,
+    Easing.out(Easing.cubic),
+  );
+  const wcCursorIn = progress(frame, widgetClick.start - 2, 4, FAST_FADE_EASE);
+  const wcCursorOut = progress(frame, widgetClick.start + 12, 4, FAST_FADE_EASE);
+  const wcPress = interpolate(
+    frame,
+    [
+      widgetClick.start + 8,
+      widgetClick.start + 11,
+      widgetClick.start + widgetClick.duration,
+    ],
+    [0, 1, 0],
+    {
+      easing: Easing.inOut(Easing.quad),
+      extrapolateLeft: "clamp",
+      extrapolateRight: "clamp",
+    },
+  );
+  const wcActive = interpolate(
+    frame,
+    [
+      widgetClick.start + 6,
+      widgetClick.start + 10,
+      widgetClick.start + widgetClick.duration,
+    ],
+    [0, 1, 0],
+    { extrapolateLeft: "clamp", extrapolateRight: "clamp" },
+  );
+  const wcRipple = progress(frame, widgetClick.start + 8, 9, FAST_FADE_EASE);
+  const wcRippleOpacity =
+    frame >= widgetClick.start + 8 && frame < widgetClick.start + 17
+      ? (1 - wcRipple) * (1 - exit)
+      : 0;
 
   const stepStyle = (start: number, duration: number) => {
     const opacity = progress(
@@ -1275,17 +1351,19 @@ const WorkflowResponseSequence: React.FC<LaunchVideoProps> = ({
 
           <div
             style={{
+              position: "relative",
               display: "flex",
               alignItems: "center",
               gap: 14,
               padding: "13px 15px",
               borderRadius: 18,
-              border: "1px solid #272f3d",
+              border: `1px solid rgb(${Math.round(39 - wcActive * 38)}, ${Math.round(47 + wcActive * 73)}, ${Math.round(61 + wcActive * 194)})`,
               backgroundColor: "#090e17",
-              boxShadow: "0 8px 24px rgba(0, 0, 0, 0.18)",
+              boxShadow: `0 8px 24px rgba(0, 0, 0, 0.18), 0 0 0 ${wcActive * 3}px rgba(1, 120, 255, ${wcActive * 0.35}), 0 0 ${wcActive * 40}px rgba(1, 120, 255, ${wcActive * 0.3})`,
               opacity: createdOpacity,
               filter: `blur(${(1 - createdSettle) * 2.5}px)`,
-              transform: `translateY(${(1 - createdSettle) * 14}px) scale(${0.985 + createdSettle * 0.015})`,
+              transform: `translateY(${(1 - createdSettle) * 14}px) scale(${0.985 + createdSettle * 0.015 - wcPress * 0.03})`,
+              transformOrigin: "center",
             }}
           >
             <span
@@ -1311,7 +1389,7 @@ const WorkflowResponseSequence: React.FC<LaunchVideoProps> = ({
                   fontWeight: 700,
                 }}
               >
-                NVDA 12h buy below 200
+                NVDA · Buy below $200
               </span>
               <span
                 style={{
@@ -1321,10 +1399,38 @@ const WorkflowResponseSequence: React.FC<LaunchVideoProps> = ({
                   fontSize: 16,
                 }}
               >
-                Created workflow &quot;NVDA 12h buy below 200&quot;.
+                Created workflow &quot;NVDA · Buy below $200&quot;.
               </span>
             </span>
             <ArrowRight size={20} strokeWidth={1.8} color="#71717a" />
+
+            {/* Click ripple radiating from the cursor hit point. */}
+            <span
+              aria-hidden
+              style={{
+                position: "absolute",
+                left: 150,
+                top: "50%",
+                width: 60,
+                height: 60,
+                marginLeft: -30,
+                marginTop: -30,
+                borderRadius: "50%",
+                border: "2px solid rgba(1, 120, 255, 0.85)",
+                opacity: wcRippleOpacity,
+                transform: `scale(${0.4 + wcRipple * 1.4})`,
+                pointerEvents: "none",
+              }}
+            />
+
+            <FakeCursor
+              move={wcCursorMove}
+              press={wcPress}
+              opacity={wcCursorIn * (1 - wcCursorOut) * (1 - exit)}
+              origin={{ x: 520, y: 150 }}
+              target={{ x: 150, y: 34 }}
+              size={46}
+            />
           </div>
 
           <div
@@ -1680,21 +1786,6 @@ const WorkflowBuildSequence: React.FC = () => {
             >
               <Clock3 size={27} strokeWidth={2} /> 4 nodes
             </span>
-            <span
-              style={{
-                height: 58,
-                display: "inline-flex",
-                alignItems: "center",
-                padding: "0 26px",
-                borderRadius: 999,
-                border: "2px solid #252832",
-                color: "#a1a1aa",
-                fontSize: 27,
-                fontWeight: 600,
-              }}
-            >
-              Auto arrange
-            </span>
           </div>
           <div
             style={{
@@ -1744,8 +1835,17 @@ const ExecuteFinaleSequence: React.FC<LaunchVideoProps> = ({
 }) => {
   const frame = useCurrentFrame();
   const { fps } = useVideoConfig();
-  const { button, cursor, click, logo, cta, url, outro } =
+  const { grid, button, cursor, click, logo, cta, url, outro } =
     LAUNCH_VIDEO_TIMELINE.executeFinale;
+
+  // Grid geometry: four framed workflow cards across the top band.
+  const GRID_CARD_W = 420;
+  const GRID_CARD_H = 320;
+  const GRID_GAP = 24;
+  const GRID_TOP = 190;
+  const gridTotalW = GRID_CARD_W * 4 + GRID_GAP * 3;
+  const gridStartX = (1920 - gridTotalW) / 2;
+  const GRID_GRAPH_H = GRID_CARD_H - 74;
 
   const buttonOpacity = progress(
     frame,
@@ -1828,13 +1928,11 @@ const ExecuteFinaleSequence: React.FC<LaunchVideoProps> = ({
   );
   const urlIn = progress(frame, url.start, url.duration, POP_EASE);
   const exit = progress(frame, outro.start, outro.duration, OUTRO_EASE);
-  const finaleLayout = progress(
-    frame,
-    cta.start - 8,
-    18,
-    Easing.inOut(Easing.cubic),
-  );
-  const finaleLift = finaleLayout * 130;
+  // The grid holds the upper band; on click it fades so the centered lockup can
+  // own the frame. No vertical lift is needed: the logo lands where the button
+  // was (screen center), with the CTA + URL stacked beneath.
+  const gridFade = progress(frame, click.start, 12, FAST_FADE_EASE);
+  const finaleLift = 0;
 
   const buttonTextOpacity = 1 - progress(
     frame,
@@ -1858,6 +1956,78 @@ const ExecuteFinaleSequence: React.FC<LaunchVideoProps> = ({
         transform: `translateY(${exit * 24}px)`,
       }}
     >
+      {/* Grid of four workflows across the top band. Fades on the Execute
+          click so the centered NickAI lockup can own the frame. */}
+      <div style={{ position: "absolute", inset: 0, opacity: 1 - gridFade }}>
+        {GRID_WORKFLOWS.map((w, index) => {
+          const start = grid.start + index * grid.stagger;
+          const cardOpacity = progress(
+            frame,
+            start,
+            grid.duration,
+            FAST_FADE_EASE,
+          );
+          const cardSettle = progress(frame, start, grid.duration, POP_EASE);
+
+          return (
+            <div
+              key={wfName(w)}
+              style={{
+                position: "absolute",
+                left: gridStartX + index * (GRID_CARD_W + GRID_GAP),
+                top: GRID_TOP,
+                width: GRID_CARD_W,
+                height: GRID_CARD_H,
+                borderRadius: 26,
+                border: "1px solid rgba(255, 255, 255, 0.09)",
+                backgroundColor: "rgba(11, 16, 26, 0.85)",
+                boxShadow: "0 40px 90px -40px rgba(0, 0, 0, 0.8)",
+                overflow: "hidden",
+                opacity: cardOpacity,
+                transform: `translateY(${(1 - cardSettle) * 26}px) scale(${0.95 + cardSettle * 0.05})`,
+                transformOrigin: "center center",
+              }}
+            >
+              <div
+                style={{
+                  position: "absolute",
+                  top: 10,
+                  left: 10,
+                  right: 10,
+                  height: GRID_GRAPH_H,
+                }}
+              >
+                <WorkflowGraph
+                  template={w.template}
+                  vw={GRID_CARD_W - 20}
+                  vh={GRID_GRAPH_H}
+                  cw={3600}
+                  ch={1700}
+                  camera={fitCamera(GRID_CARD_W - 20, GRID_GRAPH_H, 3600, 1700)}
+                />
+              </div>
+              <div
+                style={{
+                  position: "absolute",
+                  bottom: 20,
+                  left: 24,
+                  right: 24,
+                  fontFamily: MANROPE,
+                  fontSize: 24,
+                  fontWeight: 600,
+                  color: "#fff",
+                  whiteSpace: "nowrap",
+                  overflow: "hidden",
+                  textOverflow: "ellipsis",
+                }}
+              >
+                {wfName(w)}
+              </div>
+            </div>
+          );
+        })}
+      </div>
+
       <div
         style={{
           position: "absolute",
@@ -2040,6 +2210,56 @@ const ExecuteFinaleSequence: React.FC<LaunchVideoProps> = ({
 };
 
 /**
+ * The NickAI lockup pinned top-left for the entire video, above every beat.
+ * Its position + sizing match the montage/product beats' own logo exactly so it
+ * overlaps them cleanly (no doubling), and it fades out as the finale's big
+ * centered lockup takes over. Mark blue is #0178FF (nick-mark.svg).
+ */
+const PersistentLogo: React.FC = () => {
+  const frame = useCurrentFrame();
+  const { executeFinale } = LAUNCH_VIDEO_TIMELINE;
+  const fadeOut = progress(
+    frame,
+    executeFinale.from + executeFinale.click.start,
+    16,
+    FAST_FADE_EASE,
+  );
+
+  return (
+    <div
+      style={{
+        position: "absolute",
+        top: 54,
+        left: 80,
+        zIndex: 20,
+        display: "flex",
+        alignItems: "center",
+        gap: 12,
+        opacity: 1 - fadeOut,
+        pointerEvents: "none",
+      }}
+    >
+      <Img
+        src={staticFile("nick/nick-mark.svg")}
+        style={{ height: 44, width: 44, display: "block" }}
+      />
+      <span
+        style={{
+          fontFamily: MANROPE,
+          fontWeight: 700,
+          fontSize: 36,
+          letterSpacing: "-0.02em",
+          color: "#ffffff",
+          lineHeight: 1,
+        }}
+      >
+        NickAI
+      </span>
+    </div>
+  );
+};
+
+/**
  * Extensible Launch Video shell. Later scenes should be added as sibling
  * Sequences whose boundaries live in timeline.ts.
  */
@@ -2053,7 +2273,6 @@ export const LaunchVideoComposition: React.FC<LaunchVideoProps> = (props) => {
     workflowResponse,
     workflowBuild,
     workflowMontage,
-    workflowGrid,
     productShell,
     execution,
     executeFinale,
@@ -2139,13 +2358,6 @@ export const LaunchVideoComposition: React.FC<LaunchVideoProps> = (props) => {
         <WorkflowMontageSequence />
       </Sequence>
       <Sequence
-        from={workflowGrid.from}
-        durationInFrames={workflowGrid.durationInFrames}
-        name="Three-workflow grid"
-      >
-        <WorkflowGridSequence />
-      </Sequence>
-      <Sequence
         from={productShell.from}
         durationInFrames={productShell.durationInFrames}
         name="Product shell with cards"
@@ -2166,6 +2378,8 @@ export const LaunchVideoComposition: React.FC<LaunchVideoProps> = (props) => {
       >
         <ExecuteFinaleSequence {...props} />
       </Sequence>
+
+      <PersistentLogo />
     </AbsoluteFill>
   );
 };
