@@ -2005,16 +2005,22 @@ const ExecuteFinaleSequence: React.FC<LaunchVideoProps> = ({
     4,
     FAST_FADE_EASE,
   );
-  const buttonCollapse = progress(
+  const circleMorph = progress(
     frame,
-    click.start + 2,
-    9,
+    click.start + click.duration - 1,
+    12,
     Easing.inOut(Easing.cubic),
   );
-  const logoReveal = progress(
+  const markReveal = progress(
     frame,
     logo.start,
-    logo.duration,
+    9,
+    Easing.out(Easing.cubic),
+  );
+  const wordmarkReveal = progress(
+    frame,
+    logo.start + 9,
+    14,
     Easing.out(Easing.cubic),
   );
   const logoSpring = spring({
@@ -2027,18 +2033,6 @@ const ExecuteFinaleSequence: React.FC<LaunchVideoProps> = ({
       mass: 0.9,
     },
   });
-  const seamIn = progress(
-    frame,
-    click.start + 3,
-    8,
-    Easing.out(Easing.cubic),
-  );
-  const seamOut = progress(
-    frame,
-    logo.start + 7,
-    11,
-    FAST_FADE_EASE,
-  );
   const urlIn = progress(frame, url.start, url.duration, POP_EASE);
   const exit = progress(frame, outro.start, outro.duration, OUTRO_EASE);
   const finaleLayout = progress(
@@ -2055,9 +2049,10 @@ const ExecuteFinaleSequence: React.FC<LaunchVideoProps> = ({
     6,
     FAST_FADE_EASE,
   );
-  const seamOpacity = seamIn * (1 - seamOut);
-  const seamWidth = interpolate(seamIn, [0, 1], [180, 680]);
   const sweepX = interpolate(clickProgress, [0, 1], [-160, 520]);
+  const pillWidth = interpolate(circleMorph, [0, 1], [430, 124]);
+  const pillHeight = interpolate(circleMorph, [0, 1], [116, 124]);
+  const circleShift = wordmarkReveal * 191;
   const logoWords = ctaHeadline.split(" ");
 
   return (
@@ -2074,24 +2069,23 @@ const ExecuteFinaleSequence: React.FC<LaunchVideoProps> = ({
       <div
         style={{
           position: "absolute",
+          zIndex: 2,
           left: "50%",
           top: "50%",
-          width: 430,
-          height: 116,
+          width: pillWidth,
+          height: pillHeight,
           display: "flex",
           alignItems: "center",
           justifyContent: "center",
           gap: 16,
-          borderRadius: 58,
+          borderRadius: interpolate(circleMorph, [0, 1], [58, 62]),
           color: "white",
           background:
             "linear-gradient(180deg, #0b84ff 0%, #0178ff 58%, #006eea 100%)",
           boxShadow: `0 18px 48px rgba(1, 120, 255, ${0.16 + press * 0.1}), inset 0 1px 0 rgba(255, 255, 255, 0.2)`,
-          opacity:
-            buttonOpacity *
-            (1 - progress(frame, click.start + 6, 5, FAST_FADE_EASE)),
+          opacity: buttonOpacity,
           overflow: "hidden",
-          transform: `translate(-50%, calc(-50% + ${(1 - buttonSettle) * 34}px)) scaleX(${0.86 + buttonSettle * 0.14 + buttonCollapse * 0.34}) scaleY(${0.86 + buttonSettle * 0.14 - press * 0.035 - buttonCollapse * 0.985})`,
+          transform: `translate(calc(-50% - ${circleShift}px), calc(-50% + ${(1 - buttonSettle) * 34}px - ${finaleLift}px)) scale(${0.86 + buttonSettle * 0.14 - press * 0.035})`,
         }}
       >
         <span
@@ -2126,30 +2120,38 @@ const ExecuteFinaleSequence: React.FC<LaunchVideoProps> = ({
         >
           Execute <ArrowRight size={36} strokeWidth={2.2} />
         </span>
+        <span
+          aria-hidden
+          style={{
+            position: "absolute",
+            width: 64,
+            height: 64,
+            overflow: "hidden",
+            opacity: markReveal,
+            filter: `blur(${(1 - markReveal) * 5}px)`,
+            transform: `scale(${0.78 + logoSpring * 0.22})`,
+          }}
+        >
+          <Img
+            src={staticFile("figma/logo.svg")}
+            style={{
+              position: "absolute",
+              left: 0,
+              top: 0,
+              width: 306.07,
+              height: 64,
+              maxWidth: "none",
+              filter: "brightness(0) invert(1)",
+            }}
+          />
+        </span>
       </div>
 
       <div
         aria-hidden
         style={{
           position: "absolute",
-          left: "50%",
-          top: "50%",
-          width: seamWidth,
-          height: 2,
-          borderRadius: 999,
-          background:
-            "linear-gradient(90deg, transparent, rgba(1, 120, 255, 0.72) 14%, white 50%, rgba(1, 120, 255, 0.72) 86%, transparent)",
-          boxShadow:
-            "0 0 12px rgba(255, 255, 255, 0.3), 0 0 38px rgba(1, 120, 255, 0.25)",
-          opacity: seamOpacity,
-          transform: "translate(-50%, -50%)",
-        }}
-      />
-
-      <div
-        aria-hidden
-        style={{
-          position: "absolute",
+          zIndex: 0,
           left: "50%",
           top: "50%",
           width: 760,
@@ -2157,28 +2159,37 @@ const ExecuteFinaleSequence: React.FC<LaunchVideoProps> = ({
           borderRadius: "50%",
           background:
             "radial-gradient(ellipse, rgba(1, 120, 255, 0.16) 0%, rgba(1, 120, 255, 0.055) 44%, transparent 72%)",
-          opacity: logoReveal * (1 - seamOut * 0.35),
+          opacity: markReveal * 0.72 + wordmarkReveal * 0.28,
           filter: "blur(22px)",
-          transform: `translate(-50%, calc(-50% - ${finaleLift}px)) scale(${0.76 + logoReveal * 0.24})`,
+          transform: `translate(-50%, calc(-50% - ${finaleLift}px)) scale(${0.82 + wordmarkReveal * 0.18})`,
         }}
       />
 
       <div
         style={{
           position: "absolute",
-          left: "50%",
+          zIndex: 2,
+          left: "calc(50% - 97px)",
           top: "50%",
-          width: 574,
-          height: 120,
-          opacity: logoReveal,
-          clipPath: `inset(0 ${50 - logoReveal * 50}% 0 ${50 - logoReveal * 50}%)`,
-          filter: `blur(${(1 - logoReveal) * 13}px)`,
-          transform: `translate(-50%, calc(-50% - ${finaleLift}px)) scale(${0.975 + logoSpring * 0.025})`,
+          width: 350,
+          height: 104,
+          overflow: "hidden",
+          opacity: wordmarkReveal,
+          clipPath: `inset(0 ${100 - wordmarkReveal * 100}% 0 0)`,
+          filter: `blur(${(1 - wordmarkReveal) * 8}px)`,
+          transform: `translate(${(1 - wordmarkReveal) * -18}px, calc(-50% - ${finaleLift}px))`,
         }}
       >
         <Img
           src={staticFile("figma/logo.svg")}
-          style={{ width: "100%", height: "100%" }}
+          style={{
+            position: "absolute",
+            left: -148,
+            top: 0,
+            width: 497.36,
+            height: 104,
+            maxWidth: "none",
+          }}
         />
       </div>
 
