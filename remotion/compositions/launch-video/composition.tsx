@@ -46,7 +46,14 @@ import { NVDA_HERO_TEMPLATE } from "../nick-launch-video/nvda-template";
 import { GRID_WORKFLOWS, GRID_WORKFLOWS_2, wfName } from "../nick-launch-video/props";
 import type { TemplateGraph } from "../workflow-template-card/props";
 import { PriceCardView } from "../chat-cards/price-card-view";
-import { SAMPLE_PRICE_NVDA } from "../chat-cards/props";
+import { PortfolioCardView } from "../chat-cards/portfolio-card-view";
+import { TradeConfirmationCardView } from "../chat-cards/trade-confirmation-card-view";
+import {
+  SAMPLE_PORTFOLIO,
+  SAMPLE_PRICE_NVDA,
+  SAMPLE_PRICE_SPACEX,
+  SAMPLE_TRADE_AAPL,
+} from "../chat-cards/props";
 import { buildReveal, zoomIntroCamera } from "./graph-anim";
 
 const CANVAS = "#09090b";
@@ -1789,31 +1796,53 @@ const ExecuteFinaleSequence: React.FC<LaunchVideoProps> = ({
 }) => {
   const frame = useCurrentFrame();
   const { fps } = useVideoConfig();
-  const { heroIn, heroFly, grid, soften, button, cursor, click, logo, cta, url, outro } =
+  const { heroFly, grid, soften, button, cursor, click, logo, cta, url, outro } =
     LAUNCH_VIDEO_TIMELINE.executeFinale;
 
-  // Grid geometry: eight framed workflow cards, 4 columns × 2 rows.
+  // Grid geometry: 4 columns × 3 rows.
+  //   row 0 → workflows (GRID_WORKFLOWS)
+  //   row 1 → widgets (SpaceX price, NVDA price, portfolio, AAPL trade)
+  //   row 2 → more workflows (GRID_WORKFLOWS_2)
   const GRID_CARD_W = 400;
-  const GRID_CARD_H = 300;
-  const GRID_GAP_X = 22;
-  const GRID_GAP_Y = 28;
+  const GRID_CARD_H = 236;
+  const GRID_GAP_X = 20;
+  const GRID_GAP_Y = 22;
   const GRID_TOP = 150;
   const gridTotalW = GRID_CARD_W * 4 + GRID_GAP_X * 3;
   const gridStartX = (1920 - gridTotalW) / 2;
-  const GRID_GRAPH_H = GRID_CARD_H - 64;
-  const ALL_GRID = [...GRID_WORKFLOWS, ...GRID_WORKFLOWS_2];
+  const GRID_GRAPH_H = GRID_CARD_H - 58;
   const slotX = (i: number) => gridStartX + (i % 4) * (GRID_CARD_W + GRID_GAP_X);
   const slotY = (i: number) => GRID_TOP + Math.floor(i / 4) * (GRID_CARD_H + GRID_GAP_Y);
+  const cellCX = (i: number) => slotX(i) + GRID_CARD_W / 2;
+  const cellCY = (i: number) => slotY(i) + GRID_CARD_H / 2;
 
-  // Hero (index 0) entrance + fly-to-slot.
-  const heroInP = progress(frame, heroIn.start, heroIn.duration, POP_EASE);
-  const heroFlyP = progress(frame, heroFly.start, heroFly.duration, Easing.inOut(Easing.cubic));
-  // Center of the hero's settled slot vs. screen center — the fly delta.
-  const heroSlotCX = slotX(0) + GRID_CARD_W / 2;
-  const heroSlotCY = slotY(0) + GRID_CARD_H / 2;
-  const heroDX = (960 - heroSlotCX) * (1 - heroFlyP);
-  const heroDY = (600 - heroSlotCY) * (1 - heroFlyP);
-  const heroScale = 1 + (1 - heroFlyP) * 1.25;
+  // Row-2 widgets. The AAPL trade card (col 3, cell index 7) is the "hero" that
+  // persists from the execution beat, centered, then flies into this slot.
+  const WIDGETS = [
+    { kind: "price" as const, data: SAMPLE_PRICE_SPACEX },
+    { kind: "price" as const, data: SAMPLE_PRICE_NVDA },
+    { kind: "portfolio" as const, data: SAMPLE_PORTFOLIO },
+    { kind: "trade" as const, data: SAMPLE_TRADE_AAPL },
+  ];
+  const TRADE_IDX = 7;
+  // Widget cards render at a uniform height; width follows each card's aspect.
+  const WIDGET_H = GRID_CARD_H - 26;
+  const widgetW = (kind: string) =>
+    Math.round(WIDGET_H * (kind === "price" ? 1.271 : kind === "portfolio" ? 1.15 : 1.74));
+
+  // The trade card flies from screen center (width 560, as the execution beat
+  // left it) into its widget-row slot.
+  const flyP = progress(frame, heroFly.start, heroFly.duration, Easing.inOut(Easing.cubic));
+  const tradeW = interpolate(flyP, [0, 1], [560, widgetW("trade")]);
+  const tradeCX = interpolate(flyP, [0, 1], [960, cellCX(TRADE_IDX)]);
+  const tradeCY = interpolate(flyP, [0, 1], [630, cellCY(TRADE_IDX)]);
+
+  // Twelve cells: row 0 workflows, row 1 widgets, row 2 more workflows.
+  const CELLS = [
+    ...GRID_WORKFLOWS.map((w) => ({ type: "workflow" as const, w })),
+    ...WIDGETS.map((wd) => ({ type: "widget" as const, ...wd })),
+    ...GRID_WORKFLOWS_2.map((w) => ({ type: "workflow" as const, w })),
+  ];
 
   // The grid softens (dims + desaturates) once settled, then the whole grid
   // fades on the Execute click.
@@ -1928,10 +1957,11 @@ const ExecuteFinaleSequence: React.FC<LaunchVideoProps> = ({
         transform: `translateY(${exit * 24}px)`,
       }}
     >
-      {/* Two-row (4×2) grid of workflows. The hero (index 0) enters large +
-          centered then flies to its top-left slot while the other seven
-          populate. The whole grid softens (dim + desaturate) so the Execute
-          button reads on top, then fades on the click. */}
+      {/* 3-row × 4-col grid: workflows, then the product widgets, then more
+          workflows. The AAPL trade card (rendered last) persists from the
+          execution beat and flies from center into its widget-row slot while the
+          other eleven cells stagger in. The grid softens so the Execute button
+          reads on top, then fades on the click. */}
       <div
         style={{
           position: "absolute",
@@ -1940,51 +1970,64 @@ const ExecuteFinaleSequence: React.FC<LaunchVideoProps> = ({
           filter: `saturate(${1 - softenP * 0.45}) brightness(${1 - softenP * 0.2})`,
         }}
       >
-        {ALL_GRID.map((w, index) => {
-          const isHero = index === 0;
-          // Non-hero cards stagger in; the hero uses its own entrance + fly.
-          const start = grid.start + (index - 1) * grid.stagger;
-          const cardOpacity = isHero
-            ? heroInP
-            : progress(frame, start, grid.duration, FAST_FADE_EASE);
-          const cardSettle = isHero
-            ? 1
-            : progress(frame, start, grid.duration, POP_EASE);
-          const transform = isHero
-            ? `translate(${heroDX}px, ${heroDY}px) scale(${heroScale})`
-            : `translateY(${(1 - cardSettle) * 26}px) scale(${0.95 + cardSettle * 0.05})`;
+        {CELLS.map((cell, index) => {
+          // The trade card is drawn separately below (it flies from center).
+          if (index === TRADE_IDX) return null;
+          const order = index < TRADE_IDX ? index : index - 1;
+          const start = grid.start + order * grid.stagger;
+          const cardOpacity = progress(frame, start, grid.duration, FAST_FADE_EASE);
+          const cardSettle = progress(frame, start, grid.duration, POP_EASE);
+          const pop = `translateY(${(1 - cardSettle) * 22}px) scale(${0.95 + cardSettle * 0.05})`;
+
+          if (cell.type === "widget") {
+            const w = widgetW(cell.kind);
+            return (
+              <div
+                key={`widget-${index}`}
+                style={{
+                  position: "absolute",
+                  left: cellCX(index),
+                  top: cellCY(index),
+                  width: w,
+                  height: WIDGET_H,
+                  opacity: cardOpacity,
+                  transform: `translate(-50%, calc(-50% + ${(1 - cardSettle) * 22}px)) scale(${0.95 + cardSettle * 0.05})`,
+                  transformOrigin: "center center",
+                }}
+              >
+                {cell.kind === "price" ? (
+                  <PriceCardView data={cell.data} width={w} anim={1} />
+                ) : cell.kind === "portfolio" ? (
+                  <PortfolioCardView data={cell.data} width={w} anim={1} />
+                ) : (
+                  <TradeConfirmationCardView data={cell.data} width={w} anim={1} />
+                )}
+              </div>
+            );
+          }
 
           return (
             <div
-              key={wfName(w)}
+              key={wfName(cell.w)}
               style={{
                 position: "absolute",
                 left: slotX(index),
                 top: slotY(index),
                 width: GRID_CARD_W,
                 height: GRID_CARD_H,
-                borderRadius: 26,
+                borderRadius: 22,
                 border: "1px solid rgba(255, 255, 255, 0.09)",
                 backgroundColor: "rgba(11, 16, 26, 0.85)",
                 boxShadow: "0 40px 90px -40px rgba(0, 0, 0, 0.8)",
                 overflow: "hidden",
                 opacity: cardOpacity,
-                transform,
+                transform: pop,
                 transformOrigin: "center center",
-                zIndex: isHero ? 3 : 1,
               }}
             >
-              <div
-                style={{
-                  position: "absolute",
-                  top: 10,
-                  left: 10,
-                  right: 10,
-                  height: GRID_GRAPH_H,
-                }}
-              >
+              <div style={{ position: "absolute", top: 8, left: 10, right: 10, height: GRID_GRAPH_H }}>
                 <WorkflowGraph
-                  template={w.template}
+                  template={cell.w.template}
                   vw={GRID_CARD_W - 20}
                   vh={GRID_GRAPH_H}
                   cw={3600}
@@ -1995,11 +2038,11 @@ const ExecuteFinaleSequence: React.FC<LaunchVideoProps> = ({
               <div
                 style={{
                   position: "absolute",
-                  bottom: 18,
-                  left: 22,
-                  right: 22,
+                  bottom: 14,
+                  left: 20,
+                  right: 20,
                   fontFamily: MANROPE,
-                  fontSize: 22,
+                  fontSize: 21,
                   fontWeight: 600,
                   color: "#fff",
                   whiteSpace: "nowrap",
@@ -2007,11 +2050,25 @@ const ExecuteFinaleSequence: React.FC<LaunchVideoProps> = ({
                   textOverflow: "ellipsis",
                 }}
               >
-                {wfName(w)}
+                {wfName(cell.w)}
               </div>
             </div>
           );
         })}
+
+        {/* AAPL trade card: persists from the execution beat, flies to its slot. */}
+        <div
+          style={{
+            position: "absolute",
+            left: tradeCX,
+            top: tradeCY,
+            width: tradeW,
+            transform: "translate(-50%, -50%)",
+            zIndex: 4,
+          }}
+        >
+          <TradeConfirmationCardView data={SAMPLE_TRADE_AAPL} width={tradeW} anim={1} />
+        </div>
       </div>
 
       <div

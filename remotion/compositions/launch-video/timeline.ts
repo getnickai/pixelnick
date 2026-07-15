@@ -255,86 +255,93 @@ export const LAUNCH_VIDEO_TIMELINE = {
     // thread (SpaceX + NVDA price cards, then the portfolio card). Trimmed hold:
     // the UX settles then hands straight to the execution zoom (no long linger).
     from: 713,
-    durationInFrames: 92,
-    shell: { start: 0, duration: 14 }, // panels wipe in
-    canvas: { start: 2, duration: 16 }, // workflow settles in the right pane
-    intro: { start: 16, duration: 10 }, // assistant line
-    cards: { start: 22, stagger: 12, duration: 14 }, // spacex, nvda, portfolio
-    outro: { start: 82, duration: 10 },
+    durationInFrames: 96,
+    // Workflow-first: the docked workflow canvas settles in immediately (it is
+    // the montage graph arriving at its final position), THEN the product UX
+    // wipes in around it (chat rail + panel), then the thread + cards stream.
+    canvas: { start: 0, duration: 10 }, // workflow settles in the right pane first
+    shell: { start: 8, duration: 16 }, // chat rail + panel wipe in around it
+    intro: { start: 22, duration: 10 }, // assistant line
+    cards: { start: 30, stagger: 12, duration: 14 }, // spacex, nvda, portfolio
+    outro: { start: 86, duration: 10 },
   },
   execution: {
-    // The full product UX is briefly visible, then the camera pushes onto the
-    // top-right "Run Now" control → it presses → the Execution Logs panel opens
-    // and rows stream → the run completes: the camera pulls back to center and a
-    // "Workflow executed successfully" banner + an AAPL trade-fill confirmation
-    // card animate in on top.
+    // The full product UX is visible, then a big blue "Execute" button appears
+    // in the middle. The pointer clicks it → the camera zooms into the canvas as
+    // the workflow nodes turn green and the Execution Logs stream → the run
+    // completes → the camera pulls back and a "Workflow executed successfully"
+    // banner + an AAPL trade-fill confirmation card animate in → the product UX
+    // fades to dark around the trade card, handing off to the finale grid.
     from: 797,
-    durationInFrames: 176,
-    zoomIn: { start: 0, duration: 16 }, // camera pushes toward Run Now
-    press: { start: 14, duration: 8 }, // Run Now clicked
-    logsOpen: { start: 22, duration: 16 }, // logs panel slides up, nodes light
-    scroll: { start: 40, duration: 60 }, // rows stream up while running
-    finish: { start: 100, duration: 22 }, // run completes; camera pulls back to center
-    confirm: { start: 118, duration: 20 }, // success banner + AAPL trade card in
-    outro: { start: 166, duration: 10 },
+    durationInFrames: 196,
+    button: { start: 6, duration: 14 }, // blue Execute button fades in, centered
+    cursor: { start: 22, duration: 16 }, // pointer moves to the button
+    click: { start: 42, duration: 9 }, // click -> triggers the run
+    logsOpen: { start: 50, duration: 16 }, // logs panel opens, nodes start going green
+    scroll: { start: 62, duration: 56 }, // rows stream + nodes green; camera zoomed on canvas
+    finish: { start: 118, duration: 20 }, // all nodes green; camera pulls back to center
+    confirm: { start: 134, duration: 20 }, // success banner + AAPL trade card in
+    fadeUX: { start: 162, duration: 24 }, // product UX fades to dark around the trade card
+    outro: { start: 188, duration: 8 },
   },
   executeFinale: {
-    // The finale opens on the hero workflow (NVDA) large + centered; it then
-    // flies to its top-left slot while the other seven workflows populate a
-    // 2-row × 4-col grid around it. The whole grid then softens (contrast down)
-    // and the Execute button layers in on top. Its click is the transition:
+    // The finale opens on the AAPL trade card centered (handed off, still lit,
+    // from the execution beat). The card then flies to its widget-row slot while
+    // a 3-row × 4-col grid assembles around it: row 1 workflows, row 2 the
+    // price / portfolio / trade widgets, row 3 more workflows. The grid softens
+    // and the Execute button layers on top. Its click is the transition:
     // grid + button -> energy core -> NickAI lockup + CTA.
-    from: 965,
-    durationInFrames: 262,
+    from: 985,
+    durationInFrames: 278,
     heroIn: {
-      // Hero workflow enters large + centered.
-      start: 2,
+      // Centered hold of the trade card (matches the execution hand-off).
+      start: 0,
       duration: 16,
     },
     heroFly: {
-      // Hero flies from center to its top-left grid slot.
-      start: 18,
-      duration: 24,
+      // Trade card flies from center to its widget-row slot.
+      start: 16,
+      duration: 26,
     },
     grid: {
-      // The other seven cards stagger in (both rows) as the hero flies.
-      start: 22,
-      stagger: 5,
-      duration: 16,
+      // The other eleven cards stagger in as the trade card flies.
+      start: 20,
+      stagger: 4,
+      duration: 14,
     },
     soften: {
       // The settled grid dims + desaturates so the button reads on top.
-      start: 58,
+      start: 74,
       duration: 14,
     },
     button: {
       // Layers in on top of the softened grid, screen-centered.
-      start: 62,
+      start: 78,
       duration: 14,
     },
     cursor: {
-      start: 84,
+      start: 100,
       duration: 16,
     },
     click: {
-      start: 106,
+      start: 122,
       duration: 9,
     },
     logo: {
-      start: 116,
+      start: 132,
       duration: 26,
     },
     cta: {
-      start: 148,
+      start: 164,
       stagger: 2,
       duration: 14,
     },
     url: {
-      start: 160,
+      start: 176,
       duration: 12,
     },
     outro: {
-      start: 250,
+      start: 266,
       duration: 12,
     },
   },
