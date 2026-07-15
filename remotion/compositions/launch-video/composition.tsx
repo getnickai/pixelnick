@@ -1885,7 +1885,8 @@ const ExecuteFinaleSequence: React.FC<LaunchVideoProps> = ({
 }) => {
   const frame = useCurrentFrame();
   const { fps } = useVideoConfig();
-  const { grid, logo, cta, url, outro } = LAUNCH_VIDEO_TIMELINE.executeFinale;
+  const { grid, soften, statement, logo, cta, url, outro } =
+    LAUNCH_VIDEO_TIMELINE.executeFinale;
 
   // Layout: the AAPL confirmation stays CENTERED (handed off from the execution
   // beat). Workflows sit in a row above and a row below it; the other product
@@ -1924,9 +1925,15 @@ const ExecuteFinaleSequence: React.FC<LaunchVideoProps> = ({
   ];
 
   const bandIn = progress(frame, grid.start + 40, 16, FAST_FADE_EASE);
-  // The whole arrangement softens then fades just before the lockup resolves.
-  const softenP = progress(frame, logo.start - 30, 18, FAST_FADE_EASE);
-  const arrangementFade = progress(frame, logo.start - 12, 12, FAST_FADE_EASE);
+  // The wall softens, then fades; a two-line strategy statement resolves; then
+  // the NickAI lockup + CTA.
+  const softenP = progress(frame, soften.start, soften.duration, FAST_FADE_EASE);
+  const arrangementFade = progress(frame, soften.start + soften.duration, 14, FAST_FADE_EASE);
+
+  // "Describe any strategy you want, / Nick builds, tests and runs it for you."
+  const statementIn = progress(frame, statement.start, statement.duration, POP_EASE);
+  const statementOut = progress(frame, logo.start - 24, 14, FAST_FADE_EASE);
+  const statementOpacity = statementIn * (1 - statementOut);
 
   const logoReveal = progress(frame, logo.start, logo.duration, Easing.out(Easing.cubic));
   const logoSpring = spring({
@@ -2070,6 +2077,30 @@ const ExecuteFinaleSequence: React.FC<LaunchVideoProps> = ({
         >
           <VenuesBand caption="Nick trades on the venues you already use" logoHeight={38} gap={46} />
         </div>
+      </div>
+
+      {/* Two-line strategy statement, between the wall and the lockup. */}
+      <div
+        style={{
+          position: "absolute",
+          left: 120,
+          right: 120,
+          top: "50%",
+          transform: `translateY(calc(-50% + ${(1 - statementIn) * 26}px))`,
+          textAlign: "center",
+          color: "#fafafa",
+          fontFamily: DUPLET,
+          fontSize: 62,
+          fontWeight: 500,
+          lineHeight: 1.28,
+          letterSpacing: 0.3,
+          opacity: statementOpacity,
+          filter: statementIn >= 1 ? undefined : `blur(${(1 - statementIn) * 5}px)`,
+        }}
+      >
+        Describe any strategy you want,
+        <br />
+        Nick builds, tests and runs it for you
       </div>
 
       {/* Energy-core glow behind the resolving lockup. */}

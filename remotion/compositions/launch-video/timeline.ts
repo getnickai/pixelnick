@@ -57,7 +57,7 @@ export const LAUNCH_VIDEO_TIMELINE = {
   chatComposer: {
     // Begins as the product-statement title exits.
     from: 120,
-    durationInFrames: 78,
+    durationInFrames: 90,
     shell: {
       start: 0,
       duration: 12,
@@ -71,25 +71,25 @@ export const LAUNCH_VIDEO_TIMELINE = {
       duration: 5,
     },
     typing: {
-      start: 11,
+      // The box appears, then holds ~0.4s (12f) before typing begins.
+      start: 23,
       duration: 36,
     },
     send: {
-      // Typing completes at frame 47. Cut the dead hold: the cursor enters and
-      // travels almost immediately, clicking Send at ~frame 60.
-      start: 60,
+      // Typing completes at frame 59; the cursor travels and clicks Send.
+      start: 72,
       duration: 10,
     },
     outro: {
       // Begins on the exact frame the click ripple completes.
-      start: 70,
+      start: 82,
       duration: 6,
     },
   },
   chatResponse: {
     // Starts as soon as the composer click ripple completes. Durations mirror
     // the first result-thread beat in NicksiteV2 at playbackRate: 2.
-    from: 190,
+    from: 202,
     durationInFrames: 95,
     shell: {
       start: 0,
@@ -123,7 +123,7 @@ export const LAUNCH_VIDEO_TIMELINE = {
   workflowComposer: {
     // NicksiteV2's second focus/typing beat. The original 3400ms type-on runs
     // at playbackRate 2, which maps to 51 frames at 30fps.
-    from: 278,
+    from: 290,
     durationInFrames: 90,
     shell: {
       start: 0,
@@ -156,7 +156,7 @@ export const LAUNCH_VIDEO_TIMELINE = {
   workflowResponse: {
     // Workflow-thread responses only. Sidebar/panel/node reveals deliberately
     // remain out of this sequence so they can become the next product beat.
-    from: 361,
+    from: 373,
     durationInFrames: 112,
     shell: {
       start: 0,
@@ -194,7 +194,7 @@ export const LAUNCH_VIDEO_TIMELINE = {
   workflowBuild: {
     // The workflow canvas begins while the response thread is completing its
     // fast fade, keeping the creation result and visual build in one motion.
-    from: 466,
+    from: 478,
     durationInFrames: 105,
     shell: {
       start: 0,
@@ -228,7 +228,7 @@ export const LAUNCH_VIDEO_TIMELINE = {
     // The NVDA hero build (workflowBuild) is workflow #1. Here two MORE
     // workflows finalize fast: swap the composer prompt, the new graph pops in
     // already-built (no slow node-by-node build), twice.
-    from: 564,
+    from: 576,
     durationInFrames: 156,
     intro: { start: 0, duration: 10 },
     swap2: { start: 6, duration: 12 }, // prompt swaps to workflow #2
@@ -254,7 +254,7 @@ export const LAUNCH_VIDEO_TIMELINE = {
     // chat rail wipes in from the left and the widget cards stream into the
     // thread (SpaceX + NVDA price cards, then the portfolio card). Trimmed hold:
     // the UX settles then hands straight to the execution zoom (no long linger).
-    from: 713,
+    from: 725,
     durationInFrames: 96,
     // Workflow-first: the docked workflow canvas settles in immediately (it is
     // the montage graph arriving at its final position), THEN the product UX
@@ -272,7 +272,7 @@ export const LAUNCH_VIDEO_TIMELINE = {
     // completes → the camera pulls back and a "Workflow executed successfully"
     // banner + an AAPL trade-fill confirmation card animate in → the product UX
     // fades to dark around the trade card, handing off to the finale grid.
-    from: 797,
+    from: 809,
     durationInFrames: 196,
     button: { start: 6, duration: 14 }, // blue Execute button fades in, centered
     cursor: { start: 22, duration: 16 }, // pointer moves to the button
@@ -285,63 +285,45 @@ export const LAUNCH_VIDEO_TIMELINE = {
     outro: { start: 188, duration: 8 },
   },
   executeFinale: {
-    // The finale opens on the AAPL trade card centered (handed off, still lit,
-    // from the execution beat). The card then flies to its widget-row slot while
-    // a 3-row × 4-col grid assembles around it: row 1 workflows, row 2 the
-    // price / portfolio / trade widgets, row 3 more workflows. The grid softens
-    // and the Execute button layers on top. Its click is the transition:
-    // grid + button -> energy core -> NickAI lockup + CTA.
-    from: 985,
-    durationInFrames: 278,
-    heroIn: {
-      // Centered hold of the trade card (matches the execution hand-off).
-      start: 0,
-      duration: 16,
-    },
-    heroFly: {
-      // Trade card flies from center to its widget-row slot.
-      start: 16,
-      duration: 26,
-    },
+    // The finale opens on the AAPL confirmation centered (handed off, still lit,
+    // from the execution beat). Workflows assemble in rows above/below, the
+    // price/portfolio widgets flank it, and the supported-venue logos band sits
+    // beneath. The wall then softens + fades, a two-line strategy statement
+    // resolves, and finally the NickAI lockup + CTA.
+    from: 997,
+    durationInFrames: 344,
     grid: {
-      // The other eleven cards stagger in as the trade card flies.
+      // The workflows + widgets stagger in around the centered AAPL card.
       start: 20,
       stagger: 4,
       duration: 14,
     },
     soften: {
-      // The settled grid dims + desaturates so the button reads on top.
-      start: 74,
-      duration: 14,
-    },
-    button: {
-      // Layers in on top of the softened grid, screen-centered.
-      start: 78,
-      duration: 14,
-    },
-    cursor: {
-      start: 100,
+      // The settled wall dims + desaturates before fading out.
+      start: 92,
       duration: 16,
     },
-    click: {
-      start: 122,
-      duration: 9,
+    statement: {
+      // Two-line strategy line: "Describe any strategy you want, / Nick builds,
+      // tests and runs it for you."
+      start: 130,
+      duration: 18,
     },
     logo: {
-      start: 132,
+      start: 218,
       duration: 26,
     },
     cta: {
-      start: 164,
+      start: 250,
       stagger: 2,
       duration: 14,
     },
     url: {
-      start: 176,
+      start: 262,
       duration: 12,
     },
     outro: {
-      start: 266,
+      start: 332,
       duration: 12,
     },
   },
