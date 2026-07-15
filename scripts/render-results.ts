@@ -15,7 +15,7 @@
  *   --no-top            render every market for a game (default = biggest payout)
  *   --no-mp4            PNG only (faster)
  *   --feed=<path>       results.json path (default public/swarm-arena-cards/results.json)
- *   --out=<dir>         output dir (default out/results)
+ *   --out=<dir>         output dir (default out/mp4)
  */
 import path from "node:path";
 import fs from "node:fs";

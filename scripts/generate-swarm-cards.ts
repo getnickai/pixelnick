@@ -2,7 +2,7 @@
  * Swarm Arena card generator.
  *
  * Loads the deck (R2 or fixtures, see swarm-feed.ts), then renders a PNG per
- * card to out/swarm-arena/:
+ * card to out/mp4/:
  *   - one agent card per agent (default layout: editorial)
  *   - one match card
  *   - one leaderboard card
@@ -16,7 +16,7 @@
  *   --size=portrait|story|square|og   (default portrait)
  *   --layout=editorial|hero|scoreboard|terminal   (agent cards; default editorial)
  *   --slug=<name>          render only the card with this output slug
- *   --out=<dir>            output dir (default out/swarm-arena)
+ *   --out=<dir>            output dir (default out/mp4)
  *
  * MP4 / Slack posting are intentionally out of scope for this pass.
  */

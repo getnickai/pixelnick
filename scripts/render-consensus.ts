@@ -24,7 +24,7 @@
  *   --src=<url>             preview: upcoming/Elo feed (default the prod /api/swarm-upcoming)
  *   --no-mp4                PNG only (faster)
  *   --feed=<path>           consensus.json path (default public/swarm-arena-cards/consensus.json)
- *   --out=<dir>             output dir (default out/consensus)
+ *   --out=<dir>             output dir (default out/mp4)
  */
 import path from "node:path";
 import fs from "node:fs";
