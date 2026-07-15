@@ -7,7 +7,9 @@
 import { AbsoluteFill, staticFile } from "remotion";
 import { ArrowRight, ArrowUp, ChevronDown, Download, Loader2, Maximize2, Play, Plus, Sparkles, Square, Trash2, X } from "lucide-react";
 import { fitCamera, focusCamera, WorkflowGraph, type RunStatus } from "./graph";
-import { NVIDIA_CARD, PORTFOLIO_CARD, PriceCardMock, PortfolioCardMock, SPACEX_CARD } from "./cards";
+import { PriceCardView } from "../chat-cards/price-card-view";
+import { PortfolioCardView } from "../chat-cards/portfolio-card-view";
+import { SAMPLE_PORTFOLIO, SAMPLE_PRICE_NVDA, SAMPLE_PRICE_SPACEX } from "../chat-cards/props";
 import { topoOrder } from "../workflow-template-card/layout";
 import { getGlyph } from "../workflow-template-card/node-glyphs";
 import {
@@ -26,8 +28,8 @@ const SANS = "var(--font-manrope), ui-sans-serif, system-ui, sans-serif";
 const BLUE = "#0178FF";
 
 /* Workflow canvas geometry (shared by wide + zoom screens). */
-const CANVAS_W = 2600;
-const CANVAS_H = 1200;
+const CANVAS_W = 3600;
+const CANVAS_H = 1700;
 const WF_VW = 1720;
 const WF_VH = 660;
 const WF_TOP = 140;
@@ -363,6 +365,15 @@ export function ProductScreen({
     };
   };
 
+  // Tighter framing so the rich nodes read clearly in the pane: take the
+  // whole-graph fit, then bump the zoom for readability. This graph is wider than
+  // the pane at high zoom, so a straight 1.4x centred crop sliced the left/right
+  // nodes in half. Instead zoom 1.3x (nodes stay large) and pan slightly left so
+  // the dense left fan sits fully in-frame and only the far-right convergence
+  // node gently fades off the right edge — the look of a real, scrollable canvas.
+  const baseFit = fitCamera(wsW, canvasH, CANVAS_W, CANVAS_H, 0.82);
+  const wsCamera = { ...baseFit, scale: baseFit.scale * 1.3, fx: baseFit.fx - 175 };
+
   // Running state: most nodes completed (green), a few mid-graph still running (blue).
   let statusById: Record<string, RunStatus> | undefined;
   if (running) {
@@ -402,15 +413,15 @@ export function ProductScreen({
             Here's your book right now. SpaceX and NVDA are your two biggest movers today.
           </div>
           <div style={{ display: "flex", gap: 16 }}>
-            <div style={cardStyle(0)}>
-              <PriceCardMock data={SPACEX_CARD} width={314} />
+            <div style={{ ...cardStyle(0), width: 314, height: 247 }}>
+              <PriceCardView data={SAMPLE_PRICE_SPACEX} width={314} anim={cardReveal[0]} />
             </div>
-            <div style={cardStyle(1)}>
-              <PriceCardMock data={NVIDIA_CARD} width={314} />
+            <div style={{ ...cardStyle(1), width: 314, height: 247 }}>
+              <PriceCardView data={SAMPLE_PRICE_NVDA} width={314} anim={cardReveal[1]} />
             </div>
           </div>
-          <div style={cardStyle(2)}>
-            <PortfolioCardMock data={PORTFOLIO_CARD} width={644} />
+          <div style={{ ...cardStyle(2), width: 644, height: 560 }}>
+            <PortfolioCardView data={SAMPLE_PORTFOLIO} width={644} anim={cardReveal[2]} />
           </div>
         </div>
         {/* input */}
@@ -468,7 +479,7 @@ export function ProductScreen({
           }}
         >
           <div style={{ width: wsW, height: canvasH, opacity: canvasOpacity, transform: `scale(${canvasScale})`, transformOrigin: "center center" }}>
-            <WorkflowGraph template={w.template} vw={wsW} vh={canvasH} cw={CANVAS_W} ch={CANVAS_H} camera={fitCamera(wsW, canvasH, CANVAS_W, CANVAS_H, 0.82)} statusById={statusById} />
+            <WorkflowGraph template={w.template} vw={wsW} vh={canvasH} cw={CANVAS_W} ch={CANVAS_H} camera={wsCamera} statusById={statusById} />
           </div>
           {running ? (
             <div style={{ position: "absolute", top: 24, left: "50%", transform: "translateX(-50%)", display: "flex", alignItems: "center", gap: 8, backgroundColor: "rgba(1,120,255,0.14)", border: `1px solid ${BLUE}`, color: BLUE, fontWeight: 600, fontSize: 15, padding: "8px 18px", borderRadius: 999 }}>

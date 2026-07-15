@@ -158,6 +158,28 @@ export const motionManifest: MotionEntryMeta[] = [
     durationInFrames: 262,
   },
   {
+    // NickAI in-chat Price card — the reusable candlestick/price widget Nick
+    // renders in chat, faithful to the real product card. Card-native 2x
+    // canvas (880x700). ~1.5s candle draw-on + price count-up, then a hold. 3s.
+    id: "chat-price-card",
+    label: "Chat Price Card",
+    width: 880,
+    height: 700,
+    fps: 30,
+    durationInFrames: 90,
+  },
+  {
+    // NickAI in-chat Portfolio card — the reusable portfolio snapshot widget
+    // (net worth, equity curve, allocation, positions). Card-native 2x canvas
+    // (880x810). ~1.5s curve draw-on + net-worth count-up, then a hold. 3s.
+    id: "chat-portfolio-card",
+    label: "Chat Portfolio Card",
+    width: 880,
+    height: 810,
+    fps: 30,
+    durationInFrames: 90,
+  },
+  {
     // NickAI social card (STA-473) — brand-dark frame for the weekly X
     // content calendar. ~2.4s staggered entrance (wave → header → headline →
     // subline → chips/module → footer) + hold. Stills render settled at any

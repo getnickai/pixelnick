@@ -18,8 +18,8 @@ import { progress, POP_EASE, FAST_FADE_EASE, OUTRO_EASE } from "./motion";
 
 const SANS = "var(--font-manrope), ui-sans-serif, system-ui, sans-serif";
 const BG = "#070b14";
-const CANVAS_W = 2600;
-const CANVAS_H = 1200;
+const CANVAS_W = 3600;
+const CANVAS_H = 1700;
 
 function Background() {
   return (

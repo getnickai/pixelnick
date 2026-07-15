@@ -34,6 +34,14 @@ import { GamePickCardComposition } from "./compositions/game-pick-card/compositi
 import { gamePickCardDefaultProps } from "./compositions/game-pick-card/props";
 import { ResultPortfolioCardComposition } from "./compositions/result-portfolio-card/composition";
 import { resultPortfolioCardDefaultProps } from "./compositions/result-portfolio-card/props";
+import {
+  ChatPriceCardComposition,
+  ChatPortfolioCardComposition,
+} from "./compositions/chat-cards/composition";
+import {
+  chatPriceCardDefaultProps,
+  chatPortfolioCardDefaultProps,
+} from "./compositions/chat-cards/props";
 import { NickaiSocialCardComposition } from "./compositions/nickai-social-card/composition";
 import { nickaiSocialCardDefaultProps } from "./compositions/nickai-social-card/props";
 import { NickaiOgCoverComposition } from "./compositions/nickai-og-cover/composition";
@@ -57,6 +65,8 @@ const leaderboardAnim = getMotionEntryMeta("swarm-arena-leaderboard-card")!;
 const matchdayAnim = getMotionEntryMeta("matchday-analysis")!;
 const gamePickAnim = getMotionEntryMeta("game-pick-card")!;
 const resultPortfolioAnim = getMotionEntryMeta("result-portfolio-card")!;
+const chatPrice = getMotionEntryMeta("chat-price-card")!;
+const chatPortfolio = getMotionEntryMeta("chat-portfolio-card")!;
 const nickaiSocial = getMotionEntryMeta("nickai-social-card")!;
 const nickaiOgCover = getMotionEntryMeta("nickai-og-cover")!;
 const workflowTemplate = getMotionEntryMeta("workflow-template-card")!;
@@ -172,6 +182,29 @@ export const RemotionRoot: React.FC = () => {
         width={resultPortfolioAnim.width}
         height={resultPortfolioAnim.height}
         defaultProps={resultPortfolioCardDefaultProps}
+      />
+      {/* NickAI in-chat Price card — reusable candlestick/price widget Nick
+          renders in chat. Candle draw-on + price count-up, then hold. */}
+      <Composition
+        id="chat-price-card"
+        component={ChatPriceCardComposition}
+        durationInFrames={chatPrice.durationInFrames}
+        fps={chatPrice.fps}
+        width={chatPrice.width}
+        height={chatPrice.height}
+        defaultProps={chatPriceCardDefaultProps}
+      />
+      {/* NickAI in-chat Portfolio card — reusable portfolio snapshot widget
+          (net worth, equity curve, allocation, positions). Curve draw-on +
+          net-worth count-up, then hold. */}
+      <Composition
+        id="chat-portfolio-card"
+        component={ChatPortfolioCardComposition}
+        durationInFrames={chatPortfolio.durationInFrames}
+        fps={chatPortfolio.fps}
+        width={chatPortfolio.width}
+        height={chatPortfolio.height}
+        defaultProps={chatPortfolioCardDefaultProps}
       />
       {/* NickAI social card (STA-473) — brand-dark frame for the weekly X
           content calendar, rendered to PNG/MP4 by render-nickai-social. */}

@@ -27,86 +27,92 @@ export type RunStatus = "completed" | "running";
 const RUN_GREEN = "#1fc16b";
 const RUN_BLUE = "#2b7fff";
 
-const NODE_W = 210;
-const NODE_H = 66;
+/** Node card design. `compact` = our icon-tile + type + name (scaled up for
+ *  readability). `rich` = Onur's second-20 look: title + colored type badge +
+ *  a one-line subtitle. Both draw inside the same camera engine. */
+export type NodeVariant = "compact" | "rich";
+const NODE_DIMS: Record<NodeVariant, { w: number; h: number }> = {
+  compact: { w: 300, h: 96 },
+  rich: { w: 392, h: 120 },
+};
+export const nodeDims = (variant: NodeVariant = "compact") => NODE_DIMS[variant];
 
-/** One workflow node, drawn like a real builder node: icon tile + labels. When
- *  `status` is set the node reads as executed (green + check) or running (blue). */
-export function WorkflowNodeCard({ node, status }: { node: TemplateNodeData; status?: RunStatus }) {
+/** One workflow node, drawn like a real builder node. When `status` is set the
+ *  node reads as executed (green + check) or running (blue). */
+export function WorkflowNodeCard({
+  node,
+  status,
+  variant = "compact",
+}: {
+  node: TemplateNodeData;
+  status?: RunStatus;
+  variant?: NodeVariant;
+}) {
   const g = getGlyph(node.type);
   const Icon = g.Icon;
-  const tile = 42;
+  const { w, h } = NODE_DIMS[variant];
   const border = status === "completed" ? RUN_GREEN : status === "running" ? RUN_BLUE : g.border;
   const glow = status === "completed" ? RUN_GREEN : status === "running" ? RUN_BLUE : g.icon;
-  return (
-    <div
-      style={{
-        position: "relative",
-        width: NODE_W,
-        height: NODE_H,
-        display: "flex",
-        alignItems: "center",
-        gap: 12,
-        padding: "0 14px",
-        borderRadius: 18,
-        border: `2px solid ${border}`,
-        backgroundColor: "#0f1216",
-        boxShadow: `0 16px 44px -18px ${glow}66, inset 0 0 0 1px rgba(255,255,255,0.05)`,
-      }}
-    >
-      {status === "completed" ? (
-        <div style={{ position: "absolute", top: -8, right: -8, width: 20, height: 20, borderRadius: 999, backgroundColor: RUN_GREEN, display: "flex", alignItems: "center", justifyContent: "center", boxShadow: "0 0 0 3px #0f1216" }}>
-          <Check size={13} color="#04140a" strokeWidth={3.5} />
+
+  const StatusBadge =
+    status === "completed" ? (
+      <div style={{ position: "absolute", top: -8, right: -8, width: 22, height: 22, borderRadius: 999, backgroundColor: RUN_GREEN, display: "flex", alignItems: "center", justifyContent: "center", boxShadow: "0 0 0 3px #0f1216" }}>
+        <Check size={14} color="#04140a" strokeWidth={3.5} />
+      </div>
+    ) : status === "running" ? (
+      <div style={{ position: "absolute", top: -7, right: -7, width: 17, height: 17, borderRadius: 999, backgroundColor: RUN_BLUE, boxShadow: `0 0 0 3px #0f1216, 0 0 12px ${RUN_BLUE}` }} />
+    ) : null;
+
+  const shell: React.CSSProperties = {
+    position: "relative",
+    width: w,
+    height: h,
+    borderRadius: 20,
+    border: `2px solid ${border}`,
+    backgroundColor: "#0f1216",
+    boxShadow: `0 16px 44px -18px ${glow}66, inset 0 0 0 1px rgba(255,255,255,0.05)`,
+  };
+
+  if (variant === "rich") {
+    const tile = 54;
+    // Badge sits ABOVE the title on its own row so the node name always gets the
+    // full card width (no truncation from a same-row badge).
+    return (
+      <div style={{ ...shell, padding: "16px 20px", display: "flex", alignItems: "center", gap: 16 }}>
+        {StatusBadge}
+        <div style={{ width: tile, height: tile, flexShrink: 0, borderRadius: 14, backgroundColor: `${g.icon}22`, display: "flex", alignItems: "center", justifyContent: "center" }}>
+          <Icon size={28} color={g.icon} strokeWidth={2.3} />
         </div>
-      ) : status === "running" ? (
-        <div style={{ position: "absolute", top: -7, right: -7, width: 16, height: 16, borderRadius: 999, backgroundColor: RUN_BLUE, boxShadow: `0 0 0 3px #0f1216, 0 0 12px ${RUN_BLUE}` }} />
-      ) : null}
-      <div
-        style={{
-          width: tile,
-          height: tile,
-          flexShrink: 0,
-          borderRadius: 12,
-          backgroundColor: `${g.icon}22`,
-          display: "flex",
-          alignItems: "center",
-          justifyContent: "center",
-        }}
-      >
-        <Icon size={24} color={g.icon} strokeWidth={2.3} />
+        <div style={{ minWidth: 0, flex: 1, display: "flex", flexDirection: "column", gap: 3 }}>
+          <span style={{ alignSelf: "flex-start", padding: "3px 9px", borderRadius: 999, fontSize: 11, fontWeight: 700, letterSpacing: "0.08em", textTransform: "uppercase", color: g.icon, backgroundColor: `${g.icon}1f` }}>{g.typeLabel}</span>
+          <div style={{ fontSize: 20, fontWeight: 600, lineHeight: 1.1, color: "#fff", whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis" }}>{node.label}</div>
+          {node.subtitle ? (
+            <div style={{ fontSize: 13, fontWeight: 500, color: "#8b93a2", whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis" }}>{node.subtitle}</div>
+          ) : null}
+        </div>
+      </div>
+    );
+  }
+
+  // compact
+  const tile = 56;
+  return (
+    <div style={{ ...shell, display: "flex", alignItems: "center", gap: 14, padding: "0 18px" }}>
+      {StatusBadge}
+      <div style={{ width: tile, height: tile, flexShrink: 0, borderRadius: 14, backgroundColor: `${g.icon}22`, display: "flex", alignItems: "center", justifyContent: "center" }}>
+        <Icon size={30} color={g.icon} strokeWidth={2.3} />
       </div>
       <div style={{ minWidth: 0, flex: 1 }}>
-        <div
-          style={{
-            fontSize: 10,
-            fontWeight: 700,
-            letterSpacing: "0.12em",
-            textTransform: "uppercase",
-            color: g.icon,
-          }}
-        >
-          {g.typeLabel}
-        </div>
-        <div
-          style={{
-            fontSize: 15,
-            fontWeight: 600,
-            lineHeight: 1.15,
-            color: "#fff",
-            whiteSpace: "nowrap",
-            overflow: "hidden",
-            textOverflow: "ellipsis",
-          }}
-        >
-          {node.label}
-        </div>
+        <div style={{ fontSize: 13, fontWeight: 700, letterSpacing: "0.12em", textTransform: "uppercase", color: g.icon }}>{g.typeLabel}</div>
+        <div style={{ fontSize: 20, fontWeight: 600, lineHeight: 1.15, color: "#fff", whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis" }}>{node.label}</div>
       </div>
     </div>
   );
 }
 
-function graphLayout(template: TemplateGraph, cw: number, ch: number) {
-  return layoutGraph(template.nodes, { width: cw, height: ch, padding: Math.max(NODE_W, NODE_H) * 0.7 });
+function graphLayout(template: TemplateGraph, cw: number, ch: number, variant: NodeVariant = "compact") {
+  const { w, h } = NODE_DIMS[variant];
+  return layoutGraph(template.nodes, { width: cw, height: ch, padding: Math.max(w, h) * 0.7 });
 }
 
 /** Camera that fits the whole canvas into the viewport (with margin). */
@@ -122,8 +128,9 @@ export function focusCamera(
   ch: number,
   ids: string[],
   scale: number,
+  variant: NodeVariant = "compact",
 ): Camera {
-  const layout = graphLayout(template, cw, ch);
+  const layout = graphLayout(template, cw, ch, variant);
   const pts = ids.map((id) => layout.nodeById[id]).filter(Boolean);
   if (!pts.length) return { scale, fx: cw / 2, fy: ch / 2 };
   return {
@@ -137,12 +144,13 @@ export function WorkflowGraph({
   template,
   vw,
   vh,
-  cw = 2600,
-  ch = 1200,
+  cw = 3600,
+  ch = 1700,
   camera,
   nodeReveal,
   edgeReveal,
   statusById,
+  nodeVariant = "rich",
 }: {
   template: TemplateGraph;
   /** Viewport (output) size. */
@@ -155,8 +163,10 @@ export function WorkflowGraph({
   nodeReveal?: Record<string, number>;
   edgeReveal?: Record<string, number>;
   statusById?: Record<string, RunStatus>;
+  nodeVariant?: NodeVariant;
 }) {
-  const layout = graphLayout(template, cw, ch);
+  const layout = graphLayout(template, cw, ch, nodeVariant);
+  const { w: NW, h: NH } = nodeDims(nodeVariant);
   const cam = camera ?? fitCamera(vw, vh, cw, ch);
   const tx = vw / 2 - cam.fx * cam.scale;
   const ty = vh / 2 - cam.fy * cam.scale;
@@ -200,14 +210,14 @@ export function WorkflowGraph({
               key={n.id}
               style={{
                 position: "absolute",
-                left: n.cx - NODE_W / 2,
-                top: n.cy - NODE_H / 2,
+                left: n.cx - NW / 2,
+                top: n.cy - NH / 2,
                 opacity: reveal,
                 transform: `scale(${0.7 + 0.3 * reveal})`,
                 transformOrigin: "center center",
               }}
             >
-              <WorkflowNodeCard node={n} status={statusById?.[n.id]} />
+              <WorkflowNodeCard node={n} status={statusById?.[n.id]} variant={nodeVariant} />
             </div>
           );
         })}

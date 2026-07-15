@@ -14,20 +14,19 @@
  */
 import { AbsoluteFill, staticFile, useCurrentFrame } from "remotion";
 import { ArrowUp, Plus } from "lucide-react";
-import { WorkflowGraph, fitCamera } from "../nick-launch-video/graph";
-import { topoOrder } from "../workflow-template-card/layout";
-import type { TemplateGraph } from "../workflow-template-card/props";
+import { WorkflowGraph } from "../nick-launch-video/graph";
 import { LAUNCH_WORKFLOWS } from "../nick-launch-video/props";
 import { LAUNCH_VIDEO_TIMELINE } from "./timeline";
 import { progress, POP_EASE, FAST_FADE_EASE, OUTRO_EASE } from "./motion";
+import { buildReveal, zoomIntroCamera } from "./graph-anim";
 
 const SANS = "var(--font-manrope), ui-sans-serif, system-ui, sans-serif";
 const BG = "#070b14";
 const BLUE = "#0178FF";
 
 /* Canvas geometry, matches WorkflowWide (screens.tsx). */
-const CANVAS_W = 2600;
-const CANVAS_H = 1200;
+const CANVAS_W = 3600;
+const CANVAS_H = 1700;
 const VW = 1720;
 const VH = 720;
 const WF_TOP = 200;
@@ -90,27 +89,6 @@ function Composer({ prompt, cx, cy, width = 1160 }: { prompt: React.ReactNode; c
   );
 }
 
-/* ── Reveal maths ─────────────────────────────────────────────────────────── */
-
-/** Fast per-node stagger across the build window, so the graph "finalizes". */
-function buildReveal(template: TemplateGraph, frame: number, start: number, duration: number) {
-  const order = topoOrder(template.nodes, template.edges);
-  const perNode = 8;
-  const spread = Math.max(1, duration - perNode);
-  const step = spread / Math.max(1, order.length - 1);
-  const nodeReveal: Record<string, number> = {};
-  order.forEach((id, i) => {
-    nodeReveal[id] = progress(frame, start + i * step, perNode, POP_EASE);
-  });
-  // Edges draw with the overall build so connectors trail the nodes.
-  const edgeP = progress(frame, start + duration * 0.28, duration * 0.6, FAST_FADE_EASE);
-  const edgeReveal: Record<string, number> = {};
-  template.edges.forEach((e) => {
-    edgeReveal[e.id] = edgeP;
-  });
-  return { nodeReveal, edgeReveal };
-}
-
 /* ── Beat ─────────────────────────────────────────────────────────────────── */
 
 export const WorkflowMontageSequence: React.FC = () => {
@@ -132,8 +110,32 @@ export const WorkflowMontageSequence: React.FC = () => {
   const revealA = buildReveal(wA.template, frame, build2.start, build2.duration);
   const revealB = buildReveal(wB.template, frame, build3.start, build3.duration);
 
-  const cameraA = fitCamera(VW, VH, CANVAS_W, CANVAS_H);
-  const cameraB = fitCamera(VW, VH, CANVAS_W, CANVAS_H);
+  // Each workflow opens zoomed on its first 2 nodes during its build window,
+  // then pulls the camera back to the whole graph before the swap / beat end.
+  const cameraA = zoomIntroCamera({
+    template: wA.template,
+    vw: VW,
+    vh: VH,
+    cw: CANVAS_W,
+    ch: CANVAS_H,
+    frame,
+    buildStart: build2.start,
+    buildDur: build2.duration,
+    holdDur: 2,
+    zoomOutDur: 28,
+  });
+  const cameraB = zoomIntroCamera({
+    template: wB.template,
+    vw: VW,
+    vh: VH,
+    cw: CANVAS_W,
+    ch: CANVAS_H,
+    frame,
+    buildStart: build3.start,
+    buildDur: build3.duration,
+    holdDur: 2,
+    zoomOutDur: 28,
+  });
 
   // Prompt swap: old text lifts out over the first half of the swap, new text
   // drops in over the second half.

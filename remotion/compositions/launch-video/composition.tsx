@@ -42,16 +42,18 @@ import { WorkflowMontageSequence } from "./beat-montage";
 import { WorkflowGridSequence } from "./beat-grid";
 import { ProductShellSequence } from "./beat-product-shell";
 import { ExecutionSequence } from "./beat-execution";
+import { WorkflowGraph } from "../nick-launch-video/graph";
+import { NVDA_HERO_TEMPLATE } from "../nick-launch-video/nvda-template";
+import { PriceCardView } from "../chat-cards/price-card-view";
+import { SAMPLE_PRICE_NVDA } from "../chat-cards/props";
+import { buildReveal, zoomIntroCamera } from "./graph-anim";
 
 const CANVAS = "#09090b";
 const TILE_SIZE = 88;
 const DUPLET =
   'var(--font-duplet, "Duplet"), ui-sans-serif, system-ui, sans-serif';
 const MANROPE = "Manrope, ui-sans-serif, system-ui, sans-serif";
-const NVDA_CHART_LINE =
-  "M0 147C18 115 30 123 47 122C64 121 73 106 89 126C102 141 114 91 130 75C146 59 160 96 173 122C185 143 199 139 211 140C224 82 241 78 258 58C273 43 281 0 293 42C306 72 319 58 334 63C349 70 357 86 371 88C386 90 393 78 404 91C414 105 417 47 431 59C445 67 448 95 460 83C472 73 477 105 489 98C502 93 510 128 521 111C532 96 540 104 551 86C563 67 573 105 583 96C595 84 601 80 615 89C629 102 632 127 646 132C661 137 671 111 684 117C691 120 696 115 700 116";
-const NVDA_CHART_FILL = `${NVDA_CHART_LINE}L700 170L0 170Z`;
-const WORKFLOW_BOARD = { width: 1600, height: 850 } as const;
+const WORKFLOW_BOARD = { width: 1600, height: 480 } as const;
 const WORKFLOW_NODE_HEIGHT = 142;
 
 type WorkflowNodeKind = "start" | "price" | "condition" | "trade";
@@ -922,7 +924,6 @@ const ChatResponseSequence: React.FC<LaunchVideoProps> = ({ chatPrompt }) => {
     userMessage,
     reasoning,
     resultCard,
-    chartFill,
     chartLine,
     outro,
   } = LAUNCH_VIDEO_TIMELINE.chatResponse;
@@ -969,12 +970,6 @@ const ChatResponseSequence: React.FC<LaunchVideoProps> = ({ chatPrompt }) => {
     resultCard.start,
     resultCard.duration,
     POP_EASE,
-  );
-  const fillOpacity = progress(
-    frame,
-    chartFill.start,
-    chartFill.duration,
-    FAST_FADE_EASE,
   );
   const lineDraw = progress(
     frame,
@@ -1076,98 +1071,14 @@ const ChatResponseSequence: React.FC<LaunchVideoProps> = ({ chatPrompt }) => {
           <div
             style={{
               marginTop: 18,
-              overflow: "hidden",
-              padding: "27px 30px 24px",
-              borderRadius: 24,
-              border: "1px solid #272f3d",
-              backgroundColor: "#090e17",
-              boxShadow: "0 10px 30px rgba(0, 0, 0, 0.2)",
+              width: 560,
+              height: 440,
               opacity: cardOpacity,
               filter: `blur(${(1 - cardSettle) * 2.5}px)`,
               transform: `translateY(${(1 - cardSettle) * 16}px) scale(${0.985 + cardSettle * 0.015})`,
             }}
           >
-            <div
-              style={{
-                color: "#a1a1aa",
-                fontSize: 18,
-                fontWeight: 600,
-              }}
-            >
-              NVDA
-            </div>
-            <div
-              style={{
-                marginTop: 4,
-                color: "#ffffff",
-                fontFamily: DUPLET,
-                fontSize: 57,
-                fontWeight: 600,
-                lineHeight: 1,
-                letterSpacing: 0.5,
-              }}
-            >
-              $202.56
-            </div>
-            <div
-              style={{
-                marginTop: 13,
-                color: "#22c55e",
-                fontSize: 21,
-                fontWeight: 600,
-              }}
-            >
-              +$18.5 (+9.13%) Today
-            </div>
-
-            <svg
-              viewBox="0 0 700 170"
-              preserveAspectRatio="none"
-              width="100%"
-              height="190"
-              fill="none"
-              aria-label="NVDA daily price chart"
-              style={{ display: "block", marginTop: 10, overflow: "visible" }}
-            >
-              <defs>
-                <linearGradient
-                  id="launch-video-nvda-fill"
-                  x1="350"
-                  y1="10"
-                  x2="350"
-                  y2="170"
-                  gradientUnits="userSpaceOnUse"
-                >
-                  <stop stopColor="#22c55e" stopOpacity="0.24" />
-                  <stop offset="1" stopColor="#22c55e" stopOpacity="0" />
-                </linearGradient>
-                <clipPath id="launch-video-nvda-line-reveal">
-                  <rect x="0" y="0" width={700 * lineDraw} height="170" />
-                </clipPath>
-              </defs>
-              <path
-                d={NVDA_CHART_FILL}
-                fill="url(#launch-video-nvda-fill)"
-                opacity={fillOpacity}
-              />
-              <path
-                d={NVDA_CHART_LINE}
-                stroke="#22c55e"
-                strokeWidth={2.4}
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                clipPath="url(#launch-video-nvda-line-reveal)"
-              />
-            </svg>
-            <div
-              style={{
-                color: "#71717a",
-                fontSize: 17,
-                fontWeight: 500,
-              }}
-            >
-              1d · Apr 13 to Jul 9
-            </div>
+            <PriceCardView data={SAMPLE_PRICE_NVDA} width={560} anim={lineDraw} />
           </div>
         </div>
       </div>
@@ -1640,9 +1551,7 @@ const WorkflowCanvasNode: React.FC<{
 
 const WorkflowBuildSequence: React.FC = () => {
   const frame = useCurrentFrame();
-  const { fps } = useVideoConfig();
-  const { shell, header, nodes, edges, outro } =
-    LAUNCH_VIDEO_TIMELINE.workflowBuild;
+  const { shell, header, outro } = LAUNCH_VIDEO_TIMELINE.workflowBuild;
   const shellOpacity = progress(
     frame,
     shell.start,
@@ -1661,73 +1570,33 @@ const WorkflowBuildSequence: React.FC = () => {
   const shellIsSettled = shellSettle >= 1 && exit === 0;
   const headerIsSettled = headerSettle >= 1;
 
-  const nodeStyles = WORKFLOW_NODES.map((_, index) => {
-    const start = nodes.start + index * nodes.stagger;
-
-    return {
-      opacity: progress(
-        frame,
-        start,
-        Math.min(7, nodes.duration),
-        FAST_FADE_EASE,
-      ),
-      settle: spring({
-        frame: Math.max(0, frame - start),
-        fps,
-        durationInFrames: nodes.duration,
-        config: {
-          damping: 12,
-          stiffness: 165,
-          mass: 0.72,
-        },
-      }),
-      complete: frame >= start + nodes.duration,
-    };
-  });
-  const edgeDraws = Array.from(
-    { length: WORKFLOW_EDGE_COUNT },
-    (_, index) =>
-      progress(
-        frame,
-        edges.start + index * edges.stagger,
-        edges.duration,
-        Easing.inOut(Easing.quad),
-      ),
-  );
-  const originDotStyles = WORKFLOW_CONNECTION_ORIGINS.map((_, index) => {
-    const start = edges.start + index * edges.stagger - 2;
-
-    return {
-      opacity: progress(frame, start, 4, FAST_FADE_EASE),
-      scale: spring({
-        frame: Math.max(0, frame - start),
-        fps,
-        durationInFrames: 7,
-        config: {
-          damping: 11,
-          stiffness: 220,
-          mass: 0.6,
-        },
-      }),
-    };
-  });
-  const targetDotStyles = WORKFLOW_CONNECTION_TARGETS.map((_, index) => {
-    const start =
-      edges.start + index * edges.stagger + edges.duration - 2;
-
-    return {
-      opacity: progress(frame, start, 4, FAST_FADE_EASE),
-      scale: spring({
-        frame: Math.max(0, frame - start),
-        fps,
-        durationInFrames: 7,
-        config: {
-          damping: 11,
-          stiffness: 220,
-          mass: 0.6,
-        },
-      }),
-    };
+  // Zoom-in-then-out build (STA-494): open focused on the first 2 NVDA nodes
+  // while the per-node build runs (~frames 8-55), then pull the camera back to
+  // the full 4-node graph (~frames 55-90) before the existing outro fade.
+  const BUILD_START = 8;
+  const BUILD_DUR = 47;
+  const HOLD_DUR = 0;
+  const ZOOM_OUT_DUR = 35;
+  // A 4-node linear flow does not fill the big 3600x1700 canvas the montage
+  // graphs use, so the hero gets a right-sized canvas that frames the single row
+  // and vertically centers it. ch stays ~= 2x the rich-node layout padding so
+  // the row sits at the vertical centre; cw is kept just wide enough to space the
+  // four nodes without overlap, which (with the shorter board below) is what pulls
+  // the end framing in so the nodes read large instead of a thin distant strip.
+  const HERO_CW = 1850;
+  const HERO_CH = 550;
+  const reveal = buildReveal(NVDA_HERO_TEMPLATE, frame, BUILD_START, BUILD_DUR);
+  const camera = zoomIntroCamera({
+    template: NVDA_HERO_TEMPLATE,
+    vw: WORKFLOW_BOARD.width,
+    vh: WORKFLOW_BOARD.height,
+    cw: HERO_CW,
+    ch: HERO_CH,
+    frame,
+    buildStart: BUILD_START,
+    buildDur: BUILD_DUR,
+    holdDur: HOLD_DUR,
+    zoomOutDur: ZOOM_OUT_DUR,
   });
 
   return (
@@ -1742,7 +1611,7 @@ const WorkflowBuildSequence: React.FC = () => {
       <div
         style={{
           width: WORKFLOW_BOARD.width,
-          height: 1040,
+          height: 170 + WORKFLOW_BOARD.height,
           opacity: shellOpacity * (1 - exit),
           filter: shellIsSettled
             ? undefined
@@ -1793,7 +1662,7 @@ const WorkflowBuildSequence: React.FC = () => {
                 letterSpacing: -0.6,
               }}
             >
-              NVDA 12h buy below 200
+              NVDA · Buy below $200
             </span>
             <span
               style={{
@@ -1836,7 +1705,7 @@ const WorkflowBuildSequence: React.FC = () => {
               lineHeight: 1.2,
             }}
           >
-            Buy $50 of NVDA on paper trading when the price is below $200
+            Buy $50 of NVDA every 12 hours when the price is below $200, on paper trading.
           </div>
         </div>
 
@@ -1852,104 +1721,17 @@ const WorkflowBuildSequence: React.FC = () => {
             backgroundSize: "48px 48px",
           }}
         >
-          <svg
-            aria-hidden="true"
-            viewBox={`0 0 ${WORKFLOW_BOARD.width} ${WORKFLOW_BOARD.height}`}
-            style={{
-              position: "absolute",
-              zIndex: 1,
-              inset: 0,
-              width: "100%",
-              height: "100%",
-              overflow: "visible",
-            }}
-          >
-            {WORKFLOW_CONNECTORS.map((connector, index) => {
-              const draw = edgeDraws[index];
-              const isComplete = draw >= 1;
-
-              return (
-                <path
-                  key={connector.id}
-                  d={connector.path}
-                  fill="none"
-                  pathLength={1}
-                  stroke="#626673"
-                  strokeWidth={5}
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  strokeDasharray={isComplete ? undefined : 1}
-                  strokeDashoffset={isComplete ? undefined : 1 - draw}
-                  opacity={draw > 0 ? 1 : 0}
-                />
-              );
-            })}
-          </svg>
-          <div
-            style={{
-              position: "absolute",
-              zIndex: 2,
-              left: conditionNode.x + conditionNode.width / 2 - 42,
-              top: conditionNode.y + WORKFLOW_NODE_HEIGHT + 68,
-              color: `rgba(119, 121, 133, ${edgeDraws[2]})`,
-              fontSize: 28,
-              fontWeight: 500,
-            }}
-          >
-            true
-          </div>
-
-          {WORKFLOW_NODES.map((node, index) => (
-            <WorkflowCanvasNode
-              key={node.id}
-              node={node}
-              opacity={nodeStyles[index].opacity}
-              settle={nodeStyles[index].settle}
-              complete={nodeStyles[index].complete}
-            />
-          ))}
-
-          {WORKFLOW_CONNECTION_ORIGINS.map((origin, index) => (
-            <span
-              key={origin.id}
-              aria-hidden
-              style={{
-                position: "absolute",
-                zIndex: 3,
-                left: origin.x - 9,
-                top: origin.y - 9,
-                width: 18,
-                height: 18,
-                borderRadius: "50%",
-                backgroundColor: "#0178ff",
-                boxShadow:
-                  "0 0 0 4px rgba(1, 120, 255, 0.13), 0 0 18px rgba(1, 120, 255, 0.42)",
-                opacity: originDotStyles[index].opacity,
-                transform: `scale(${originDotStyles[index].scale})`,
-              }}
-            />
-          ))}
-
-          {WORKFLOW_CONNECTION_TARGETS.map((target, index) => (
-            <span
-              key={target.id}
-              aria-hidden
-              style={{
-                position: "absolute",
-                zIndex: 3,
-                left: target.x - 9,
-                top: target.y - 9,
-                width: 18,
-                height: 18,
-                borderRadius: "50%",
-                backgroundColor: "#0178ff",
-                boxShadow:
-                  "0 0 0 4px rgba(1, 120, 255, 0.13), 0 0 18px rgba(1, 120, 255, 0.42)",
-                opacity: targetDotStyles[index].opacity,
-                transform: `scale(${targetDotStyles[index].scale})`,
-              }}
-            />
-          ))}
+          <WorkflowGraph
+            template={NVDA_HERO_TEMPLATE}
+            vw={WORKFLOW_BOARD.width}
+            vh={WORKFLOW_BOARD.height}
+            cw={HERO_CW}
+            ch={HERO_CH}
+            camera={camera}
+            nodeReveal={reveal.nodeReveal}
+            edgeReveal={reveal.edgeReveal}
+            nodeVariant="rich"
+          />
         </div>
       </div>
     </AbsoluteFill>
@@ -2282,7 +2064,7 @@ export const LaunchVideoComposition: React.FC<LaunchVideoProps> = (props) => {
       {/* Music bed — same track as the template cards, looped for the full
           runtime with a quick fade in and a tail fade out. */}
       <Audio
-        src={staticFile("audio/workflow-template-card.mp3")}
+        src={staticFile("audio/nick-performance-highlight.mp3")}
         loop
         volume={(f) =>
           interpolate(
