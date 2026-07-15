@@ -142,7 +142,7 @@ Aspirational and empowering framing. No fear, loss, or "you can't" hooks, even f
 
 - Do: "Nick is non-custodial, your funds stay in your own exchange or wallet."
 - Don't: "Don't worry about giving a stranger access to your money."
-- Do: "Great agents win on position sizing."
+- Do: "Great agents get position sizing right."
 - Don't: "Position sizing kills trading agents."
 
 ### Show real outputs and use cases
