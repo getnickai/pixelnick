@@ -1,0 +1,91 @@
+/**
+ * Render stills at beat-center frames of the full `launch-video` composition,
+ * for design review of the grafted product beats (STA-494).
+ *
+ *   bun scripts/render-launch-frames.ts             # all named beats
+ *   bun scripts/render-launch-frames.ts montage grid # only these
+ *   bun scripts/render-launch-frames.ts 972          # a raw frame number
+ *
+ * Output → out/launch-frames/<name>.png (1920×1200). Pure design, no creds.
+ */
+import path from "node:path";
+import fs from "node:fs";
+import { bundle } from "@remotion/bundler";
+import { renderStill, selectComposition } from "@remotion/renderer";
+import { enableTailwind } from "@remotion/tailwind-v4";
+import { launchVideoDefaultProps } from "../remotion/compositions/launch-video/props";
+
+const COMPOSITION_ID = "launch-video";
+const PUBLIC_DIR = path.join(process.cwd(), "public");
+const OUT = path.join(process.cwd(), "out", "launch-frames");
+
+// Beat-center frames (see remotion/compositions/launch-video/timeline.ts).
+const BEATS: Record<string, number> = {
+  opening: 35,
+  statement: 96,
+  "chat-composer": 188,
+  "chat-response": 285,
+  "workflow-composer": 403,
+  "workflow-response": 505,
+  "workflow-build": 643,
+  "montage-2": 700,
+  "montage-3": 760,
+  grid: 840,
+  product: 980,
+  execution: 1120,
+  finale: 1274,
+};
+
+async function main() {
+  const argv = process.argv.slice(2);
+  const targets: Array<{ name: string; frame: number }> = argv.length
+    ? argv.map((a) =>
+        /^\d+$/.test(a)
+          ? { name: `frame-${a}`, frame: Number(a) }
+          : { name: a, frame: BEATS[a] },
+      )
+    : Object.entries(BEATS).map(([name, frame]) => ({ name, frame }));
+
+  const bad = targets.filter((t) => t.frame == null || Number.isNaN(t.frame));
+  if (bad.length) {
+    console.error(`Unknown beat(s): ${bad.map((b) => b.name).join(", ")}`);
+    console.error(`Options: ${Object.keys(BEATS).join(", ")} (or a raw frame number)`);
+    process.exit(1);
+  }
+  fs.mkdirSync(OUT, { recursive: true });
+
+  console.log("Bundling Remotion project…");
+  const serveUrl = await bundle({
+    entryPoint: path.join(process.cwd(), "remotion", "index.ts"),
+    webpackOverride: (config) => enableTailwind(config),
+  });
+  fs.cpSync(PUBLIC_DIR, serveUrl, { recursive: true });
+
+  const composition = await selectComposition({
+    serveUrl,
+    id: COMPOSITION_ID,
+    inputProps: launchVideoDefaultProps,
+  });
+  console.log(
+    `Rendering ${targets.length} frame(s) of ${COMPOSITION_ID} (${composition.width}×${composition.height}, ${composition.durationInFrames}f)\n`,
+  );
+
+  for (const { name, frame } of targets) {
+    const png = path.join(OUT, `${name}.png`);
+    await renderStill({
+      composition,
+      serveUrl,
+      output: png,
+      inputProps: launchVideoDefaultProps,
+      frame,
+      imageFormat: "png",
+    });
+    console.log(`  ✓ ${name}.png  @ frame ${frame}`);
+  }
+  console.log(`\nDone → out/launch-frames/`);
+}
+
+main().catch((err) => {
+  console.error(err);
+  process.exit(1);
+});

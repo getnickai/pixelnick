@@ -215,10 +215,61 @@ export const LAUNCH_VIDEO_TIMELINE = {
       duration: 10,
     },
   },
+  // ── Grafted product beats (STA-494): montage → grid → product shell →
+  // execution logs. Each starts a few frames before the previous ends so the
+  // product-film motion never visibly stops. Sub-slots are local frames.
+  workflowMontage: {
+    // The NVDA hero build (workflowBuild) is workflow #1. Here two MORE
+    // workflows finalize fast: swap the composer prompt, the new graph pops in
+    // already-built (no slow node-by-node build), twice.
+    from: 646,
+    durationInFrames: 156,
+    intro: { start: 0, duration: 10 },
+    swap2: { start: 6, duration: 12 }, // prompt swaps to workflow #2
+    build2: { start: 20, duration: 22 }, // workflow #2 finalizes (fast pop)
+    swap3: { start: 74, duration: 12 }, // prompt swaps to workflow #3
+    build3: { start: 88, duration: 22 }, // workflow #3 finalizes
+    outro: { start: 146, duration: 10 },
+  },
+  workflowGrid: {
+    // Camera pulls back to reveal all three workflows in their own framed
+    // cards, side by side, with the product tagline beneath.
+    from: 794,
+    durationInFrames: 96,
+    shell: { start: 0, duration: 12 },
+    cards: { start: 4, stagger: 5, duration: 14 }, // three cards settle
+    tagline: { start: 30, duration: 14 },
+    outro: { start: 86, duration: 10 },
+  },
+  productShell: {
+    // Match-cut: the hero workflow docks into the right builder pane while the
+    // chat rail wipes in from the left and the widget cards stream into the
+    // thread (SpaceX + NVDA price cards, then the portfolio card).
+    from: 882,
+    durationInFrames: 150,
+    shell: { start: 0, duration: 14 }, // panels wipe in
+    canvas: { start: 2, duration: 16 }, // workflow settles in the right pane
+    intro: { start: 16, duration: 10 }, // assistant line
+    cards: { start: 22, stagger: 12, duration: 14 }, // spacex, nvda, portfolio
+    outro: { start: 140, duration: 10 },
+  },
+  execution: {
+    // Zoom on the top-right "Run Now" control → it presses → the Execution Logs
+    // panel opens → rows stream upward (more and more executions) → the camera
+    // pulls back to the full product UX.
+    from: 1024,
+    durationInFrames: 168,
+    zoomIn: { start: 0, duration: 18 }, // camera pushes toward Run Now
+    press: { start: 16, duration: 8 }, // Run Now clicked
+    logsOpen: { start: 24, duration: 14 }, // logs panel slides up, nodes light
+    scroll: { start: 40, duration: 96 }, // rows stream up while running
+    zoomOut: { start: 138, duration: 20 }, // pull back to full UX
+    outro: { start: 160, duration: 8 },
+  },
   executeFinale: {
-    // The button enters while the workflow canvas is completing its outro.
+    // The button enters while the execution beat is completing its pull-back.
     // Its click is the transition: button -> energy core -> NickAI lockup.
-    from: 638,
+    from: 1184,
     durationInFrames: 148,
     button: {
       start: 3,

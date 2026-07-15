@@ -26,6 +26,7 @@ import {
 } from "lucide-react";
 import {
   AbsoluteFill,
+  Audio,
   Easing,
   Img,
   Sequence,
@@ -36,7 +37,11 @@ import {
   useVideoConfig,
 } from "remotion";
 import type { LaunchVideoProps } from "./props";
-import { LAUNCH_VIDEO_TIMELINE } from "./timeline";
+import { LAUNCH_VIDEO_TIMELINE, LAUNCH_VIDEO_DURATION } from "./timeline";
+import { WorkflowMontageSequence } from "./beat-montage";
+import { WorkflowGridSequence } from "./beat-grid";
+import { ProductShellSequence } from "./beat-product-shell";
+import { ExecutionSequence } from "./beat-execution";
 
 const CANVAS = "#09090b";
 const TILE_SIZE = 88;
@@ -2265,11 +2270,29 @@ export const LaunchVideoComposition: React.FC<LaunchVideoProps> = (props) => {
     workflowComposer,
     workflowResponse,
     workflowBuild,
+    workflowMontage,
+    workflowGrid,
+    productShell,
+    execution,
     executeFinale,
   } = LAUNCH_VIDEO_TIMELINE;
 
   return (
     <AbsoluteFill style={{ backgroundColor: CANVAS, overflow: "hidden" }}>
+      {/* Music bed — same track as the template cards, looped for the full
+          runtime with a quick fade in and a tail fade out. */}
+      <Audio
+        src={staticFile("audio/workflow-template-card.mp3")}
+        loop
+        volume={(f) =>
+          interpolate(
+            f,
+            [0, 20, LAUNCH_VIDEO_DURATION - 40, LAUNCH_VIDEO_DURATION - 1],
+            [0, 0.7, 0.7, 0],
+            { extrapolateLeft: "clamp", extrapolateRight: "clamp" },
+          )
+        }
+      />
       <Sequence
         from={opening.from}
         durationInFrames={opening.durationInFrames}
@@ -2325,6 +2348,34 @@ export const LaunchVideoComposition: React.FC<LaunchVideoProps> = (props) => {
         name="Workflow nodes build"
       >
         <WorkflowBuildSequence />
+      </Sequence>
+      <Sequence
+        from={workflowMontage.from}
+        durationInFrames={workflowMontage.durationInFrames}
+        name="Workflow montage"
+      >
+        <WorkflowMontageSequence />
+      </Sequence>
+      <Sequence
+        from={workflowGrid.from}
+        durationInFrames={workflowGrid.durationInFrames}
+        name="Three-workflow grid"
+      >
+        <WorkflowGridSequence />
+      </Sequence>
+      <Sequence
+        from={productShell.from}
+        durationInFrames={productShell.durationInFrames}
+        name="Product shell with cards"
+      >
+        <ProductShellSequence />
+      </Sequence>
+      <Sequence
+        from={execution.from}
+        durationInFrames={execution.durationInFrames}
+        name="Execution logs"
+      >
+        <ExecutionSequence />
       </Sequence>
       <Sequence
         from={executeFinale.from}

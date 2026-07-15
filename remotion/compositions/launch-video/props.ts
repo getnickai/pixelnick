@@ -25,10 +25,10 @@ export const launchVideoDefaultProps: LaunchVideoProps = {
   productHeadline: "Nick trades",
   productHeadlineAccent: "anything",
   productSubline: "Crypto, stocks, prediction markets. One agent.",
-  chatPrompt: "Pull NVDA — price and give me the daily chart",
+  chatPrompt: "Pull NVDA, price and the daily chart",
   workflowPrompt:
-    "Create a workflow to buy $50 of shares every 12 hour when NVDA is below $200. Use my paper trading wallet",
-  ctaHeadline: "Start your trading agent today",
+    "Create a workflow to buy $50 of shares every 12 hours when NVDA is below $200. Use my paper trading wallet",
+  ctaHeadline: "Try it for free now",
   ctaUrl: "getnick.ai",
   showBackgroundIcons: false,
 };
