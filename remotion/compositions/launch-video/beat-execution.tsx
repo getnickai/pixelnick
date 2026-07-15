@@ -82,8 +82,13 @@ export const ExecutionSequence: React.FC = () => {
   const bannerP = progress(frame, confirm.start, 10, FAST_FADE_EASE);
   const cardIn = progress(frame, confirm.start + 4, confirm.duration, POP_EASE);
   const fadeUXP = progress(frame, fadeUX.start, fadeUX.duration, FAST_FADE_EASE);
-  // Dim on confirm so the card reads; then fade the whole UX to near-black.
-  const scrim = Math.min(1, confirmP * 0.5 + fadeUXP * 0.5);
+  // Dim the product UX as the Execute button appears (same effect as the trade
+  // confirmation), then lift it on the click so the run reads clearly; dim again
+  // on confirm so the card reads; then fade the whole UX to near-black.
+  const dimIn = progress(frame, button.start, 10, FAST_FADE_EASE);
+  const dimOut = progress(frame, click.start, 8, FAST_FADE_EASE);
+  const buttonScrim = dimIn * (1 - dimOut) * 0.5;
+  const scrim = Math.max(buttonScrim, Math.min(1, confirmP * 0.5 + fadeUXP * 0.5));
   // The banner retires as the UX fades (the finale opens on just the card).
   const bannerOpacity = bannerP * (1 - fadeUXP);
 
@@ -164,11 +169,11 @@ export const ExecutionSequence: React.FC = () => {
         />
       </svg>
 
-      {/* "Workflow executed successfully" banner. */}
+      {/* "Workflow executed successfully" banner — sits just above the card. */}
       <div
         style={{
           position: "absolute",
-          top: 150,
+          top: 396,
           left: "50%",
           transform: `translate(-50%, ${(1 - bannerP) * -20}px)`,
           display: "flex",

@@ -35,6 +35,28 @@ const WF_VW = 1720;
 const WF_VH = 660;
 const WF_TOP = 140;
 
+/* Product-UX workspace-pane geometry + camera, exported so a docking transition
+ * can render a "flying" copy of the workflow that lands pixel-aligned with the
+ * pane's own canvas (see ProductShellSequence). */
+const WS_RAIL_W = 68;
+const WS_CHAT_W = 700;
+const WS_X = WS_RAIL_W + WS_CHAT_W;
+const WS_W = NICK_LAUNCH_W - WS_X;
+const WS_CANVAS_TOP = 120;
+const WS_CANVAS_H = NICK_LAUNCH_H - WS_CANVAS_TOP - 72;
+const WS_BASE_FIT = fitCamera(WS_W, WS_CANVAS_H, CANVAS_W, CANVAS_H, 0.82);
+const WS_CAMERA = { ...WS_BASE_FIT, scale: WS_BASE_FIT.scale * 1.3, fx: WS_BASE_FIT.fx - 175 };
+export const PRODUCT_WS = {
+  wsX: WS_X,
+  wsW: WS_W,
+  canvasTop: WS_CANVAS_TOP,
+  canvasH: WS_CANVAS_H,
+  cw: CANVAS_W,
+  ch: CANVAS_H,
+  camera: WS_CAMERA,
+};
+export const PRODUCT_WS_WORKFLOW = LAUNCH_WORKFLOWS[2];
+
 /* ── Shared chrome ────────────────────────────────────────────────────────── */
 
 function Background() {
@@ -352,15 +374,15 @@ export function ProductScreen({
   /** Override the logs header execution count. */
   logCount?: number;
 } = {}) {
-  const w = LAUNCH_WORKFLOWS[2]; // 3rd workflow, expanded into the builder
-  const railW = 68;
-  const chatW = 700;
+  const w = PRODUCT_WS_WORKFLOW; // 3rd workflow, expanded into the builder
+  const railW = WS_RAIL_W;
+  const chatW = WS_CHAT_W;
   const chatX = railW;
-  const wsX = railW + chatW;
-  const wsW = NICK_LAUNCH_W - wsX;
-  const canvasTop = 120;
+  const wsX = WS_X;
+  const wsW = WS_W;
+  const canvasTop = WS_CANVAS_TOP;
+  const canvasH = WS_CANVAS_H;
   const canvasBottom = 72;
-  const canvasH = NICK_LAUNCH_H - canvasTop - canvasBottom;
   const logsH = 420;
 
   // ── Optional entrance drivers (all default to the settled still). ──
@@ -383,8 +405,7 @@ export function ProductScreen({
   // nodes in half. Instead zoom 1.3x (nodes stay large) and pan slightly left so
   // the dense left fan sits fully in-frame and only the far-right convergence
   // node gently fades off the right edge — the look of a real, scrollable canvas.
-  const baseFit = fitCamera(wsW, canvasH, CANVAS_W, CANVAS_H, 0.82);
-  const wsCamera = { ...baseFit, scale: baseFit.scale * 1.3, fx: baseFit.fx - 175 };
+  const wsCamera = WS_CAMERA;
 
   // Running state: most nodes completed (green), a few mid-graph still running
   // (blue). Completed state: every node green.

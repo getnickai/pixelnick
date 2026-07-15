@@ -2410,7 +2410,7 @@ export const LaunchVideoComposition: React.FC<LaunchVideoProps> = (props) => {
       {/* Music bed — same track as the template cards, looped for the full
           runtime with a quick fade in and a tail fade out. */}
       <Audio
-        src={staticFile("audio/nick-performance-highlight.mp3")}
+        src={staticFile(props.musicTrack)}
         loop
         volume={(f) =>
           interpolate(

@@ -16,6 +16,8 @@ export type LaunchVideoProps = {
   ctaHeadline: string;
   /** Final product URL. */
   ctaUrl: string;
+  /** Music bed path under public/ (swap to compare soundtracks). */
+  musicTrack: string;
   /** Keep the preserved icon field available for later launch-video scenes. */
   showBackgroundIcons: boolean;
 };
@@ -30,5 +32,6 @@ export const launchVideoDefaultProps: LaunchVideoProps = {
     "Create a workflow to buy $50 of shares every 12 hours when NVDA is below $200. Use my paper trading wallet",
   ctaHeadline: "Try it for free now",
   ctaUrl: "getnick.ai",
+  musicTrack: "audio/nick-performance-highlight.mp3",
   showBackgroundIcons: false,
 };

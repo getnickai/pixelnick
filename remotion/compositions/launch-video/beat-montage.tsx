@@ -33,7 +33,9 @@ import { buildReveal, zoomIntroCamera } from "./graph-anim";
 const SANS = "var(--font-manrope), ui-sans-serif, system-ui, sans-serif";
 // Matches ChatComposerSequence (composition.tsx) so the composer reads identical.
 const MANROPE = "Manrope, ui-sans-serif, system-ui, sans-serif";
-const BG = "#070b14";
+// Match the rest of the film's near-black canvas (was #070b14, which read as a
+// dark-blue tint at this beat).
+const BG = "#09090b";
 const BLUE = "#0178FF";
 
 /* Canvas geometry, matches WorkflowWide (screens.tsx). */
@@ -51,16 +53,8 @@ const CHAT_TOP = 882;
 /* ── Shared chrome ────────────────────────────────────────────────────────── */
 
 function Background() {
-  return (
-    <>
-      <AbsoluteFill style={{ backgroundColor: BG }} />
-      <img
-        alt=""
-        src={staticFile("figma/background-glow.svg")}
-        style={{ position: "absolute", top: "-18%", left: "50%", transform: "translateX(-50%)", width: "120%", opacity: 0.6 }}
-      />
-    </>
-  );
+  // Plain near-black to match the opening/finale beats (no blue glow overlay).
+  return <AbsoluteFill style={{ backgroundColor: BG }} />;
 }
 
 function Logo() {
