@@ -7,7 +7,7 @@
  *   bun scripts/render-nickai-social.ts --sample            # built-in samples
  *
  * --mp4 renders a video with the baked landing-page silk loop
- * (public/nickai-social/wave-loop-{dark|light}.mp4). Rebake via:
+ * (public/nickai-social/wave-loop-{dark|light}.webm, VP9+alpha). Rebake via:
  *   bun scripts/bake-wave-loop/bake.ts [--theme both] [--seconds 5]
  *
  * The props file is either a single NickaiSocialCardProps object or an array
@@ -27,45 +27,12 @@ const COMPOSITION_ID = "nickai-social-card";
 
 type Job = { slug: string; props: NickaiSocialCardProps };
 
+/** Use-case card only — the free-wave cover template (light + dark). */
 const SAMPLE_JOBS: Job[] = [
   { slug: "sample-use-case-dark", props: nickaiSocialCardDefaultProps },
   {
     slug: "sample-use-case-light",
     props: { ...nickaiSocialCardDefaultProps, theme: "light" },
-  },
-  {
-    slug: "sample-live-results-dark",
-    props: {
-      theme: "dark",
-      eyebrow: "Trading analysis",
-      headline: "One momentum agent, thirty days of live capital",
-      chips: [],
-      fill: {
-        kind: "bigNumber",
-        value: "+18.4%",
-        label: "30 days, live capital",
-        caption: "recorded on-platform, Jun 3 to Jul 3",
-        tone: "positive",
-      },
-      wave: 2,
-    },
-  },
-  {
-    slug: "sample-live-results-light",
-    props: {
-      theme: "light",
-      eyebrow: "Trading analysis",
-      headline: "One momentum agent, thirty days of live capital",
-      chips: [],
-      fill: {
-        kind: "bigNumber",
-        value: "+18.4%",
-        label: "30 days, live capital",
-        caption: "recorded on-platform, Jun 3 to Jul 3",
-        tone: "positive",
-      },
-      wave: 2,
-    },
   },
 ];
 
@@ -131,18 +98,21 @@ async function main() {
   console.log(`Bundle ready. Rendering ${jobs.length} card(s) → ${path.relative(process.cwd(), flags.out)}/\n`);
 
   for (const job of jobs) {
+    const stillProps = { ...job.props, animate: false as const };
+    const motionProps = { ...job.props, animate: true as const };
+
     const composition = await selectComposition({
       serveUrl,
       id: COMPOSITION_ID,
-      inputProps: job.props,
+      inputProps: stillProps,
     });
     const output = path.join(flags.out, `${job.slug}.png`);
     await renderStill({
       composition,
       serveUrl,
       output,
-      inputProps: job.props,
-      // Settled frame — last frame once the CP2 entrance animation lands.
+      inputProps: stillProps,
+      // Settled end frame of the still.
       frame: composition.durationInFrames - 1,
       imageFormat: "png",
     });
@@ -151,21 +121,26 @@ async function main() {
     if (flags.mp4) {
       if (composition.durationInFrames <= 1) {
         console.warn(
-          `  ⚠ skipping ${job.slug}.mp4 — composition is a 1-frame still; ` +
-            `the CP2 motion pass bumps the duration first.`,
+          `  ⚠ skipping ${job.slug}.mp4 — composition is a 1-frame still.`,
         );
         continue;
       }
+      // Re-select with animate:true so duration/props match the wave-loop path.
+      const motionComp = await selectComposition({
+        serveUrl,
+        id: COMPOSITION_ID,
+        inputProps: motionProps,
+      });
       const mp4Out = path.join(flags.out, `${job.slug}.mp4`);
       await renderMedia({
-        composition,
+        composition: motionComp,
         serveUrl,
         codec: "h264",
         muted: true,
         outputLocation: mp4Out,
-        inputProps: { ...job.props, animate: true },
+        inputProps: motionProps,
       });
-      const secs = (composition.durationInFrames / composition.fps).toFixed(1);
+      const secs = (motionComp.durationInFrames / motionComp.fps).toFixed(1);
       console.log(`  ✓ ${job.slug}.mp4  (${secs}s)`);
     }
   }

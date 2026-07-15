@@ -10,23 +10,17 @@
 import { useId } from "react";
 import {
   AbsoluteFill,
-  Easing,
   Img,
-  interpolate,
-  Loop,
   OffthreadVideo,
   staticFile,
-  useCurrentFrame,
+  useVideoConfig,
 } from "remotion";
 import type { NickaiSocialCardProps, NickaiSocialCardTheme } from "./props";
 
-/** Baked hero-silk loop length (see scripts/bake-wave-loop/bake.ts). */
-const WAVE_LOOP_FPS = 30;
-const WAVE_LOOP_SECONDS = 5;
-const WAVE_LOOP_FRAMES = WAVE_LOOP_FPS * WAVE_LOOP_SECONDS;
+/** Baked hero-silk length @ 30fps (see scripts/bake-wave-loop/bake.ts). */
+const WAVE_SOURCE_FRAMES = 150; // 5s source, played slow to fill the 8s card
 
 const BLUE = "#0178ff";
-const BLUE_LIGHT = "#4da0ff";
 
 /** Big-number tones: brand blue, or semantic P&L green/red (TW v4 500 stops). */
 const NUMBER_TONES = {
@@ -43,7 +37,6 @@ type Skin = {
   headline: string;
   subline: string;
   wordmark: string;
-  eyebrow: string;
   chipText: string;
   chipBorder: string;
   chipBg: string;
@@ -57,7 +50,6 @@ const SKINS: Record<NickaiSocialCardTheme, Skin> = {
     headline: "#fafafa",
     subline: "#a1a1aa",
     wordmark: "#ffffff",
-    eyebrow: BLUE_LIGHT,
     chipText: "#d4d4d8",
     chipBorder: "#27272a",
     chipBg: "rgba(24, 24, 27, 0.72)",
@@ -69,7 +61,6 @@ const SKINS: Record<NickaiSocialCardTheme, Skin> = {
     headline: "#0a0a0a",
     subline: "#5c5c5c",
     wordmark: "#0a0a0a",
-    eyebrow: BLUE,
     chipText: "#3f3f46",
     chipBorder: "#e4e4e7",
     chipBg: "rgba(255, 255, 255, 0.85)",
@@ -125,28 +116,17 @@ export const NickaiSocialCardComposition: React.FC<NickaiSocialCardProps> = ({
   eyebrow,
   headline,
   subline,
-  chips = [],
   fill = { kind: "none" },
   wave = 1,
   animate = false,
 }) => {
-  const frame = useCurrentFrame();
+  const { durationInFrames } = useVideoConfig();
   const skin = SKINS[theme] ?? SKINS.dark;
   const hasSideFill = fill.kind !== "none";
   const textWidth = hasSideFill ? "58%" : "72%";
 
-  /**
-   * Entrance progress for a window of frames: 0→1 with an ease-out, pinned
-   * to 1 when `animate` is off so stills stay settled at any frame.
-   */
-  const enter = (from: number, to: number): number =>
-    animate
-      ? interpolate(frame, [from, to], [0, 1], {
-          extrapolateLeft: "clamp",
-          extrapolateRight: "clamp",
-          easing: Easing.out(Easing.cubic),
-        })
-      : 1;
+  /** Settled copy — motion is the baked silk loop only. */
+  const enter = (_from: number, _to: number): number => 1;
 
   /** fade + rise entrance style for a progress value. */
   const rise = (p: number, distance = 28): React.CSSProperties => ({
@@ -154,24 +134,27 @@ export const NickaiSocialCardComposition: React.FC<NickaiSocialCardProps> = ({
     transform: `translateY(${(1 - p) * distance}px)`,
   });
 
-  const waveStyle: React.CSSProperties = {
+  // Light stills/webm are keyed silk from the landing shader — full opacity
+  // (0.85 washed folds out on white). A light-only filter matches the hero
+  // page punch; dark stays screen-blended against zinc.
+  const waveOpacity = hasSideFill ? 0.4 : 1;
+  const waveBox: React.CSSProperties = {
     position: "absolute",
-    // Full-bleed height: baked loop is 1284×900 (wave motif 1 size).
     top: 0,
     right: -120,
     width: 1284,
     height: 900,
-    // Dark: screen drops the black plate. Light baked loop is on black too —
-    // screen keeps the silk and clears the plate into the light canvas.
-    mixBlendMode: "screen",
-    opacity: (hasSideFill ? 0.4 : theme === "light" ? 0.85 : 0.9) * enter(0, 45),
-    transform: `translateX(${(1 - enter(0, 45)) * 60}px)`,
+    opacity: waveOpacity,
+    mixBlendMode: animate || theme === "light" ? "normal" : "screen",
+    ...(theme === "light"
+      ? { filter: "contrast(1.18) saturate(1.22) brightness(0.94)" }
+      : null),
   };
 
   const waveLoopSrc = staticFile(
     theme === "light"
-      ? "nickai-social/wave-loop-light.mp4"
-      : "nickai-social/wave-loop-dark.mp4",
+      ? "nickai-social/wave-loop-light.webm"
+      : "nickai-social/wave-loop-dark.webm",
   );
   const waveStillSrc = staticFile(
     theme === "light"
@@ -179,21 +162,27 @@ export const NickaiSocialCardComposition: React.FC<NickaiSocialCardProps> = ({
       : `nickai-social/wave-dark-${wave}.png`,
   );
 
+  // Stretch the 5s bake across the full card (8s) — one pass, no loop.
+  const wavePlaybackRate = WAVE_SOURCE_FRAMES / durationInFrames;
+
   return (
     <AbsoluteFill style={{ backgroundColor: skin.bg, fontFamily: fontSans }}>
       {wave !== 0 &&
         (animate ? (
-          // MP4 path: baked landing-page silk loop (scripts/bake-wave-loop).
-          <Loop durationInFrames={WAVE_LOOP_FRAMES}>
-            <OffthreadVideo src={waveLoopSrc} muted style={waveStyle} />
-          </Loop>
+          <div style={waveBox}>
+            <OffthreadVideo
+              src={waveLoopSrc}
+              muted
+              transparent
+              playbackRate={wavePlaybackRate}
+              style={{ width: "100%", height: "100%", objectFit: "cover" }}
+            />
+          </div>
         ) : (
-          // PNG still — same placement/blend as the loop for a matched pair.
           <Img
             src={waveStillSrc}
             style={{
-              ...waveStyle,
-              // Still light assets are pre-keyed (transparent plate).
+              ...waveBox,
               ...(theme === "light" ? { mixBlendMode: "normal" as const } : null),
               ...(wave === 2 ? WAVE_DISPLAY[2] : null),
             }}
@@ -201,42 +190,28 @@ export const NickaiSocialCardComposition: React.FC<NickaiSocialCardProps> = ({
         ))}
 
       <AbsoluteFill style={{ padding: PAD, justifyContent: "space-between" }}>
-        {/* Header: wordmark left, series eyebrow right. */}
+        {/* Header: wordmark only. */}
         <div
           style={{
             display: "flex",
-            justifyContent: "space-between",
             alignItems: "center",
+            gap: 17,
             ...rise(enter(0, 24), 16),
           }}
         >
-          <div style={{ display: "flex", alignItems: "center", gap: 17 }}>
-            <LogoMark size={50} />
-            <span
-              style={{
-                fontFamily: fontHeading,
-                fontWeight: 600,
-                fontSize: 45,
-                letterSpacing: -0.5,
-                color: skin.wordmark,
-                lineHeight: 1,
-              }}
-            >
-              NickAI
-            </span>
-          </div>
-          <div
+          <LogoMark size={50} />
+          <span
             style={{
-              fontFamily: fontSans,
+              fontFamily: fontHeading,
               fontWeight: 600,
-              fontSize: 24,
-              letterSpacing: 6,
-              textTransform: "uppercase",
-              color: skin.eyebrow,
+              fontSize: 45,
+              letterSpacing: -0.5,
+              color: skin.wordmark,
+              lineHeight: 1,
             }}
           >
-            {eyebrow}
-          </div>
+            NickAI
+          </span>
         </div>
 
         {/* Body: headline block left, optional module right. */}
@@ -281,28 +256,24 @@ export const NickaiSocialCardComposition: React.FC<NickaiSocialCardProps> = ({
                 {subline}
               </div>
             )}
-            {chips.length > 0 && (
-              <div style={{ display: "flex", gap: 14, marginTop: 6 }}>
-                {chips.map((chip, i) => (
-                  <div
-                    key={`${chip}-${i}`}
-                    style={{
-                      ...rise(enter(32 + i * 8, 58 + i * 8), 20),
-                      fontFamily: fontSans,
-                      fontWeight: 500,
-                      fontSize: 22,
-                      color: skin.chipText,
-                      border: `1.5px solid ${skin.chipBorder}`,
-                      backgroundColor: skin.chipBg,
-                      borderRadius: 12,
-                      padding: "10px 20px",
-                    }}
-                  >
-                    {chip}
-                  </div>
-                ))}
-              </div>
-            )}
+            {/* Single series chip (Product drop / Trading insights / …). */}
+            <div
+              style={{
+                alignSelf: "flex-start",
+                marginTop: 6,
+                fontFamily: fontSans,
+                fontWeight: 500,
+                fontSize: 22,
+                color: skin.chipText,
+                border: `1.5px solid ${skin.chipBorder}`,
+                backgroundColor: skin.chipBg,
+                borderRadius: 12,
+                padding: "10px 20px",
+                ...rise(enter(32, 58), 20),
+              }}
+            >
+              {eyebrow}
+            </div>
           </div>
 
           {fill.kind === "bigNumber" && (

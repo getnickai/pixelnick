@@ -36,7 +36,10 @@ export type NickaiSocialCardProps = {
   eyebrow: string;
   headline: string;
   subline?: string;
-  /** Small pill labels, e.g. the enabling nodes. Keep to ≤3. */
+  /**
+   * @deprecated Series label is `eyebrow` (rendered as the sole chip under
+   * the subline). Kept optional so older props JSON still parses; ignored.
+   */
   chips?: string[];
   fill?: NickaiSocialCardFill;
   /**
@@ -59,7 +62,7 @@ export const nickaiSocialCardDefaultProps: NickaiSocialCardProps = {
   headline: "Trade the same event across Kalshi and Polymarket from one workflow",
   subline:
     "Confidence-gated venue matching finds the same market on both books and routes the better price.",
-  chips: ["Kalshi node", "Polymarket node"],
+  chips: [],
   fill: { kind: "none" },
   wave: 1,
   animate: false,

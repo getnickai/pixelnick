@@ -3,9 +3,9 @@
  *
  *   bun scripts/bake-wave-loop/bake.ts [--theme dark|light|both] [--seconds 5]
  *
- * Outputs:
- *   public/nickai-social/wave-loop-dark.mp4
- *   public/nickai-social/wave-loop-light.mp4
+ * Outputs (VP9 + alpha — PNG frames are keyed; MP4 would flatten to black):
+ *   public/nickai-social/wave-loop-dark.webm
+ *   public/nickai-social/wave-loop-light.webm
  */
 import { spawnSync } from "node:child_process";
 import fs from "node:fs";
@@ -142,9 +142,11 @@ async function bakeTheme(theme: Theme, seconds: number, port: number) {
   }
 
   fs.mkdirSync(OUT_DIR, { recursive: true });
-  const mp4 = path.join(OUT_DIR, `wave-loop-${theme}.mp4`);
-  console.log(`Encoding ${path.relative(ROOT, mp4)}…`);
+  const webm = path.join(OUT_DIR, `wave-loop-${theme}.webm`);
+  console.log(`Encoding ${path.relative(ROOT, webm)} (VP9 + alpha)…`);
   // Shader buffer is odd-width — scale to even 1284×900 (social-card wave size).
+  // Keep alpha: H.264/yuv420p flattens transparent plate to black and breaks
+  // light-theme compositing (screen-on-light washes the silk out).
   run(ffmpegPath.path, [
     "-y",
     "-framerate",
@@ -154,19 +156,21 @@ async function bakeTheme(theme: Theme, seconds: number, port: number) {
     "-vf",
     "scale=1284:900",
     "-c:v",
-    "libx264",
+    "libvpx-vp9",
     "-pix_fmt",
-    "yuv420p",
+    "yuva420p",
+    "-auto-alt-ref",
+    "0",
+    "-b:v",
+    "0",
     "-crf",
-    "18",
-    "-movflags",
-    "+faststart",
-    mp4,
+    "28",
+    webm,
   ]);
 
   fs.copyFileSync(path.join(frameDir, "f0000.png"), path.join(OUT_DIR, `wave-loop-${theme}-preview.png`));
   fs.rmSync(frameDir, { recursive: true, force: true });
-  console.log(`  ✓ ${path.relative(ROOT, mp4)}`);
+  console.log(`  ✓ ${path.relative(ROOT, webm)}`);
 }
 
 async function main() {
