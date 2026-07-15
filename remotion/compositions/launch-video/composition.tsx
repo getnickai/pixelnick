@@ -284,102 +284,70 @@ const introWords = (
 const IntroTitle: React.FC<{
   words: { intro: string; nick: string; trades: string; anything: string };
   enter: number;
-  collapse: number;
-  expand: number;
+  slide: number;
   groupOpacity?: number;
   groupBlur?: number;
   groupShiftX?: number;
 }> = ({
   words,
   enter,
-  collapse,
-  expand,
+  slide,
   groupOpacity = 1,
   groupBlur = 0,
   groupShiftX = 0,
 }) => {
-  // Generous max-widths (px): an inline-block caps at its content width, so any
-  // value >= the real glyph width fully reveals with no trailing gap. The word
-  // gap is carried on a margin that scales with the same progress, so spacing
-  // appears and disappears together with the word body.
-  const INTRO_MAX = 760;
-  const TRADES_MAX = 420;
-  const ANY_MAX = 520;
+  // ONE rigid row — "Introducing Nick trades anything" — never reflows. A single
+  // translateX centers "Introducing Nick" (slide=0), then "Nick trades anything"
+  // (slide=1). So "Nick" slides smoothly left while "Introducing" fades off to
+  // the left and "trades anything" slide in from the right. No layout jump / blink.
+  //
+  // Approximate rendered word widths (px) at DUPLET 124/600, tuned by stills —
+  // they only set where the row is centered, so small errors never cause a jump.
+  const W = { intro: 720, nick: 232, trades: 352, anything: 470 };
   const GAP = 34;
+  const mid1 = (W.intro + GAP + W.nick) / 2; // center of "Introducing Nick"
+  const rowW = W.intro + GAP + W.nick + GAP + W.trades + GAP + W.anything;
+  const mid2 = (W.intro + GAP + rowW) / 2; // center of "Nick trades anything"
+  const mid = mid1 + (mid2 - mid1) * slide;
 
   const enterBlur = (1 - enter) * 6;
   const enterY = (1 - enter) * 34;
 
-  // Reveal the incoming words by opening their box width FAST (so a partial,
-  // half-clipped glyph is never shown for long) while the eye reads the reveal
-  // through the slower opacity fade. This keeps "trades anything" from ever
-  // looking like clipped letters mid-transition.
-  const widthReveal = Math.min(1, expand * 2.4);
-
-  // Clip the horizontal reveal only. overflow:hidden clips BOTH axes, and with
-  // this tight lineHeight it sliced descenders (the "g" in Introducing/anything).
-  // clip-path insets left/right at the box edge (the reveal) but extends past the
-  // top/bottom so ascenders and descenders stay fully visible.
-  const collapsibleClip = {
-    display: "inline-block",
-    clipPath: "inset(-0.35em 0 -0.35em 0)",
-    whiteSpace: "nowrap",
-    verticalAlign: "baseline",
-  } as const;
+  // "Introducing" fades out as it slides off-left; "trades anything" fade in as
+  // they slide into center. "Nick" is always solid (it just slides).
+  const introOpacity = enter * (1 - slide);
+  const tailOpacity = enter * slide;
 
   return (
     <div
       role="img"
       aria-label={`${words.nick} ${words.trades} ${words.anything}`}
       style={{
+        position: "absolute",
+        left: "50%",
+        top: "50%",
         display: "flex",
         alignItems: "baseline",
-        justifyContent: "center",
         whiteSpace: "nowrap",
         color: "#ffffff",
         fontFamily: DUPLET,
         fontSize: 124,
         fontWeight: 600,
-        lineHeight: 1,
+        lineHeight: 1.25,
         letterSpacing: 0.5,
-        opacity: enter * groupOpacity,
+        opacity: groupOpacity,
         filter: `blur(${enterBlur + groupBlur}px)`,
-        transform: `translate(${groupShiftX}px, ${enterY}px)`,
+        transform: `translate(calc(-${mid}px + ${groupShiftX}px), calc(-50% + ${enterY}px))`,
       }}
     >
-      <span
-        aria-hidden
-        style={{
-          ...collapsibleClip,
-          maxWidth: INTRO_MAX * (1 - collapse),
-          marginRight: GAP * (1 - collapse),
-          opacity: 1 - collapse,
-        }}
-      >
+      <span aria-hidden style={{ marginRight: GAP, opacity: introOpacity }}>
         {words.intro}
       </span>
-      <span style={{ display: "inline-block" }}>{words.nick}</span>
-      <span
-        aria-hidden
-        style={{
-          ...collapsibleClip,
-          maxWidth: TRADES_MAX * widthReveal,
-          marginLeft: GAP * widthReveal,
-          opacity: expand,
-        }}
-      >
+      <span style={{ opacity: enter }}>{words.nick}</span>
+      <span aria-hidden style={{ marginLeft: GAP, opacity: tailOpacity }}>
         {words.trades}
       </span>
-      <span
-        aria-hidden
-        style={{
-          ...collapsibleClip,
-          maxWidth: ANY_MAX * widthReveal,
-          marginLeft: GAP * widthReveal,
-          opacity: expand,
-          color: "#0178ff",
-        }}
-      >
+      <span aria-hidden style={{ marginLeft: GAP, opacity: tailOpacity, color: "#0178ff" }}>
         {words.anything}
       </span>
     </div>
@@ -402,17 +370,14 @@ const OpeningSequence: React.FC<LaunchVideoProps> = ({
     reflow.enterDuration,
     POP_EASE,
   );
-  const collapse = progress(
+  // The whole reflow is one smooth slide: from centering "Introducing Nick" to
+  // centering "Nick trades anything". Runs from the old collapse start through
+  // the end of the old expand window, on a single ease-in-out.
+  const slide = progress(
     frame,
     reflow.collapseStart,
-    reflow.collapseDuration,
-    FAST_FADE_EASE,
-  );
-  const expand = progress(
-    frame,
-    reflow.expandStart,
-    reflow.expandDuration,
-    POP_EASE,
+    reflow.expandStart + reflow.expandDuration - reflow.collapseStart,
+    Easing.inOut(Easing.cubic),
   );
 
   return (
@@ -474,12 +439,7 @@ const OpeningSequence: React.FC<LaunchVideoProps> = ({
           overflow: "hidden",
         }}
       >
-        <IntroTitle
-          words={words}
-          enter={enter}
-          collapse={collapse}
-          expand={expand}
-        />
+        <IntroTitle words={words} enter={enter} slide={slide} />
       </AbsoluteFill>
     </AbsoluteFill>
   );
@@ -517,8 +477,7 @@ const ProductStatementSequence: React.FC<LaunchVideoProps> = ({
       <IntroTitle
         words={words}
         enter={1}
-        collapse={1}
-        expand={1}
+        slide={1}
         groupOpacity={1 - titleExit}
         groupBlur={titleExit * 3}
         groupShiftX={-titleExit * 42}
@@ -591,6 +550,9 @@ type ChatComposerSequenceProps = {
   prompt: string;
   timing: ComposerTiming;
   showPlaceholder?: boolean;
+  /** Body min-height. Set to the 2-line height for a prompt that wraps, so the
+   *  box opens already tall and never grows/jumps mid-type. Defaults to 1 line. */
+  bodyMinHeight?: number;
 };
 
 const FakeCursor: React.FC<{
@@ -647,6 +609,7 @@ const ChatComposerSequence: React.FC<ChatComposerSequenceProps> = ({
   prompt,
   timing,
   showPlaceholder = true,
+  bodyMinHeight = 132,
 }) => {
   const frame = useCurrentFrame();
   const { shell, focus, placeholder, typing, send, outro } = timing;
@@ -766,7 +729,7 @@ const ChatComposerSequence: React.FC<ChatComposerSequenceProps> = ({
             <div
               style={{
                 position: "relative",
-                minHeight: 132,
+                minHeight: bodyMinHeight,
                 padding: "27px 32px 36px",
                 color: "#fafafa",
                 fontFamily: MANROPE,
@@ -2367,6 +2330,7 @@ export const LaunchVideoComposition: React.FC<LaunchVideoProps> = (props) => {
           prompt={props.workflowPrompt}
           timing={workflowComposer}
           showPlaceholder={false}
+          bodyMinHeight={150}
         />
       </Sequence>
       <Sequence

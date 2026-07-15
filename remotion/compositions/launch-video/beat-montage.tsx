@@ -14,7 +14,7 @@
  *   build3 {88,22}  workflow B (Mag 7) builds fast
  *   outro  {146,10} quick fade out, hands off to the grid
  */
-import { AbsoluteFill, staticFile, useCurrentFrame } from "remotion";
+import { AbsoluteFill, Easing, interpolate, staticFile, useCurrentFrame } from "remotion";
 import {
   ArrowUp,
   ChevronDown,
@@ -112,13 +112,30 @@ function Swap({
  * and the Chat / Agent tab strip. Sizing/colors match ChatComposerSequence; only
  * the prompt area height is trimmed to a single line for this in-flow use.
  */
-function ChatBox({ prompt }: { prompt: React.ReactNode }) {
+function ChatBox({
+  prompt,
+  sendPress = 0,
+  ripple = 0,
+  rippleShown = false,
+}: {
+  prompt: React.ReactNode;
+  /** Send-button press pulse (0 idle, 1 fully pressed). */
+  sendPress?: number;
+  /** Click ripple progress (0..1). */
+  ripple?: number;
+  /** Whether the ripple ring is currently visible. */
+  rippleShown?: boolean;
+}) {
   const action48 = {
     width: 48,
     height: 48,
     display: "grid",
     placeItems: "center",
   } as const;
+  // The send button lights up brand-blue as it is pressed (matches the opening).
+  const sendActive = Math.max(0, Math.min(1, sendPress));
+  const sendBg = `rgb(${Math.round(24 - sendActive * 23)}, ${Math.round(24 + sendActive * 96)}, ${Math.round(27 + sendActive * 228)})`;
+  const sendFg = Math.round(113 + sendActive * 142);
   return (
     <div style={{ position: "absolute", left: CHAT_LEFT, top: CHAT_TOP, width: CHAT_W, fontFamily: MANROPE }}>
       <div
@@ -180,11 +197,24 @@ function ChatBox({ prompt }: { prompt: React.ReactNode }) {
                 ...action48,
                 position: "relative",
                 borderRadius: "50%",
-                color: "rgb(113, 113, 113)",
-                backgroundColor: "rgb(24, 24, 27)",
-                boxShadow: "inset 0 0 0 1px rgba(63, 63, 70, 1)",
+                color: `rgb(${sendFg}, ${sendFg}, ${sendFg})`,
+                backgroundColor: sendBg,
+                boxShadow: `inset 0 0 0 1px rgba(63, 63, 70, ${1 - sendActive})`,
+                transform: `scale(${1 - sendPress * 0.1})`,
               }}
             >
+              <span
+                aria-hidden
+                style={{
+                  position: "absolute",
+                  inset: -4,
+                  borderRadius: "50%",
+                  border: "2px solid rgba(1, 120, 255, 0.84)",
+                  opacity: rippleShown ? 1 - ripple : 0,
+                  transform: `scale(${1 + ripple * 0.9})`,
+                  pointerEvents: "none",
+                }}
+              />
               <ArrowUp size={25} strokeWidth={2} />
             </div>
           </div>
@@ -280,6 +310,38 @@ export const WorkflowMontageSequence: React.FC = () => {
   const promptOut = progress(frame, swap3.start, swap3.duration * 0.5, FAST_FADE_EASE);
   const promptIn = progress(frame, swap3.start + swap3.duration * 0.5, swap3.duration * 0.5, POP_EASE);
 
+  // A send-arrow click precedes each workflow build (like the opening composer):
+  // the pointer arrives, presses the send arrow, and that "triggers" the build.
+  const clickAStart = build2.start - 6;
+  const clickBStart = build3.start - 6;
+  const pressWin = (start: number, end: number) =>
+    interpolate(frame, [start, start + 3, end], [0, 1, 0], {
+      easing: Easing.inOut(Easing.quad),
+      extrapolateLeft: "clamp",
+      extrapolateRight: "clamp",
+    });
+  const sendPress = pressWin(clickAStart, build2.start) + pressWin(clickBStart, build3.start);
+  const inA = frame >= clickAStart && frame < clickAStart + 8;
+  const inB = frame >= clickBStart && frame < clickBStart + 8;
+  const ripple = inB
+    ? progress(frame, clickBStart, 8, FAST_FADE_EASE)
+    : progress(frame, clickAStart, 8, FAST_FADE_EASE);
+  const rippleShown = inA || inB;
+
+  // Pointer: fades in just before each click, presses on the arrow, fades as the
+  // build begins.
+  const curA = progress(frame, clickAStart - 4, 5, FAST_FADE_EASE) * (1 - progress(frame, build2.start, 5, FAST_FADE_EASE));
+  const curB = progress(frame, clickBStart - 4, 5, FAST_FADE_EASE) * (1 - progress(frame, build3.start, 5, FAST_FADE_EASE));
+  const cursorOpacity = Math.max(curA, curB) * beatOpacity;
+  const cursorApproach = inB
+    ? progress(frame, clickBStart - 4, 7, Easing.out(Easing.cubic))
+    : progress(frame, clickAStart - 4, 7, Easing.out(Easing.cubic));
+  // Send-arrow center (screen px), inside the montage ChatBox action row.
+  const SEND_X = 1434;
+  const SEND_Y = 1016;
+  const curX = SEND_X + (1 - cursorApproach) * 34;
+  const curY = SEND_Y + (1 - cursorApproach) * 40;
+
   // Steady caret blink, like the live composer.
   const caretVisible = Math.floor(frame / 8) % 2 === 0;
   const Caret = (
@@ -338,6 +400,9 @@ export const WorkflowMontageSequence: React.FC = () => {
 
       {/* Composer (same chat box as the video's opening), prompt swaps mid-beat. */}
       <ChatBox
+        sendPress={sendPress}
+        ripple={ripple}
+        rippleShown={rippleShown}
         prompt={
           <Swap
             a={<>{wA.prompt}{Caret}</>}
@@ -348,6 +413,31 @@ export const WorkflowMontageSequence: React.FC = () => {
           />
         }
       />
+
+      {/* Pointer that clicks the send arrow to trigger each build. */}
+      <svg
+        aria-hidden
+        viewBox="0 0 20 20"
+        style={{
+          position: "absolute",
+          left: 0,
+          top: 0,
+          width: 46,
+          height: 46,
+          overflow: "visible",
+          opacity: cursorOpacity,
+          zIndex: 9,
+          pointerEvents: "none",
+          transform: `translate3d(${curX - 8}px, ${curY - 8}px, 0) scale(${1 - sendPress * 0.12})`,
+          transformOrigin: "8px 8px",
+        }}
+      >
+        <path
+          d="M3.52832 4.03809C3.40568 3.71915 3.71916 3.40568 4.03809 3.52832L16.2471 8.22461C16.5924 8.35745 16.5814 8.8498 16.2305 8.9668L11.0195 10.7031L10.7822 10.7822L10.7031 11.0195L8.9668 16.2305C8.8498 16.5814 8.35745 16.5924 8.22461 16.2471L3.52832 4.03809Z"
+          fill="black"
+          stroke="white"
+        />
+      </svg>
     </AbsoluteFill>
   );
 };
