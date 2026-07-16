@@ -50,14 +50,20 @@ export const LAUNCH_VIDEO_TIMELINE = {
   },
   finale: {
     from: 1310,
-    durationInFrames: 344,
+    durationInFrames: 420,
     grid: { start: 20, stagger: 4, duration: 14 },
     soften: { start: 92, duration: 16 },
-    statement: { start: 130, duration: 18 },
-    logo: { start: 218, duration: 26 },
-    cta: { start: 250, stagger: 2, duration: 14 },
-    url: { start: 262, duration: 12 },
-    outro: { start: 332, duration: 12 },
+    venues: {
+      start: 124,
+      duration: 14,
+      logos: { start: 136, stagger: 3, duration: 14 },
+      outro: { start: 190, duration: 16 },
+    },
+    statement: { start: 206, duration: 18 },
+    logo: { start: 294, duration: 26 },
+    cta: { start: 326, stagger: 2, duration: 14 },
+    url: { start: 338, duration: 12 },
+    outro: { start: 408, duration: 12 },
   },
 } as const;
 

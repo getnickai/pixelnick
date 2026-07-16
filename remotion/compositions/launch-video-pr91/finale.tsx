@@ -32,7 +32,7 @@ const DUPLET =
   'var(--font-duplet, "Duplet"), ui-sans-serif, system-ui, sans-serif';
 const BENTO_SETTLE_EASE = Easing.bezier(0.16, 1, 0.3, 1);
 const WORKFLOW_TILE_WIDTH = 400;
-const WORKFLOW_TILE_HEIGHT = 155;
+const WORKFLOW_TILE_HEIGHT = 240;
 const BENTO_RADIUS = 24;
 const BENTO_BORDER = "#2b2b31";
 const BENTO_SURFACE = "#18181b";
@@ -53,71 +53,106 @@ const VENUES: Array<{ file?: string; name?: string }> = [
   { file: "tradexyz.svg" },
 ];
 
-const VenuesBand: React.FC = () => (
-  <div
-    style={{
-      display: "flex",
-      flexDirection: "column",
-      alignItems: "center",
-      gap: 22,
-    }}
-  >
-    <span
-      style={{
-        color: "rgba(255,255,255,0.55)",
-        fontFamily: MANROPE,
-        fontSize: 23,
-        fontWeight: 600,
-        letterSpacing: 0.3,
-      }}
-    >
-      Nick trades on the venues you already use
-    </span>
+const VenuesBand: React.FC<{
+  frame: number;
+  timing: (typeof LAUNCH_VIDEO_TIMELINE.finale)["venues"];
+}> = ({ frame, timing }) => {
+  const titleReveal = progress(
+    frame,
+    timing.start,
+    timing.duration,
+    BENTO_SETTLE_EASE,
+  );
+
+  return (
     <div
       style={{
         display: "flex",
+        flexDirection: "column",
         alignItems: "center",
-        justifyContent: "center",
-        gap: 34,
+        gap: 62,
       }}
     >
-      {VENUES.map((venue, index) => (
-        <div
-          key={`${venue.file ?? venue.name}-${index}`}
-          style={{ display: "flex", alignItems: "center", gap: 8 }}
-        >
-          {venue.file ? (
-            <Img
-              src={staticFile(`brand/exchanges/${venue.file}`)}
+      <span
+        style={{
+          color: "rgba(255,255,255,0.62)",
+          fontFamily: MANROPE,
+          fontSize: 43,
+          fontWeight: 500,
+          letterSpacing: -1.35,
+          opacity: titleReveal,
+          filter: `blur(${(1 - titleReveal) * 4}px)`,
+          transform: `translateY(${(1 - titleReveal) * 14}px)`,
+        }}
+      >
+        Nick trades on the venues you already use
+      </span>
+      <div
+        style={{
+          display: "grid",
+          gridTemplateColumns: "repeat(4, 190px)",
+          alignItems: "center",
+          justifyContent: "center",
+          columnGap: 112,
+          rowGap: 64,
+        }}
+      >
+        {VENUES.map((venue, index) => {
+          const reveal = progress(
+            frame,
+            timing.logos.start + index * timing.logos.stagger,
+            timing.logos.duration,
+            BENTO_SETTLE_EASE,
+          );
+
+          return (
+            <div
+              key={`${venue.file ?? venue.name}-${index}`}
               style={{
-                width: "auto",
-                height: 34,
-                maxWidth: 120,
-                objectFit: "contain",
-                filter: "invert(1)",
-                opacity: 0.9,
-              }}
-            />
-          ) : null}
-          {venue.name ? (
-            <span
-              style={{
-                color: "#fff",
-                fontFamily: MANROPE,
-                fontSize: 21,
-                fontWeight: 650,
-                opacity: 0.9,
-                whiteSpace: "nowrap",
+                width: 190,
+                height: 64,
+                display: "flex",
+                alignItems: "center",
+                justifyContent: "center",
+                gap: 11,
+                opacity: reveal,
+                filter: `blur(${(1 - reveal) * 4}px)`,
+                transform: `translateY(${(1 - reveal) * 16}px) scale(${0.92 + reveal * 0.08})`,
               }}
             >
-              {venue.name}
-            </span>
-          ) : null}
-        </div>
-      ))}
+              {venue.file ? (
+                <Img
+                  src={staticFile(`brand/exchanges/${venue.file}`)}
+                  style={{
+                    width: venue.name ? 44 : 160,
+                    height: 48,
+                    objectFit: "contain",
+                    filter: "invert(1)",
+                    opacity: 0.92,
+                  }}
+                />
+              ) : null}
+              {venue.name ? (
+                <span
+                  style={{
+                    color: "#fff",
+                    fontFamily: MANROPE,
+                    fontSize: 27,
+                    fontWeight: 650,
+                    opacity: 0.92,
+                    whiteSpace: "nowrap",
+                  }}
+                >
+                  {venue.name}
+                </span>
+              ) : null}
+            </div>
+          );
+        })}
+      </div>
     </div>
-  </div>
-);
+  );
+};
 
 const WorkflowTile: React.FC<{
   workflow: (typeof GRID_WORKFLOWS)[number];
@@ -127,6 +162,7 @@ const WorkflowTile: React.FC<{
 }> = ({ workflow, x, y, reveal }) => {
   const width = WORKFLOW_TILE_WIDTH;
   const height = WORKFLOW_TILE_HEIGHT;
+  const graphHeight = height - 54;
 
   return (
     <div
@@ -151,17 +187,17 @@ const WorkflowTile: React.FC<{
           top: 8,
           left: 10,
           right: 10,
-          height: 103,
+          height: graphHeight,
           filter: "brightness(1.7) saturate(1.45) contrast(1.08)",
         }}
       >
         <WorkflowGraph
           template={workflow.template}
           vw={width - 20}
-          vh={103}
+          vh={graphHeight}
           cw={3600}
           ch={1700}
-          camera={fitCamera(width - 20, 103, 3600, 1700)}
+          camera={fitCamera(width - 20, graphHeight, 3600, 1700)}
         />
       </div>
       <div
@@ -191,7 +227,7 @@ export const ProductCutFinaleSequence: React.FC<
 > = ({ ctaHeadline, ctaUrl }) => {
   const frame = useCurrentFrame();
   const { fps } = useVideoConfig();
-  const { grid, soften, statement, logo, cta, url, outro } =
+  const { grid, soften, venues, statement, logo, cta, url, outro } =
     LAUNCH_VIDEO_TIMELINE.finale;
 
   const workflowWidth = WORKFLOW_TILE_WIDTH;
@@ -200,8 +236,8 @@ export const ProductCutFinaleSequence: React.FC<
   const workflowStartX = (1920 - workflowRowWidth) / 2;
   const workflowX = (index: number) =>
     workflowStartX + index * (workflowWidth + workflowGap);
-  const workflowTopY = 84;
-  const workflowBottomY = 760;
+  const workflowTopY = 78;
+  const workflowBottomY = 839;
   const middleRowTop = workflowTopY + WORKFLOW_TILE_HEIGHT + workflowGap;
   const middleRowHeight = workflowBottomY - middleRowTop - workflowGap;
   const middleRowCenterY = middleRowTop + middleRowHeight / 2;
@@ -258,7 +294,12 @@ export const ProductCutFinaleSequence: React.FC<
   });
   const urlIn = progress(frame, url.start, url.duration, POP_EASE);
   const exit = progress(frame, outro.start, outro.duration, OUTRO_EASE);
-  const bandIn = progress(frame, grid.start + 40, 16, FAST_FADE_EASE);
+  const bandOut = progress(
+    frame,
+    venues.outro.start,
+    venues.outro.duration,
+    FAST_FADE_EASE,
+  );
   const ctaWords = ctaHeadline.split(" ");
 
   return (
@@ -378,20 +419,21 @@ export const ProductCutFinaleSequence: React.FC<
             shellStyle={BENTO_SHELL_STYLE}
           />
         </div>
-        <div
-          style={{
-            position: "absolute",
-            top: 968,
-            right: 0,
-            left: 0,
-            display: "flex",
-            justifyContent: "center",
-            opacity: bandIn,
-            transform: `translateY(${(1 - bandIn) * 16}px)`,
-          }}
-        >
-          <VenuesBand />
-        </div>
+      </div>
+
+      <div
+        style={{
+          position: "absolute",
+          inset: 0,
+          display: "flex",
+          alignItems: "center",
+          justifyContent: "center",
+          opacity: 1 - bandOut,
+          filter: `blur(${bandOut * 4}px)`,
+          transform: `translateY(${-bandOut * 18}px)`,
+        }}
+      >
+        <VenuesBand frame={frame} timing={venues} />
       </div>
 
       <div
