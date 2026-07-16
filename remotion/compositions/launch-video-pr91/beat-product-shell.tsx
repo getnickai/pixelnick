@@ -27,7 +27,7 @@ import {
 // Anime.js-style product spring translated to Remotion's deterministic frame
 // model. The graph gets enough travel time to read as a deliberate camera move,
 // with only a very small overshoot before it settles into the workspace.
-const DOCK_DURATION = 42;
+const DOCK_DURATION = 32;
 const DOCK_SPRING = {
   damping: 17,
   stiffness: 105,
@@ -35,7 +35,7 @@ const DOCK_SPRING = {
 } as const;
 const CHROME_SPRING = {
   damping: 20,
-  stiffness: 92,
+  stiffness: 192,
   mass: 1.05,
 } as const;
 

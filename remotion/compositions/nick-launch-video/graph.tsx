@@ -130,7 +130,7 @@ export function WorkflowNodeCard({
               color: "#fafafa",
               fontSize: 32,
               fontWeight: 600,
-              lineHeight: 1,
+              lineHeight: 1.2,
               whiteSpace: "nowrap",
               textOverflow: "ellipsis",
             }}

@@ -321,8 +321,9 @@ export function progressiveBuildCamera({
     durationInFrames: Math.max(1, buildDur - 4),
     config: {
       mass: 1.2,
-      stiffness: 95,
-      damping: 20,
+        stiffness: 250,
+        damping: 18,
+      
     },
   });
 
