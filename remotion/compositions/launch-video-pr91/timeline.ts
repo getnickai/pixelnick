@@ -51,15 +51,29 @@ export const LAUNCH_VIDEO_TIMELINE = {
   finale: {
     from: 1310,
     durationInFrames: 420,
-    grid: { start: 20, stagger: 4, duration: 14 },
+    grid: {
+      start: 20,
+      stagger: 4,
+      duration: 14,
+      // Mirror the entrance cadence so the wall resolves item by item before
+      // the venue band takes over, instead of disappearing as one flat layer.
+      outro: { start: 94, stagger: 1.5, duration: 10 },
+    },
     soften: { start: 92, duration: 16 },
     venues: {
       start: 124,
       duration: 14,
       logos: { start: 136, stagger: 3, duration: 14 },
-      outro: { start: 190, duration: 16 },
+      outro: {
+        start: 180,
+        stagger: 1.8,
+        duration: 9,
+        titleDelay: 14,
+        titleDuration: 11,
+      },
     },
     statement: { start: 206, duration: 18 },
+    sponsor: { start: 276, duration: 14 },
     logo: { start: 294, duration: 26 },
     cta: { start: 326, stagger: 2, duration: 14 },
     url: { start: 338, duration: 12 },
