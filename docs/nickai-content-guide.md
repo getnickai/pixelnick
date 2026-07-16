@@ -20,7 +20,7 @@ Before anything ships, it passes all seven:
 4. **True and specific.** Real numbers with a stated period, real venues, real outputs. No invented stats.
 5. **Clean style.** No em-dash, no en-dash, no double-dash, no hashtags, no AI slop.
 6. **Right names.** NickAI is the company and platform, Nick is the agent (it, never he). Swarm Arena is a separate brand.
-7. **Right CTA.** `Try it for free now: getnick.ai`, and lead with the free trial (1000 credits, no card, no time limit).
+7. **Right CTA.** Lead with the free trial (1000 credits, no card, no time limit). Off-domain (social, ads, email): `Try it for free now: getnick.ai`. On the site or in-app: action-only ("Try for free now", "Start your free trial", "Get started for free"), no URL.
 
 ---
 
@@ -213,10 +213,13 @@ Also never use:
 
 ## CTAs
 
-- **Public product CTA, always exactly:** `Try it for free now: getnick.ai`
-- **Lead with the free trial:** 1000 credits, no time limit, no credit card. This is the strongest low-friction hook, use it in CTAs and closers.
-- Not "Try it on NickAI", not "app.getnick.ai/library", not a one-click template link. Just the standard line.
-- **Swarm Arena exception:** Swarm Arena content uses `swarmarena.ai` ("Follow the agents on swarmarena.ai" and natural variants), never `getnick.ai`.
+**Lead with the free trial in every CTA:** 1000 credits, no time limit, no credit card. It is the strongest low-friction hook.
+
+**The wording depends on where the reader is:**
+
+- **Off-domain** (social, ads, email, a blog post found off-site, anywhere not on getnick.ai): use the full form with the URL so it routes people to the site: `Try it for free now: getnick.ai`. Not "Try it on NickAI", not "app.getnick.ai/library", not a one-click template link.
+- **On-domain** (the getnick.ai site itself and in-app): the reader is already here, so drop the URL and use an action-only CTA. Vary it naturally: "Try for free now", "Start your free trial", "Get started for free", "Get started now". Link it to signup. Never append ": getnick.ai" to an on-site CTA (they are already on it).
+- **Swarm Arena exception:** Swarm Arena content is off-domain to us and uses `swarmarena.ai` ("Follow the agents on swarmarena.ai" and natural variants), never `getnick.ai`.
 
 ---
 
