@@ -1075,7 +1075,8 @@ const ChatResponseSequence: React.FC<LaunchVideoProps> = ({ chatPrompt }) => {
               display: "flex",
               alignItems: "center",
               gap: 10,
-              marginTop: 30,
+              width: "75%",
+              margin: "30px auto 0",
               color: "#71717a",
               fontSize: 18,
               fontWeight: 600,
@@ -1094,12 +1095,14 @@ const ChatResponseSequence: React.FC<LaunchVideoProps> = ({ chatPrompt }) => {
 
           <div
             style={{
-              marginTop: 18,
+              boxSizing: "border-box",
+              width: "75%",
+              margin: "18px auto 0",
               overflow: "hidden",
               padding: "27px 30px 24px",
               borderRadius: 24,
-              border: "1px solid #272f3d",
-              backgroundColor: "#090e17",
+              border: "1px solid #27272a",
+              backgroundColor: "#18181b",
               boxShadow: "0 10px 30px rgba(0, 0, 0, 0.2)",
               opacity: cardOpacity,
               filter: `blur(${(1 - cardSettle) * 2.5}px)`,
@@ -1346,7 +1349,7 @@ const WorkflowResponseSequence: React.FC<LaunchVideoProps> = ({
             display: "flex",
             flexDirection: "column",
             gap: 10,
-            marginTop: 48,
+            marginTop: 60,
           }}
         >
           <div
@@ -1388,8 +1391,8 @@ const WorkflowResponseSequence: React.FC<LaunchVideoProps> = ({
               gap: 14,
               padding: "13px 15px",
               borderRadius: 18,
-              border: "1px solid #272f3d",
-              backgroundColor: "#090e17",
+              border: "1px solid #27272a",
+              backgroundColor: "#18181b",
               boxShadow: "0 8px 24px rgba(0, 0, 0, 0.18)",
               opacity: createdOpacity,
               filter: `blur(${(1 - createdSettle) * 2.5}px)`,
@@ -1762,7 +1765,7 @@ const WorkflowBuildSequence: React.FC = () => {
   const cameraZoom = 1.16;
   const cameraSegments = cameraTargets.map((target, index) => {
     const start = nodes.start + index * nodes.stagger - (index === 0 ? 8 : 0);
-    const duration = index === 0 ? 18 : 16;
+    const duration = 18;
     const from = index === 0 ? cameraBase : { ...cameraTargets[index - 1], scale: cameraZoom };
     return { start, duration, from, to: { ...target, scale: cameraZoom } };
   });

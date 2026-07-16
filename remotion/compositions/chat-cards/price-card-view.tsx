@@ -64,6 +64,8 @@ function Candles({ candles, reveal, uid }: { candles: Candle[]; reveal: number; 
           const cx = (i + 0.5) * slot;
           const bodyTop = Math.min(y(c.o), y(c.c));
           const bodyH = Math.max(2, Math.abs(y(c.c) - y(c.o)));
+          const bodyRadiusX = bodyW / 2;
+          const bodyRadiusY = Math.min(bodyW / 2, bodyH / 2);
           return (
             <g key={i}>
               <line
@@ -75,7 +77,15 @@ function Candles({ candles, reveal, uid }: { candles: Candle[]; reveal: number; 
                 strokeWidth={2}
                 vectorEffect="non-scaling-stroke"
               />
-              <rect x={cx - bodyW / 2} y={bodyTop} width={bodyW} height={bodyH} fill={color} rx={1} />
+              <rect
+                x={cx - bodyW / 2}
+                y={bodyTop}
+                width={bodyW}
+                height={bodyH}
+                fill={color}
+                rx={bodyRadiusX}
+                ry={bodyRadiusY}
+              />
             </g>
           );
         })}

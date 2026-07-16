@@ -144,6 +144,7 @@ const WorkflowTile: React.FC<{
           left: 10,
           right: 10,
           height: 103,
+          filter: "brightness(1.7) saturate(1.45) contrast(1.08)",
         }}
       >
         <WorkflowGraph

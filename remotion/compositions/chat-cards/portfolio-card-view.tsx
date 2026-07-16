@@ -135,6 +135,7 @@ export function PortfolioCardView({
       <div
         style={{
           display: "flex",
+          gap: 1.5 * k,
           height: 8 * k,
           width: "100%",
           overflow: "hidden",
