@@ -33,6 +33,14 @@ const DUPLET =
 const BENTO_SETTLE_EASE = Easing.bezier(0.16, 1, 0.3, 1);
 const WORKFLOW_TILE_WIDTH = 400;
 const WORKFLOW_TILE_HEIGHT = 155;
+const BENTO_RADIUS = 24;
+const BENTO_BORDER = "#2b2b31";
+const BENTO_SURFACE = "#18181b";
+const BENTO_SHELL_STYLE = {
+  borderRadius: BENTO_RADIUS,
+  border: `1px solid ${BENTO_BORDER}`,
+  backgroundColor: BENTO_SURFACE,
+} as const;
 
 const VENUES: Array<{ file?: string; name?: string }> = [
   { file: "coinbase.svg" },
@@ -129,9 +137,9 @@ const WorkflowTile: React.FC<{
         width,
         height,
         overflow: "hidden",
-        border: "1px solid #27272a",
-        borderRadius: 20,
-        backgroundColor: "#18181b",
+        border: `1px solid ${BENTO_BORDER}`,
+        borderRadius: BENTO_RADIUS,
+        backgroundColor: BENTO_SURFACE,
         boxShadow: "0 30px 70px -40px rgba(0,0,0,0.8)",
         opacity: reveal,
         transform: `translateY(${(1 - reveal) * 20}px) scale(${0.95 + reveal * 0.05})`,
@@ -326,6 +334,7 @@ export const ProductCutFinaleSequence: React.FC<
             data={SAMPLE_PORTFOLIO}
             width={middleSideWidth}
             anim={1}
+            shellStyle={BENTO_SHELL_STYLE}
           />
         </div>
         <div
@@ -348,6 +357,7 @@ export const ProductCutFinaleSequence: React.FC<
             data={SAMPLE_PRICE_SPACEX}
             width={middleSideWidth}
             anim={1}
+            shellStyle={BENTO_SHELL_STYLE}
           />
         </div>
         <div
@@ -365,6 +375,7 @@ export const ProductCutFinaleSequence: React.FC<
             data={SAMPLE_TRADE_AAPL}
             width={aaplWidth}
             anim={1}
+            shellStyle={BENTO_SHELL_STYLE}
           />
         </div>
         <div

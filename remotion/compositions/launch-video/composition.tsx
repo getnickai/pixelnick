@@ -1,4 +1,5 @@
 import type { LucideIcon } from "lucide-react";
+import type { ReactNode } from "react";
 import {
   ChartNoAxesCombined,
   Check,
@@ -934,7 +935,15 @@ const ChatComposerSequence: React.FC<ChatComposerSequenceProps> = ({
   );
 };
 
-const ChatResponseSequence: React.FC<LaunchVideoProps> = ({ chatPrompt }) => {
+type LaunchVideoInternalProps = LaunchVideoProps & {
+  /** Product-cut-only visual override. The public Launch Video keeps its line chart. */
+  chatResponseChart?: ReactNode;
+};
+
+const ChatResponseSequence: React.FC<LaunchVideoInternalProps> = ({
+  chatPrompt,
+  chatResponseChart,
+}) => {
   const frame = useCurrentFrame();
   const {
     shell,
@@ -1142,45 +1151,47 @@ const ChatResponseSequence: React.FC<LaunchVideoProps> = ({ chatPrompt }) => {
               +$18.5 (+9.13%) Today
             </div>
 
-            <svg
-              viewBox="0 0 700 170"
-              preserveAspectRatio="none"
-              width="100%"
-              height="190"
-              fill="none"
-              aria-label="NVDA daily price chart"
-              style={{ display: "block", marginTop: 10, overflow: "visible" }}
-            >
-              <defs>
-                <linearGradient
-                  id="launch-video-nvda-fill"
-                  x1="350"
-                  y1="10"
-                  x2="350"
-                  y2="170"
-                  gradientUnits="userSpaceOnUse"
-                >
-                  <stop stopColor="#22c55e" stopOpacity="0.24" />
-                  <stop offset="1" stopColor="#22c55e" stopOpacity="0" />
-                </linearGradient>
-                <clipPath id="launch-video-nvda-line-reveal">
-                  <rect x="0" y="0" width={700 * lineDraw} height="170" />
-                </clipPath>
-              </defs>
-              <path
-                d={NVDA_CHART_FILL}
-                fill="url(#launch-video-nvda-fill)"
-                opacity={fillOpacity}
-              />
-              <path
-                d={NVDA_CHART_LINE}
-                stroke="#22c55e"
-                strokeWidth={2.4}
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                clipPath="url(#launch-video-nvda-line-reveal)"
-              />
-            </svg>
+            {chatResponseChart ?? (
+              <svg
+                viewBox="0 0 700 170"
+                preserveAspectRatio="none"
+                width="100%"
+                height="190"
+                fill="none"
+                aria-label="NVDA daily price chart"
+                style={{ display: "block", marginTop: 10, overflow: "visible" }}
+              >
+                <defs>
+                  <linearGradient
+                    id="launch-video-nvda-fill"
+                    x1="350"
+                    y1="10"
+                    x2="350"
+                    y2="170"
+                    gradientUnits="userSpaceOnUse"
+                  >
+                    <stop stopColor="#22c55e" stopOpacity="0.24" />
+                    <stop offset="1" stopColor="#22c55e" stopOpacity="0" />
+                  </linearGradient>
+                  <clipPath id="launch-video-nvda-line-reveal">
+                    <rect x="0" y="0" width={700 * lineDraw} height="170" />
+                  </clipPath>
+                </defs>
+                <path
+                  d={NVDA_CHART_FILL}
+                  fill="url(#launch-video-nvda-fill)"
+                  opacity={fillOpacity}
+                />
+                <path
+                  d={NVDA_CHART_LINE}
+                  stroke="#22c55e"
+                  strokeWidth={2.4}
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  clipPath="url(#launch-video-nvda-line-reveal)"
+                />
+              </svg>
+            )}
             <div
               style={{
                 color: "#71717a",
@@ -2378,7 +2389,9 @@ const ExecuteFinaleSequence: React.FC<LaunchVideoProps> = ({
  * Extensible Launch Video shell. Later scenes should be added as sibling
  * Sequences whose boundaries live in timeline.ts.
  */
-export const LaunchVideoComposition: React.FC<LaunchVideoProps> = (props) => {
+export const LaunchVideoComposition: React.FC<LaunchVideoInternalProps> = (
+  props,
+) => {
   const {
     opening,
     productStatement,

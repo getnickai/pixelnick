@@ -8,6 +8,7 @@
  * left-to-right candle reveal + a headline price count-up; it defaults to 1
  * (fully settled) so a still renders complete.
  */
+import type { CSSProperties } from "react";
 import {
   CardHeader,
   CardShell,
@@ -98,10 +99,12 @@ export function PriceCardView({
   data,
   width = 440,
   anim = 1,
+  shellStyle,
 }: {
   data: PriceCardData;
   width?: number;
   anim?: number;
+  shellStyle?: CSSProperties;
 }) {
   const k = width / 440;
   const a = Math.max(0, Math.min(1, anim));
@@ -124,7 +127,11 @@ export function PriceCardView({
   }));
 
   return (
-    <CardShell k={k} width={width} style={{ height: "100%" }}>
+    <CardShell
+      k={k}
+      width={width}
+      style={{ height: "100%", ...shellStyle }}
+    >
       <CardHeader
         k={k}
         title={data.symbol}

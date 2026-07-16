@@ -8,6 +8,7 @@
  * draw-on, allocation-bar grow, a net-worth count-up and a positions fade;
  * defaults to 1 (settled) so a still renders complete.
  */
+import type { CSSProperties } from "react";
 import {
   CardHeader,
   CardShell,
@@ -79,10 +80,12 @@ export function PortfolioCardView({
   data,
   width = 440,
   anim = 1,
+  shellStyle,
 }: {
   data: PortfolioCardData;
   width?: number;
   anim?: number;
+  shellStyle?: CSSProperties;
 }) {
   const k = width / 440;
   const a = Math.max(0, Math.min(1, anim));
@@ -91,7 +94,11 @@ export function PortfolioCardView({
   const shownNet = data.netWorth * easeOutCubic(a);
 
   return (
-    <CardShell k={k} width={width} style={{ height: "100%" }}>
+    <CardShell
+      k={k}
+      width={width}
+      style={{ height: "100%", ...shellStyle }}
+    >
       <CardHeader
         k={k}
         title="Portfolio"

@@ -7,6 +7,7 @@ import { ProductCutFinaleSequence } from "./finale";
 import type { LaunchVideoProductCutProps } from "./props";
 import { LAUNCH_VIDEO_TIMELINE } from "./timeline";
 import { OUTRO_EASE, progress } from "./motion";
+import { ProductCutNvdaCandlestickChart } from "./nvda-candlestick-chart";
 
 const CANVAS = "#09090b";
 
@@ -18,7 +19,10 @@ const ProductCutCoreSequence: React.FC<LaunchVideoProductCutProps> = (props) => 
   return (
     <AbsoluteFill style={{ opacity: 1 - fadeOut }}>
       <Freeze frame={Math.min(frame, freezeAt)}>
-        <LaunchVideoComposition {...props} />
+        <LaunchVideoComposition
+          {...props}
+          chatResponseChart={<ProductCutNvdaCandlestickChart />}
+        />
       </Freeze>
     </AbsoluteFill>
   );

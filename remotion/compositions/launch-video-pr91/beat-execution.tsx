@@ -28,6 +28,7 @@ const SANS = "var(--font-manrope), ui-sans-serif, system-ui, sans-serif";
 
 // 16 lead rows x 27px row height — the streaming depth of ExecutionLogs.
 const LOG_SCROLL_MAX = 16 * 27;
+const CONFIRMATION_WIDTH = 560;
 
 export const ExecutionSequence: React.FC = () => {
   const frame = useCurrentFrame();
@@ -133,7 +134,10 @@ export const ExecutionSequence: React.FC = () => {
   const dimIn = progress(frame, button.start, 10, FAST_FADE_EASE);
   const dimOut = progress(frame, click.start, 8, FAST_FADE_EASE);
   const buttonScrim = dimIn * (1 - dimOut) * 0.5;
-  const scrim = Math.max(buttonScrim, Math.min(1, confirmP * 0.5 + fadeUXP * 0.5));
+  const scrim = Math.max(
+    buttonScrim,
+    Math.min(1, confirmP * 0.82 + fadeUXP * 0.18),
+  );
   // The banner retires as the UX fades (the finale opens on just the card).
   const bannerOpacity = bannerP * (1 - fadeUXP);
 
@@ -226,16 +230,17 @@ export const ExecutionSequence: React.FC = () => {
           position: "absolute",
           top: 340,
           left: "50%",
+          boxSizing: "border-box",
+          width: CONFIRMATION_WIDTH,
           transform: `translate(-50%, ${(1 - bannerP) * -20}px)`,
           display: "flex",
           alignItems: "center",
-          gap: 14,
-          padding: "15px 30px",
+          gap: 12,
+          padding: "14px 24px",
           borderRadius: 999,
           // Opaque so the workflow node behind never bleeds through the text.
-          backgroundColor: "#0c1f14",
-          border: "1px solid rgba(31,193,107,0.6)",
-          boxShadow: "0 20px 50px -28px rgba(0,0,0,0.7)",
+          backgroundColor: "#1fc16b",
+          boxShadow: "0 20px 50px -28px rgba(31,193,107,0.7)",
           opacity: bannerOpacity,
           fontFamily: SANS,
           whiteSpace: "nowrap",
@@ -246,15 +251,15 @@ export const ExecutionSequence: React.FC = () => {
             display: "inline-flex",
             alignItems: "center",
             justifyContent: "center",
-            width: 40,
-            height: 40,
+            width: 36,
+            height: 36,
             borderRadius: 999,
-            backgroundColor: "#1fc16b",
+            backgroundColor: "#ffffff",
           }}
         >
-          <Check size={24} color="#04140a" strokeWidth={3} />
+          <Check size={22} color="#15803d" strokeWidth={3} />
         </span>
-        <span style={{ fontSize: 32, fontWeight: 700, color: "#fff" }}>
+        <span style={{ fontSize: 28, fontWeight: 700, color: "#ffffff" }}>
           Workflow executed successfully
         </span>
       </div>
@@ -265,13 +270,17 @@ export const ExecutionSequence: React.FC = () => {
           position: "absolute",
           top: "50%",
           left: "50%",
-          width: 560,
+          width: CONFIRMATION_WIDTH,
           transform: `translate(-50%, calc(-50% + 30px)) translateY(${(1 - cardIn) * 26}px) scale(${0.96 + cardIn * 0.04})`,
           opacity: cardIn,
           filter: cardIn >= 1 ? undefined : `blur(${(1 - cardIn) * 6}px)`,
         }}
       >
-        <TradeConfirmationCardView data={SAMPLE_TRADE_AAPL} width={560} anim={cardIn} />
+        <TradeConfirmationCardView
+          data={SAMPLE_TRADE_AAPL}
+          width={CONFIRMATION_WIDTH}
+          anim={cardIn}
+        />
       </div>
     </>
   );
