@@ -363,6 +363,7 @@ export function ProductScreen({
   workflowCanvasH = CANVAS_H,
   workflowCamera = WS_CAMERA,
   workflowNodeVariant = "rich",
+  workflowRunProgress,
   workspaceReveal = 1,
 }: {
   running?: boolean;
@@ -393,6 +394,8 @@ export function ProductScreen({
   workflowCanvasH?: number;
   workflowCamera?: Camera;
   workflowNodeVariant?: NodeVariant;
+  /** Optional 0..1 execution cursor. Nodes advance through topological order. */
+  workflowRunProgress?: number;
   /** Product workspace chrome reveal around a continuously docking graph. */
   workspaceReveal?: number;
 } = {}) {
@@ -439,12 +442,22 @@ export function ProductScreen({
     });
   } else if (running) {
     const order = topoOrder(w.template.nodes, w.template.edges);
-    const doneCut = Math.floor(order.length * 0.6);
     statusById = {};
-    order.forEach((id, i) => {
-      if (i < doneCut) statusById![id] = "completed";
-      else if (i < doneCut + 3) statusById![id] = "running";
-    });
+    if (workflowRunProgress === undefined) {
+      const doneCut = Math.floor(order.length * 0.6);
+      order.forEach((id, i) => {
+        if (i < doneCut) statusById![id] = "completed";
+        else if (i < doneCut + 3) statusById![id] = "running";
+      });
+    } else {
+      const executionCursor = Math.max(0, Math.min(1, workflowRunProgress)) * order.length;
+      const completedCount = Math.min(order.length, Math.floor(executionCursor));
+      const activeIndex = Math.min(order.length - 1, completedCount);
+      order.forEach((id, i) => {
+        if (i < completedCount) statusById![id] = "completed";
+        else if (i === activeIndex) statusById![id] = "running";
+      });
+    }
   }
 
   return (

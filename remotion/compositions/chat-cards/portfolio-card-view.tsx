@@ -103,7 +103,6 @@ export function PortfolioCardView({
       <div style={{ display: "flex", flexDirection: "column", gap: 2 * k }}>
         <span
           style={{
-            fontFamily: TOKENS.mono,
             fontWeight: 700,
             fontSize: 36 * k,
             lineHeight: 1,

@@ -77,6 +77,15 @@ export const ExecutionSequence: React.FC = () => {
       extrapolateRight: "clamp",
     }),
   );
+  // Advance node states on the same frame window as the streaming execution
+  // rows. Each topological step becomes blue while active, then green before
+  // the next dependent node begins.
+  const nodeExecutionProgress = interpolate(
+    frame,
+    [scroll.start, scroll.start + scroll.duration],
+    [0, 1],
+    { extrapolateLeft: "clamp", extrapolateRight: "clamp" },
+  );
 
   // ── Centered blue Execute button (the clear run trigger). ──
   const btnIn = progress(frame, button.start, button.duration, POP_EASE);
@@ -144,6 +153,7 @@ export const ExecutionSequence: React.FC = () => {
           workflowCanvasH={graphCanvasH}
           workflowCamera={graphCamera}
           workflowNodeVariant="cinematic"
+          workflowRunProgress={nodeExecutionProgress}
         />
       </ZoomInto>
 
