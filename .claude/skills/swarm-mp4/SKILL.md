@@ -5,16 +5,19 @@ description: >-
   agent output, for download — NOT posted to Slack. Covers every Swarm Arena
   card design: agent cards (classic + the model-card design), the leaderboard
   (classic + the model-design leaderboard), the "Market vs Agents"
-  consensus/games card (the design for UPCOMING game/match cards), and the
+  consensus/games card (the design for UPCOMING game/match cards), the
   settled "won pick" result card (the consensus design after the whistle: final
-  score + the swarm's pick + how much the agents made). Use whenever Badi asks to
-  "generate an mp4", "make a video of the leaderboard", "render the consensus card
-  for <game>", "render the won pick / result card for <game>", "card for a game
-  the agents won", "render GROK as an mp4", "swarm arena card video", "do the games
-  for today as mp4", or wants a downloadable clip of any Swarm Arena card. This is
-  the swarm-arena card pipeline in the `pixelnick` repo — distinct from the
-  performance-card / trading-card pipeline (see nickai-performance-cards).
-  Reach for this even if Badi doesn't say "pixelnick".
+  score + the swarm's pick + how much the agents made), AND Season 2's single
+  meta agent Nick — his "Match Pick" card (upcoming) and "Result + Portfolio"
+  card (settled). Use whenever Badi asks to "generate an mp4", "make a video of
+  the leaderboard", "render the consensus card for <game>", "render the won
+  pick / result card for <game>", "render Nick's pick for <game>", "card for a
+  game the agents won", "render GROK as an mp4", "swarm arena card video", "do
+  the games for today as mp4", or wants a downloadable clip of any Swarm Arena
+  card, Season 1 or Season 2. This is the swarm-arena card pipeline in the
+  `pixelnick` repo — distinct from the performance-card / trading-card pipeline
+  (see nickai-performance-cards). Reach for this even if Badi doesn't say
+  "pixelnick".
 ---
 
 # Swarm Arena Card MP4 (on demand)
@@ -170,6 +173,50 @@ Read `public/swarm-arena-cards/results.json`
 to see which games/markets settled. Example 2026-06-14: USA 4–1 Paraguay, the
 swarm's Over 2.5 hit and 5/8 agents banked +$564.
 
+## Season 2: Nick, the single meta agent
+
+**Everything above (the 8 `s1-match-reader-<model>` agents, `swarm-consensus.ts`/
+`render-consensus.ts`, `swarm-results.ts`/`render-results.ts`) is Season 1.**
+Season 1 is now ARCHIVED — the World Cup narrowed to a few knockout games, and
+Season 2 runs a single meta agent, **Nick**, on the quarter-finals onward
+(`world-cup-agent[-N]`, ~6 workflows + LLM consensus, one pick per game).
+
+**Check the fixture's `stage` before picking a pipeline**, don't default to the
+S1 commands above:
+- `group` / `Round of 32` / `Round of 16` → Season 1 (the 8-agent pipeline above).
+- `Quarter-finals` / `Semi-finals` / `Final` → **Season 2, Nick** (this section).
+
+Read the stage from `bun scripts/swarm-schedule.ts` → `public/swarm-arena-cards/fixtures.json`
+(`status`, `stage` per fixture), not from memory of what round a team was in
+last week. **Knockout fixtures are double-entered in the mirror under two stage
+labels** (e.g. a Round-of-16 matchup that turns out to also be a Semi-final
+gets both rows) — the real stage is the HIGHEST round; a game can look like S1
+at a glance and actually be S2. Confirmed 2026-07-15: France vs Spain showed
+both `"Round of 16"` and `"Semi · finals"` in `fixtures.json` — it was S2/Nick's
+game, and checking only the S1 pipeline (which had no winning pick on it) gave
+a false "no card" before the stage check caught it.
+
+Nick writes picks to R2 but never settles them — results are computed
+site-side against the `matches` mirror's final score, same honest-data rule as
+S1 (no coverage / no score → no record).
+
+| Nick's card | What it is | Command |
+|---|---|---|
+| **Match Pick** (upcoming) | one game, one pick: Nick's selection vs the market odds, his own probability read, stake + payout-if-hit | `bun scripts/swarm-nick.ts` then `bun scripts/render-game-pick.ts --game="<substr>" [--all] [--no-mp4]` |
+| **Result + Portfolio** (settled) | final score + HIT/MISS chip + payout, PLUS Nick's running portfolio (bankroll from a $1,000 start) | `bun scripts/swarm-nick.ts [--results-limit=4]` then `bun scripts/render-result-portfolio.ts --game="<substr>" [--all] [--no-mp4]` |
+
+- `swarm-nick.ts` writes both feeds in one run: `public/swarm-arena-cards/nick-upcoming.json`
+  (Nick's still-open picks) and `nick-results.json` (settled, newest first, capped
+  by `--results-limit`, default 4). Refresh both before rendering, same
+  stale-data-file rule as every other card.
+- Both render scripts mirror the S1 ones: `--game=<substr>` (repeatable, picks
+  the first match) or `--all`; `--no-mp4` for PNG-only; `--feed=<path>` /
+  `--out=<dir>` overrides. Slugs: `game-pick-<home>-vs-<away>`,
+  `result-portfolio-<home>-vs-<away>` (full team names).
+- **These renders are silent, same as every card below** — see the audio
+  gotcha. If you need a version with sound (e.g. to hand-post to Slack outside
+  the automated cron), mux it yourself; don't assume the raw render has audio.
+
 ## Slug / handle notes
 - Handles come from `data/swarm-identity.ts` / the deck's `agents[].handle`
   (e.g. `GROK`, `GPT`, `CLAUDE`, `GEMINI`, `KIMI`, `DEEPSEEK`, `QWEN`, `MISTRAL`).
@@ -192,17 +239,39 @@ swarm's Over 2.5 hit and 5/8 agents banked +$564.
   cause.
 - **Live = now (v1).** The deck/feed are point-in-time "now". Timeline/historical
   MP4s (the gallery's `?at=` date picker) are not wired into these scripts yet.
-- **No Slack.** Posting is the daily `swarm-daily.ts` cron's job, not this skill.
+- **No Slack.** Posting is the `swarm-auto.ts` cron's job (`--nick` flag for
+  Season 2, plus its various `--force-*` flags for Season 1 — see
+  `project_swarm_auto_cron` memory / the script's own argv parsing), not this
+  skill. (Earlier revisions of this doc said `swarm-daily.ts` — no such file
+  exists; the cron script is `swarm-auto.ts`.)
+- **Renders are silent by design, for every card, S1 and S2.** None of these
+  render scripts (`generate-swarm-cards.ts`, `render-consensus.ts`,
+  `render-results.ts`, `render-game-pick.ts`, `render-result-portfolio.ts`)
+  mux in audio — the Remotion compositions carry no soundtrack. Music only
+  gets added by `swarm-auto.ts`'s own post-render step (`muxAudio()`, ffmpeg
+  copy-video/aac-audio/`-shortest`, tracks in `public/audio/`: `stadium-groove.mp3`
+  for game/pick cards, `decisive-moment.mp3` for result cards, `victory-jingle.mp3`
+  for the leaderboard). If you render straight from this skill's commands and
+  then hand a clip to Slack expecting sound, it'll be silent — mux it yourself
+  first (no system `ffmpeg` needed: `node_modules/@remotion/compositor-<platform>/ffmpeg`
+  is bundled and is what `swarm-auto.ts` falls back to when `Bun.which("ffmpeg")`
+  finds nothing, which is the normal case on Badi's machine). Bit a session on
+  2026-07-15 (posted two silent Nick cards to Slack before catching it).
 - Don't print or echo `.env.local` values when checking creds — key names only.
 ```bash
-# canonical full run (model leaderboard + the games card for a fixture)
+# canonical full run (model leaderboard + the games card for a fixture) — Season 1
 cd "${PIXELNICK_DIR:-$HOME/claude/pixelnick}"   # any up-to-date `main` checkout
 bun scripts/swarm-adapter.ts
 bun scripts/generate-swarm-cards.ts --deck=public/swarm-arena-cards/live-deck.json \
   --card=leaderboard --mp4 --no-archive
 bun scripts/swarm-consensus.ts
 bun scripts/render-consensus.ts --game="usa vs paraguay"
-# a settled "won pick" result card for a finished game
+# a settled "won pick" result card for a finished game — Season 1
 bun scripts/swarm-results.ts
 bun scripts/render-results.ts --game="usa vs paraguay"
+
+# Season 2 (Nick) — check the fixture's stage first; QF/SF/F only
+bun scripts/swarm-nick.ts --results-limit=4
+bun scripts/render-game-pick.ts --game="england vs argentina"       # upcoming
+bun scripts/render-result-portfolio.ts --game="france vs spain"     # settled
 ```
