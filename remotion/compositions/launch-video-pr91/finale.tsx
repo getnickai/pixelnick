@@ -30,6 +30,9 @@ const CANVAS = "#09090b";
 const MANROPE = "Manrope, ui-sans-serif, system-ui, sans-serif";
 const DUPLET =
   'var(--font-duplet, "Duplet"), ui-sans-serif, system-ui, sans-serif';
+const BENTO_SETTLE_EASE = Easing.bezier(0.16, 1, 0.3, 1);
+const WORKFLOW_TILE_WIDTH = 400;
+const WORKFLOW_TILE_HEIGHT = 155;
 
 const VENUES: Array<{ file?: string; name?: string }> = [
   { file: "coinbase.svg" },
@@ -114,8 +117,8 @@ const WorkflowTile: React.FC<{
   y: number;
   reveal: number;
 }> = ({ workflow, x, y, reveal }) => {
-  const width = 400;
-  const height = 155;
+  const width = WORKFLOW_TILE_WIDTH;
+  const height = WORKFLOW_TILE_HEIGHT;
 
   return (
     <div
@@ -182,16 +185,26 @@ export const ProductCutFinaleSequence: React.FC<
   const { grid, soften, statement, logo, cta, url, outro } =
     LAUNCH_VIDEO_TIMELINE.finale;
 
-  const workflowWidth = 400;
+  const workflowWidth = WORKFLOW_TILE_WIDTH;
   const workflowGap = 22;
   const workflowRowWidth = workflowWidth * 4 + workflowGap * 3;
   const workflowStartX = (1920 - workflowRowWidth) / 2;
   const workflowX = (index: number) =>
     workflowStartX + index * (workflowWidth + workflowGap);
+  const workflowTopY = 84;
+  const workflowBottomY = 760;
+  const middleRowTop = workflowTopY + WORKFLOW_TILE_HEIGHT + workflowGap;
+  const middleRowHeight = workflowBottomY - middleRowTop - workflowGap;
+  const middleRowCenterY = middleRowTop + middleRowHeight / 2;
+  const middleSideWidth = workflowWidth;
+  const middleCenterWidth = workflowWidth * 2 + workflowGap;
+  const middleLeftCenterX = workflowStartX + middleSideWidth / 2;
+  const middleRightCenterX = 1920 - middleLeftCenterX;
 
-  const settled = progress(frame, 2, 16, Easing.inOut(Easing.cubic));
-  const aaplCenterY = interpolate(settled, [0, 1], [630, 500]);
-  const aaplWidth = interpolate(settled, [0, 1], [560, 430]);
+  const settled = progress(frame, 2, 26, BENTO_SETTLE_EASE);
+  const aaplCenterY = interpolate(settled, [0, 1], [630, middleRowCenterY]);
+  const aaplWidth = interpolate(settled, [0, 1], [560, middleCenterWidth]);
+  const aaplHeight = interpolate(settled, [0, 1], [284, middleRowHeight]);
   const softenProgress = progress(
     frame,
     soften.start,
@@ -269,7 +282,7 @@ export const ProductCutFinaleSequence: React.FC<
               key={`top-${wfName(workflow)}`}
               workflow={workflow}
               x={workflowX(index)}
-              y={84}
+              y={workflowTopY}
               reveal={reveal}
             />
           );
@@ -286,7 +299,7 @@ export const ProductCutFinaleSequence: React.FC<
               key={`bottom-${wfName(workflow)}`}
               workflow={workflow}
               x={workflowX(index)}
-              y={760}
+              y={workflowBottomY}
               reveal={reveal}
             />
           );
@@ -295,9 +308,10 @@ export const ProductCutFinaleSequence: React.FC<
         <div
           style={{
             position: "absolute",
-            left: 380,
-            top: 500,
-            width: 430,
+            left: middleLeftCenterX,
+            top: middleRowCenterY,
+            width: middleSideWidth,
+            height: middleRowHeight,
             opacity: progress(
               frame,
               grid.start + 8 * grid.stagger,
@@ -307,14 +321,19 @@ export const ProductCutFinaleSequence: React.FC<
             transform: "translate(-50%, -50%)",
           }}
         >
-          <PortfolioCardView data={SAMPLE_PORTFOLIO} width={430} anim={1} />
+          <PortfolioCardView
+            data={SAMPLE_PORTFOLIO}
+            width={middleSideWidth}
+            anim={1}
+          />
         </div>
         <div
           style={{
             position: "absolute",
-            left: 1540,
-            top: 500,
-            width: 430,
+            left: middleRightCenterX,
+            top: middleRowCenterY,
+            width: middleSideWidth,
+            height: middleRowHeight,
             opacity: progress(
               frame,
               grid.start + 9 * grid.stagger,
@@ -324,7 +343,11 @@ export const ProductCutFinaleSequence: React.FC<
             transform: "translate(-50%, -50%)",
           }}
         >
-          <PriceCardView data={SAMPLE_PRICE_SPACEX} width={430} anim={1} />
+          <PriceCardView
+            data={SAMPLE_PRICE_SPACEX}
+            width={middleSideWidth}
+            anim={1}
+          />
         </div>
         <div
           style={{
@@ -333,6 +356,7 @@ export const ProductCutFinaleSequence: React.FC<
             top: aaplCenterY,
             zIndex: 4,
             width: aaplWidth,
+            height: aaplHeight,
             transform: "translate(-50%, -50%)",
           }}
         >

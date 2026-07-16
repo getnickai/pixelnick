@@ -121,7 +121,16 @@ export function TradeConfirmationCardView({
       </div>
 
       {/* Footer: account + time */}
-      <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", fontSize: 11.5 * k, color: TOKENS.textSoft }}>
+      <div
+        style={{
+          display: "flex",
+          alignItems: "center",
+          justifyContent: "space-between",
+          marginTop: "auto",
+          fontSize: 11.5 * k,
+          color: TOKENS.textSoft,
+        }}
+      >
         <span>{data.account}</span>
         <span>{data.filledAt}</span>
       </div>

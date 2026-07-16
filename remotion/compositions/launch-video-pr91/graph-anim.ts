@@ -8,11 +8,16 @@
  * drives the focus-then-fit camera move. Both are pure functions of `frame`, so
  * the headless render and the live Player agree frame-for-frame.
  */
-import { Easing, interpolate, spring } from "remotion";
+import { Easing, interpolate } from "remotion";
 import { fitCamera, nodeDims, type Camera, type NodeVariant } from "../nick-launch-video/graph";
 import { layoutGraph, topoOrder } from "../workflow-template-card/layout";
 import type { TemplateGraph } from "../workflow-template-card/props";
 import { progress } from "./motion";
+
+// Product-film motion curves translated from Anime.js-style outExpo and a
+// symmetrical cinematic camera ease. Neither curve overshoots its endpoint.
+const NODE_REVEAL_EASE = Easing.bezier(0.16, 1, 0.3, 1);
+const CAMERA_PULLBACK_EASE = Easing.bezier(0.65, 0, 0.35, 1);
 
 /** Fast per-node topo stagger across the build window, so the graph "finalizes"
  *  node-by-node with the connectors trailing behind. */
@@ -47,16 +52,12 @@ export function buildReveal(
         : waveStart + Math.floor((i - deliberateCount) / waveSize) * waveStep;
     const revealStart = start + offset;
     revealStartById.set(id, revealStart);
-    nodeReveal[id] = spring({
-      frame: frame - revealStart,
-      fps: 30,
-      durationInFrames: perNode,
-      config: {
-        mass: 0.9,
-        stiffness: 135,
-        damping: 18,
-      },
-    });
+    nodeReveal[id] = progress(
+      frame,
+      revealStart,
+      perNode,
+      NODE_REVEAL_EASE,
+    );
   });
   // Every connector follows its own downstream node instead of arriving as one
   // late overlay. The source is already present, the curve draws, and the
@@ -75,7 +76,7 @@ export function buildReveal(
   return { nodeReveal, edgeReveal };
 }
 
-const ZOOM_OUT_EASE = Easing.inOut(Easing.cubic);
+const ZOOM_OUT_EASE = CAMERA_PULLBACK_EASE;
 
 /**
  * A readable, left-anchored overview of a graph. The graph may continue beyond
@@ -312,20 +313,18 @@ export function progressiveBuildCamera({
     overviewScale,
   });
 
-  // A single under-damped spring drives scale and both camera axes. This avoids
-  // the previous stop/start cadence between node stages and gives the pullback
-  // one continuous, physical settle with only a restrained final overshoot.
-  const pullBack = spring({
-    frame: frame - buildStart - 4,
-    fps: 30,
-    durationInFrames: Math.max(1, buildDur - 4),
-    config: {
-      mass: 1.2,
-        stiffness: 250,
-        damping: 18,
-      
-    },
-  });
+  // Hold the opening composition long enough to register the origin node, then
+  // make one continuous camera move with a short settled tail. A deterministic
+  // product-film curve is more appropriate here than a spring: no rebound, no
+  // focus-point oscillation, and one shared velocity profile for zoom and pan.
+  const openingHold = Math.min(10, Math.max(4, buildDur * 0.12));
+  const settledTail = Math.min(8, Math.max(4, buildDur * 0.1));
+  const pullBack = progress(
+    frame,
+    buildStart + openingHold,
+    Math.max(1, buildDur - openingHold - settledTail),
+    CAMERA_PULLBACK_EASE,
+  );
 
   return {
     scale: interpolate(pullBack, [0, 1], [focused.scale, overview.scale]),

@@ -314,10 +314,10 @@ export function WorkflowGraph({
           const visibleReveal = Math.max(0, Math.min(1, reveal));
           const entranceScale =
             nodeVariant === "cinematic"
-              ? 0.955 + 0.045 * reveal
-              : 0.7 + 0.3 * reveal;
+              ? 0.985 + 0.015 * visibleReveal
+              : 0.7 + 0.3 * visibleReveal;
           const entranceY =
-            nodeVariant === "cinematic" ? (1 - reveal) * 24 : 0;
+            nodeVariant === "cinematic" ? (1 - visibleReveal) * 14 : 0;
           return (
             <div
               key={n.id}
@@ -328,7 +328,7 @@ export function WorkflowGraph({
                 opacity: visibleReveal,
                 filter:
                   nodeVariant === "cinematic" && visibleReveal < 1
-                    ? `blur(${(1 - visibleReveal) * 5}px)`
+                    ? `blur(${(1 - visibleReveal) * 3}px)`
                     : undefined,
                 transform: `translateY(${entranceY}px) scale(${entranceScale})`,
                 transformOrigin: "center center",
