@@ -76,9 +76,11 @@ export const LAUNCH_VIDEO_TIMELINE = {
     },
     send: {
       // Typing completes at frame 47. Hold the completed prompt cleanly for
-      // 36 frames (1.2s), then let the cursor enter and travel for 10 frames.
-      start: 93,
-      duration: 10,
+      // 26 frames before the cursor enters. The longer 20-frame interaction
+      // gives the press, contact hold, and spring release room to read while
+      // preserving the existing response handoff at frame 103.
+      start: 83,
+      duration: 20,
     },
     outro: {
       // Begins on the exact frame the click ripple completes.
@@ -143,9 +145,10 @@ export const LAUNCH_VIDEO_TIMELINE = {
     },
     send: {
       // The long request completes at frame 57. Give it a 54-frame (1.8s)
-      // cursor-free reading hold before the pointer approaches Send.
-      start: 121,
-      duration: 10,
+      // reading hold before the pointer approaches Send. The click then uses
+      // the same 20-frame physical press and spring release as sequence one.
+      start: 111,
+      duration: 20,
     },
     outro: {
       // Begins on the exact frame the click ripple completes.

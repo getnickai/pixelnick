@@ -15,11 +15,13 @@ import {
   useVideoConfig,
 } from "remotion";
 import { ArrowRight, Check } from "lucide-react";
-import { ProductScreen, ZoomInto } from "../nick-launch-video/screens";
+import { ProductScreen, PRODUCT_WS, ZoomInto } from "../nick-launch-video/screens";
 import { TradeConfirmationCardView } from "../chat-cards/trade-confirmation-card-view";
 import { SAMPLE_TRADE_AAPL } from "../chat-cards/props";
 import { LAUNCH_VIDEO_TIMELINE } from "./timeline";
 import { FAST_FADE_EASE, POP_EASE, progress } from "./motion";
+import { readableOverviewCamera } from "./graph-anim";
+import { PRODUCT_CUT_MAG7_WORKFLOW } from "./montage-workflows";
 
 const CAM_EASE = Easing.inOut(Easing.cubic);
 const SANS = "var(--font-manrope), ui-sans-serif, system-ui, sans-serif";
@@ -32,6 +34,18 @@ export const ExecutionSequence: React.FC = () => {
   const { fps } = useVideoConfig();
   const { button, cursor, click, logsOpen, scroll, finish, confirm, fadeUX, durationInFrames } =
     LAUNCH_VIDEO_TIMELINE.execution;
+  const { wsW, canvasH } = PRODUCT_WS;
+  const { template, canvasW, canvasH: graphCanvasH } = PRODUCT_CUT_MAG7_WORKFLOW;
+  const graphCamera = readableOverviewCamera({
+    template,
+    vw: wsW,
+    vh: canvasH,
+    cw: canvasW,
+    ch: graphCanvasH,
+    variant: "cinematic",
+    overviewScale: 0.55,
+    leftSafeArea: 44,
+  });
 
   // Camera: full frame while the button is clicked, then zoom into the canvas as
   // the run streams, then pull back to center for the confirmation.
@@ -125,6 +139,11 @@ export const ExecutionSequence: React.FC = () => {
           logStreaming={logsShown}
           logScroll={logScroll}
           logCount={logCount}
+          workflow={PRODUCT_CUT_MAG7_WORKFLOW}
+          workflowCanvasW={canvasW}
+          workflowCanvasH={graphCanvasH}
+          workflowCamera={graphCamera}
+          workflowNodeVariant="cinematic"
         />
       </ZoomInto>
 

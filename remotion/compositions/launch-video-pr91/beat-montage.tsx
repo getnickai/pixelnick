@@ -9,14 +9,23 @@
  * Timeline (local frames, from LAUNCH_VIDEO_TIMELINE.workflowMontage):
  *   intro  {0,10}    whole beat fades in, composer + graph A present
  *   type2  {8,38}   centered composer types workflow A's prompt
- *   dock2  {46,16}  composer settles to the bottom action position
- *   build2 {68,72}  workflow A builds with five deliberate close nodes, then overview
- *   swap3  {160,14} first graph clears while the composer stays docked
- *   type3  {176,38} composer types workflow B's prompt in place at the bottom
- *   build3 {236,72} workflow B repeats the same measured camera grammar
- *   outro  {328,12} clean fade out after a readable settled hold
+ *   clickA {60,22}  centered composer receives the physical Send interaction
+ *   dock2  {82,16}  composer moves down only after the rebound completes
+ *   build2 {98,72}  workflow A builds with five deliberate close nodes, then overview
+ *   swap3  {190,14} first graph clears while the composer stays docked
+ *   type3  {204,38} composer types workflow B's prompt in place at the bottom
+ *   clickB {250,22} docked composer repeats the physical Send interaction
+ *   build3 {272,72} workflow B repeats the same measured camera grammar
+ *   outro  {368,12} clean fade out after a readable settled hold
  */
-import { AbsoluteFill, Easing, interpolate, useCurrentFrame } from "remotion";
+import {
+  AbsoluteFill,
+  Easing,
+  interpolate,
+  spring,
+  useCurrentFrame,
+  useVideoConfig,
+} from "remotion";
 import {
   ArrowUp,
   ChevronDown,
@@ -27,12 +36,10 @@ import {
   Plus,
 } from "lucide-react";
 import { WorkflowGraph } from "../nick-launch-video/graph";
-import { MONTAGE_WORKFLOWS } from "../nick-launch-video/props";
 import { LAUNCH_VIDEO_TIMELINE } from "./timeline";
 import { progress, POP_EASE, FAST_FADE_EASE, OUTRO_EASE } from "./motion";
 import { buildReveal, progressiveBuildCamera } from "./graph-anim";
-import { topoOrder } from "../workflow-template-card/layout";
-import type { TemplateGraph } from "../workflow-template-card/props";
+import { LEAN_MONTAGE_WORKFLOWS } from "./montage-workflows";
 
 const SANS = "var(--font-manrope), ui-sans-serif, system-ui, sans-serif";
 // Matches ChatComposerSequence (composition.tsx) so the composer reads identical.
@@ -59,89 +66,6 @@ function Background() {
   // Plain near-black to match the opening/finale beats (no blue glow overlay).
   return <AbsoluteFill style={{ backgroundColor: BG }} />;
 }
-
-/**
- * The source templates carry editor coordinates, including intentional overlap.
- * For this product-film montage, arrange the same graph into even topological
- * lanes. Original vertical order is retained inside each lane to reduce edge
- * crossings while every card receives a consistent amount of breathing room.
- */
-function leanOutTemplate(template: TemplateGraph): TemplateGraph {
-  const order = topoOrder(template.nodes, template.edges);
-  const rankById = new Map(template.nodes.map((node) => [node.id, 0]));
-  const sourceIndex = new Map(template.nodes.map((node, index) => [node.id, index]));
-
-  for (const id of order) {
-    const rank = rankById.get(id) ?? 0;
-    for (const edge of template.edges) {
-      if (edge.source !== id) continue;
-      rankById.set(edge.target, Math.max(rankById.get(edge.target) ?? 0, rank + 1));
-    }
-  }
-
-  const layers = new Map<number, typeof template.nodes>();
-  for (const node of template.nodes) {
-    const rank = rankById.get(node.id) ?? 0;
-    const layer = layers.get(rank) ?? [];
-    layer.push(node);
-    layers.set(rank, layer);
-  }
-
-  const positioned = new Map<string, { x: number; y: number }>();
-  const ranks = [...layers.keys()].sort((a, b) => a - b);
-  let column = 0;
-  const maxRowsPerColumn = 4;
-  ranks.forEach((rank) => {
-    const layer = [...(layers.get(rank) ?? [])].sort((a, b) => {
-      const byY = a.position.y - b.position.y;
-      return byY || (sourceIndex.get(a.id) ?? 0) - (sourceIndex.get(b.id) ?? 0);
-    });
-    layer.forEach((node, index) => {
-      const subcolumn = Math.floor(index / maxRowsPerColumn);
-      const withinColumn = index % maxRowsPerColumn;
-      const columnSize = Math.min(
-        maxRowsPerColumn,
-        layer.length - subcolumn * maxRowsPerColumn,
-      );
-      positioned.set(node.id, {
-        x: column + subcolumn,
-        // Keep a constant row unit across lanes instead of stretching every
-        // lane independently from top to bottom. Dense fan-outs wrap after five
-        // rows so the readable overview never has to shrink for one tall lane.
-        y: withinColumn - (columnSize - 1) / 2,
-      });
-    });
-    column += Math.max(1, Math.ceil(layer.length / maxRowsPerColumn));
-  });
-
-  return {
-    ...template,
-    nodes: template.nodes.map((node) => ({
-      ...node,
-      position: positioned.get(node.id) ?? node.position,
-    })),
-  };
-}
-
-const LEAN_MONTAGE_WORKFLOWS = MONTAGE_WORKFLOWS.map((workflow) => ({
-  ...workflow,
-  template: leanOutTemplate(workflow.template),
-})).map((workflow) => {
-  const ranks = new Set(workflow.template.nodes.map((node) => node.position.x));
-  const layerCounts = new Map<number, number>();
-  workflow.template.nodes.forEach((node) => {
-    layerCounts.set(node.position.x, (layerCounts.get(node.position.x) ?? 0) + 1);
-  });
-  const maxLayerSize = Math.max(1, ...layerCounts.values());
-
-  return {
-    ...workflow,
-    // Cinematic cards are 520×142. These dimensions preserve ~100px of
-    // horizontal and ~78px of vertical air between every neighbouring card.
-    canvasW: 728 + Math.max(0, ranks.size - 1) * 620,
-    canvasH: 728 + Math.max(0, maxLayerSize - 1) * 220,
-  };
-});
 
 /** Two cross-fading spans (old lifts out, new drops in) sharing one anchor.
  *  Reused for the workflow title and the composer prompt so both swap in sync. */
@@ -187,6 +111,8 @@ function ChatBox({
   prompt,
   top = CHAT_TOP,
   sendPress = 0,
+  composerScale = 1,
+  sendButtonScale = 1,
   ripple = 0,
   rippleShown = false,
 }: {
@@ -195,6 +121,10 @@ function ChatBox({
   top?: number;
   /** Send-button press pulse (0 idle, 1 fully pressed). */
   sendPress?: number;
+  /** Whole-composer physical compression and rebound. */
+  composerScale?: number;
+  /** Send-button compression and rebound. */
+  sendButtonScale?: number;
   /** Click ripple progress (0..1). */
   ripple?: number;
   /** Whether the ripple ring is currently visible. */
@@ -211,7 +141,17 @@ function ChatBox({
   const sendBg = `rgb(${Math.round(24 - sendActive * 23)}, ${Math.round(24 + sendActive * 96)}, ${Math.round(27 + sendActive * 228)})`;
   const sendFg = Math.round(113 + sendActive * 142);
   return (
-    <div style={{ position: "absolute", left: CHAT_LEFT, top, width: CHAT_W, fontFamily: MANROPE }}>
+    <div
+      style={{
+        position: "absolute",
+        left: CHAT_LEFT,
+        top,
+        width: CHAT_W,
+        fontFamily: MANROPE,
+        transform: `scale(${composerScale})`,
+        transformOrigin: "center center",
+      }}
+    >
       <div
         style={{
           position: "relative",
@@ -219,7 +159,7 @@ function ChatBox({
           borderRadius: 31,
           border: "1px solid #27272a",
           backgroundColor: "#18181b",
-          boxShadow: "0 28px 80px rgba(0, 0, 0, 0.46), 0 2px 8px rgba(0, 0, 0, 0.28)",
+          boxShadow: `0 ${28 - sendPress * 12}px ${80 - sendPress * 28}px rgba(0, 0, 0, ${0.46 - sendPress * 0.08}), 0 ${2 - sendPress}px ${8 - sendPress * 3}px rgba(0, 0, 0, 0.28)`,
         }}
       >
         <div
@@ -274,7 +214,7 @@ function ChatBox({
                 color: `rgb(${sendFg}, ${sendFg}, ${sendFg})`,
                 backgroundColor: sendBg,
                 boxShadow: `inset 0 0 0 1px rgba(63, 63, 70, ${1 - sendActive})`,
-                transform: `scale(${1 - sendPress * 0.1})`,
+                transform: `scale(${sendButtonScale})`,
               }}
             >
               <span
@@ -335,6 +275,7 @@ function ChatBox({
 
 export const WorkflowMontageSequence: React.FC = () => {
   const frame = useCurrentFrame();
+  const { fps } = useVideoConfig();
   const { intro, type2, dock2, build2, swap3, type3, build3, outro } =
     LAUNCH_VIDEO_TIMELINE.workflowMontage;
 
@@ -363,7 +304,9 @@ export const WorkflowMontageSequence: React.FC = () => {
     ch: wA.canvasH,
     frame,
     buildStart: build2.start,
-    buildDur: build2.duration,
+    // Let the camera keep settling through most of the readable hold instead
+    // of completing the pullback at the same instant as the last node.
+    buildDur: build2.duration + 12,
     variant: "cinematic",
   });
   const cameraB = progressiveBuildCamera({
@@ -374,7 +317,7 @@ export const WorkflowMontageSequence: React.FC = () => {
     ch: wB.canvasH,
     frame,
     buildStart: build3.start,
-    buildDur: build3.duration,
+    buildDur: build3.duration + 12,
     variant: "cinematic",
   });
 
@@ -399,32 +342,85 @@ export const WorkflowMontageSequence: React.FC = () => {
   const firstComposerTop = interpolate(firstDock, [0, 1], [CHAT_CENTER_TOP, CHAT_TOP]);
   const composerTop = firstComposerTop;
 
-  // A send-arrow click precedes each workflow build (like the opening composer):
-  // the pointer arrives, presses the send arrow, and that "triggers" the build.
-  const clickAStart = build2.start - 6;
-  const clickBStart = build3.start - 6;
-  const pressWin = (start: number, end: number) =>
-    interpolate(frame, [start, start + 3, end], [0, 1, 0], {
-      easing: Easing.inOut(Easing.quad),
-      extrapolateLeft: "clamp",
-      extrapolateRight: "clamp",
+  // Match the opening composer's physical interaction: cursor approach, four
+  // frames of compression, a one-frame contact hold, then a damped rebound.
+  // The first composer does not begin docking until this full cycle completes.
+  const clickDuration = 22;
+  const clickAStart = dock2.start - clickDuration;
+  const clickBStart = build3.start - clickDuration;
+  const pressState = (start: number) => {
+    const contactStart = start + 7;
+    const releaseStart = contactStart + 5;
+    const active = frame >= start && frame < start + clickDuration;
+    const pressDown = progress(
+      frame,
+      contactStart,
+      4,
+      Easing.out(Easing.cubic),
+    );
+    const releaseSpring = spring({
+      frame: Math.max(0, frame - releaseStart),
+      fps,
+      durationInFrames: 10,
+      config: {
+        damping: 14,
+        stiffness: 180,
+        mass: 0.75,
+      },
     });
-  const sendPress = pressWin(clickAStart, build2.start) + pressWin(clickBStart, build3.start);
-  const inA = frame >= clickAStart && frame < clickAStart + 8;
-  const inB = frame >= clickBStart && frame < clickBStart + 8;
-  const ripple = inB
-    ? progress(frame, clickBStart, 8, FAST_FADE_EASE)
-    : progress(frame, clickAStart, 8, FAST_FADE_EASE);
-  const rippleShown = inA || inB;
+    const press = !active
+      ? 0
+      : frame < releaseStart
+        ? pressDown
+        : Math.max(0, Math.min(1, 1 - releaseSpring));
+    const composerScale = !active
+      ? 1
+      : frame < releaseStart
+        ? 1 - pressDown * 0.025
+        : 0.975 + releaseSpring * 0.025;
+    const buttonScale = !active
+      ? 1
+      : frame < releaseStart
+        ? 1 - pressDown * 0.075
+        : 0.925 + releaseSpring * 0.075;
+
+    return {
+      active,
+      contactStart,
+      press,
+      composerScale,
+      buttonScale,
+    };
+  };
+  const pressA = pressState(clickAStart);
+  const pressB = pressState(clickBStart);
+  const activePress = pressB.active ? pressB : pressA;
+  const sendPress = activePress.press;
+  const composerClickScale = activePress.composerScale;
+  const sendButtonClickScale = activePress.buttonScale;
+  const ripple = progress(
+    frame,
+    activePress.contactStart,
+    8,
+    FAST_FADE_EASE,
+  );
+  const rippleShown =
+    activePress.active &&
+    frame >= activePress.contactStart &&
+    frame < activePress.contactStart + 8;
 
   // Pointer: fades in just before each click, presses on the arrow, fades as the
   // build begins.
-  const curA = progress(frame, clickAStart - 4, 5, FAST_FADE_EASE) * (1 - progress(frame, build2.start, 5, FAST_FADE_EASE));
-  const curB = progress(frame, clickBStart - 4, 5, FAST_FADE_EASE) * (1 - progress(frame, build3.start, 5, FAST_FADE_EASE));
+  const curA =
+    progress(frame, clickAStart, 4, FAST_FADE_EASE) *
+    (1 - progress(frame, clickAStart + clickDuration - 4, 4, FAST_FADE_EASE));
+  const curB =
+    progress(frame, clickBStart, 4, FAST_FADE_EASE) *
+    (1 - progress(frame, clickBStart + clickDuration - 4, 4, FAST_FADE_EASE));
   const cursorOpacity = Math.max(curA, curB) * beatOpacity;
-  const cursorApproach = inB
-    ? progress(frame, clickBStart - 4, 7, Easing.out(Easing.cubic))
-    : progress(frame, clickAStart - 4, 7, Easing.out(Easing.cubic));
+  const cursorApproach = pressB.active
+    ? progress(frame, clickBStart, 7, Easing.out(Easing.cubic))
+    : progress(frame, clickAStart, 7, Easing.out(Easing.cubic));
   // Send-arrow center (screen px), inside the montage ChatBox action row.
   const SEND_X = 1434;
   const SEND_Y = composerTop + 134;
@@ -489,6 +485,8 @@ export const WorkflowMontageSequence: React.FC = () => {
       <ChatBox
         top={composerTop}
         sendPress={sendPress}
+        composerScale={composerClickScale}
+        sendButtonScale={sendButtonClickScale}
         ripple={ripple}
         rippleShown={rippleShown}
         prompt={

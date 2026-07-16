@@ -6,7 +6,14 @@
  */
 import { AbsoluteFill, staticFile } from "remotion";
 import { ArrowRight, ArrowUp, Check, ChevronDown, Download, Loader2, Maximize2, Play, Plus, Sparkles, Square, Trash2, X } from "lucide-react";
-import { fitCamera, focusCamera, WorkflowGraph, type RunStatus } from "./graph";
+import {
+  fitCamera,
+  focusCamera,
+  WorkflowGraph,
+  type Camera,
+  type NodeVariant,
+  type RunStatus,
+} from "./graph";
 import { PriceCardView } from "../chat-cards/price-card-view";
 import { PortfolioCardView } from "../chat-cards/portfolio-card-view";
 import { SAMPLE_PORTFOLIO, SAMPLE_PRICE_NVDA, SAMPLE_PRICE_SPACEX } from "../chat-cards/props";
@@ -21,6 +28,7 @@ import {
   NICK_LAUNCH_W,
   TAGLINE,
   wfName,
+  type LaunchWorkflow,
   type LaunchScreen,
 } from "./props";
 
@@ -350,6 +358,11 @@ export function ProductScreen({
   logScroll = 0,
   logStreaming = false,
   logCount,
+  workflow = PRODUCT_WS_WORKFLOW,
+  workflowCanvasW = CANVAS_W,
+  workflowCanvasH = CANVAS_H,
+  workflowCamera = WS_CAMERA,
+  workflowNodeVariant = "rich",
 }: {
   running?: boolean;
   /** Run finished: all nodes green, the pills flip to "Completed". */
@@ -373,8 +386,14 @@ export function ProductScreen({
   logStreaming?: boolean;
   /** Override the logs header execution count. */
   logCount?: number;
+  /** Workflow and graph presentation to preserve across a custom handoff. */
+  workflow?: LaunchWorkflow;
+  workflowCanvasW?: number;
+  workflowCanvasH?: number;
+  workflowCamera?: Camera;
+  workflowNodeVariant?: NodeVariant;
 } = {}) {
-  const w = PRODUCT_WS_WORKFLOW; // 3rd workflow, expanded into the builder
+  const w = workflow;
   const railW = WS_RAIL_W;
   const chatW = WS_CHAT_W;
   const chatX = railW;
@@ -405,7 +424,7 @@ export function ProductScreen({
   // nodes in half. Instead zoom 1.3x (nodes stay large) and pan slightly left so
   // the dense left fan sits fully in-frame and only the far-right convergence
   // node gently fades off the right edge — the look of a real, scrollable canvas.
-  const wsCamera = WS_CAMERA;
+  const wsCamera = workflowCamera;
 
   // Running state: most nodes completed (green), a few mid-graph still running
   // (blue). Completed state: every node green.
@@ -514,7 +533,16 @@ export function ProductScreen({
           }}
         >
           <div style={{ width: wsW, height: canvasH, opacity: canvasOpacity, transform: `scale(${canvasScale})`, transformOrigin: "center center" }}>
-            <WorkflowGraph template={w.template} vw={wsW} vh={canvasH} cw={CANVAS_W} ch={CANVAS_H} camera={wsCamera} statusById={statusById} />
+            <WorkflowGraph
+              template={w.template}
+              vw={wsW}
+              vh={canvasH}
+              cw={workflowCanvasW}
+              ch={workflowCanvasH}
+              camera={wsCamera}
+              statusById={statusById}
+              nodeVariant={workflowNodeVariant}
+            />
           </div>
           {completed ? (
             <div style={{ position: "absolute", top: 24, left: "50%", transform: "translateX(-50%)", display: "flex", alignItems: "center", gap: 8, backgroundColor: "rgba(31,193,107,0.16)", border: "1px solid #1fc16b", color: "#1fc16b", fontWeight: 600, fontSize: 15, padding: "8px 18px", borderRadius: 999 }}>

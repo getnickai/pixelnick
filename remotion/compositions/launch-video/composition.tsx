@@ -657,22 +657,26 @@ const ChatComposerSequence: React.FC<ChatComposerSequenceProps> = ({
     Math.max(1, send.duration * 0.35),
     FAST_FADE_EASE,
   );
-  const sendContactStart = send.start + 4;
-  const sendReleaseStart = sendContactStart + 3;
+  const sendContactStart = send.start + 5;
+  const sendPressDuration = 4;
+  const sendReleaseStart = sendContactStart + sendPressDuration + 1;
   const sendPressDown = progress(
     frame,
     sendContactStart,
-    3,
+    sendPressDuration,
     Easing.out(Easing.cubic),
   );
   const sendReleaseSpring = spring({
     frame: Math.max(0, frame - sendReleaseStart),
     fps,
-    durationInFrames: Math.max(1, send.duration - 3),
+    durationInFrames: Math.max(
+      1,
+      send.start + send.duration - sendReleaseStart,
+    ),
     config: {
-      damping: 9,
-      stiffness: 280,
-      mass: 0.55,
+      damping: 14,
+      stiffness: 180,
+      mass: 0.75,
     },
   });
   const sendPress =
@@ -681,12 +685,12 @@ const ChatComposerSequence: React.FC<ChatComposerSequenceProps> = ({
       : Math.max(0, Math.min(1, 1 - sendReleaseSpring));
   const composerClickScale =
     frame < sendReleaseStart
-      ? 1 - sendPressDown * 0.018
-      : 0.982 + sendReleaseSpring * 0.018;
+      ? 1 - sendPressDown * 0.025
+      : 0.975 + sendReleaseSpring * 0.025;
   const sendButtonClickScale =
     frame < sendReleaseStart
-      ? 1 - sendPressDown * 0.055
-      : 0.945 + sendReleaseSpring * 0.055;
+      ? 1 - sendPressDown * 0.075
+      : 0.925 + sendReleaseSpring * 0.075;
   const cursorMove = progress(
     frame,
     cursorStart,
@@ -696,12 +700,12 @@ const ChatComposerSequence: React.FC<ChatComposerSequenceProps> = ({
   const exit = progress(frame, outro.start, outro.duration, OUTRO_EASE);
   const clickRipple = progress(
     frame,
-    send.start + 4,
-    6,
+    sendContactStart,
+    8,
     FAST_FADE_EASE,
   );
   const clickRippleOpacity =
-    frame >= send.start + 4 && frame < send.start + 10
+    frame >= sendContactStart && frame < sendContactStart + 8
       ? (1 - clickRipple) * (1 - exit)
       : 0;
   const cursorOpacity =

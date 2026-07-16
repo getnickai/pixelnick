@@ -10,11 +10,12 @@ import { Easing, useCurrentFrame } from "remotion";
 import {
   ProductScreen,
   PRODUCT_WS,
-  PRODUCT_WS_WORKFLOW,
 } from "../nick-launch-video/screens";
 import { WorkflowGraph } from "../nick-launch-video/graph";
 import { LAUNCH_VIDEO_TIMELINE } from "./timeline";
 import { FAST_FADE_EASE, POP_EASE, progress } from "./motion";
+import { readableOverviewCamera } from "./graph-anim";
+import { PRODUCT_CUT_MAG7_WORKFLOW } from "./montage-workflows";
 
 export const ProductShellSequence: React.FC = () => {
   const frame = useCurrentFrame();
@@ -30,7 +31,18 @@ export const ProductShellSequence: React.FC = () => {
     progress(frame, cards.start + i * cards.stagger, cards.duration, POP_EASE),
   );
 
-  const { wsX, wsW, canvasTop, canvasH, cw, ch, camera } = PRODUCT_WS;
+  const { wsX, wsW, canvasTop, canvasH } = PRODUCT_WS;
+  const { template, canvasW, canvasH: graphCanvasH } = PRODUCT_CUT_MAG7_WORKFLOW;
+  const graphCamera = readableOverviewCamera({
+    template,
+    vw: wsW,
+    vh: canvasH,
+    cw: canvasW,
+    ch: graphCanvasH,
+    variant: "cinematic",
+    overviewScale: 0.55,
+    leftSafeArea: 44,
+  });
   const paneCX = wsX + wsW / 2;
   const paneCY = canvasTop + canvasH / 2;
   // At dock=0 the copy is centered on screen + larger; at dock=1 it sits exactly
@@ -47,6 +59,11 @@ export const ProductShellSequence: React.FC = () => {
         canvasReveal={canvasReveal}
         introReveal={introReveal}
         cardReveal={cardReveal}
+        workflow={PRODUCT_CUT_MAG7_WORKFLOW}
+        workflowCanvasW={canvasW}
+        workflowCanvasH={graphCanvasH}
+        workflowCamera={graphCamera}
+        workflowNodeVariant="cinematic"
       />
 
       {/* Flying workflow copy, pane-framed, sliding center → pane. */}
@@ -66,12 +83,13 @@ export const ProductShellSequence: React.FC = () => {
         }}
       >
         <WorkflowGraph
-          template={PRODUCT_WS_WORKFLOW.template}
+          template={template}
           vw={wsW}
           vh={canvasH}
-          cw={cw}
-          ch={ch}
-          camera={camera}
+          cw={canvasW}
+          ch={graphCanvasH}
+          camera={graphCamera}
+          nodeVariant="cinematic"
         />
       </div>
     </>
