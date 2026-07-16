@@ -363,6 +363,7 @@ export function ProductScreen({
   workflowCanvasH = CANVAS_H,
   workflowCamera = WS_CAMERA,
   workflowNodeVariant = "rich",
+  workspaceReveal = 1,
 }: {
   running?: boolean;
   /** Run finished: all nodes green, the pills flip to "Completed". */
@@ -392,6 +393,8 @@ export function ProductScreen({
   workflowCanvasH?: number;
   workflowCamera?: Camera;
   workflowNodeVariant?: NodeVariant;
+  /** Product workspace chrome reveal around a continuously docking graph. */
+  workspaceReveal?: number;
 } = {}) {
   const w = workflow;
   const railW = WS_RAIL_W;
@@ -499,7 +502,17 @@ export function ProductScreen({
       </div>
 
       {/* ── WORKSPACE PANEL ── */}
-      <div style={{ position: "absolute", left: wsX, top: 0, width: wsW, height: NICK_LAUNCH_H, backgroundColor: PANEL }}>
+      <div
+        style={{
+          position: "absolute",
+          left: wsX,
+          top: 0,
+          width: wsW,
+          height: NICK_LAUNCH_H,
+          backgroundColor: PANEL,
+          opacity: Math.max(0, Math.min(1, workspaceReveal)),
+        }}
+      >
         {/* header */}
         <div style={{ height: 68, display: "flex", alignItems: "center", justifyContent: "space-between", padding: "0 28px", borderBottom: `1px solid ${LINE}` }}>
           <div style={{ display: "flex", alignItems: "center", gap: 12, color: "#fff", fontSize: 19, fontWeight: 600 }}>

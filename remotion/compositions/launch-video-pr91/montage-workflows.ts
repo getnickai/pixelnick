@@ -93,3 +93,11 @@ export const LEAN_MONTAGE_WORKFLOWS: LeanMontageWorkflow[] = MONTAGE_WORKFLOWS.m
 
 /** The exact Mag 7 graph shown immediately after its composer prompt. */
 export const PRODUCT_CUT_MAG7_WORKFLOW = LEAN_MONTAGE_WORKFLOWS[1];
+
+/** Shared full-screen viewport used immediately before the product-shell dock. */
+export const PRODUCT_CUT_MONTAGE_VIEWPORT = {
+  left: 100,
+  top: 28,
+  width: 1720,
+  height: 820,
+} as const;

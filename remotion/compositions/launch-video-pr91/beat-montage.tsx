@@ -39,7 +39,10 @@ import { WorkflowGraph } from "../nick-launch-video/graph";
 import { LAUNCH_VIDEO_TIMELINE } from "./timeline";
 import { progress, POP_EASE, FAST_FADE_EASE, OUTRO_EASE } from "./motion";
 import { buildReveal, progressiveBuildCamera } from "./graph-anim";
-import { LEAN_MONTAGE_WORKFLOWS } from "./montage-workflows";
+import {
+  LEAN_MONTAGE_WORKFLOWS,
+  PRODUCT_CUT_MONTAGE_VIEWPORT,
+} from "./montage-workflows";
 
 const SANS = "var(--font-manrope), ui-sans-serif, system-ui, sans-serif";
 // Matches ChatComposerSequence (composition.tsx) so the composer reads identical.
@@ -50,9 +53,9 @@ const BG = "#09090b";
 const BLUE = "#0178FF";
 
 /* Canvas geometry, matches WorkflowWide (screens.tsx). */
-const VW = 1720;
-const VH = 820;
-const WF_TOP = 28;
+const VW = PRODUCT_CUT_MONTAGE_VIEWPORT.width;
+const VH = PRODUCT_CUT_MONTAGE_VIEWPORT.height;
+const WF_TOP = PRODUCT_CUT_MONTAGE_VIEWPORT.top;
 
 /* Chat box (mirrors the beginning composer's 1050px shell). */
 const CHAT_W = 1050;
@@ -447,7 +450,7 @@ export const WorkflowMontageSequence: React.FC = () => {
   const canvasLeft = (1920 - VW) / 2;
 
   return (
-    <AbsoluteFill style={{ backgroundColor: BG, fontFamily: SANS, opacity: beatOpacity }}>
+    <AbsoluteFill style={{ backgroundColor: BG, fontFamily: SANS }}>
       <Background />
 
       {/* Workflow canvas: both graphs stacked, cross-fading on the swap. */}
@@ -459,6 +462,7 @@ export const WorkflowMontageSequence: React.FC = () => {
           width: VW,
           height: VH,
           overflow: "hidden",
+          opacity: beatIn,
         }}
       >
         <div style={{ position: "absolute", inset: 0, opacity: canvasAOpacity }}>
@@ -481,49 +485,58 @@ export const WorkflowMontageSequence: React.FC = () => {
         />
       </div>
 
-      {/* Composer (same chat box as the video's opening), prompt swaps mid-beat. */}
-      <ChatBox
-        top={composerTop}
-        sendPress={sendPress}
-        composerScale={composerClickScale}
-        sendButtonScale={sendButtonClickScale}
-        ripple={ripple}
-        rippleShown={rippleShown}
-        prompt={
-          <Swap
-            a={<>{promptA}{Caret}</>}
-            b={<>{promptB}{Caret}</>}
-            outP={promptOut}
-            inP={promptIn}
-            style={{ display: "block", height: 40 }}
-          />
-        }
-      />
-
-      {/* Pointer that clicks the send arrow to trigger each build. */}
-      <svg
-        aria-hidden
-        viewBox="0 0 20 20"
+      {/* The composer retires on the outro; the graph itself remains fully
+          present so the following camera move begins from this exact frame. */}
+      <div
         style={{
           position: "absolute",
-          left: 0,
-          top: 0,
-          width: 46,
-          height: 46,
-          overflow: "visible",
-          opacity: cursorOpacity,
-          zIndex: 9,
-          pointerEvents: "none",
-          transform: `translate3d(${curX - 8}px, ${curY - 8}px, 0) scale(${1 - sendPress * 0.12})`,
-          transformOrigin: "8px 8px",
+          inset: 0,
+          opacity: beatOpacity,
         }}
       >
-        <path
-          d="M3.52832 4.03809C3.40568 3.71915 3.71916 3.40568 4.03809 3.52832L16.2471 8.22461C16.5924 8.35745 16.5814 8.8498 16.2305 8.9668L11.0195 10.7031L10.7822 10.7822L10.7031 11.0195L8.9668 16.2305C8.8498 16.5814 8.35745 16.5924 8.22461 16.2471L3.52832 4.03809Z"
-          fill="black"
-          stroke="white"
+        <ChatBox
+          top={composerTop}
+          sendPress={sendPress}
+          composerScale={composerClickScale}
+          sendButtonScale={sendButtonClickScale}
+          ripple={ripple}
+          rippleShown={rippleShown}
+          prompt={
+            <Swap
+              a={<>{promptA}{Caret}</>}
+              b={<>{promptB}{Caret}</>}
+              outP={promptOut}
+              inP={promptIn}
+              style={{ display: "block", height: 40 }}
+            />
+          }
         />
-      </svg>
+
+        {/* Pointer that clicks the send arrow to trigger each build. */}
+        <svg
+          aria-hidden
+          viewBox="0 0 20 20"
+          style={{
+            position: "absolute",
+            left: 0,
+            top: 0,
+            width: 46,
+            height: 46,
+            overflow: "visible",
+            opacity: cursorOpacity,
+            zIndex: 9,
+            pointerEvents: "none",
+            transform: `translate3d(${curX - 8}px, ${curY - 8}px, 0) scale(${1 - sendPress * 0.12})`,
+            transformOrigin: "8px 8px",
+          }}
+        >
+          <path
+            d="M3.52832 4.03809C3.40568 3.71915 3.71916 3.40568 4.03809 3.52832L16.2471 8.22461C16.5924 8.35745 16.5814 8.8498 16.2305 8.9668L11.0195 10.7031L10.7822 10.7822L10.7031 11.0195L8.9668 16.2305C8.8498 16.5814 8.35745 16.5924 8.22461 16.2471L3.52832 4.03809Z"
+            fill="black"
+            stroke="white"
+          />
+        </svg>
+      </div>
     </AbsoluteFill>
   );
 };
