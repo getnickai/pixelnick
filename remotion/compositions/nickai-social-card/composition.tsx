@@ -71,17 +71,11 @@ const SKINS: Record<NickaiSocialCardTheme, Skin> = {
 
 const PAD = 84;
 
-/** Display size so each wave motif fills the 900px card height edge-to-edge. */
-const WAVE_DISPLAY: Record<1 | 2, { width: number; height: number }> = {
-  1: { width: 1284, height: 900 }, // native 1498×1050
-  2: { width: 1166, height: 900 }, // native 1026×792
-};
-
 /** Shrink the display size for long headlines so they stay ≤3 lines. */
 function headlineSize(text: string): number {
-  if (text.length <= 46) return 84;
-  if (text.length <= 72) return 72;
-  return 60;
+  if (text.length <= 46) return 104;
+  if (text.length <= 72) return 88;
+  return 74;
 }
 
 /** NickAI mark — same path as og-cover / marketing icons.tsx. */
@@ -115,7 +109,6 @@ export const NickaiSocialCardComposition: React.FC<NickaiSocialCardProps> = ({
   theme = "dark",
   eyebrow,
   headline,
-  subline,
   fill = { kind: "none" },
   wave = 1,
   animate = false,
@@ -184,7 +177,6 @@ export const NickaiSocialCardComposition: React.FC<NickaiSocialCardProps> = ({
             style={{
               ...waveBox,
               ...(theme === "light" ? { mixBlendMode: "normal" as const } : null),
-              ...(wave === 2 ? WAVE_DISPLAY[2] : null),
             }}
           />
         ))}
@@ -228,51 +220,36 @@ export const NickaiSocialCardComposition: React.FC<NickaiSocialCardProps> = ({
           }}
         >
           <div style={{ width: textWidth, display: "flex", flexDirection: "column", gap: 28 }}>
+            {/* Series chip / eyebrow (Product drop / Trading insights / …).
+             * Sits above the headline; subtext lives in the post, not the card. */}
+            <div
+              style={{
+                alignSelf: "flex-start",
+                fontFamily: fontSans,
+                fontWeight: 600,
+                fontSize: 30,
+                color: skin.chipText,
+                border: `2px solid ${skin.chipBorder}`,
+                backgroundColor: skin.chipBg,
+                borderRadius: 16,
+                padding: "14px 30px",
+                ...rise(enter(4, 30), 20),
+              }}
+            >
+              {eyebrow}
+            </div>
             <div
               style={{
                 fontFamily: fontHeading,
                 fontWeight: 600,
                 fontSize: headlineSize(headline),
-                lineHeight: 1.12,
+                lineHeight: 1.1,
                 color: skin.headline,
                 letterSpacing: -0.5,
-                ...rise(enter(8, 40)),
+                ...rise(enter(10, 42)),
               }}
             >
               {headline}
-            </div>
-            {subline && (
-              <div
-                style={{
-                  fontFamily: fontSans,
-                  fontWeight: 400,
-                  fontSize: 27,
-                  lineHeight: 1.5,
-                  color: skin.subline,
-                  maxWidth: 720,
-                  ...rise(enter(20, 50)),
-                }}
-              >
-                {subline}
-              </div>
-            )}
-            {/* Single series chip (Product drop / Trading insights / …). */}
-            <div
-              style={{
-                alignSelf: "flex-start",
-                marginTop: 6,
-                fontFamily: fontSans,
-                fontWeight: 500,
-                fontSize: 22,
-                color: skin.chipText,
-                border: `1.5px solid ${skin.chipBorder}`,
-                backgroundColor: skin.chipBg,
-                borderRadius: 12,
-                padding: "10px 20px",
-                ...rise(enter(32, 58), 20),
-              }}
-            >
-              {eyebrow}
             </div>
           </div>
 
