@@ -48,10 +48,10 @@ const SKINS: Record<NickaiOgCoverTheme, Skin> = {
  */
 function headlineSize(text: string): number {
   const n = text.length;
-  if (n <= 30) return 66;
-  if (n <= 48) return 60;
-  if (n <= 64) return 52;
-  return 46;
+  if (n <= 26) return 84;
+  if (n <= 42) return 74;
+  if (n <= 58) return 64;
+  return 56;
 }
 
 /** The NickAI logo mark — path copied verbatim from src/components/icons.tsx

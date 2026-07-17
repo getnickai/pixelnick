@@ -35,6 +35,11 @@ export type NickaiSocialCardProps = {
    */
   eyebrow: string;
   headline: string;
+  /**
+   * @deprecated Subtext removed from the card so the title carries the card;
+   * the supporting copy lives in the post/thread. Kept optional so older props
+   * JSON still parses; ignored at render time.
+   */
   subline?: string;
   /**
    * @deprecated Series label is `eyebrow` (rendered as the sole chip under
@@ -47,8 +52,9 @@ export type NickaiSocialCardProps = {
    * JSON still parses. Ignored at render time.
    */
   meta?: string;
-  /** Wave motif variant for stills; 0 hides it. MP4 always uses the baked silk loop. */
-  wave?: 0 | 1 | 2;
+  /** Wave motif for stills: 1 = the silk wave, 0 hides it. MP4 always uses the
+   * baked silk loop. (The old line-fan variant `2` was removed.) */
+  wave?: 0 | 1;
   /**
    * false/undefined → PNG still (settled).
    * true → MP4 with the baked landing-page silk loop behind settled/entering copy.
