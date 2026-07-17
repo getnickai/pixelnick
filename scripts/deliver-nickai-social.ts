@@ -2,10 +2,13 @@
  * Deliver a weekly NickAI social batch to Slack (STA-473 CP4).
  *
  * One Slack message per post: initial_comment = the VERBATIM tweet text (so
- * copying the message body copies the post), the MP4 attached (PNG fallback),
- * then a thread reply with metadata (day, series, source, hero). Ends with a
- * summary message that ALWAYS posts, even when individual posts fail — a
- * missing Friday message is the one failure nobody notices until Monday.
+ * copying the message body copies the post), the social card attached as the
+ * hero (MP4 when the card animates, PNG otherwise). Then a comment carries the
+ * metadata (day, series, source, hero) AND the OG cover image (the blog reuse
+ * asset) — threaded under the post when files:read is available, else posted
+ * standalone right after. Ends with a summary message that ALWAYS posts, even
+ * when individual posts fail — a missing Friday message is the one failure
+ * nobody notices until Monday.
  *
  * Usage:
  *   bun scripts/deliver-nickai-social.ts --batch <dir with batch.json> \
@@ -25,7 +28,10 @@ type BatchPost = {
   series: string;
   text: string;
   thread?: string[];
+  /** The social card — the hero asset posted on social. mp4 preferred, png fallback. */
   card: { png?: string; mp4?: string };
+  /** The OG cover (blog reuse asset). Rides along in the post's comment. */
+  cover?: { light?: string; dark?: string; use?: "light" | "dark" };
   source: string;
   hero: boolean;
 };
@@ -86,13 +92,26 @@ async function main() {
   const results: { slug: string; ok: boolean; detail: string }[] = [];
 
   for (const post of batch.posts) {
+    // Hero = the social card (mp4 preferred, png fallback).
     const mediaPath = [post.card.mp4, post.card.png]
       .filter((p): p is string => Boolean(p))
       .map((p) => path.resolve(flags.batch, p))
       .find((p) => fs.existsSync(p));
+    // Comment asset = the OG cover (blog reuse). Prefer the theme the batch
+    // picked (`use`), then whichever exists.
+    const coverPath = post.cover
+      ? [post.cover.use === "dark" ? post.cover.dark : post.cover.light, post.cover.light, post.cover.dark]
+          .filter((p): p is string => Boolean(p))
+          .map((p) => path.resolve(flags.batch, p))
+          .find((p) => fs.existsSync(p))
+      : undefined;
     try {
       if (flags.dry) {
-        console.log(`  · ${post.slug}: would post ${mediaPath ? path.basename(mediaPath) : "TEXT ONLY"} + ${post.text.length} chars`);
+        console.log(
+          `  · ${post.slug}: hero ${mediaPath ? path.basename(mediaPath) : "TEXT ONLY"}` +
+            ` + comment ${coverPath ? path.basename(coverPath) : "(metadata only)"}` +
+            ` + ${post.text.length} chars`,
+        );
         results.push({ slug: post.slug, ok: true, detail: "dry" });
         continue;
       }
@@ -115,21 +134,45 @@ async function main() {
       const metaLines = [
         `${post.suggestedDay} · ${post.series}${post.hero ? " · HERO" : ""}`,
         `source: ${post.source}`,
+        ...(coverPath ? [`OG cover (blog): ${path.basename(coverPath)}`] : []),
         ...(post.thread?.length ? ["thread tweets:", ...post.thread.map((t, i) => `${i + 2}. ${t}`)] : []),
       ];
-      // Prefer a threaded reply under the post; fall back to a standalone
-      // message when the parent ts can't be resolved (the bot lacks files:read
-      // to read an uploaded file's share ts). The metadata carries the source
-      // and the blog link, so it must never be silently dropped.
-      const meta = await slackPostForm(token, "chat.postMessage", {
-        channel,
-        text: metaLines.join("\n"),
-        ...(ts ? { thread_ts: ts } : {}),
-      });
-      if (!meta.ok) {
-        console.warn(`  ⚠ ${post.slug}: metadata message failed (${meta.error})`);
-      } else if (!ts) {
-        console.warn(`  ⚠ ${post.slug}: parent ts unresolved (no files:read); metadata posted standalone`);
+      // The comment carries metadata + the OG cover (the blog reuse asset).
+      // Thread it under the post when the parent ts resolved; otherwise post
+      // standalone right after (the bot lacks files:read to resolve an uploaded
+      // file's share ts). The metadata carries the source and blog link, so it
+      // must never be silently dropped.
+      if (coverPath) {
+        try {
+          const coverId = await uploadOne(token, coverPath);
+          const commentRes = await slackPostForm(token, "files.completeUploadExternal", {
+            files: JSON.stringify([{ id: coverId, title: path.basename(coverPath) }]),
+            channel_id: channel,
+            initial_comment: metaLines.join("\n"),
+            ...(ts ? { thread_ts: ts } : {}),
+          });
+          if (!commentRes.ok) throw new Error(commentRes.error);
+        } catch (e) {
+          // If the OG cover upload fails, still land the metadata text so the
+          // source and blog link survive.
+          const msg = e instanceof Error ? e.message : String(e);
+          console.warn(`  ⚠ ${post.slug}: OG cover comment failed (${msg}); posting metadata text only`);
+          await slackPostForm(token, "chat.postMessage", {
+            channel,
+            text: metaLines.join("\n"),
+            ...(ts ? { thread_ts: ts } : {}),
+          });
+        }
+      } else {
+        const meta = await slackPostForm(token, "chat.postMessage", {
+          channel,
+          text: metaLines.join("\n"),
+          ...(ts ? { thread_ts: ts } : {}),
+        });
+        if (!meta.ok) console.warn(`  ⚠ ${post.slug}: metadata message failed (${meta.error})`);
+      }
+      if (!ts) {
+        console.warn(`  ⚠ ${post.slug}: parent ts unresolved (no files:read); comment posted standalone`);
       }
       console.log(`  ✓ ${post.slug} (${post.suggestedDay})`);
       results.push({ slug: post.slug, ok: true, detail: mediaPath ? path.basename(mediaPath) : "text only" });
