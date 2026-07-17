@@ -563,6 +563,8 @@ type ChatComposerSequenceProps = {
   timing: ComposerTiming;
   showPlaceholder?: boolean;
   interactionScale?: number;
+  textAreaHeight?: number;
+  textLineHeight?: number;
 };
 
 const FakeCursor: React.FC<{
@@ -620,6 +622,8 @@ const ChatComposerSequence: React.FC<ChatComposerSequenceProps> = ({
   timing,
   showPlaceholder = true,
   interactionScale = 1,
+  textAreaHeight,
+  textLineHeight = 1.35,
 }) => {
   const frame = useCurrentFrame();
   const { fps } = useVideoConfig();
@@ -769,13 +773,15 @@ const ChatComposerSequence: React.FC<ChatComposerSequenceProps> = ({
             <div
               style={{
                 position: "relative",
-                minHeight: 132,
+                minHeight: textAreaHeight ?? 132,
+                height: textAreaHeight,
+                overflow: textAreaHeight === undefined ? undefined : "hidden",
                 padding: "27px 32px 36px",
                 color: "#fafafa",
                 fontFamily: MANROPE,
                 fontSize: 29,
                 fontWeight: 500,
-                lineHeight: 1.35,
+                lineHeight: textLineHeight,
                 letterSpacing: -0.45,
               }}
             >
@@ -950,6 +956,10 @@ type LaunchVideoInternalProps = LaunchVideoProps & {
   interactionScale?: number;
   /** Product-cut-only vertical rhythm override for workflow response rows. */
   workflowResponseGap?: number;
+  /** Product-cut-only fixed composer text area, preventing wrap-driven resizing. */
+  composerTextAreaHeight?: number;
+  /** Product-cut-only composer text leading. */
+  composerTextLineHeight?: number;
 };
 
 const ChatResponseSequence: React.FC<LaunchVideoInternalProps> = ({
@@ -2455,6 +2465,8 @@ export const LaunchVideoComposition: React.FC<LaunchVideoInternalProps> = (
           prompt={props.chatPrompt}
           timing={chatComposer}
           interactionScale={props.interactionScale}
+          textAreaHeight={props.composerTextAreaHeight}
+          textLineHeight={props.composerTextLineHeight}
         />
       </Sequence>
       <Sequence
@@ -2474,6 +2486,8 @@ export const LaunchVideoComposition: React.FC<LaunchVideoInternalProps> = (
           timing={workflowComposer}
           showPlaceholder={false}
           interactionScale={props.interactionScale}
+          textAreaHeight={props.composerTextAreaHeight}
+          textLineHeight={props.composerTextLineHeight}
         />
       </Sequence>
       <Sequence

@@ -9,6 +9,8 @@ import { LAUNCH_VIDEO_TIMELINE } from "./timeline";
 import { OUTRO_EASE, progress } from "./motion";
 import { ProductCutNvdaCandlestickChart } from "./nvda-candlestick-chart";
 import {
+  PRODUCT_CUT_COMPOSER_TEXT_AREA_HEIGHT,
+  PRODUCT_CUT_COMPOSER_TEXT_LINE_HEIGHT,
   PRODUCT_CUT_INTERACTION_SCALE,
   PRODUCT_CUT_WORKFLOW_RESPONSE_GAP,
 } from "./readability";
@@ -28,6 +30,8 @@ const ProductCutCoreSequence: React.FC<LaunchVideoProductCutProps> = (props) => 
           chatResponseChart={<ProductCutNvdaCandlestickChart />}
           interactionScale={PRODUCT_CUT_INTERACTION_SCALE}
           workflowResponseGap={PRODUCT_CUT_WORKFLOW_RESPONSE_GAP}
+          composerTextAreaHeight={PRODUCT_CUT_COMPOSER_TEXT_AREA_HEIGHT}
+          composerTextLineHeight={PRODUCT_CUT_COMPOSER_TEXT_LINE_HEIGHT}
         />
       </Freeze>
     </AbsoluteFill>
