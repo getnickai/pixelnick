@@ -311,35 +311,17 @@ export const ProductCutFinaleSequence: React.FC<
     durationInFrames: 20,
     config: { damping: 28, stiffness: 120, mass: 1 },
   });
-  const markReveal = progress(
+  const brandReveal = progress(
     frame,
     logo.start,
-    9,
+    16,
     Easing.out(Easing.cubic),
-  );
-  const wordmarkReveal = progress(
-    frame,
-    logo.start + 9,
-    14,
-    Easing.out(Easing.cubic),
-  );
-  const brandAssembly = progress(
-    frame,
-    logo.start + 7,
-    18,
-    BENTO_SETTLE_EASE,
   );
   const logoSpring = spring({
     frame: Math.max(0, frame - logo.start),
     fps,
     durationInFrames: logo.duration,
-    config: { damping: 24, stiffness: 130, mass: 0.9 },
-  });
-  const wordmarkSpring = spring({
-    frame: Math.max(0, frame - logo.start - 8),
-    fps,
-    durationInFrames: 24,
-    config: { damping: 28, stiffness: 145, mass: 0.9 },
+    config: { damping: 28, stiffness: 125, mass: 0.95 },
   });
   const urlIn = progress(frame, url.start, url.duration, POP_EASE);
   const exit = progress(frame, outro.start, outro.duration, OUTRO_EASE);
@@ -520,81 +502,26 @@ export const ProductCutFinaleSequence: React.FC<
       </div>
 
       <div
-        aria-hidden
         style={{
           position: "absolute",
           top: "50%",
           left: "50%",
-          width: 760,
-          height: 230,
-          borderRadius: "50%",
-          background:
-            "radial-gradient(ellipse, rgba(1,120,255,0.16) 0%, rgba(1,120,255,0.055) 44%, transparent 72%)",
-          opacity: markReveal * 0.72 + wordmarkReveal * 0.28,
-          filter: "blur(22px)",
-          transform: `translate(-50%, -50%) scale(${0.82 + wordmarkReveal * 0.18})`,
-        }}
-      />
-      <div
-        style={{
-          position: "absolute",
-          top: "50%",
-          left: "50%",
-          display: "flex",
-          alignItems: "center",
-          gap: 28,
-          transform: `translateX(calc(-50% + ${(1 - brandAssembly) * 189}px)) translateY(-50%)`,
-          willChange: "transform",
+          width: 497.36,
+          height: 104,
+          opacity: brandReveal,
+          filter: `blur(${(1 - brandReveal) * 5}px)`,
+          transform: `translate(-50%, -50%) translateY(${(1 - logoSpring) * 18}px) scale(${0.94 + logoSpring * 0.06})`,
+          willChange: "opacity, filter, transform",
         }}
       >
-        <div
+        <Img
+          src={staticFile("figma/logo.svg")}
           style={{
-            position: "relative",
-            width: 104,
-            height: 104,
-            overflow: "hidden",
-            opacity: markReveal,
-            filter: `blur(${(1 - markReveal) * 5}px)`,
-            transform: `scale(${0.78 + logoSpring * 0.22})`,
+            width: "100%",
+            height: "100%",
+            display: "block",
           }}
-        >
-          <Img
-            src={staticFile("figma/logo.svg")}
-            style={{
-              position: "absolute",
-              top: 0,
-              left: 0,
-              width: 497.36,
-              height: 104,
-              maxWidth: "none",
-            }}
-          />
-        </div>
-        <div
-          style={{
-            position: "relative",
-            width: 350,
-            height: 104,
-            overflow: "hidden",
-            opacity: wordmarkReveal,
-            filter: `blur(${(1 - wordmarkReveal) * 5}px)`,
-            transform: `translateY(${(1 - wordmarkSpring) * 16}px) scale(${0.97 + wordmarkSpring * 0.03})`,
-            transformOrigin: "left center",
-            willChange: "opacity, filter, transform",
-          }}
-        >
-          <Img
-            src={staticFile("figma/logo.svg")}
-            style={{
-              position: "absolute",
-              top: 0,
-              left: -148,
-              width: 497.36,
-              height: 104,
-              maxWidth: "none",
-            }}
-          />
-        </div>
+        />
       </div>
 
       <div
