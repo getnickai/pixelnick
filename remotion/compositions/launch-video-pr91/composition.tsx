@@ -8,6 +8,10 @@ import type { LaunchVideoProductCutProps } from "./props";
 import { LAUNCH_VIDEO_TIMELINE } from "./timeline";
 import { OUTRO_EASE, progress } from "./motion";
 import { ProductCutNvdaCandlestickChart } from "./nvda-candlestick-chart";
+import {
+  PRODUCT_CUT_INTERACTION_SCALE,
+  PRODUCT_CUT_WORKFLOW_RESPONSE_GAP,
+} from "./readability";
 
 const CANVAS = "#09090b";
 
@@ -22,6 +26,8 @@ const ProductCutCoreSequence: React.FC<LaunchVideoProductCutProps> = (props) => 
         <LaunchVideoComposition
           {...props}
           chatResponseChart={<ProductCutNvdaCandlestickChart />}
+          interactionScale={PRODUCT_CUT_INTERACTION_SCALE}
+          workflowResponseGap={PRODUCT_CUT_WORKFLOW_RESPONSE_GAP}
         />
       </Freeze>
     </AbsoluteFill>

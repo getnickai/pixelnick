@@ -43,6 +43,7 @@ import {
   LEAN_MONTAGE_WORKFLOWS,
   PRODUCT_CUT_MONTAGE_VIEWPORT,
 } from "./montage-workflows";
+import { PRODUCT_CUT_INTERACTION_SCALE } from "./readability";
 
 const SANS = "var(--font-manrope), ui-sans-serif, system-ui, sans-serif";
 // Matches ChatComposerSequence (composition.tsx) so the composer reads identical.
@@ -62,6 +63,7 @@ const CHAT_W = 1050;
 const CHAT_LEFT = (1920 - CHAT_W) / 2;
 const CHAT_TOP = 882;
 const CHAT_CENTER_TOP = 430;
+const CHAT_CENTER_X = 960;
 
 /* ── Shared chrome ────────────────────────────────────────────────────────── */
 
@@ -151,7 +153,7 @@ function ChatBox({
         top,
         width: CHAT_W,
         fontFamily: MANROPE,
-        transform: `scale(${composerScale})`,
+        transform: `scale(${composerScale * PRODUCT_CUT_INTERACTION_SCALE})`,
         transformOrigin: "center center",
       }}
     >
@@ -425,7 +427,9 @@ export const WorkflowMontageSequence: React.FC = () => {
     ? progress(frame, clickBStart, 7, Easing.out(Easing.cubic))
     : progress(frame, clickAStart, 7, Easing.out(Easing.cubic));
   // Send-arrow center (screen px), inside the montage ChatBox action row.
-  const SEND_X = 1434;
+  const SEND_X =
+    CHAT_CENTER_X +
+    (1434 - CHAT_CENTER_X) * PRODUCT_CUT_INTERACTION_SCALE;
   const SEND_Y = composerTop + 134;
   const curX = SEND_X + (1 - cursorApproach) * 34;
   const curY = SEND_Y + (1 - cursorApproach) * 40;

@@ -562,6 +562,7 @@ type ChatComposerSequenceProps = {
   prompt: string;
   timing: ComposerTiming;
   showPlaceholder?: boolean;
+  interactionScale?: number;
 };
 
 const FakeCursor: React.FC<{
@@ -618,6 +619,7 @@ const ChatComposerSequence: React.FC<ChatComposerSequenceProps> = ({
   prompt,
   timing,
   showPlaceholder = true,
+  interactionScale = 1,
 }) => {
   const frame = useCurrentFrame();
   const { fps } = useVideoConfig();
@@ -726,6 +728,12 @@ const ChatComposerSequence: React.FC<ChatComposerSequenceProps> = ({
         alignItems: "center",
         justifyContent: "center",
         overflow: "hidden",
+        ...(interactionScale === 1
+          ? {}
+          : {
+              transform: `scale(${interactionScale})`,
+              transformOrigin: "center",
+            }),
       }}
     >
       <div
@@ -938,11 +946,16 @@ const ChatComposerSequence: React.FC<ChatComposerSequenceProps> = ({
 type LaunchVideoInternalProps = LaunchVideoProps & {
   /** Product-cut-only visual override. The public Launch Video keeps its line chart. */
   chatResponseChart?: ReactNode;
+  /** Product-cut-only readability lift for interaction-heavy scenes. */
+  interactionScale?: number;
+  /** Product-cut-only vertical rhythm override for workflow response rows. */
+  workflowResponseGap?: number;
 };
 
 const ChatResponseSequence: React.FC<LaunchVideoInternalProps> = ({
   chatPrompt,
   chatResponseChart,
+  interactionScale = 1,
 }) => {
   const frame = useCurrentFrame();
   const {
@@ -1018,6 +1031,12 @@ const ChatResponseSequence: React.FC<LaunchVideoInternalProps> = ({
         alignItems: "center",
         justifyContent: "center",
         overflow: "hidden",
+        ...(interactionScale === 1
+          ? {}
+          : {
+              transform: `scale(${interactionScale})`,
+              transformOrigin: "center",
+            }),
       }}
     >
       <div
@@ -1208,8 +1227,10 @@ const ChatResponseSequence: React.FC<LaunchVideoInternalProps> = ({
   );
 };
 
-const WorkflowResponseSequence: React.FC<LaunchVideoProps> = ({
+const WorkflowResponseSequence: React.FC<LaunchVideoInternalProps> = ({
   workflowPrompt,
+  interactionScale = 1,
+  workflowResponseGap = 10,
 }) => {
   const frame = useCurrentFrame();
   const {
@@ -1298,6 +1319,12 @@ const WorkflowResponseSequence: React.FC<LaunchVideoProps> = ({
         alignItems: "center",
         justifyContent: "center",
         overflow: "hidden",
+        ...(interactionScale === 1
+          ? {}
+          : {
+              transform: `scale(${interactionScale})`,
+              transformOrigin: "center",
+            }),
       }}
     >
       <div
@@ -1359,7 +1386,7 @@ const WorkflowResponseSequence: React.FC<LaunchVideoProps> = ({
           style={{
             display: "flex",
             flexDirection: "column",
-            gap: 10,
+            gap: workflowResponseGap,
             marginTop: 60,
           }}
         >
@@ -2427,6 +2454,7 @@ export const LaunchVideoComposition: React.FC<LaunchVideoInternalProps> = (
         <ChatComposerSequence
           prompt={props.chatPrompt}
           timing={chatComposer}
+          interactionScale={props.interactionScale}
         />
       </Sequence>
       <Sequence
@@ -2445,6 +2473,7 @@ export const LaunchVideoComposition: React.FC<LaunchVideoInternalProps> = (
           prompt={props.workflowPrompt}
           timing={workflowComposer}
           showPlaceholder={false}
+          interactionScale={props.interactionScale}
         />
       </Sequence>
       <Sequence
