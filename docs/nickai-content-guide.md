@@ -88,7 +88,7 @@ Lead with capability. **Non-custodial is the closer, not the opener** in cold co
 
 1. **Describe it, Nick builds it.** Say what you want to trade in plain English. Nick creates the advanced workflows, and you run them on a schedule or via webhooks.
 2. **A desk of agents, orchestrated.** Nick is a meta trading agent that spins up, backtests, deploys, and supervises specialized agents and workflows. One place to run the whole desk instead of babysitting python scripts.
-3. **Across platforms, across assets.** Coinbase, Hyperliquid, Tradexyz, OKX, Polymarket, Kalshi. Equities and stocks, perps, tokens, prediction markets, commodities, ETFs.
+3. **Across platforms, across assets.** Coinbase, Hyperliquid, OKX, Alpaca, Revolut, Trade[XYZ], Polymarket, Kalshi. Equities and stocks, perps, tokens, prediction markets, commodities, ETFs.
 4. **High-quality data in one place.** Databento and Pyth for market data, Dune and DeFiLlama for on-chain, all in the same workflow.
 5. **Prove before you risk.** Nick's paper exchange lets you deploy agents with virtual money, then switch to real money once strategies are proven. Backtesting is in beta: build, backtest, run on paper, graduate to real money.
 6. **Your call on consensus.** Set up adversarial reviews or LLM consensus to power a workflow or a trading decision. This is orchestration inside the product, different LLMs running different tasks as sub-agents. It is user-directed, not automatic, and it is not framed via Swarm Arena.
@@ -108,9 +108,9 @@ Name real features, real venues, real sources. Label anything in beta.
 | Data | Many high-quality sources in one place (Databento, Pyth) plus on-chain (Dune, DeFiLlama). |
 | Execute | Place a trade, pick a prediction market, create a ratio between assets, rebalance assets. |
 | Create a trading strategy | Describe it in plain English, Nick builds the advanced workflows, run on a schedule or via webhooks. |
-| Across platforms | Coinbase, Hyperliquid, Tradexyz, OKX, Polymarket, Kalshi. |
+| Across platforms | Coinbase, Hyperliquid, OKX, Alpaca, Revolut, Trade[XYZ], Polymarket, Kalshi. |
 | Across assets | Equities and stocks, perps, tokens, prediction markets, commodities, ETFs. |
-| Paper exchange | Deploy agents with virtual money, switch to real money once strategies are proven. |
+| Paper exchange | Deploy agents with virtual money, switch to real money once strategies are proven. Internal product name is PaperNick; use "paper exchange" in external copy. |
 | Custom scripts | Use Nick to write custom scripts and include them in workflows. |
 | LLM consensus | Use adversarial reviews or consensus to power workflows and trading decisions (user-directed). |
 | On-chain | Partnership with snapshot.org. Bring agents on-chain on a non-custodial wallet with specific permissions. Supports ETH, Base, Arbitrum, Polygon. |
@@ -189,7 +189,7 @@ Verified claims are backed by product, partners, or investors. Directional claim
 | The agentic trading platform | Verified | Category lead line |
 | The Cursor of trading, Claude for trading | Verified | Analogy for legibility, plus "Claude for prediction markets / Polymarket" |
 | Meta trading agent orchestrating a desk of agents | Verified | Use "a desk of agents", never "swarm" (reserved for Swarm Arena) |
-| Across platforms | Verified | Coinbase, Hyperliquid, Tradexyz, OKX, Polymarket, Kalshi. Name venues actually supported |
+| Across platforms | Verified | Coinbase, Hyperliquid, OKX, Alpaca, Revolut, Trade[XYZ], Polymarket, Kalshi. Name venues actually supported |
 | Across assets | Verified | Equities, perps, tokens, prediction markets, commodities, ETFs |
 | Data sources | Verified | Databento, Pyth, Dune, DeFiLlama. Name real sources |
 | On-chain | Verified | snapshot.org partnership, ETH / Base / Arbitrum / Polygon |
@@ -197,7 +197,7 @@ Verified claims are backed by product, partners, or investors. Directional claim
 | Non-custodial | Verified | Nick never holds funds. Factual attribute in the anchor line, the closer in persuasive copy |
 | Private by default | Verified | A user's agents and trades are never public |
 | Backtesting | Directional | Always label beta |
-| Enterprise ready, backed by Galaxy | Directional | Confirm approved public Galaxy naming before external use. Fallback: "backed by a leading publicly-traded digital-asset trading firm" |
+| Enterprise ready, backed by Galaxy | Verified | Galaxy is NickAI's main investor and uses the product internally. Public "Galaxy" naming is approved. A core enterprise value prop, custody can lead here. |
 
 ### Banned claims (CFTC risk, never use)
 Never make a returns, profit, or performance-outcome claim. If asked about performance, stay on capability, what Nick can build and run, never on outcomes.
