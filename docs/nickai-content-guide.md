@@ -217,8 +217,9 @@ Also never use:
 
 **The wording depends on where the reader is:**
 
-- **Off-domain** (social, ads, email, a blog post found off-site, anywhere not on getnick.ai): use the full form with the URL so it routes people to the site: `Try it for free now: getnick.ai`. Not "Try it on NickAI", not "app.getnick.ai/library", not a one-click template link.
+- **Off-domain acquisition** (social, ads, cold email, a blog post found off-site, anywhere not on getnick.ai where the reader is not yet a user): use the full form with the URL so it routes people to the site: `Try it for free now: getnick.ai`. Not "Try it on NickAI", not "app.getnick.ai/library", not a one-click template link.
 - **On-domain** (the getnick.ai site itself and in-app): the reader is already here, so drop the URL and use an action-only CTA. Vary it naturally: "Try for free now", "Start your free trial", "Get started for free", "Get started now". Link it to signup. Never append ": getnick.ai" to an on-site CTA (they are already on it).
+- **Lifecycle and transactional email (carve-out):** email to signed-in, registered users (customer.io onboarding, credits, win-back, cancelled, product-update sequences) is NOT acquisition copy, so do not use the `Try it for free now: getnick.ai` line. Deep-link the reader straight into their own account (`app.getnick.ai/chat`, `/library`, `/settings/billing`) with an action-only button ("Open my agent library", "Build my next agent", "See plans"). The off-domain rule above is for acquisition only. (The one exception is a pre-signup/reactivation email to someone who never became a user, which is acquisition and takes the off-domain CTA.)
 - **Swarm Arena exception:** Swarm Arena content is off-domain to us and uses `swarmarena.ai` ("Follow the agents on swarmarena.ai" and natural variants), never `getnick.ai`.
 
 ---
