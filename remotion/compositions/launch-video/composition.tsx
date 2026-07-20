@@ -201,8 +201,8 @@ const WORKFLOW_BADGES: Record<
  * a sharper accelerating exit. Opacity stays separately clamped.
  */
 const POP_EASE = Easing.bezier(0.18, 1.18, 0.32, 1);
-const FAST_FADE_EASE = Easing.out(Easing.cubic);
-const OUTRO_EASE = Easing.in(Easing.cubic);
+const FAST_FADE_EASE = Easing.out(Easing.exp);
+const OUTRO_EASE = Easing.in(Easing.exp);
 
 type IconTile = {
   Icon: LucideIcon;
@@ -672,7 +672,7 @@ const ChatComposerSequence: React.FC<ChatComposerSequenceProps> = ({
     frame,
     sendContactStart,
     sendPressDuration,
-    Easing.out(Easing.cubic),
+    Easing.out(Easing.exp),
   );
   const sendReleaseSpring = spring({
     frame: Math.max(0, frame - sendReleaseStart),
@@ -703,7 +703,7 @@ const ChatComposerSequence: React.FC<ChatComposerSequenceProps> = ({
     frame,
     cursorStart,
     10,
-    Easing.out(Easing.cubic),
+    Easing.out(Easing.exp),
   );
   const exit = progress(frame, outro.start, outro.duration, OUTRO_EASE);
   const clickRipple = progress(
@@ -1747,7 +1747,7 @@ const WorkflowBuildSequence: React.FC = () => {
         frame,
         start,
         Math.min(14, nodes.duration),
-        Easing.out(Easing.cubic),
+        Easing.out(Easing.exp),
       ),
       settle: spring({
         frame: Math.max(0, frame - start),
@@ -1769,14 +1769,14 @@ const WorkflowBuildSequence: React.FC = () => {
         frame,
         edges.start + index * edges.stagger,
         edges.duration,
-        Easing.out(Easing.cubic),
+        Easing.out(Easing.exp),
       ),
   );
   const originDotStyles = WORKFLOW_CONNECTION_ORIGINS.map((_, index) => {
     const start = edges.start + index * edges.stagger - 2;
 
     return {
-      opacity: progress(frame, start, 7, Easing.out(Easing.cubic)),
+      opacity: progress(frame, start, 7, Easing.out(Easing.exp)),
       scale: spring({
         frame: Math.max(0, frame - start),
         fps,
@@ -1794,7 +1794,7 @@ const WorkflowBuildSequence: React.FC = () => {
       edges.start + index * edges.stagger + edges.duration - 2;
 
     return {
-      opacity: progress(frame, start, 7, Easing.out(Easing.cubic)),
+      opacity: progress(frame, start, 7, Easing.out(Easing.exp)),
       scale: spring({
         frame: Math.max(0, frame - start),
         fps,
@@ -1848,7 +1848,7 @@ const WorkflowBuildSequence: React.FC = () => {
   }
 
   const pullBackStart = nodes.start + (WORKFLOW_NODES.length - 1) * nodes.stagger + nodes.duration + 4;
-  const pullBack = progress(frame, pullBackStart, 18, Easing.inOut(Easing.cubic));
+  const pullBack = progress(frame, pullBackStart, 18, Easing.inOut(Easing.exp));
   if (frame >= pullBackStart) {
     camera = {
       x: interpolate(pullBack, [0, 1], [cameraTargets[cameraTargets.length - 1].x, cameraBase.x]),
@@ -2151,7 +2151,7 @@ const ExecuteFinaleSequence: React.FC<LaunchVideoProps> = ({
     frame,
     cursor.start,
     cursor.duration,
-    Easing.out(Easing.cubic),
+    Easing.out(Easing.exp),
   );
   const cursorIn = progress(frame, cursor.start - 2, 4, FAST_FADE_EASE);
   const press = interpolate(
@@ -2168,7 +2168,7 @@ const ExecuteFinaleSequence: React.FC<LaunchVideoProps> = ({
     frame,
     click.start,
     3,
-    Easing.out(Easing.cubic),
+    Easing.out(Easing.exp),
   );
   const releaseStart = click.start + 3;
   const releaseSpring = spring({
@@ -2195,19 +2195,19 @@ const ExecuteFinaleSequence: React.FC<LaunchVideoProps> = ({
     frame,
     click.start + click.duration + 3,
     12,
-    Easing.inOut(Easing.cubic),
+    Easing.inOut(Easing.exp),
   );
   const markReveal = progress(
     frame,
     logo.start,
     9,
-    Easing.out(Easing.cubic),
+    Easing.out(Easing.exp),
   );
   const wordmarkReveal = progress(
     frame,
     logo.start + 9,
     14,
-    Easing.out(Easing.cubic),
+    Easing.out(Easing.exp),
   );
   const logoSpring = spring({
     frame: Math.max(0, frame - logo.start),
@@ -2225,7 +2225,7 @@ const ExecuteFinaleSequence: React.FC<LaunchVideoProps> = ({
     frame,
     cta.start - 8,
     18,
-    Easing.inOut(Easing.cubic),
+    Easing.inOut(Easing.exp),
   );
   const finaleLift = finaleLayout * 130;
 
