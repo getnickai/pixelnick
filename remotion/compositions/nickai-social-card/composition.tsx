@@ -182,22 +182,22 @@ export const NickaiSocialCardComposition: React.FC<NickaiSocialCardProps> = ({
         ))}
 
       <AbsoluteFill style={{ padding: PAD, justifyContent: "space-between" }}>
-        {/* Header: wordmark only. */}
+        {/* Header: mark + wordmark, top-left (2x the original scale). */}
         <div
           style={{
             display: "flex",
             alignItems: "center",
-            gap: 17,
+            gap: 34,
             ...rise(enter(0, 24), 16),
           }}
         >
-          <LogoMark size={50} />
+          <LogoMark size={100} />
           <span
             style={{
               fontFamily: fontHeading,
               fontWeight: 600,
-              fontSize: 45,
-              letterSpacing: -0.5,
+              fontSize: 90,
+              letterSpacing: -1,
               color: skin.wordmark,
               lineHeight: 1,
             }}
