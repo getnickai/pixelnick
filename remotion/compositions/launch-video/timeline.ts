@@ -76,22 +76,21 @@ export const LAUNCH_VIDEO_TIMELINE = {
     },
     send: {
       // Typing completes at frame 47. Hold the completed prompt cleanly for
-      // 26 frames before the cursor enters. The longer 20-frame interaction
-      // gives the press, contact hold, and spring release room to read while
-      // preserving the existing response handoff at frame 103.
+      // 26 frames before the cursor enters. The compact 16-frame interaction
+      // keeps the press and spring release crisp, handing off at frame 99.
       start: 83,
-      duration: 20,
+      duration: 16,
     },
     outro: {
-      // Begins on the exact frame the click ripple completes.
-      start: 103,
+      // Begins as the compact release spring finishes.
+      start: 99,
       duration: 6,
     },
   },
   chatResponse: {
     // Starts as soon as the composer click ripple completes. Durations mirror
     // the first result-thread beat in NicksiteV2 at playbackRate: 2.
-    from: 225,
+    from: 221,
     durationInFrames: 95,
     shell: {
       start: 0,
@@ -146,20 +145,20 @@ export const LAUNCH_VIDEO_TIMELINE = {
     send: {
       // The long request completes at frame 57. Give it a 54-frame (1.8s)
       // reading hold before the pointer approaches Send. The click then uses
-      // the same 20-frame physical press and spring release as sequence one.
+      // the same 16-frame physical press and spring release as sequence one.
       start: 111,
-      duration: 20,
+      duration: 16,
     },
     outro: {
-      // Begins on the exact frame the click ripple completes.
-      start: 131,
+      // Begins as the compact release spring finishes.
+      start: 127,
       duration: 6,
     },
   },
   workflowResponse: {
     // Workflow-thread responses only. Sidebar/panel/node reveals deliberately
     // remain out of this sequence so they can become the next product beat.
-    from: 444,
+    from: 440,
     durationInFrames: 112,
     shell: {
       start: 0,

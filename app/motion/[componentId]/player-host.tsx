@@ -322,6 +322,16 @@ export function PlayerHost({ entry }: { entry: MotionEntry }) {
             onMouseEnter={() => setControlsVisible(true)}
             onClick={(e) => e.stopPropagation()}
           >
+            <ControlButton
+              onClick={toggle}
+              label={playing ? "Pause" : "Play"}
+            >
+              {playing ? (
+                <Pause className="size-4 fill-white text-white" />
+              ) : (
+                <Play className="size-4 fill-white text-white" />
+              )}
+            </ControlButton>
             <p className="shrink-0 font-mono text-[11px] tabular-nums text-white/80">
               {formatTimecode(currentFrame, entry.fps)}
               <span className="text-white/40"> / </span>
@@ -339,28 +349,16 @@ export function PlayerHost({ entry }: { entry: MotionEntry }) {
                 }
               }}
             />
-            <div className="flex shrink-0 items-center gap-2">
-              <ControlButton
-                onClick={toggle}
-                label={playing ? "Pause" : "Play"}
-              >
-                {playing ? (
-                  <Pause className="size-4 fill-white text-white" />
-                ) : (
-                  <Play className="size-4 fill-white text-white" />
-                )}
-              </ControlButton>
-              <ControlButton
-                onClick={toggleFullscreen}
-                label={fullscreen ? "Exit fullscreen" : "Enter fullscreen"}
-              >
-                {fullscreen ? (
-                  <Minimize className="size-4 text-white" />
-                ) : (
-                  <Maximize className="size-4 text-white" />
-                )}
-              </ControlButton>
-            </div>
+            <ControlButton
+              onClick={toggleFullscreen}
+              label={fullscreen ? "Exit fullscreen" : "Enter fullscreen"}
+            >
+              {fullscreen ? (
+                <Minimize className="size-4 text-white" />
+              ) : (
+                <Maximize className="size-4 text-white" />
+              )}
+            </ControlButton>
           </div>
         </div>
       </div>

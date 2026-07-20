@@ -11,6 +11,7 @@ import {
   ChevronDown,
   Folder,
   GitBranch,
+  Link2,
   Mail,
   Maximize2,
   MessageCircle,
@@ -622,7 +623,7 @@ const ChatComposerSequence: React.FC<ChatComposerSequenceProps> = ({
   timing,
   showPlaceholder = true,
   interactionScale = 1,
-  textAreaHeight,
+  textAreaHeight = 148,
   textLineHeight = 1.35,
 }) => {
   const frame = useCurrentFrame();
@@ -665,7 +666,7 @@ const ChatComposerSequence: React.FC<ChatComposerSequenceProps> = ({
     FAST_FADE_EASE,
   );
   const sendContactStart = send.start + 5;
-  const sendPressDuration = 4;
+  const sendPressDuration = 2;
   const sendReleaseStart = sendContactStart + sendPressDuration + 1;
   const sendPressDown = progress(
     frame,
@@ -773,9 +774,9 @@ const ChatComposerSequence: React.FC<ChatComposerSequenceProps> = ({
             <div
               style={{
                 position: "relative",
-                minHeight: textAreaHeight ?? 132,
+                minHeight: textAreaHeight,
                 height: textAreaHeight,
-                overflow: textAreaHeight === undefined ? undefined : "hidden",
+                overflow: "hidden",
                 padding: "27px 32px 36px",
                 color: "#fafafa",
                 fontFamily: MANROPE,
@@ -1240,7 +1241,7 @@ const ChatResponseSequence: React.FC<LaunchVideoInternalProps> = ({
 const WorkflowResponseSequence: React.FC<LaunchVideoInternalProps> = ({
   workflowPrompt,
   interactionScale = 1,
-  workflowResponseGap = 10,
+  workflowResponseGap = 20,
 }) => {
   const frame = useCurrentFrame();
   const {
@@ -1284,6 +1285,12 @@ const WorkflowResponseSequence: React.FC<LaunchVideoInternalProps> = ({
     POP_EASE,
   );
   const exit = progress(frame, outro.start, outro.duration, OUTRO_EASE);
+  // Product Cut scales this entire scene by 1.5x, so retain its compact base
+  // type sizes to avoid clipping while increasing the unscaled Launch Video.
+  const usesScaledResponseLayout = interactionScale > 1;
+  const responseRowFontSize = usesScaledResponseLayout ? 18 : 21;
+  const workflowTitleFontSize = usesScaledResponseLayout ? 19 : 21;
+  const workflowSubtitleFontSize = usesScaledResponseLayout ? 16 : 18;
 
   const stepStyle = (start: number, duration: number) => {
     const opacity = progress(
@@ -1319,8 +1326,9 @@ const WorkflowResponseSequence: React.FC<LaunchVideoInternalProps> = ({
     alignItems: "center",
     minHeight: 32,
     color: "#a1a1aa",
-    fontSize: 18,
+    fontSize: responseRowFontSize,
     fontWeight: 500,
+    lineHeight: 1.35,
   } as const;
 
   return (
@@ -1466,7 +1474,7 @@ const WorkflowResponseSequence: React.FC<LaunchVideoInternalProps> = ({
                 style={{
                   display: "block",
                   color: "#f4f4f5",
-                  fontSize: 19,
+                  fontSize: workflowTitleFontSize,
                   fontWeight: 700,
                 }}
               >
@@ -1477,7 +1485,7 @@ const WorkflowResponseSequence: React.FC<LaunchVideoInternalProps> = ({
                   display: "block",
                   marginTop: 3,
                   color: "#71717a",
-                  fontSize: 16,
+                  fontSize: workflowSubtitleFontSize,
                 }}
               >
                 Created workflow &quot;NVDA 12h buy below 200&quot;.
@@ -1588,7 +1596,7 @@ const WorkflowResponseSequence: React.FC<LaunchVideoInternalProps> = ({
               ...afterStepStyles[5],
               marginTop: 4,
               color: "#f4f4f5",
-              fontSize: 18,
+              fontSize: responseRowFontSize,
               fontWeight: 500,
               lineHeight: 1.45,
             }}
@@ -2399,14 +2407,18 @@ const ExecuteFinaleSequence: React.FC<LaunchVideoProps> = ({
         style={{
           position: "absolute",
           top: `calc(75% - ${finaleLift}px)`,
+          display: "flex",
+          alignItems: "center",
+          gap: 16,
           color: "#4b9cff",
-          fontSize: 32,
+          fontSize: 40,
           fontWeight: 650,
           letterSpacing: 0.4,
           opacity: urlIn,
           transform: `translateY(${(1 - urlIn) * 20}px)`,
         }}
       >
+        <Link2 size={40} strokeWidth={2.2} />
         {ctaUrl}
       </div>
 
