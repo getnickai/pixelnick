@@ -42,12 +42,12 @@ export const ProductCutNvdaCandlestickChart: React.FC = () => {
       style={{ display: "block", marginTop: 10, overflow: "visible" }}
     >
       {CANDLES.map((candle, index) => {
-        // Anime-style reveal: short out-cubic tweens with a readable stagger.
+        // Anime-style reveal: short out-expo tweens with a readable stagger.
         const reveal = progress(
           frame,
           chartLine.start + index * 0.72,
           8,
-          Easing.out(Easing.cubic),
+          Easing.out(Easing.exp),
         );
         const up = candle.c >= candle.o;
         const color = up ? UP : DOWN;

@@ -70,7 +70,7 @@ export function buildReveal(
       frame,
       edgeStart,
       Math.max(10, perNode * 0.8),
-      Easing.out(Easing.cubic),
+      Easing.out(Easing.exp),
     );
   });
   return { nodeReveal, edgeReveal };

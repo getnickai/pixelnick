@@ -8,8 +8,8 @@
 import { Easing, interpolate } from "remotion";
 
 export const POP_EASE = Easing.bezier(0.18, 1.18, 0.32, 1);
-export const FAST_FADE_EASE = Easing.out(Easing.cubic);
-export const OUTRO_EASE = Easing.in(Easing.cubic);
+export const FAST_FADE_EASE = Easing.out(Easing.exp);
+export const OUTRO_EASE = Easing.in(Easing.exp);
 
 /** 0 before `start`, 1 after `start + duration`, eased in between. */
 export const progress = (

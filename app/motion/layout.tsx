@@ -8,7 +8,7 @@ export default function MotionLayout({ children }: { children: ReactNode }) {
   return (
     <div className="relative flex min-h-dvh flex-col bg-background">
       <PinRootFontSize />
-      <header className="sticky top-0 z-20 flex h-12 shrink-0 items-center gap-2 border-b border-sidebar-border px-4">
+      <header className="sticky top-0 z-30 flex h-12 shrink-0 items-center gap-2 border-b border-sidebar-border bg-background/85 px-4 backdrop-blur-md">
         <SidebarTrigger className="text-sidebar-foreground" />
         <DashboardBreadcrumb
           root="Motion"

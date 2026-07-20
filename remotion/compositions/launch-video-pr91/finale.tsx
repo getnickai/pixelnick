@@ -315,7 +315,7 @@ export const ProductCutFinaleSequence: React.FC<
     frame,
     logo.start,
     16,
-    Easing.out(Easing.cubic),
+    Easing.out(Easing.exp),
   );
   const logoSpring = spring({
     frame: Math.max(0, frame - logo.start),

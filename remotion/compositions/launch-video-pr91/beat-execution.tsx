@@ -23,7 +23,7 @@ import { FAST_FADE_EASE, POP_EASE, progress } from "./motion";
 import { readableOverviewCamera } from "./graph-anim";
 import { PRODUCT_CUT_MAG7_WORKFLOW } from "./montage-workflows";
 
-const CAM_EASE = Easing.inOut(Easing.cubic);
+const CAM_EASE = Easing.inOut(Easing.exp);
 const SANS = "var(--font-manrope), ui-sans-serif, system-ui, sans-serif";
 
 // 16 lead rows x 27px row height — the streaming depth of ExecutionLogs.
@@ -94,7 +94,7 @@ export const ExecutionSequence: React.FC = () => {
     frame,
     click.start,
     3,
-    Easing.out(Easing.cubic),
+    Easing.out(Easing.exp),
   );
   const releaseStart = click.start + 3;
   const releaseSpring = spring({
@@ -116,7 +116,7 @@ export const ExecutionSequence: React.FC = () => {
   const btnOpacity = btnIn * (1 - btnOut);
 
   // Pointer: eases in toward the button then presses.
-  const cursorMove = progress(frame, cursor.start, cursor.duration, Easing.out(Easing.cubic));
+  const cursorMove = progress(frame, cursor.start, cursor.duration, Easing.out(Easing.exp));
   const cursorIn = progress(frame, cursor.start - 2, 4, FAST_FADE_EASE);
   const cursorOut = progress(frame, click.start + 3, 5, FAST_FADE_EASE);
   const cursorOpacity = cursorIn * (1 - cursorOut);

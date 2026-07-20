@@ -343,7 +343,7 @@ export const WorkflowMontageSequence: React.FC = () => {
   const promptA = typedPrompt(wA.prompt, type2.start, type2.duration);
   const promptB = typedPrompt(wB.prompt, type3.start, type3.duration);
 
-  const firstDock = progress(frame, dock2.start, dock2.duration, Easing.inOut(Easing.cubic));
+  const firstDock = progress(frame, dock2.start, dock2.duration, Easing.inOut(Easing.exp));
   const firstComposerTop = interpolate(firstDock, [0, 1], [CHAT_CENTER_TOP, CHAT_TOP]);
   const composerTop = firstComposerTop;
 
@@ -361,7 +361,7 @@ export const WorkflowMontageSequence: React.FC = () => {
       frame,
       contactStart,
       4,
-      Easing.out(Easing.cubic),
+      Easing.out(Easing.exp),
     );
     const releaseSpring = spring({
       frame: Math.max(0, frame - releaseStart),
@@ -424,8 +424,8 @@ export const WorkflowMontageSequence: React.FC = () => {
     (1 - progress(frame, clickBStart + clickDuration - 4, 4, FAST_FADE_EASE));
   const cursorOpacity = Math.max(curA, curB) * beatOpacity;
   const cursorApproach = pressB.active
-    ? progress(frame, clickBStart, 7, Easing.out(Easing.cubic))
-    : progress(frame, clickAStart, 7, Easing.out(Easing.cubic));
+    ? progress(frame, clickBStart, 7, Easing.out(Easing.exp))
+    : progress(frame, clickAStart, 7, Easing.out(Easing.exp));
   // Send-arrow center (screen px), inside the montage ChatBox action row.
   const SEND_X =
     CHAT_CENTER_X +
