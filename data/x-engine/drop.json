@@ -1,150 +1,124 @@
 {
-  "generated_at": "2026-06-25T18:00:00.000Z",
-  "edition": "June 25, 2026",
-  "source_folder": "Claude pixelnick",
-  "brand_mark": "NickAI",
-  "accent": "#E08A4D",
+  "edition": "July 16, 2026",
+  "source_folder": "SENSE automation",
   "slides": [
     {
       "kind": "cover",
+      "headline": "*4 THINGS* IN *AI TODAY*",
       "kicker": "THE AGENTIC DROP",
-      "date": "JUNE 25, 2026",
-      "headline": "*4* CRAZY THINGS IN AI *TODAY*",
-      "subtitle": "The *4 stories* you don't want to miss.",
-      "inset": "/x-engine/drop/bg-1.jpg",
+      "date": "JULY 16, 2026",
+      "subtitle": "The *4 stories* you need to know today.",
       "art": {
         "shot_type": "conceptual",
         "bg_source": "generate",
-        "bg_prompt": "A dramatic photorealistic editorial hero shot: a glowing custom AI accelerator microchip held up between two fingers, sharp macro detail with intricate circuitry catching warm amber rim-light, and softly out of focus behind it a person's awestruck face lit by the chip's glow in a dark high-tech room. Cinematic, premium, high contrast, real human skin, not cartoon, not uncanny. Vertical 4:5 with the bottom third darker and uncluttered for a headline overlay.",
+        "bg_prompt": "A cinematic editorial photograph of a person seen from behind, lit in awe by glowing screens showing Brainless: Shadcn components that look like Claude Code, Codex and Grok, cursors moving autonomously, dark high-tech room, dramatic volumetric light. Photorealistic, premium. Vertical 4:5 with the bottom third darker and uncluttered for a headline overlay.",
         "logos": []
-      },
-      "logo_images": [],
-      "image": "/x-engine/drop/bg-0.png"
+      }
     },
     {
       "kind": "story",
       "index": 1,
-      "headline": "*OPENAI* BUILT ITS OWN *AI CHIP*",
-      "subtitle": "Meet *Jalapeño* — designed with *Broadcom*.",
-      "body": "OpenAI says it designed its first chip from the ground up, purpose-built for the LLM workloads behind ChatGPT, Codex and the API. Owning the silicon is the new frontier in the *compute arms race* — the labs are done renting.",
+      "headline": "*BRAINLESS SHADCN COMPONENTS* THAT LOOK LIKE",
+      "body": "Brainless: Shadcn components that look like Claude Code, Codex and Grok",
+      "subtitle": "*benswerd* on the *Llms* move.",
       "source": {
-        "handle": "OpenAI",
-        "name": "OpenAI"
+        "handle": "benswerd",
+        "name": "benswerd"
       },
       "metrics": {
-        "impression_count": 4902987,
-        "like_count": 20880,
-        "bookmark_count": 2940
+        "impression_count": 20000,
+        "like_count": 20,
+        "bookmark_count": 1
       },
       "art": {
-        "shot_type": "deterministic",
-        "bg_source": "post_media",
-        "bg_image_url": "https://pbs.twimg.com/media/HLlMzhyakAArWhk.jpg",
-        "bg_prompt_fallback": "A cinematic macro shot of a glowing custom AI accelerator chip on a dark circuit board, premium product render, no text.",
+        "shot_type": "conceptual",
+        "bg_source": "generate",
+        "bg_prompt": "A cinematic editorial photograph of a focused professional, face lit by screen glow, reacting to news about Brainless: Shadcn components that look like Claude Code, Codex and Grok. Dark premium magazine photography, real natural human skin, subject framed in the upper two thirds. Vertical 4:5 with the bottom third darker and uncluttered for a headline overlay.",
         "logos": []
-      },
-      "logo_images": [],
-      "image": "/x-engine/drop/bg-1.jpg",
-      "focus": "50% 40%",
-      "zoom": 1.5
+      }
     },
     {
       "kind": "story",
       "index": 2,
-      "headline": "*$200M* TO BUILD AI THAT DOES *AI R&D*",
-      "subtitle": "*a16z* leads *Mirendil's* seed round.",
-      "body": "Mirendil is training frontier models that are *expert at AI research itself* — then wrapping a product around them so anyone can do AI work. A $200M seed is a massive bet that the next breakthroughs come from *AI improving AI*.",
+      "headline": "*RUNNING GEMMA 4* 26B AT 5",
+      "body": "Running Gemma 4 26B at 5 tokens/sec on a 13-year-old Xeon with no GPU",
+      "subtitle": "*neomindryan* on the *Crypto* move.",
       "source": {
-        "handle": "a16z",
-        "name": "a16z"
+        "handle": "neomindryan",
+        "name": "neomindryan"
       },
       "metrics": {
-        "impression_count": 785152,
-        "like_count": 1059,
-        "bookmark_count": 633
+        "impression_count": 186000,
+        "like_count": 186,
+        "bookmark_count": 32
       },
       "art": {
         "shot_type": "conceptual",
         "bg_source": "generate",
-        "bg_prompt": "A cinematic editorial photograph of two focused AI researchers, a man and a woman, standing in a dark premium lab studying a large glowing holographic neural-network diagram that is visibly generating a second network from itself. Real natural human skin, dramatic volumetric lighting, shallow depth of field, subjects framed in the upper two thirds. Vertical 4:5 with the bottom third darker and uncluttered for a headline overlay.",
+        "bg_prompt": "A cinematic editorial photograph of professionals in a modern workspace, face lit by screen glow, reacting to news about Running Gemma 4 26B at 5 tokens/sec on a 13-year-old Xeon with no GPU. Dark premium magazine photography, real natural human skin, subject framed in the upper two thirds. Vertical 4:5 with the bottom third darker and uncluttered for a headline overlay.",
         "logos": []
-      },
-      "logo_images": [],
-      "image": "/x-engine/drop/bg-2.png",
-      "brightness": 1.35
+      }
     },
     {
       "kind": "story",
       "index": 3,
-      "headline": "*GOOGLE* SCRAMBLES TO CATCH *ANTHROPIC*",
-      "subtitle": "It's reorganizing an *AI-coding strike team*.",
-      "body": "Per The Information, Google is restructuring the newly launched team behind its AI coding tools to close the gap with *Anthropic's Claude*. Coding has quietly become the *front line* of the model wars.",
+      "headline": "*AMID HARDWARE LEGAL* BATTLE OPENAI RELEASES",
+      "body": "OpenAI, which is in the middle of a legal battle with Apple over hardware trade theft allegations, just released a light-up keyboard designed to be paired with its agentic codin…",
+      "subtitle": "*news* on the *ai Agents* move.",
       "source": {
-        "handle": "WhaleInsider",
-        "name": "Whale Insider"
+        "handle": "news",
+        "name": "news"
       },
       "metrics": {
-        "impression_count": 38676,
-        "like_count": 259,
-        "bookmark_count": 9
+        "impression_count": 10000,
+        "like_count": 0,
+        "bookmark_count": 0
       },
       "art": {
-        "shot_type": "person_composite",
+        "shot_type": "conceptual",
         "bg_source": "generate",
-        "people": [
-          "Dario Amodei",
-          "Sundar Pichai"
-        ],
-        "bg_prompt": "A dramatic cinematic editorial portrait of Dario Amodei (Anthropic CEO) and Sundar Pichai (Google CEO) facing each other in a tense, high-stakes face-off, split lighting — cool blue on one side, warm on the other — dark premium newsroom backdrop. Photorealistic, accurate likeness of both real men, serious expressions, framed from the chest up in the upper two thirds. Vertical 4:5 with the bottom third darker and uncluttered for a headline overlay.",
-        "bg_prompt_fallback": "A cinematic shot of two glowing AI logos facing off across a dark arena, dramatic rim light, premium editorial, no text.",
+        "bg_prompt": "A cinematic editorial photograph of professionals in a modern workspace, face lit by screen glow, reacting to news about Amid hardware legal battle, OpenAI releases a $230 keyboard for Codex. Dark premium magazine photography, real natural human skin, subject framed in the upper two thirds. Vertical 4:5 with the bottom third darker and uncluttered for a headline overlay.",
         "logos": []
-      },
-      "logo_images": [],
-      "image": "/x-engine/drop/bg-3.png",
-      "brightness": 1.35
+      }
     },
     {
       "kind": "story",
       "index": 4,
-      "headline": "*KALSHI* EYES A *$40B* VALUATION",
-      "subtitle": "*Doubling* its last round, pulling ahead of *Polymarket*.",
-      "body": "Per the FT, Kalshi is raising at roughly *$40B* — nearly *2x* its $22B last round — widening its lead over rival *Polymarket*. Founders Tarek Mansour and Luana Lopes Lara are scaling real-money prediction markets fast, with a public debut eyed for *2027*.",
+      "headline": "*SHOW HN MISA77* - A CODEC",
+      "body": "I&#x27;ve spent the last few months working on this codec.<p>It has the following characteristics:<p><pre><code>  - SOTA decompression throughput in its ratio class\n  - Decent r…",
+      "subtitle": "*nonadhocproblem* on the *Model Releases* move.",
       "source": {
-        "handle": "CoinDesk",
-        "name": "CoinDesk"
+        "handle": "nonadhocproblem",
+        "name": "nonadhocproblem"
       },
       "metrics": {
-        "impression_count": 28375,
-        "like_count": 62,
-        "bookmark_count": 9
+        "impression_count": 108000,
+        "like_count": 108,
+        "bookmark_count": 11
       },
       "art": {
-        "shot_type": "person_composite",
+        "shot_type": "conceptual",
         "bg_source": "generate",
-        "people": [
-          "Tarek Mansour",
-          "Luana Lopes Lara"
-        ],
-        "bg_prompt": "A cinematic editorial portrait of the two young Kalshi co-founders, Tarek Mansour and Luana Lopes Lara, standing confidently in a sleek modern fintech office with subtle glowing market tickers in the background. Photorealistic, accurate likeness of both real people, natural human skin, premium magazine photography, framed from the chest up in the upper two thirds. Vertical 4:5 with the bottom third darker and uncluttered for a headline overlay.",
-        "bg_prompt_fallback": "A cinematic close-up of glowing green and red market probability bars rising on a dark screen, premium editorial, no text.",
+        "bg_prompt": "A cinematic editorial photograph of professionals in a modern workspace, face lit by screen glow, reacting to news about Show HN: misa77 - a codec that decodes 2x faster than LZ4 (at better ratios). Dark premium magazine photography, real natural human skin, subject framed in the upper two thirds. Vertical 4:5 with the bottom third darker and uncluttered for a headline overlay.",
         "logos": []
-      },
-      "logo_images": [],
-      "image": "/x-engine/drop/bg-4.png"
+      }
     },
     {
       "kind": "outro",
       "headline": "THAT'S THE *AGENTIC DROP*",
-      "body": "*4 stories*, every day — the AI moves that actually matter.",
+      "body": "*4 stories*, every day. The AI moves that actually matter.",
       "cta": "Follow for the daily drop",
       "art": {
         "shot_type": "conceptual",
         "bg_source": "generate",
-        "bg_prompt": "A cinematic dark editorial backdrop of a softly glowing abstract neural constellation fading into black, premium and minimal, lots of negative space in the center and bottom for text overlay. No text, no logos.",
+        "bg_prompt": "A cinematic dark editorial backdrop of a softly glowing abstract neural constellation fading into black, premium and minimal, negative space for text. No text, no logos.",
         "logos": []
-      },
-      "logo_images": [],
-      "image": "/x-engine/drop/bg-5.png"
+      }
     }
-  ]
+  ],
+  "generated_at": "2026-07-15T21:17:10.247Z",
+  "brand_mark": "NickAI",
+  "accent": "#E08A4D",
+  "caption": "The Agentic Drop — July 16, 2026\n\n1. Brainless: Shadcn components that look like Claude Code, Codex and Grok (@benswerd)\n2. Running Gemma 4 26B at 5 tokens/sec on a 13-year-old Xeon with no GPU (@neomindryan)\n3. Amid hardware legal battle, OpenAI releases a $230 keyboard for Codex (@news)\n4. Show HN: misa77 - a codec that decodes 2x faster than LZ4 (at better ratios) (@nonadhocproblem)\n\nFollow for the daily AI carousel.",
+  "date": "2026-07-16"
 }

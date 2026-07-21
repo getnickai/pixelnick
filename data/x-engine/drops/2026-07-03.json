@@ -1,0 +1,140 @@
+{
+  "edition": "July 3, 2026",
+  "source_folder": "Claude pixelnick",
+  "slides": [
+    {
+      "kind": "cover",
+      "headline": "*AI WON'T* SLOW DOWN",
+      "kicker": "THE AGENTIC DROP",
+      "date": "JULY 3, 2026",
+      "art": {
+        "shot_type": "conceptual",
+        "bg_source": "generate",
+        "bg_prompt": "A cinematic editorial photograph of a person seen from behind, lit in awe by a wall of glowing screens where an AI agent autonomously operates a web browser and a code terminal on its own, cursors moving, dark high-tech room, dramatic volumetric light. Photorealistic, premium, a sense of wonder. Vertical 4:5 with the bottom third darker and uncluttered for a headline overlay.",
+        "logos": []
+      },
+      "subtitle": "The *4 stories* you need to know today.",
+      "inset": "/x-engine/drop/2026-07-03/bg-1.png",
+      "logo_images": [],
+      "image": "/x-engine/drop/2026-07-03/bg-0.png"
+    },
+    {
+      "kind": "story",
+      "index": 1,
+      "headline": "*CLAUDE SONNET 5* GOES *AUTONOMOUS*",
+      "body": "Sonnet 5 makes its own plans and drives tools, browsers and terminals, running autonomously at a level that needed far bigger, pricier models just months ago.",
+      "source": {
+        "handle": "claudeai",
+        "name": "Claude"
+      },
+      "metrics": {
+        "impression_count": 9032595,
+        "like_count": 41619,
+        "bookmark_count": 5341
+      },
+      "art": {
+        "shot_type": "conceptual",
+        "bg_source": "generate",
+        "bg_prompt": "A cinematic editorial photograph of a focused young professional, face lit by screen glow, watching an AI agent autonomously operate a browser and a terminal across several glowing monitors in a dark modern office. Real natural human skin, premium magazine photography, person framed in the upper two thirds. Vertical 4:5 with the bottom third darker and uncluttered for a headline overlay.",
+        "logos": []
+      },
+      "subtitle": "Anthropic's *most agentic* Sonnet yet.",
+      "logo_images": [],
+      "image": "/x-engine/drop/2026-07-03/bg-1.png"
+    },
+    {
+      "kind": "story",
+      "index": 2,
+      "headline": "*CLAUDE'S* TOP MODELS GO *GLOBAL*",
+      "body": "Anthropic says the Commerce Department cleared its most powerful models for export, with access restored right away. The *AI trade map* just shifted overnight.",
+      "source": {
+        "handle": "AnthropicAI",
+        "name": "Anthropic"
+      },
+      "metrics": {
+        "impression_count": 13945200,
+        "like_count": 84614,
+        "bookmark_count": 7472
+      },
+      "art": {
+        "shot_type": "person_composite",
+        "bg_source": "generate",
+        "bg_prompt": "A dramatic cinematic editorial portrait of Dario Amodei (Anthropic CEO), accurate likeness, confident, standing before a large glowing world map / globe of connected light nodes spanning continents in a dark premium room. Photorealistic, real human skin, framed from the chest up in the upper two thirds. Vertical 4:5 with the bottom third darker and uncluttered for a headline overlay.",
+        "people": [
+          "Dario Amodei"
+        ],
+        "bg_prompt_fallback": "A cinematic glowing world map of connected light nodes across continents, dark premium editorial, no text.",
+        "logos": []
+      },
+      "subtitle": "US lifts export controls on *Fable 5* and *Mythos 5*.",
+      "logo_images": [],
+      "image": "/x-engine/drop/2026-07-03/bg-2.png"
+    },
+    {
+      "kind": "story",
+      "index": 3,
+      "headline": "*ETCHED* BETS IT ALL ON ONE *CHIP*",
+      "body": "Etched's inference-only silicon claims state-of-the-art throughput and power efficiency, with first racks shipping this summer. A specialized challenger to the *GPU*.",
+      "source": {
+        "handle": "Etched",
+        "name": "Etched"
+      },
+      "metrics": {
+        "impression_count": 5757253,
+        "like_count": 9214,
+        "bookmark_count": 3593
+      },
+      "art": {
+        "shot_type": "conceptual",
+        "bg_source": "generate",
+        "bg_prompt": "A cinematic editorial photograph of two focused hardware engineers, a man and a woman, holding and inspecting a glowing custom AI inference chip in front of a rack of servers with blue light, dark premium data-center setting. Real natural human skin, premium photography, people framed in the upper two thirds. Vertical 4:5 with the bottom third darker and uncluttered for a headline overlay.",
+        "logos": []
+      },
+      "subtitle": "Out of stealth with *$800M* raised and *$1B* in orders.",
+      "logo_images": [],
+      "image": "/x-engine/drop/2026-07-03/bg-3.png"
+    },
+    {
+      "kind": "story",
+      "index": 4,
+      "headline": "*LAB-GROWN* HUMAN *EGGS*",
+      "body": "Conception says it generated the first early human eggs derived from stem cells, with the potential to *redefine fertility*. Biology is becoming programmable.",
+      "source": {
+        "handle": "mattkrisiloff",
+        "name": "Matt Krisiloff"
+      },
+      "metrics": {
+        "impression_count": 2410850,
+        "like_count": 6339,
+        "bookmark_count": 3009
+      },
+      "art": {
+        "shot_type": "conceptual",
+        "bg_source": "generate",
+        "bg_prompt": "A cinematic editorial photograph of a hopeful female scientist in a premium biotech lab holding up a glowing vial toward the light, soft warm rim light, blurred lab equipment behind. Real natural human skin, premium magazine photography, subject framed in the upper two thirds. Vertical 4:5 with the bottom third darker and uncluttered for a headline overlay.",
+        "logos": []
+      },
+      "subtitle": "*Conception* makes the first eggs from stem cells.",
+      "logo_images": [],
+      "image": "/x-engine/drop/2026-07-03/bg-4.png"
+    },
+    {
+      "kind": "outro",
+      "headline": "THAT'S THE *AGENTIC DROP*",
+      "body": "*4 stories*, every day. The AI moves that actually matter.",
+      "cta": "Follow for the daily drop",
+      "art": {
+        "shot_type": "conceptual",
+        "bg_source": "generate",
+        "bg_prompt": "A cinematic dark editorial backdrop of a softly glowing abstract neural constellation fading into black, premium and minimal, negative space for text. No text, no logos.",
+        "logos": []
+      },
+      "logo_images": [],
+      "image": "/x-engine/drop/2026-07-03/bg-5.png"
+    }
+  ],
+  "generated_at": "2026-07-03T12:00:00.000Z",
+  "brand_mark": "NickAI",
+  "accent": "#E08A4D",
+  "date": "2026-07-03"
+}
