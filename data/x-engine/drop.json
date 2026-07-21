@@ -5,7 +5,7 @@
     {
       "kind": "cover",
       "headline": "*4 THINGS* IN *AI TODAY*",
-      "kicker": "THE AGENTIC DROP",
+      "kicker": "ALPHA NEWS",
       "date": "JULY 16, 2026",
       "subtitle": "The *4 stories* you need to know today.",
       "art": {
@@ -105,7 +105,7 @@
     },
     {
       "kind": "outro",
-      "headline": "THAT'S THE *AGENTIC DROP*",
+      "headline": "THAT'S THE *ALPHA NEWS*",
       "body": "*4 stories*, every day. The AI moves that actually matter.",
       "cta": "Follow for the daily drop",
       "art": {
@@ -117,7 +117,7 @@
     }
   ],
   "generated_at": "2026-07-15T21:17:10.247Z",
-  "brand_mark": "NickAI",
+  "brand_mark": "Alpha News",
   "accent": "#E08A4D",
   "caption": "The Agentic Drop — July 16, 2026\n\n1. Brainless: Shadcn components that look like Claude Code, Codex and Grok (@benswerd)\n2. Running Gemma 4 26B at 5 tokens/sec on a 13-year-old Xeon with no GPU (@neomindryan)\n3. Amid hardware legal battle, OpenAI releases a $230 keyboard for Codex (@news)\n4. Show HN: misa77 - a codec that decodes 2x faster than LZ4 (at better ratios) (@nonadhocproblem)\n\nFollow for the daily AI carousel.",
   "date": "2026-07-16"

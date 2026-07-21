@@ -90,16 +90,16 @@ export const engineManifest: EngineEntryMeta[] = [
   },
   {
     id: "agentic-drop",
-    label: "Agentic Drop",
+    label: "Alpha News",
     group: "X Engine",
-    shortLabel: "Agentic Drop",
+    shortLabel: "Alpha News",
     meta: "carousel",
   },
   {
     id: "agentic-drop-history",
-    label: "Agentic Drop History",
+    label: "Alpha News History",
     group: "X Engine",
-    shortLabel: "Drop History",
+    shortLabel: "News History",
     meta: "archive",
   },
 ];

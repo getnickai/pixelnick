@@ -11,12 +11,12 @@ const EXPORT_WIDTH = 1080;
  * One-click export of a slideshow's slides to 1080×1350 PNGs.
  * - `targetId`: limit the export to slides inside `#<targetId>` (one day's
  *   strip). Omit to export every [data-export-slide] on the page.
- * - `prefix`: filename prefix (default "agentic-drop"); pass the edition date
+ * - `prefix`: filename prefix (default "alpha-news"); pass the edition date
  *   so each day's files are distinguishable.
  */
 export function DownloadSlidesButton({
   targetId,
-  prefix = "agentic-drop",
+  prefix = "alpha-news",
   label = "Download PNGs",
   size = "md",
 }: {

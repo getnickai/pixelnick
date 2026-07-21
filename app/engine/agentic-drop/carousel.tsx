@@ -11,7 +11,7 @@ export function AgenticDrop() {
     return (
       <div className="flex min-h-0 w-full flex-col">
         <div className="shrink-0 border-b border-sidebar-border px-6 py-4">
-          <h1 className="text-lg font-semibold tracking-tight">Agentic Drop</h1>
+          <h1 className="text-lg font-semibold tracking-tight">Alpha News</h1>
         </div>
         <p className="py-10 text-center text-sm text-muted-foreground">No drop generated yet.</p>
       </div>
@@ -22,7 +22,7 @@ export function AgenticDrop() {
     <div className="flex min-h-0 w-full flex-col">
       <div className="flex shrink-0 flex-wrap items-center justify-between gap-3 border-b border-sidebar-border px-6 py-4">
         <div>
-          <h1 className="text-lg font-semibold tracking-tight">Agentic Drop</h1>
+          <h1 className="text-lg font-semibold tracking-tight">Alpha News</h1>
           <p className="mt-0.5 text-sm text-muted-foreground">
             {drop.edition} · {drop.slides.length} slides · source folder <span className="font-mono">{drop.source_folder}</span>
           </p>
