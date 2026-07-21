@@ -3,7 +3,7 @@ import type { XDrop } from "@/lib/x-engine";
 import { Slide, DEFAULT_ACCENT } from "../agentic-drop/slide";
 import { DownloadSlidesButton } from "../agentic-drop/download-button";
 
-export const metadata = { title: "Agentic Drop History — pixelnick" };
+export const metadata = { title: "Alpha News History — pixelnick" };
 
 // All dates are plain YYYY-MM-DD editions — parse + format in UTC so the day
 // never shifts under a local timezone.
@@ -48,7 +48,7 @@ export default function Page() {
   return (
     <div className="flex min-h-0 w-full min-w-0 flex-col">
       <div className="shrink-0 border-b border-sidebar-border px-6 py-4">
-        <h1 className="text-lg font-semibold tracking-tight">Agentic Drop History</h1>
+        <h1 className="text-lg font-semibold tracking-tight">Alpha News History</h1>
         <p className="mt-0.5 text-sm text-muted-foreground">
           {drops.length} edition{drops.length === 1 ? "" : "s"} · grouped by week · download any day in one click
         </p>
