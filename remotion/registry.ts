@@ -76,6 +76,11 @@ import {
   launchVideoProductCutDefaultProps,
   type LaunchVideoProductCutProps,
 } from "./compositions/launch-video-pr91/props";
+import { NickIntroComposition } from "./compositions/nick-intro/composition";
+import {
+  nickIntroDefaultProps,
+  type NickIntroProps,
+} from "./compositions/nick-intro/props";
 import {
   motionManifest,
   type MotionEntryMeta,
@@ -169,6 +174,10 @@ const componentBindings: Record<string, ComponentBinding> = {
     component: LaunchVideoProductCutComposition,
     defaultProps: launchVideoProductCutDefaultProps,
   } as ComponentBinding<LaunchVideoProductCutProps> as ComponentBinding,
+  "nick-intro": {
+    component: NickIntroComposition,
+    defaultProps: nickIntroDefaultProps,
+  } as ComponentBinding<NickIntroProps> as ComponentBinding,
 };
 
 export const motionRegistry: MotionEntry[] = motionManifest

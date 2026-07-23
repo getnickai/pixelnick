@@ -157,7 +157,7 @@ export function SwarmArenaKit() {
           <p className="px-1 text-xs font-semibold uppercase tracking-wider text-muted-foreground">
             Data
           </p>
-          <div className="grid grid-cols-2 gap-1 rounded-lg border border-input p-1">
+          <div className="grid grid-cols-2 gap-1 rounded-lg bg-zinc-900/60 p-1">
             {(["sample", "live"] as const).map((s) => (
               <button
                 key={s}
@@ -166,7 +166,7 @@ export function SwarmArenaKit() {
                 className={cn(
                   "cursor-pointer rounded-md px-2 py-1.5 text-xs font-medium capitalize transition-colors",
                   source === s
-                    ? "bg-primary-500/15 text-zinc-50"
+                    ? "bg-primary-500 text-zinc-950"
                     : "text-zinc-500 hover:bg-zinc-900 hover:text-zinc-300",
                 )}
               >

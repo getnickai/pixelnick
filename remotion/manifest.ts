@@ -27,6 +27,12 @@ import {
   LAUNCH_VIDEO_PR91_HEIGHT,
   LAUNCH_VIDEO_PR91_WIDTH,
 } from "./compositions/launch-video-pr91/timeline";
+import {
+  NICK_INTRO_DURATION,
+  NICK_INTRO_FPS,
+  NICK_INTRO_HEIGHT,
+  NICK_INTRO_WIDTH,
+} from "./compositions/nick-intro/timeline";
 
 export type MotionEntryMeta = {
   id: string;
@@ -210,6 +216,16 @@ export const motionManifest: MotionEntryMeta[] = [
     height: LAUNCH_VIDEO_PR91_HEIGHT,
     fps: LAUNCH_VIDEO_PR91_FPS,
     durationInFrames: LAUNCH_VIDEO_PR91_DURATION,
+  },
+  {
+    // Cinematic NickAI identity sting. Anime.js drives a paused object
+    // timeline that Remotion seeks frame-by-frame for deterministic exports.
+    id: "nick-intro",
+    label: "Nick Intro",
+    width: NICK_INTRO_WIDTH,
+    height: NICK_INTRO_HEIGHT,
+    fps: NICK_INTRO_FPS,
+    durationInFrames: NICK_INTRO_DURATION,
   },
   {
     // Workflow Template Card — the library "Blueprint" video: a first-person

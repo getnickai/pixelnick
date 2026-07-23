@@ -47,6 +47,8 @@ import { LaunchVideoComposition } from "./compositions/launch-video/composition"
 import { launchVideoDefaultProps } from "./compositions/launch-video/props";
 import { LaunchVideoProductCutComposition } from "./compositions/launch-video-pr91/composition";
 import { launchVideoProductCutDefaultProps } from "./compositions/launch-video-pr91/props";
+import { NickIntroComposition } from "./compositions/nick-intro/composition";
+import { nickIntroDefaultProps } from "./compositions/nick-intro/props";
 import { getMotionEntryMeta } from "./manifest";
 
 const perf = getMotionEntryMeta("performance-card")!;
@@ -64,6 +66,7 @@ const nickaiOgCover = getMotionEntryMeta("nickai-og-cover")!;
 const workflowTemplate = getMotionEntryMeta("workflow-template-card")!;
 const launchVideo = getMotionEntryMeta("launch-video")!;
 const launchVideoProductCut = getMotionEntryMeta("launch-video-pr91")!;
+const nickIntro = getMotionEntryMeta("nick-intro")!;
 
 export const RemotionRoot: React.FC = () => {
   return (
@@ -230,6 +233,15 @@ export const RemotionRoot: React.FC = () => {
         width={launchVideoProductCut.width}
         height={launchVideoProductCut.height}
         defaultProps={launchVideoProductCutDefaultProps}
+      />
+      <Composition
+        id="nick-intro"
+        component={NickIntroComposition}
+        durationInFrames={nickIntro.durationInFrames}
+        fps={nickIntro.fps}
+        width={nickIntro.width}
+        height={nickIntro.height}
+        defaultProps={nickIntroDefaultProps}
       />
     </>
   );

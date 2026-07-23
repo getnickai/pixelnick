@@ -21,6 +21,7 @@
     "@remotion/player": "4.0.460",
     "@remotion/renderer": "4.0.460",
     "@remotion/tailwind-v4": "4.0.460",
+    "animejs": "^4.5.0",
     "class-variance-authority": "^0.7.1",
     "clsx": "^2.1.1",
     "flag-icons": "7",

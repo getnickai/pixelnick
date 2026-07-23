@@ -82,10 +82,15 @@ export async function POST(request: Request) {
       composition,
       serveUrl,
       codec: "h264",
+      imageFormat: "png",
+      pixelFormat: "yuv420p",
+      crf: 14,
+      x264Preset: "slow",
+      colorSpace: "bt709",
       outputLocation,
       inputProps,
-      // Product Cut is intentionally silent; avoid muxing an empty AAC track.
-      muted: body.id === "launch-video-pr91",
+      // These compositions are intentionally silent; avoid an empty AAC track.
+      muted: body.id === "launch-video-pr91" || body.id === "nick-intro",
       concurrency: 1,
     });
 
