@@ -81,6 +81,11 @@ import {
   nickIntroDefaultProps,
   type NickIntroProps,
 } from "./compositions/nick-intro/props";
+import { NickOutroComposition } from "./compositions/nick-outro/composition";
+import {
+  nickOutroDefaultProps,
+  type NickOutroProps,
+} from "./compositions/nick-outro/props";
 import {
   motionManifest,
   type MotionEntryMeta,
@@ -178,6 +183,10 @@ const componentBindings: Record<string, ComponentBinding> = {
     component: NickIntroComposition,
     defaultProps: nickIntroDefaultProps,
   } as ComponentBinding<NickIntroProps> as ComponentBinding,
+  "nick-outro": {
+    component: NickOutroComposition,
+    defaultProps: nickOutroDefaultProps,
+  } as ComponentBinding<NickOutroProps> as ComponentBinding,
 };
 
 export const motionRegistry: MotionEntry[] = motionManifest

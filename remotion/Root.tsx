@@ -49,6 +49,8 @@ import { LaunchVideoProductCutComposition } from "./compositions/launch-video-pr
 import { launchVideoProductCutDefaultProps } from "./compositions/launch-video-pr91/props";
 import { NickIntroComposition } from "./compositions/nick-intro/composition";
 import { nickIntroDefaultProps } from "./compositions/nick-intro/props";
+import { NickOutroComposition } from "./compositions/nick-outro/composition";
+import { nickOutroDefaultProps } from "./compositions/nick-outro/props";
 import { getMotionEntryMeta } from "./manifest";
 
 const perf = getMotionEntryMeta("performance-card")!;
@@ -67,6 +69,7 @@ const workflowTemplate = getMotionEntryMeta("workflow-template-card")!;
 const launchVideo = getMotionEntryMeta("launch-video")!;
 const launchVideoProductCut = getMotionEntryMeta("launch-video-pr91")!;
 const nickIntro = getMotionEntryMeta("nick-intro")!;
+const nickOutro = getMotionEntryMeta("nick-outro")!;
 
 export const RemotionRoot: React.FC = () => {
   return (
@@ -242,6 +245,15 @@ export const RemotionRoot: React.FC = () => {
         width={nickIntro.width}
         height={nickIntro.height}
         defaultProps={nickIntroDefaultProps}
+      />
+      <Composition
+        id="nick-outro"
+        component={NickOutroComposition}
+        durationInFrames={nickOutro.durationInFrames}
+        fps={nickOutro.fps}
+        width={nickOutro.width}
+        height={nickOutro.height}
+        defaultProps={nickOutroDefaultProps}
       />
     </>
   );

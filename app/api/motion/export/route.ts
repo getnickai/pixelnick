@@ -90,7 +90,10 @@ export async function POST(request: Request) {
       outputLocation,
       inputProps,
       // These compositions are intentionally silent; avoid an empty AAC track.
-      muted: body.id === "launch-video-pr91" || body.id === "nick-intro",
+      muted:
+        body.id === "launch-video-pr91" ||
+        body.id === "nick-intro" ||
+        body.id === "nick-outro",
       concurrency: 1,
     });
 

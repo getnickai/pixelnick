@@ -33,6 +33,12 @@ import {
   NICK_INTRO_HEIGHT,
   NICK_INTRO_WIDTH,
 } from "./compositions/nick-intro/timeline";
+import {
+  NICK_OUTRO_DURATION,
+  NICK_OUTRO_FPS,
+  NICK_OUTRO_HEIGHT,
+  NICK_OUTRO_WIDTH,
+} from "./compositions/nick-outro/timeline";
 
 export type MotionEntryMeta = {
   id: string;
@@ -226,6 +232,16 @@ export const motionManifest: MotionEntryMeta[] = [
     height: NICK_INTRO_HEIGHT,
     fps: NICK_INTRO_FPS,
     durationInFrames: NICK_INTRO_DURATION,
+  },
+  {
+    // Standalone Product Cut identity outro: Galaxy backing, NickAI lockup,
+    // CTA and URL. Anime.js recreates the source choreography deterministically.
+    id: "nick-outro",
+    label: "Nick Outro",
+    width: NICK_OUTRO_WIDTH,
+    height: NICK_OUTRO_HEIGHT,
+    fps: NICK_OUTRO_FPS,
+    durationInFrames: NICK_OUTRO_DURATION,
   },
   {
     // Workflow Template Card — the library "Blueprint" video: a first-person
