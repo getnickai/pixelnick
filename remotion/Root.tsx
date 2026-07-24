@@ -51,6 +51,11 @@ import { NickIntroComposition } from "./compositions/nick-intro/composition";
 import { nickIntroDefaultProps } from "./compositions/nick-intro/props";
 import { NickOutroComposition } from "./compositions/nick-outro/composition";
 import { nickOutroDefaultProps } from "./compositions/nick-outro/props";
+import { Wrapper16x9Composition } from "./compositions/wrapper-16-9/composition";
+import {
+  wrapper16x9DefaultProps,
+  calcWrapper16x9Metadata,
+} from "./compositions/wrapper-16-9/props";
 import { getMotionEntryMeta } from "./manifest";
 
 const perf = getMotionEntryMeta("performance-card")!;
@@ -70,6 +75,7 @@ const launchVideo = getMotionEntryMeta("launch-video")!;
 const launchVideoProductCut = getMotionEntryMeta("launch-video-pr91")!;
 const nickIntro = getMotionEntryMeta("nick-intro")!;
 const nickOutro = getMotionEntryMeta("nick-outro")!;
+const wrapper16x9 = getMotionEntryMeta("wrapper-16-9")!;
 
 export const RemotionRoot: React.FC = () => {
   return (
@@ -254,6 +260,19 @@ export const RemotionRoot: React.FC = () => {
         width={nickOutro.width}
         height={nickOutro.height}
         defaultProps={nickOutroDefaultProps}
+      />
+      {/* Wrapper 16:9 — Nick Intro → any 1920×1080 clip → Nick Outro on one
+          timeline. Duration comes from calculateMetadata (intro + measured
+          body + outro); scripts/render-wrapper.ts measures the source file. */}
+      <Composition
+        id="wrapper-16-9"
+        component={Wrapper16x9Composition}
+        durationInFrames={wrapper16x9.durationInFrames}
+        fps={wrapper16x9.fps}
+        width={wrapper16x9.width}
+        height={wrapper16x9.height}
+        defaultProps={wrapper16x9DefaultProps}
+        calculateMetadata={calcWrapper16x9Metadata}
       />
     </>
   );

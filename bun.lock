@@ -9,6 +9,7 @@
         "@base-ui/react": "^1.4.1",
         "@remotion/bundler": "4.0.460",
         "@remotion/google-fonts": "4.0.460",
+        "@remotion/media-parser": "4.0.460",
         "@remotion/player": "4.0.460",
         "@remotion/renderer": "4.0.460",
         "@remotion/tailwind-v4": "4.0.460",

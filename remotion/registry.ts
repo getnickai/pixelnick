@@ -86,6 +86,11 @@ import {
   nickOutroDefaultProps,
   type NickOutroProps,
 } from "./compositions/nick-outro/props";
+import { Wrapper16x9Composition } from "./compositions/wrapper-16-9/composition";
+import {
+  wrapper16x9DefaultProps,
+  type Wrapper16x9Props,
+} from "./compositions/wrapper-16-9/props";
 import {
   motionManifest,
   type MotionEntryMeta,
@@ -187,6 +192,10 @@ const componentBindings: Record<string, ComponentBinding> = {
     component: NickOutroComposition,
     defaultProps: nickOutroDefaultProps,
   } as ComponentBinding<NickOutroProps> as ComponentBinding,
+  "wrapper-16-9": {
+    component: Wrapper16x9Composition,
+    defaultProps: wrapper16x9DefaultProps,
+  } as ComponentBinding<Wrapper16x9Props> as ComponentBinding,
 };
 
 export const motionRegistry: MotionEntry[] = motionManifest
