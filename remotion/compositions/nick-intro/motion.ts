@@ -1,8 +1,8 @@
 import { createTimeline, stagger } from "animejs";
 
 // The default four-word tagline settles at 2,825ms. Pulling the coordinated
-// outro forward by 245ms leaves a 500ms readable hold before it exits.
-const OUTRO_SHIFT_MS = 245;
+// outro forward by 495ms leaves a 250ms readable hold before it exits.
+const OUTRO_SHIFT_MS = 495;
 
 export type NickIntroSceneState = {
   glowOpacity: number;
