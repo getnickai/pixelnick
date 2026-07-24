@@ -1,8 +1,9 @@
 import { createTimeline, stagger } from "animejs";
+import { NICK_INTRO_PLAYBACK_RATE } from "./timeline";
 
-// The default four-word tagline settles at 2,825ms. Pulling the coordinated
-// outro forward by 495ms leaves a 250ms readable hold before it exits.
-const OUTRO_SHIFT_MS = 495;
+// The unshifted timeline has 745ms between the default four-word tagline
+// settling and its exit. Keep that hold at 250ms after playback acceleration.
+const OUTRO_SHIFT_MS = 745 - 250 * NICK_INTRO_PLAYBACK_RATE;
 
 export type NickIntroSceneState = {
   glowOpacity: number;

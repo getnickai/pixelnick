@@ -10,6 +10,7 @@ import {
 } from "remotion";
 import { createNickIntroAnimation } from "./motion";
 import type { NickIntroProps } from "./props";
+import { NICK_INTRO_PLAYBACK_RATE } from "./timeline";
 
 const DUPLET = 'var(--font-duplet, "Duplet"), ui-sans-serif, system-ui, sans-serif';
 
@@ -48,7 +49,10 @@ export const NickIntroComposition: React.FC<NickIntroProps> = ({ tagline }) => {
   }, [animation]);
 
   // Remotion is the clock. Anime.js only evaluates its paused timeline.
-  animation.timeline.seek((frame / fps) * 1_000, true);
+  animation.timeline.seek(
+    (frame / fps) * 1_000 * NICK_INTRO_PLAYBACK_RATE,
+    true,
+  );
 
   const { scene, mark, wordmark } = animation;
 
