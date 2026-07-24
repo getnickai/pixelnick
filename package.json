@@ -11,13 +11,15 @@
     "cards": "bun scripts/generate-cards.ts",
     "cards:png": "bun scripts/generate-cards.ts --png",
     "swarm:fixtures": "bun scripts/swarm-fixtures.ts",
-    "cards:swarm": "bun scripts/generate-swarm-cards.ts"
+    "cards:swarm": "bun scripts/generate-swarm-cards.ts",
+    "render:wrapper": "bun scripts/render-wrapper.ts"
   },
   "dependencies": {
     "@aws-sdk/client-s3": "^3.1054.0",
     "@base-ui/react": "^1.4.1",
     "@remotion/bundler": "4.0.460",
     "@remotion/google-fonts": "4.0.460",
+    "@remotion/media-parser": "4.0.460",
     "@remotion/player": "4.0.460",
     "@remotion/renderer": "4.0.460",
     "@remotion/tailwind-v4": "4.0.460",

@@ -51,3 +51,6 @@ next-env.d.ts
 /scripts/bake-wave-loop/bake.bundle.js
 /public/nickai-social/wave-loop-*-preview.png
 /out/wave-loop-frames/
+
+# wrapper-16-9 staged input videos (source clips copied in by render-wrapper.ts)
+/public/wrapper-input/
