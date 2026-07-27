@@ -23,5 +23,6 @@ export type NickaiOgCoverProps = {
 
 export const nickaiOgCoverDefaultProps: NickaiOgCoverProps = {
   theme: "light",
-  headline: "Your AI trading agent, across every market.",
+  headline:
+    "Prediction Market Automation: AI Bots, Agents & Tools Compared (2026)",
 };

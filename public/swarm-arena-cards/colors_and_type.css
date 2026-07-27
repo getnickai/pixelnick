@@ -9,7 +9,11 @@
 
 @import url('https://fonts.googleapis.com/css2?family=Geist:wght@400;500;600;700;800&family=Fira+Code:wght@400;500;600;700&display=swap');
 
-:root {
+/* Keep the standalone card theme from leaking generic tokens such as
+   --accent and --border into the Pixelnick application shell when this file
+   is bundled by a Remotion composition. */
+html[data-theme],
+.sa-card[data-theme] {
   /* ── Font families ─────────────────────────────────────────────────── */
   --font-display: "Geist", "Rethink Sans", system-ui, sans-serif;
   --font-body:    "Geist", "Rethink Sans", system-ui, sans-serif;
@@ -49,7 +53,6 @@
 /* ════════════════════════════════════════════════════════════════════════
    THEME: DARK  (Ember) — the default product surface
    ════════════════════════════════════════════════════════════════════════ */
-:root,
 [data-theme="dark"] {
   /* surfaces */
   --bg:          #15140F;   /* page / card base — warm near-black         */

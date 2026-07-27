@@ -43,15 +43,15 @@ const SKINS: Record<NickaiOgCoverTheme, Skin> = {
 };
 
 /**
- * Shrink the display size for longer headlines so they stay ~2 lines inside
- * the left column. The reference headline (43 chars) lands at 60.
+ * Shrink the display size for longer headlines so they stay inside the left
+ * column. This is one type step below the original OG scale.
  */
 function headlineSize(text: string): number {
   const n = text.length;
-  if (n <= 26) return 84;
-  if (n <= 42) return 74;
-  if (n <= 58) return 64;
-  return 56;
+  if (n <= 26) return 74;
+  if (n <= 42) return 64;
+  if (n <= 58) return 56;
+  return 48;
 }
 
 /** The NickAI logo mark — path copied verbatim from src/components/icons.tsx
@@ -105,12 +105,10 @@ export const NickaiOgCoverComposition: React.FC<NickaiOgCoverProps> = ({
     };
   }, [handle]);
 
-  const PAD_LEFT = 88;
-  const PAD_TOP = 80;
-  // Right wave panel: exact og.png geometry (panel bbox 726..1127 x 86..543,
-  // radius 34), so the light theme is a byte-match and the wave is the original
-  // og.png crop rather than a re-created one.
-  const PANEL = { top: 86, right: 72, bottom: 86, width: 402, radius: 34 };
+  const SAFE_AREA = 72;
+  // Full-height right wave panel. Its left edge remains at the original x=726,
+  // while the other three edges bleed into the cover boundary.
+  const PANEL = { top: 0, right: 0, bottom: 0, width: 474 };
   const COL_WIDTH = 620;
 
   return (
@@ -119,8 +117,8 @@ export const NickaiOgCoverComposition: React.FC<NickaiOgCoverProps> = ({
       <div
         style={{
           position: "absolute",
-          top: PAD_TOP,
-          left: PAD_LEFT,
+          top: SAFE_AREA,
+          left: SAFE_AREA,
           display: "flex",
           alignItems: "center",
           gap: 14,
@@ -141,20 +139,17 @@ export const NickaiOgCoverComposition: React.FC<NickaiOgCoverProps> = ({
         </span>
       </div>
 
-      {/* Left content column — headline + subhead, vertically centered. */}
+      {/* Left headline column, vertically centered. */}
       <div
         style={{
           position: "absolute",
-          left: PAD_LEFT,
+          left: SAFE_AREA,
           top: 0,
-          height: 630,
+          bottom: 0,
           width: COL_WIDTH,
           display: "flex",
           flexDirection: "column",
           justifyContent: "center",
-          gap: 26,
-          // Nudge the group just below the optical center to match og.png.
-          paddingTop: 24,
         }}
       >
         <div
@@ -162,7 +157,7 @@ export const NickaiOgCoverComposition: React.FC<NickaiOgCoverProps> = ({
             fontFamily: fontHeading,
             fontWeight: 600,
             fontSize: headlineSize(headline),
-            lineHeight: 1.1,
+            lineHeight: 1.15,
             letterSpacing: -1.2,
             color: skin.headline,
             maxWidth: 600,
@@ -170,6 +165,22 @@ export const NickaiOgCoverComposition: React.FC<NickaiOgCoverProps> = ({
         >
           {headline}
         </div>
+      </div>
+
+      <div
+        style={{
+          position: "absolute",
+          left: SAFE_AREA,
+          bottom: SAFE_AREA,
+          fontFamily: fontSans,
+          fontWeight: 500,
+          fontSize: 22,
+          lineHeight: 1,
+          letterSpacing: 0.2,
+          color: skin.subhead,
+        }}
+      >
+        getnick.ai
       </div>
 
       {/* Right wave panel. */}
@@ -180,7 +191,6 @@ export const NickaiOgCoverComposition: React.FC<NickaiOgCoverProps> = ({
           right: PANEL.right,
           bottom: PANEL.bottom,
           width: PANEL.width,
-          borderRadius: PANEL.radius,
           overflow: "hidden",
         }}
       >

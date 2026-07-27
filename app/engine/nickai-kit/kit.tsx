@@ -141,7 +141,7 @@ export function NickAiKit() {
                 className={cn(
                   "cursor-pointer rounded-md px-2 py-1.5 text-xs font-medium capitalize transition-colors",
                   source === s
-                    ? "bg-primary-500 text-zinc-950"
+                    ? "bg-primary-500 text-zinc-50"
                     : "text-zinc-500 hover:bg-zinc-900 hover:text-zinc-300",
                 )}
               >
@@ -164,7 +164,7 @@ export function NickAiKit() {
                 className={cn(
                   "cursor-pointer rounded-md px-2 py-1.5 text-xs font-medium capitalize transition-colors",
                   mode === m
-                    ? "bg-primary-500 text-zinc-950"
+                    ? "bg-primary-500 text-zinc-50"
                     : "text-zinc-500 hover:bg-zinc-900 hover:text-zinc-300",
                 )}
               >
