@@ -17,6 +17,9 @@
 /.next/
 /out/
 
+# run-pixelnick driver screenshots
+/.driver-out/
+
 # downloaded remote avatars (fetched per-run, not source)
 /public/figma/avatars/
 # live data inputs (the .example template stays committed)
