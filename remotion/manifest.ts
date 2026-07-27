@@ -27,6 +27,26 @@ import {
   LAUNCH_VIDEO_PR91_HEIGHT,
   LAUNCH_VIDEO_PR91_WIDTH,
 } from "./compositions/launch-video-pr91/timeline";
+import {
+  NICK_INTRO_DURATION,
+  NICK_INTRO_FPS,
+  NICK_INTRO_HEIGHT,
+  NICK_INTRO_WIDTH,
+} from "./compositions/nick-intro/timeline";
+import {
+  NICK_OUTRO_DURATION,
+  NICK_OUTRO_FPS,
+  NICK_OUTRO_HEIGHT,
+  NICK_OUTRO_WIDTH,
+} from "./compositions/nick-outro/timeline";
+import {
+  WRAPPER_16_9_DEFAULT_BODY_DURATION,
+  WRAPPER_16_9_FPS,
+  WRAPPER_16_9_HEIGHT,
+  WRAPPER_16_9_INTRO_DURATION,
+  WRAPPER_16_9_OUTRO_DURATION,
+  WRAPPER_16_9_WIDTH,
+} from "./compositions/wrapper-16-9/timeline";
 
 export type MotionEntryMeta = {
   id: string;
@@ -210,6 +230,41 @@ export const motionManifest: MotionEntryMeta[] = [
     height: LAUNCH_VIDEO_PR91_HEIGHT,
     fps: LAUNCH_VIDEO_PR91_FPS,
     durationInFrames: LAUNCH_VIDEO_PR91_DURATION,
+  },
+  {
+    // Cinematic NickAI identity sting. Anime.js drives a paused object
+    // timeline that Remotion seeks frame-by-frame for deterministic exports.
+    id: "nick-intro",
+    label: "Nick Intro",
+    width: NICK_INTRO_WIDTH,
+    height: NICK_INTRO_HEIGHT,
+    fps: NICK_INTRO_FPS,
+    durationInFrames: NICK_INTRO_DURATION,
+  },
+  {
+    // Standalone Product Cut identity outro: Galaxy backing, NickAI lockup,
+    // CTA and URL. Anime.js recreates the source choreography deterministically.
+    id: "nick-outro",
+    label: "Nick Outro",
+    width: NICK_OUTRO_WIDTH,
+    height: NICK_OUTRO_HEIGHT,
+    fps: NICK_OUTRO_FPS,
+    durationInFrames: NICK_OUTRO_DURATION,
+  },
+  {
+    // Wrapper 16:9 — bookends any 1920×1080 clip with the Nick Intro and Nick
+    // Outro on one timeline. The body length is a placeholder here; the real
+    // frame count is measured from the source file and supplied via
+    // calculateMetadata (see scripts/render-wrapper.ts).
+    id: "wrapper-16-9",
+    label: "Wrapper 16:9",
+    width: WRAPPER_16_9_WIDTH,
+    height: WRAPPER_16_9_HEIGHT,
+    fps: WRAPPER_16_9_FPS,
+    durationInFrames:
+      WRAPPER_16_9_INTRO_DURATION +
+      WRAPPER_16_9_DEFAULT_BODY_DURATION +
+      WRAPPER_16_9_OUTRO_DURATION,
   },
   {
     // Workflow Template Card — the library "Blueprint" video: a first-person

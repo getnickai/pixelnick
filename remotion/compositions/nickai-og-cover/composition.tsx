@@ -160,7 +160,7 @@ export const NickaiOgCoverComposition: React.FC<NickaiOgCoverProps> = ({
         <div
           style={{
             fontFamily: fontHeading,
-            fontWeight: 700,
+            fontWeight: 600,
             fontSize: headlineSize(headline),
             lineHeight: 1.1,
             letterSpacing: -1.2,

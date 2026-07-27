@@ -1,0 +1,16 @@
+<svg preserveAspectRatio="none" width="100%" height="100%" overflow="visible" style="display: block;" viewBox="0 0 2180.44 2195.12" fill="none" xmlns="http://www.w3.org/2000/svg">
+<g id="Nick Intro Glow" filter="url(#nickIntroGlowBlur)">
+<ellipse cx="1090.22" cy="1097.56" rx="595.656" ry="603" fill="url(#nickIntroGlowPaint)"/>
+</g>
+<defs>
+<filter id="nickIntroGlowBlur" x="0" y="0" width="2180.44" height="2195.12" filterUnits="userSpaceOnUse" color-interpolation-filters="sRGB">
+<feFlood flood-opacity="0" result="BackgroundImageFix"/>
+<feBlend mode="normal" in="SourceGraphic" in2="BackgroundImageFix" result="shape"/>
+<feGaussianBlur stdDeviation="247.281" result="glowBlur"/>
+</filter>
+<linearGradient id="nickIntroGlowPaint" x1="934.239" y1="1409.2" x2="1090.22" y2="1700.56" gradientUnits="userSpaceOnUse">
+<stop/>
+<stop offset="0.76659" stop-color="#0178FF"/>
+</linearGradient>
+</defs>
+</svg>

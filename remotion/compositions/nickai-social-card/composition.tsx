@@ -36,7 +36,6 @@ type Skin = {
   bg: string;
   headline: string;
   subline: string;
-  wordmark: string;
   chipText: string;
   chipBorder: string;
   chipBg: string;
@@ -49,7 +48,6 @@ const SKINS: Record<NickaiSocialCardTheme, Skin> = {
     bg: "#09090b",
     headline: "#fafafa",
     subline: "#a1a1aa",
-    wordmark: "#ffffff",
     chipText: "#d4d4d8",
     chipBorder: "#27272a",
     chipBg: "rgba(24, 24, 27, 0.72)",
@@ -60,7 +58,6 @@ const SKINS: Record<NickaiSocialCardTheme, Skin> = {
     bg: "#f8fafc",
     headline: "#0a0a0a",
     subline: "#5c5c5c",
-    wordmark: "#0a0a0a",
     chipText: "#3f3f46",
     chipBorder: "#e4e4e7",
     chipBg: "rgba(255, 255, 255, 0.85)",
@@ -73,9 +70,9 @@ const PAD = 84;
 
 /** Shrink the display size for long headlines so they stay ≤3 lines. */
 function headlineSize(text: string): number {
-  if (text.length <= 46) return 104;
-  if (text.length <= 72) return 88;
-  return 74;
+  if (text.length <= 46) return 96;
+  if (text.length <= 72) return 80;
+  return 68;
 }
 
 /** NickAI mark — same path as og-cover / marketing icons.tsx. */
@@ -116,7 +113,7 @@ export const NickaiSocialCardComposition: React.FC<NickaiSocialCardProps> = ({
   const { durationInFrames } = useVideoConfig();
   const skin = SKINS[theme] ?? SKINS.dark;
   const hasSideFill = fill.kind !== "none";
-  const textWidth = hasSideFill ? "58%" : "72%";
+  const textWidth = hasSideFill ? "58%" : "75%";
 
   /** Settled copy — motion is the baked silk loop only. */
   const enter = (_from: number, _to: number): number => 1;
@@ -154,6 +151,11 @@ export const NickaiSocialCardComposition: React.FC<NickaiSocialCardProps> = ({
       ? `nickai-social/wave-light-${wave}.png`
       : `nickai-social/wave-dark-${wave}.png`,
   );
+  const wordmarkSrc = staticFile(
+    theme === "light"
+      ? "swarm-arena-cards/assets/NickAI-wordmark-dark.svg"
+      : "swarm-arena-cards/assets/NickAI-wordmark-white.svg",
+  );
 
   // Stretch the 5s bake across the full card (8s) — one pass, no loop.
   const wavePlaybackRate = WAVE_SOURCE_FRAMES / durationInFrames;
@@ -187,23 +189,20 @@ export const NickaiSocialCardComposition: React.FC<NickaiSocialCardProps> = ({
           style={{
             display: "flex",
             alignItems: "center",
-            gap: 34,
+            gap: 40,
             ...rise(enter(0, 24), 16),
           }}
         >
-          <LogoMark size={100} />
-          <span
+          <LogoMark size={84} />
+          <Img
+            alt="NickAI"
+            src={wordmarkSrc}
             style={{
-              fontFamily: fontHeading,
-              fontWeight: 600,
-              fontSize: 90,
-              letterSpacing: -1,
-              color: skin.wordmark,
-              lineHeight: 1,
+              width: 282,
+              height: 67,
+              display: "block",
             }}
-          >
-            NickAI
-          </span>
+          />
         </div>
 
         {/* Body: headline block left, optional module right. */}
@@ -219,7 +218,15 @@ export const NickaiSocialCardComposition: React.FC<NickaiSocialCardProps> = ({
             paddingBottom: 48,
           }}
         >
-          <div style={{ width: textWidth, display: "flex", flexDirection: "column", gap: 28 }}>
+          <div
+            style={{
+              width: textWidth,
+              display: "flex",
+              flexDirection: "column",
+              alignSelf: "flex-end",
+              gap: 28,
+            }}
+          >
             {/* Series chip / eyebrow (Product drop / Trading insights / …).
              * Sits above the headline; subtext lives in the post, not the card. */}
             <div
@@ -228,6 +235,7 @@ export const NickaiSocialCardComposition: React.FC<NickaiSocialCardProps> = ({
                 fontFamily: fontSans,
                 fontWeight: 600,
                 fontSize: 30,
+                textTransform: "uppercase",
                 color: skin.chipText,
                 border: `2px solid ${skin.chipBorder}`,
                 backgroundColor: skin.chipBg,
@@ -243,9 +251,9 @@ export const NickaiSocialCardComposition: React.FC<NickaiSocialCardProps> = ({
                 fontFamily: fontHeading,
                 fontWeight: 600,
                 fontSize: headlineSize(headline),
-                lineHeight: 1.1,
+                lineHeight: 1.15,
                 color: skin.headline,
-                letterSpacing: -0.5,
+                letterSpacing: -0.25,
                 ...rise(enter(10, 42)),
               }}
             >
