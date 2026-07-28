@@ -17,6 +17,7 @@ import { NickaiOgCoverComposition } from "@/remotion/compositions/nickai-og-cove
 import {
   nickaiOgCoverDefaultProps,
   type NickaiOgCoverProps,
+  type NickaiOgCoverVariant,
 } from "@/remotion/compositions/nickai-og-cover/props";
 import { cn } from "@/lib/utils";
 
@@ -35,12 +36,15 @@ type TemplateId =
   | "social-dark"
   | "social-light"
   | "og-dark"
-  | "og-light";
+  | "og-light"
+  | "og-secondary-dark"
+  | "og-secondary-light";
 
 type Template = {
   id: TemplateId;
   kind: Kind;
   theme: Theme;
+  ogVariant?: NickaiOgCoverVariant;
   label: string;
   blurb: string;
   width: number;
@@ -77,6 +81,7 @@ const TEMPLATES: Template[] = [
     id: "og-dark",
     kind: "og",
     theme: "dark",
+    ogVariant: "primary",
     label: "OG cover · Dark",
     blurb: "1200×630 blog/social OG — wave in a rounded panel.",
     width: 1200,
@@ -88,8 +93,33 @@ const TEMPLATES: Template[] = [
     id: "og-light",
     kind: "og",
     theme: "light",
+    ogVariant: "primary",
     label: "OG cover · Light",
     blurb: "Light OG twin matching getnick.ai cover treatment.",
+    width: 1200,
+    height: 630,
+    durationInFrames: 1,
+    fps: 30,
+  },
+  {
+    id: "og-secondary-dark",
+    kind: "og",
+    theme: "dark",
+    ogVariant: "secondary",
+    label: "OG cover · Secondary Dark",
+    blurb: "Secondary 1200×630 OG cover style on the dark skin.",
+    width: 1200,
+    height: 630,
+    durationInFrames: 1,
+    fps: 30,
+  },
+  {
+    id: "og-secondary-light",
+    kind: "og",
+    theme: "light",
+    ogVariant: "secondary",
+    label: "OG cover · Secondary Light",
+    blurb: "Secondary 1200×630 OG cover style on the light skin.",
     width: 1200,
     height: 630,
     durationInFrames: 1,
@@ -123,8 +153,9 @@ export function NickAiBlogCovers() {
     () => ({
       ...nickaiOgCoverDefaultProps,
       theme: template.theme,
+      variant: template.ogVariant ?? "primary",
     }),
-    [template.theme],
+    [template.theme, template.ogVariant],
   );
 
   const stageRef = useRef<HTMLDivElement>(null);

@@ -3,7 +3,7 @@
  *
  * Usage:
  *   bun scripts/render-og-cover.ts --theme <light|dark> \
- *     --headline "..." --subhead "..." --out <path.png>
+ *     --variant <primary|secondary> --headline "..." --out <path.png>
  *
  * --headline / --subhead default to the reference getnick.ai/og.png text when
  * omitted. --theme defaults to "light", --out to out/cover-<theme>.png.
@@ -21,6 +21,7 @@ import {
   nickaiOgCoverDefaultProps,
   type NickaiOgCoverProps,
   type NickaiOgCoverTheme,
+  type NickaiOgCoverVariant,
 } from "../remotion/compositions/nickai-og-cover/props";
 
 const PUBLIC_DIR = path.join(process.cwd(), "public");
@@ -29,6 +30,7 @@ const COMPOSITION_ID = "nickai-og-cover";
 function parseFlags(argv: string[]) {
   const flags = {
     theme: "light" as NickaiOgCoverTheme,
+    variant: "primary" as NickaiOgCoverVariant,
     headline: nickaiOgCoverDefaultProps.headline,
     out: "",
   };
@@ -40,6 +42,15 @@ function parseFlags(argv: string[]) {
         process.exit(1);
       }
       flags.theme = v;
+    } else if (argv[i] === "--variant") {
+      const v = argv[++i];
+      if (v !== "primary" && v !== "secondary") {
+        console.error(
+          `--variant must be "primary" or "secondary" (got "${v}").`,
+        );
+        process.exit(1);
+      }
+      flags.variant = v;
     } else if (argv[i] === "--headline") flags.headline = argv[++i] ?? flags.headline;
     else if (argv[i] === "--out") flags.out = argv[++i] ?? "";
   }
@@ -51,6 +62,7 @@ async function main() {
   const flags = parseFlags(process.argv.slice(2));
   const props: NickaiOgCoverProps = {
     theme: flags.theme,
+    variant: flags.variant,
     headline: flags.headline,
   };
 
@@ -80,7 +92,7 @@ async function main() {
   });
 
   console.log(
-    `✓ ${flags.out}  (${composition.width}×${composition.height}, theme=${flags.theme})`,
+    `✓ ${flags.out}  (${composition.width}×${composition.height}, theme=${flags.theme}, variant=${flags.variant})`,
   );
 }
 

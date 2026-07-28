@@ -12,10 +12,13 @@
  * Must be JSON-serializable (Remotion v4 requirement).
  */
 export type NickaiOgCoverTheme = "light" | "dark";
+export type NickaiOgCoverVariant = "primary" | "secondary";
 
 export type NickaiOgCoverProps = {
   /** Color skin. "light" reproduces og.png; "dark" is the zinc-950 variant. */
   theme: NickaiOgCoverTheme;
+  /** Layout family. Secondary starts as a duplicate and can evolve safely. */
+  variant: NickaiOgCoverVariant;
   /** The single line of cover text. One sentence, no subtext; the rest of the
    * context lives in the post/blog, not on the cover card. */
   headline: string;
@@ -23,6 +26,7 @@ export type NickaiOgCoverProps = {
 
 export const nickaiOgCoverDefaultProps: NickaiOgCoverProps = {
   theme: "light",
+  variant: "primary",
   headline:
     "Prediction Market Automation: AI Bots, Agents & Tools Compared (2026)",
 };

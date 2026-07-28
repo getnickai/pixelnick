@@ -88,9 +88,11 @@ const LogoMark: React.FC<{ size: number; color?: string }> = ({
 
 export const NickaiOgCoverComposition: React.FC<NickaiOgCoverProps> = ({
   theme = "light",
+  variant = "primary",
   headline,
 }) => {
   const skin = SKINS[theme] ?? SKINS.light;
+  const isSecondary = variant === "secondary";
 
   // Gate the first captured frame on the webfonts so a fallback face never
   // leaks into a still.
@@ -106,10 +108,15 @@ export const NickaiOgCoverComposition: React.FC<NickaiOgCoverProps> = ({
   }, [handle]);
 
   const SAFE_AREA = 72;
-  // Full-height right wave panel. Its left edge remains at the original x=726,
-  // while the other three edges bleed into the cover boundary.
-  const PANEL = { top: 0, right: 0, bottom: 0, width: 474 };
-  const COL_WIDTH = 620;
+  // Primary keeps the original 474px image panel. Secondary uses a 40/60
+  // white-to-blue split with a correspondingly narrower left safe column.
+  const PANEL = {
+    top: 0,
+    right: 0,
+    bottom: 0,
+    width: isSecondary ? 540 : 474,
+  };
+  const COL_WIDTH = isSecondary ? 516 : 620;
 
   return (
     <AbsoluteFill style={{ backgroundColor: skin.bg, fontFamily: fontSans }}>
@@ -157,10 +164,10 @@ export const NickaiOgCoverComposition: React.FC<NickaiOgCoverProps> = ({
             fontFamily: fontHeading,
             fontWeight: 600,
             fontSize: headlineSize(headline),
-            lineHeight: 1.15,
+            lineHeight: 1.2,
             letterSpacing: -1.2,
             color: skin.headline,
-            maxWidth: 600,
+            maxWidth: COL_WIDTH,
           }}
         >
           {headline}
@@ -192,17 +199,20 @@ export const NickaiOgCoverComposition: React.FC<NickaiOgCoverProps> = ({
           bottom: PANEL.bottom,
           width: PANEL.width,
           overflow: "hidden",
+          backgroundColor: isSecondary ? BLUE : undefined,
         }}
       >
-        <Img
-          src={staticFile(skin.wave)}
-          style={{
-            width: "100%",
-            height: "100%",
-            objectFit: "cover",
-            objectPosition: "center",
-          }}
-        />
+        {!isSecondary ? (
+          <Img
+            src={staticFile(skin.wave)}
+            style={{
+              width: "100%",
+              height: "100%",
+              objectFit: "cover",
+              objectPosition: "center",
+            }}
+          />
+        ) : null}
         {/* White NickAI mark centered on the wave panel. */}
         <div
           style={{
