@@ -17,8 +17,15 @@ import { NickaiOgCoverComposition } from "@/remotion/compositions/nickai-og-cove
 import {
   nickaiOgCoverDefaultProps,
   type NickaiOgCoverProps,
+  type NickaiOgShapeSize,
   type NickaiOgCoverVariant,
 } from "@/remotion/compositions/nickai-og-cover/props";
+import {
+  defaultNickaiOgShapeId,
+  getNickaiOgShapeOption,
+  NICKAI_OG_SHAPE_GROUPS,
+  type NickaiOgShapeId,
+} from "@/remotion/compositions/nickai-og-cover/shapes";
 import { cn } from "@/lib/utils";
 
 const SERIES = [
@@ -133,6 +140,12 @@ export function NickAiBlogCovers() {
   const [templateId, setTemplateId] = useState<TemplateId>("social-dark");
   const [series, setSeries] = useState<(typeof SERIES)[number]>("Product drop");
   const [mode, setMode] = useState<ViewMode>("static");
+  const [shapeId, setShapeId] = useState<NickaiOgShapeId>(
+    defaultNickaiOgShapeId,
+  );
+  const [shapeSize, setShapeSize] = useState<NickaiOgShapeSize>(
+    nickaiOgCoverDefaultProps.shapeSize,
+  );
   const [scale, setScale] = useState(1);
 
   const template = TEMPLATES.find((t) => t.id === templateId)!;
@@ -154,8 +167,10 @@ export function NickAiBlogCovers() {
       ...nickaiOgCoverDefaultProps,
       theme: template.theme,
       variant: template.ogVariant ?? "primary",
+      shapeId,
+      shapeSize,
     }),
-    [template.theme, template.ogVariant],
+    [shapeId, shapeSize, template.theme, template.ogVariant],
   );
 
   const stageRef = useRef<HTMLDivElement>(null);
@@ -183,7 +198,7 @@ export function NickAiBlogCovers() {
           <p className="px-1 text-xs font-semibold uppercase tracking-wider text-muted-foreground">
             View
           </p>
-          <div className="mt-2 grid grid-cols-2 gap-1 rounded-lg border border-input p-1">
+          <div className="mt-2 grid grid-cols-2 gap-1 rounded-lg bg-zinc-900/60 p-1">
             {(["static", "animation"] as const).map((m) => {
               const disabled = m === "animation" && !canAnimate;
               return (
@@ -197,7 +212,7 @@ export function NickAiBlogCovers() {
                     "cursor-pointer rounded-md px-2 py-1.5 text-xs font-medium capitalize transition-colors",
                     disabled && "cursor-not-allowed opacity-40",
                     viewMode === m
-                      ? "bg-primary-500/15 text-zinc-50"
+                      ? "bg-primary-500 text-zinc-50"
                       : "text-zinc-500 hover:bg-zinc-900 hover:text-zinc-300",
                   )}
                 >
@@ -239,6 +254,90 @@ export function NickAiBlogCovers() {
           </div>
         ) : null}
 
+        {template.kind === "og" ? (
+          <div className="space-y-4">
+            <div>
+              <p className="px-1 text-xs font-semibold uppercase tracking-wider text-muted-foreground">
+                Shape size
+              </p>
+              <div className="mt-2 grid grid-cols-3 gap-1 rounded-lg border border-input p-1">
+                {(["small", "default", "large"] as const).map((size) => (
+                  <button
+                    key={size}
+                    type="button"
+                    aria-pressed={shapeSize === size}
+                    onClick={() => setShapeSize(size)}
+                    className={cn(
+                      "cursor-pointer rounded-md px-2 py-1.5 text-xs font-medium capitalize transition-colors",
+                      shapeSize === size
+                        ? "bg-primary-500/15 text-zinc-50"
+                        : "text-zinc-500 hover:bg-zinc-900 hover:text-zinc-300",
+                    )}
+                  >
+                    {size}
+                  </button>
+                ))}
+              </div>
+            </div>
+
+            <div>
+              <div className="flex items-center justify-between px-1">
+                <p className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">
+                  Shape
+                </p>
+                <span className="max-w-32 truncate text-[10px] text-zinc-500">
+                  {getNickaiOgShapeOption(shapeId).label}
+                </span>
+              </div>
+              <div className="mt-2 max-h-64 space-y-3 overflow-y-auto rounded-lg border border-input p-2">
+                {NICKAI_OG_SHAPE_GROUPS.map((group) => (
+                  <div key={group.id}>
+                    <p className="mb-1.5 px-0.5 text-[10px] font-medium uppercase tracking-wider text-zinc-500">
+                      {group.label}
+                    </p>
+                    <div className="grid grid-cols-6 gap-1">
+                      {group.options.map((shape) => {
+                        const selected = shape.id === shapeId;
+                        return (
+                          <button
+                            key={shape.id}
+                            type="button"
+                            aria-label={`Use ${shape.label}`}
+                            aria-pressed={selected}
+                            title={shape.label}
+                            onClick={() => setShapeId(shape.id)}
+                            className={cn(
+                              "flex aspect-square cursor-pointer items-center justify-center rounded-md border text-zinc-400 transition-colors",
+                              selected
+                                ? "border-primary-500 bg-primary-500/15 text-white"
+                                : "border-zinc-800 bg-zinc-950 hover:border-zinc-600 hover:bg-zinc-900 hover:text-white",
+                            )}
+                          >
+                            <span
+                              aria-hidden="true"
+                              className="size-6 bg-current"
+                              style={{
+                                maskImage: `url(/${shape.assetPath})`,
+                                maskPosition: "center",
+                                maskRepeat: "no-repeat",
+                                maskSize: "contain",
+                                WebkitMaskImage: `url(/${shape.assetPath})`,
+                                WebkitMaskPosition: "center",
+                                WebkitMaskRepeat: "no-repeat",
+                                WebkitMaskSize: "contain",
+                              }}
+                            />
+                          </button>
+                        );
+                      })}
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </div>
+          </div>
+        ) : null}
+
         <div className="flex flex-col gap-2">
           <p className="px-1 text-xs font-semibold uppercase tracking-wider text-muted-foreground">
             Templates ({TEMPLATES.length})
@@ -255,12 +354,17 @@ export function NickAiBlogCovers() {
                   className={cn(
                     "flex cursor-pointer flex-col gap-0.5 rounded-md border px-2.5 py-2 text-left transition-colors",
                     active
-                      ? "border-primary-500/50 bg-primary-500/10 text-zinc-50"
+                      ? "border-transparent bg-primary-500 text-zinc-50"
                       : "border-transparent bg-zinc-900 text-zinc-400 hover:bg-zinc-800 hover:text-zinc-200",
                   )}
                 >
                   <span className="truncate text-xs font-medium">{t.label}</span>
-                  <span className="line-clamp-2 text-[10px] leading-snug text-muted-foreground">
+                  <span
+                    className={cn(
+                      "line-clamp-2 text-[10px] leading-snug",
+                      active ? "text-white/80" : "text-muted-foreground",
+                    )}
+                  >
                     {t.blurb}
                   </span>
                 </button>
@@ -307,7 +411,7 @@ export function NickAiBlogCovers() {
             />
           ) : (
             <Player
-              key={template.id}
+              key={`${template.id}-${shapeId}-${shapeSize}`}
               component={NickaiOgCoverComposition}
               inputProps={ogProps}
               durationInFrames={1}

@@ -10,9 +10,20 @@
  */
 import { useEffect, useId, useState } from "react";
 import { AbsoluteFill, Img, staticFile, delayRender, continueRender } from "remotion";
-import type { NickaiOgCoverProps, NickaiOgCoverTheme } from "./props";
+import type {
+  NickaiOgCoverProps,
+  NickaiOgCoverTheme,
+  NickaiOgShapeSize,
+} from "./props";
+import { getNickaiOgShapeOption } from "./shapes";
 
 const BLUE = "#0178ff";
+const SECONDARY_SHADER = "nickai-social/wave-light-1.png";
+const SHAPE_SIZE_PX: Record<NickaiOgShapeSize, number> = {
+  small: 164,
+  default: 184,
+  large: 204,
+};
 
 const fontHeading = "Duplet, ui-sans-serif, system-ui, sans-serif";
 const fontSans = "Manrope, ui-sans-serif, system-ui, sans-serif";
@@ -89,10 +100,14 @@ const LogoMark: React.FC<{ size: number; color?: string }> = ({
 export const NickaiOgCoverComposition: React.FC<NickaiOgCoverProps> = ({
   theme = "light",
   variant = "primary",
+  shapeId = "nick-logo",
+  shapeSize = "default",
   headline,
 }) => {
   const skin = SKINS[theme] ?? SKINS.light;
   const isSecondary = variant === "secondary";
+  const selectedShape = getNickaiOgShapeOption(shapeId);
+  const selectedShapeSize = SHAPE_SIZE_PX[shapeSize];
 
   // Gate the first captured frame on the webfonts so a fallback face never
   // leaks into a still.
@@ -108,7 +123,7 @@ export const NickaiOgCoverComposition: React.FC<NickaiOgCoverProps> = ({
   }, [handle]);
 
   const SAFE_AREA = 72;
-  // Primary keeps the original 474px image panel. Secondary uses a 40/60
+  // Primary keeps the original 474px image panel. Secondary uses a 55/45
   // white-to-blue split with a correspondingly narrower left safe column.
   const PANEL = {
     top: 0,
@@ -116,7 +131,7 @@ export const NickaiOgCoverComposition: React.FC<NickaiOgCoverProps> = ({
     bottom: 0,
     width: isSecondary ? 540 : 474,
   };
-  const COL_WIDTH = isSecondary ? 516 : 620;
+  const COL_WIDTH = isSecondary ? 516 : 600;
 
   return (
     <AbsoluteFill style={{ backgroundColor: skin.bg, fontFamily: fontSans }}>
@@ -212,8 +227,22 @@ export const NickaiOgCoverComposition: React.FC<NickaiOgCoverProps> = ({
               objectPosition: "center",
             }}
           />
-        ) : null}
-        {/* White NickAI mark centered on the wave panel. */}
+        ) : (
+          <Img
+            src={staticFile(SECONDARY_SHADER)}
+            style={{
+              position: "absolute",
+              inset: 0,
+              width: "100%",
+              height: "100%",
+              objectFit: "cover",
+              objectPosition: "75% center",
+              opacity: 0.6,
+              mixBlendMode: "hard-light",
+            }}
+          />
+        )}
+        {/* Selected square-normalised shape, centered on the panel. */}
         <div
           style={{
             position: "absolute",
@@ -223,7 +252,15 @@ export const NickaiOgCoverComposition: React.FC<NickaiOgCoverProps> = ({
             justifyContent: "center",
           }}
         >
-          <LogoMark size={132} color="#ffffff" />
+          <Img
+            src={staticFile(selectedShape.assetPath)}
+            style={{
+              width: selectedShapeSize,
+              height: selectedShapeSize,
+              objectFit: "contain",
+              filter: "brightness(0) invert(1)",
+            }}
+          />
         </div>
       </div>
     </AbsoluteFill>

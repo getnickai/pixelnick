@@ -3,7 +3,8 @@
  *
  * Usage:
  *   bun scripts/render-og-cover.ts --theme <light|dark> \
- *     --variant <primary|secondary> --headline "..." --out <path.png>
+ *     --variant <primary|secondary> --shape <shape-id> \
+ *     --shape-size <small|default|large> --headline "..." --out <path.png>
  *
  * --headline / --subhead default to the reference getnick.ai/og.png text when
  * omitted. --theme defaults to "light", --out to out/cover-<theme>.png.
@@ -20,9 +21,14 @@ import { renderStill, selectComposition } from "@remotion/renderer";
 import {
   nickaiOgCoverDefaultProps,
   type NickaiOgCoverProps,
+  type NickaiOgShapeSize,
   type NickaiOgCoverTheme,
   type NickaiOgCoverVariant,
 } from "../remotion/compositions/nickai-og-cover/props";
+import {
+  isNickaiOgShapeId,
+  type NickaiOgShapeId,
+} from "../remotion/compositions/nickai-og-cover/shapes";
 
 const PUBLIC_DIR = path.join(process.cwd(), "public");
 const COMPOSITION_ID = "nickai-og-cover";
@@ -31,6 +37,8 @@ function parseFlags(argv: string[]) {
   const flags = {
     theme: "light" as NickaiOgCoverTheme,
     variant: "primary" as NickaiOgCoverVariant,
+    shapeId: nickaiOgCoverDefaultProps.shapeId as NickaiOgShapeId,
+    shapeSize: nickaiOgCoverDefaultProps.shapeSize as NickaiOgShapeSize,
     headline: nickaiOgCoverDefaultProps.headline,
     out: "",
   };
@@ -51,6 +59,22 @@ function parseFlags(argv: string[]) {
         process.exit(1);
       }
       flags.variant = v;
+    } else if (argv[i] === "--shape") {
+      const v = argv[++i];
+      if (!v || !isNickaiOgShapeId(v)) {
+        console.error(`Unknown OG shape ID "${v ?? ""}".`);
+        process.exit(1);
+      }
+      flags.shapeId = v;
+    } else if (argv[i] === "--shape-size") {
+      const v = argv[++i];
+      if (v !== "small" && v !== "default" && v !== "large") {
+        console.error(
+          `--shape-size must be "small", "default", or "large" (got "${v}").`,
+        );
+        process.exit(1);
+      }
+      flags.shapeSize = v;
     } else if (argv[i] === "--headline") flags.headline = argv[++i] ?? flags.headline;
     else if (argv[i] === "--out") flags.out = argv[++i] ?? "";
   }
@@ -63,6 +87,8 @@ async function main() {
   const props: NickaiOgCoverProps = {
     theme: flags.theme,
     variant: flags.variant,
+    shapeId: flags.shapeId,
+    shapeSize: flags.shapeSize,
     headline: flags.headline,
   };
 
@@ -92,7 +118,7 @@ async function main() {
   });
 
   console.log(
-    `✓ ${flags.out}  (${composition.width}×${composition.height}, theme=${flags.theme}, variant=${flags.variant})`,
+    `✓ ${flags.out}  (${composition.width}×${composition.height}, theme=${flags.theme}, variant=${flags.variant}, shape=${flags.shapeId}, shapeSize=${flags.shapeSize})`,
   );
 }
 

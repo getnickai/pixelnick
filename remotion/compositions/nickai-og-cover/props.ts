@@ -11,14 +11,24 @@
  *
  * Must be JSON-serializable (Remotion v4 requirement).
  */
+import {
+  defaultNickaiOgShapeId,
+  type NickaiOgShapeId,
+} from "./shapes";
+
 export type NickaiOgCoverTheme = "light" | "dark";
 export type NickaiOgCoverVariant = "primary" | "secondary";
+export type NickaiOgShapeSize = "small" | "default" | "large";
 
 export type NickaiOgCoverProps = {
   /** Color skin. "light" reproduces og.png; "dark" is the zinc-950 variant. */
   theme: NickaiOgCoverTheme;
   /** Layout family. Secondary starts as a duplicate and can evolve safely. */
   variant: NickaiOgCoverVariant;
+  /** Square-normalised artwork displayed in the right-side panel. */
+  shapeId: NickaiOgShapeId;
+  /** Display size of the selected artwork. */
+  shapeSize: NickaiOgShapeSize;
   /** The single line of cover text. One sentence, no subtext; the rest of the
    * context lives in the post/blog, not on the cover card. */
   headline: string;
@@ -27,6 +37,8 @@ export type NickaiOgCoverProps = {
 export const nickaiOgCoverDefaultProps: NickaiOgCoverProps = {
   theme: "light",
   variant: "primary",
+  shapeId: defaultNickaiOgShapeId,
+  shapeSize: "default",
   headline:
     "Prediction Market Automation: AI Bots, Agents & Tools Compared (2026)",
 };
