@@ -23,6 +23,20 @@ import { getMotionEntryMeta } from "@/remotion/manifest";
 export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
 
+/**
+ * Shared-secret gate. Rendering is minutes of CPU per call, so on any
+ * internet-facing deployment this endpoint is a free resource-exhaustion
+ * button. When MOTION_RENDER_KEY is set the caller must send it as
+ * `x-render-key`; when it is unset (local dev) the check is skipped.
+ */
+const renderKeyRejection = (request: Request): Response | null => {
+  const expected = process.env.MOTION_RENDER_KEY;
+  if (!expected) return null;
+  if (request.headers.get("x-render-key") === expected) return null;
+  return Response.json({ error: "Unauthorized." }, { status: 401 });
+};
+
+
 const MAX_INPUT_PROPS_BYTES = 1_000_000;
 
 const createServeUrl = async (outDir: string) => {
@@ -38,6 +52,9 @@ const createServeUrl = async (outDir: string) => {
 };
 
 export async function POST(request: Request) {
+  const rejected = renderKeyRejection(request);
+  if (rejected) return rejected;
+
   let tempDirectory: string | null = null;
 
   try {
