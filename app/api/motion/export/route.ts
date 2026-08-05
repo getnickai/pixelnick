@@ -6,9 +6,45 @@ import { bundle } from "@remotion/bundler";
 import { renderMedia, selectComposition } from "@remotion/renderer";
 import { enableTailwind } from "@remotion/tailwind-v4";
 import { getMotionEntryMeta } from "@/remotion/manifest";
+import { TEMPLATES } from "@/remotion/compositions/workflow-template-card/data/templates.generated";
 
 export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
+
+/**
+ * Shared-secret gate. Rendering is minutes of CPU per call, so on any
+ * internet-facing deployment this endpoint is a free resource-exhaustion
+ * button. When MOTION_RENDER_KEY is set the caller must send it as
+ * `x-render-key`; when it is unset (local dev) the check is skipped.
+ */
+const renderKeyRejection = (request: Request): Response | null => {
+  const expected = process.env.MOTION_RENDER_KEY;
+  if (!expected) return null;
+  if (request.headers.get("x-render-key") === expected) return null;
+  return Response.json({ error: "Unauthorized." }, { status: 401 });
+};
+
+
+/**
+ * `workflow-template-card` needs a whole TemplateGraph (nodes, edges, prompt),
+ * not a slug. Callers should not have to ship a 200-line graph over the wire
+ * when this repo already owns the registry, so accept `templateSlug` and
+ * resolve it here.
+ */
+const withResolvedTemplate = (
+  id: string,
+  inputProps: Record<string, unknown>,
+  templateSlug: unknown,
+): Record<string, unknown> | { error: string } => {
+  if (id !== "workflow-template-card" || typeof templateSlug !== "string") {
+    return inputProps;
+  }
+  const template = TEMPLATES[templateSlug];
+  if (!template) {
+    return { error: `Unknown template slug "${templateSlug}".` };
+  }
+  return { ...inputProps, template };
+};
 
 const MAX_INPUT_PROPS_BYTES = 1_000_000;
 
@@ -27,12 +63,16 @@ const createServeUrl = async (outDir: string) => {
 };
 
 export async function POST(request: Request) {
+  const rejected = renderKeyRejection(request);
+  if (rejected) return rejected;
+
   let tempDirectory: string | null = null;
 
   try {
     const body = (await request.json()) as {
       id?: unknown;
       inputProps?: unknown;
+      templateSlug?: unknown;
     };
 
     if (typeof body.id !== "string" || !getMotionEntryMeta(body.id)) {
@@ -60,7 +100,15 @@ export async function POST(request: Request) {
       );
     }
 
-    const inputProps = body.inputProps as Record<string, unknown>;
+    const resolved = withResolvedTemplate(
+      body.id,
+      body.inputProps as Record<string, unknown>,
+      body.templateSlug,
+    );
+    if ("error" in resolved && typeof resolved.error === "string") {
+      return Response.json({ error: resolved.error }, { status: 400 });
+    }
+    const inputProps = resolved as Record<string, unknown>;
     tempDirectory = await mkdtemp(
       path.join(tmpdir(), "pixelnick-motion-export-"),
     );
