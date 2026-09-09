@@ -184,6 +184,14 @@ export const motionManifest: MotionEntryMeta[] = [
     durationInFrames: 262,
   },
   {
+    id: "nickai-social-story",
+    label: "NickAI Social Story",
+    width: 1080,
+    height: 1350,
+    fps: 30,
+    durationInFrames: 660,
+  },
+  {
     // NickAI social card (STA-473) — free-wave frame for the weekly X content
     // calendar (light + dark). Full-height wave, no footer. ~2.4s staggered
     // entrance (wave → header → headline → subline → chips/module) + hold.

@@ -251,7 +251,7 @@ Where each message lands. Each channel pulls from the same positioning, weighted
 
 Assets, the design system, and brand guidelines live in the **pixelnick** repo. Pull existing assets, do not recreate them.
 
-- **Card vs cover (the rule):** genuine DATA cards (performance cards, workflow-highlight cards) get the bespoke animated brand design plus a video. Everything text-heavy (product updates, blog, field notes, playbook, tutorials) uses the single-line **cover image** (the `nickai-og-cover` template: logo top-left, one sentence, the blue wave panel with the white mark, light or dark, no subhead, no CTA, no version stamp). The blog reuses the same cover template (dark) as each post's hero, so blog and social stay in sync.
+- **Social video vs blog cover (updated 2026-09-09):** organic X posts use the `nickai-social-story` film: a bold hook, concrete example, animated workflow, illustrated output, and payoff with the exact CTA. Use meaningful scene changes and object motion, readable without sound. A headline over a moving background is not an acceptable X video. Genuine data and workflow-highlight posts keep their source-backed bespoke visual. Blog heroes and static covers still use `nickai-og-cover`. Label illustrative workflows and outputs; never fabricate live market prices, performance, customer results, or a product screen recording.
 - **Logo and mark blue is `#0178FF`** (the brand primary, same as the CTA and logo blue). `#0892F5` is only the app favicon background, never the logo or mark color. Pull the exact logo asset from the site repo, do not recreate it.
 
 ---

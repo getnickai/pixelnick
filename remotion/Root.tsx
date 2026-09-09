@@ -1,3 +1,5 @@
+import { SocialStoryComposition } from "./compositions/nickai-social-story/composition";
+import { socialStoryDefaultProps } from "./compositions/nickai-social-story/props";
 /**
  * Remotion root — registers every composition for the headless renderer and
  * the Remotion Studio. Kept separate from the Next.js app: the app uses
@@ -68,6 +70,7 @@ const leaderboardAnim = getMotionEntryMeta("swarm-arena-leaderboard-card")!;
 const matchdayAnim = getMotionEntryMeta("matchday-analysis")!;
 const gamePickAnim = getMotionEntryMeta("game-pick-card")!;
 const resultPortfolioAnim = getMotionEntryMeta("result-portfolio-card")!;
+const socialStory = getMotionEntryMeta("nickai-social-story")!;
 const nickaiSocial = getMotionEntryMeta("nickai-social-card")!;
 const nickaiOgCover = getMotionEntryMeta("nickai-og-cover")!;
 const workflowTemplate = getMotionEntryMeta("workflow-template-card")!;
@@ -80,6 +83,15 @@ const wrapper16x9 = getMotionEntryMeta("wrapper-16-9")!;
 export const RemotionRoot: React.FC = () => {
   return (
     <>
+      <Composition
+        id="nickai-social-story"
+        component={SocialStoryComposition}
+        durationInFrames={socialStory.durationInFrames}
+        fps={socialStory.fps}
+        width={socialStory.width}
+        height={socialStory.height}
+        defaultProps={socialStoryDefaultProps}
+      />
       <Composition
         id="performance-card"
         component={PerformanceCardCard}

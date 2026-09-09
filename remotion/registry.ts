@@ -1,3 +1,5 @@
+import { SocialStoryComposition } from "./compositions/nickai-social-story/composition";
+import { socialStoryDefaultProps, type SocialStoryProps } from "./compositions/nickai-social-story/props";
 import type { ComponentType } from "react";
 import {
   PerformanceCardComposition,
@@ -164,6 +166,10 @@ const componentBindings: Record<string, ComponentBinding> = {
     component: ResultPortfolioCardComposition,
     defaultProps: resultPortfolioCardDefaultProps,
   } as ComponentBinding<ResultPortfolioCardProps> as ComponentBinding,
+  "nickai-social-story": {
+    component: SocialStoryComposition,
+    defaultProps: socialStoryDefaultProps,
+  } as ComponentBinding<SocialStoryProps> as ComponentBinding,
   "nickai-social-card": {
     component: NickaiSocialCardComposition,
     defaultProps: nickaiSocialCardDefaultProps,

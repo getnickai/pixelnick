@@ -1,3 +1,4 @@
+import { validSocialStory } from "@/remotion/compositions/nickai-social-story/props";
 import { randomUUID } from "node:crypto";
 import { cp, mkdtemp, readFile, rm } from "node:fs/promises";
 import { tmpdir } from "node:os";
@@ -110,6 +111,10 @@ export async function POST(request: Request) {
         { error: "Motion input props are too large to export." },
         { status: 413 },
       );
+    }
+
+    if (body.id === "nickai-social-story" && !validSocialStory(body.inputProps)) {
+      return Response.json({ error: "A complete, valid video storyboard is required." }, { status: 400 });
     }
 
     const resolved = withResolvedTemplate(

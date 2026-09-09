@@ -1,3 +1,4 @@
+import { validSocialStory } from "@/remotion/compositions/nickai-social-story/props";
 import { randomUUID } from "node:crypto";
 import { cp, mkdtemp, readFile, rm } from "node:fs/promises";
 import { tmpdir } from "node:os";
@@ -100,6 +101,10 @@ export async function POST(request: Request) {
       );
     }
 
+    if (body.id === "nickai-social-story" && !validSocialStory(body.inputProps)) {
+      return Response.json({ error: "A complete, valid video storyboard is required." }, { status: 400 });
+    }
+
     const resolved = withResolvedTemplate(
       body.id,
       body.inputProps as Record<string, unknown>,
@@ -132,8 +137,8 @@ export async function POST(request: Request) {
       codec: "h264",
       imageFormat: "png",
       pixelFormat: "yuv420p",
-      crf: 14,
-      x264Preset: "slow",
+      crf: body.id === "nickai-social-story" ? 18 : 14,
+      x264Preset: body.id === "nickai-social-story" ? "fast" : "slow",
       colorSpace: "bt709",
       outputLocation,
       inputProps,
