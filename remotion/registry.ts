@@ -170,6 +170,10 @@ const componentBindings: Record<string, ComponentBinding> = {
     component: SocialStoryComposition,
     defaultProps: socialStoryDefaultProps,
   } as ComponentBinding<SocialStoryProps> as ComponentBinding,
+  "nickai-trading-desk": {
+    component: TradingDeskComposition,
+    defaultProps: tradingDeskDefaultProps,
+  } as ComponentBinding<TradingDeskProps> as ComponentBinding,
   "nickai-social-card": {
     component: NickaiSocialCardComposition,
     defaultProps: nickaiSocialCardDefaultProps,
@@ -227,3 +231,5 @@ export const motionRegistry: MotionEntry[] = motionManifest
 export function getMotionEntry(id: string): MotionEntry | undefined {
   return motionRegistry.find((entry) => entry.id === id);
 }
+import { TradingDeskComposition } from "./compositions/nickai-trading-desk/composition";
+import { tradingDeskDefaultProps, type TradingDeskProps } from "./compositions/nickai-trading-desk/props";

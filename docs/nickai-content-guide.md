@@ -178,6 +178,16 @@ Avoid the tells:
 - **AI enthusiasts:** encouraging and plain, capability-focused ("no code required"), never hype or get-rich.
 - **Funds and enterprise:** measured and precise. Security, compliance, and control lead.
 
+### Twitter desk films (approved direction, 2026-09-11)
+
+For X, lean into crypto hustlers and Gen Z traders: conversational, quick, technically literate. Natural lowercase reactions, a pointed uppercase question, and one purposeful emoji are welcome. Examples: "nick, check this.", "DO WE EXECUTE THE TRADE 🤑?", "send me the setup." Avoid forced slang and generic feature announcements. A concrete event already in the source, such as a US midterms market, gives the story a recognizable setting. Do not invent current events or repeat that setting in unrelated posts.
+
+Show Nick doing the work on a cramped photographic trader desk: dark dense monitors, warm room light, blue Nick accents, keyboards and a tablet. Animate the software itself: connected venues, comparisons, streaming reviews, the native workflow graph, and an arriving result. Camera cuts follow the work. Headlines should react to what is on screen; a moving title card does not tell this story.
+
+User-configured model reviews need distinct technical viewpoints. One notices an imbalance, another challenges settlement equivalence, another checks depth and slippage. The approved example uses the display labels GPT ASTRA MAX, GEMINI 3.7 PRO and CLAUDE FABLE 5.1 MAX. These are scripted illustration labels, not a claim about available APIs or actual model responses. Omit the multi-model scene when the topic does not support it.
+
+Clearly labelled fictional binary-market quotes are permitted for a worked illustration. Explain a gross gap before fees, subject to matching settlement and available fills. This exception does not permit fabricated live prices, performance, customer results, executed orders, real model conclusions or promised outcomes. Use qualitative context for other topics. Model replies stay labelled scripted; the desk stays labelled illustrative.
+
 ---
 
 ## Claims map
@@ -251,7 +261,7 @@ Where each message lands. Each channel pulls from the same positioning, weighted
 
 Assets, the design system, and brand guidelines live in the **pixelnick** repo. Pull existing assets, do not recreate them.
 
-- **Social video vs blog cover (updated 2026-09-09):** organic X posts use the `nickai-social-story` film: a bold hook, concrete example, animated workflow, illustrated output, and payoff with the exact CTA. Use meaningful scene changes and object motion, readable without sound. A headline over a moving background is not an acceptable X video. Genuine data and workflow-highlight posts keep their source-backed bespoke visual. Blog heroes and static covers still use `nickai-og-cover`. Label illustrative workflows and outputs; never fabricate live market prices, performance, customer results, or a product screen recording.
+- **Social video vs blog cover (updated 2026-09-11):** new organic X drafts use `nickai-trading-desk`, a 25-second 1080x1920 film with active Nick screens, a concrete setup, analysis, workflow and result. Copy and screen data arrive as a validated version-2 storyboard; no generated code or media URLs. Saved version-1 `nickai-social-story` films remain renderable. Genuine data and workflow-highlight posts keep their source-backed bespoke visual. Blog heroes and static covers still use `nickai-og-cover`. Keep the story readable with sound off and finish with the exact CTA.
 - **Logo and mark blue is `#0178FF`** (the brand primary, same as the CTA and logo blue). `#0892F5` is only the app favicon background, never the logo or mark color. Pull the exact logo asset from the site repo, do not recreate it.
 
 ---

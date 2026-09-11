@@ -71,6 +71,7 @@ const matchdayAnim = getMotionEntryMeta("matchday-analysis")!;
 const gamePickAnim = getMotionEntryMeta("game-pick-card")!;
 const resultPortfolioAnim = getMotionEntryMeta("result-portfolio-card")!;
 const socialStory = getMotionEntryMeta("nickai-social-story")!;
+const tradingDesk = getMotionEntryMeta("nickai-trading-desk")!;
 const nickaiSocial = getMotionEntryMeta("nickai-social-card")!;
 const nickaiOgCover = getMotionEntryMeta("nickai-og-cover")!;
 const workflowTemplate = getMotionEntryMeta("workflow-template-card")!;
@@ -83,6 +84,15 @@ const wrapper16x9 = getMotionEntryMeta("wrapper-16-9")!;
 export const RemotionRoot: React.FC = () => {
   return (
     <>
+      <Composition
+        id="nickai-trading-desk"
+        component={TradingDeskComposition}
+        durationInFrames={tradingDesk.durationInFrames}
+        fps={tradingDesk.fps}
+        width={tradingDesk.width}
+        height={tradingDesk.height}
+        defaultProps={tradingDeskDefaultProps}
+      />
       <Composition
         id="nickai-social-story"
         component={SocialStoryComposition}
@@ -289,3 +299,5 @@ export const RemotionRoot: React.FC = () => {
     </>
   );
 };
+import { TradingDeskComposition } from "./compositions/nickai-trading-desk/composition";
+import { tradingDeskDefaultProps } from "./compositions/nickai-trading-desk/props";

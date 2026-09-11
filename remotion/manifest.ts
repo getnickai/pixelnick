@@ -184,6 +184,14 @@ export const motionManifest: MotionEntryMeta[] = [
     durationInFrames: 262,
   },
   {
+    id: "nickai-trading-desk",
+    label: "NickAI Trading Desk",
+    width: 1080,
+    height: 1920,
+    fps: 30,
+    durationInFrames: 750,
+  },
+  {
     id: "nickai-social-story",
     label: "NickAI Social Story",
     width: 1080,

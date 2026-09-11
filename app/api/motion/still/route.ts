@@ -116,6 +116,9 @@ export async function POST(request: Request) {
     if (body.id === "nickai-social-story" && !validSocialStory(body.inputProps)) {
       return Response.json({ error: "A complete, valid video storyboard is required." }, { status: 400 });
     }
+    if (body.id === "nickai-trading-desk" && !validTradingDesk(body.inputProps)) {
+      return Response.json({ error: "A complete, valid trading-desk storyboard is required." }, { status: 400 });
+    }
 
     const resolved = withResolvedTemplate(
       body.id,
@@ -185,3 +188,4 @@ export async function POST(request: Request) {
     }
   }
 }
+import { validTradingDesk } from "@/remotion/compositions/nickai-trading-desk/props";

@@ -104,6 +104,9 @@ export async function POST(request: Request) {
     if (body.id === "nickai-social-story" && !validSocialStory(body.inputProps)) {
       return Response.json({ error: "A complete, valid video storyboard is required." }, { status: 400 });
     }
+    if (body.id === "nickai-trading-desk" && !validTradingDesk(body.inputProps)) {
+      return Response.json({ error: "A complete, valid trading-desk storyboard is required." }, { status: 400 });
+    }
 
     const resolved = withResolvedTemplate(
       body.id,
@@ -137,8 +140,8 @@ export async function POST(request: Request) {
       codec: "h264",
       imageFormat: "png",
       pixelFormat: "yuv420p",
-      crf: body.id === "nickai-social-story" ? 18 : 14,
-      x264Preset: body.id === "nickai-social-story" ? "fast" : "slow",
+      crf: body.id === "nickai-social-story" || body.id === "nickai-trading-desk" ? 18 : 14,
+      x264Preset: body.id === "nickai-social-story" || body.id === "nickai-trading-desk" ? "fast" : "slow",
       colorSpace: "bt709",
       outputLocation,
       inputProps,
@@ -177,3 +180,4 @@ export async function POST(request: Request) {
     }
   }
 }
+import { validTradingDesk } from "@/remotion/compositions/nickai-trading-desk/props";
