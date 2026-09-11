@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { AbsoluteFill, Audio, Img, cancelRender, continueRender, delayRender, interpolate, staticFile, useCurrentFrame } from 'remotion';
+import { AbsoluteFill, Audio, Img, cancelRender, continueRender, delayRender, interpolate, staticFile, useCurrentFrame, useVideoConfig } from 'remotion';
 import { ArrowUp, Check, ChevronDown, CircleDot, GitBranch, Link, MessageSquare, Play, Plus, Search, Send, Settings, SquareTerminal } from 'lucide-react';
 import { WorkflowGraph, type RunStatus } from '../nick-launch-video/graph';
 import type { TemplateGraph } from '../workflow-template-card/props';
@@ -49,8 +49,9 @@ function Toolbar({ title, right = 'Sample data', size = 28 }: { title: string; r
 }
 
 function Screen({ width, height, points, children, light = false }: { width: number; height: number; points: number[][]; children: React.ReactNode; light?: boolean }) {
-  return <div style={{ position: 'absolute', top: 0, left: 0, width, height, overflow: 'hidden', transformOrigin: '0 0', transform: `matrix3d(${screenMatrix(width, height, points).join(',')})`, background: light ? '#eff1f4' : INK, color: TEXT, filter: 'brightness(.84) saturate(.88)' }}>
+  return <div style={{ position: 'absolute', top: 0, left: 0, width, height, overflow: 'hidden', transformOrigin: '0 0', transform: `matrix3d(${screenMatrix(width, height, points).join(',')})`, background: light ? '#eff1f4' : INK, color: TEXT }}>
     {children}
+    <AbsoluteFill style={{ pointerEvents: 'none', background: '#00000029', zIndex: 98 }} />
     <AbsoluteFill style={{ pointerEvents: 'none', background: light ? 'linear-gradient(125deg,#fff2,transparent 65%,#0001)' : 'linear-gradient(128deg,#dad5c10b,transparent 28%,#1e355011 75%,#ffffff07)', zIndex: 99 }} />
     <AbsoluteFill style={{ pointerEvents: 'none', opacity: light ? .015 : .04, background: 'repeating-linear-gradient(0deg,transparent 0 2px,#0007 2px 3px)', zIndex: 100 }} />
   </div>;
@@ -195,7 +196,8 @@ function Tablet({ frame, story }: { frame: number; story: TradingDeskProps }) {
 }
 
 function Desk({ story }: { story: TradingDeskProps }) {
-  const f=useCurrentFrame();
+  const { fps }=useVideoConfig();
+  const f=useCurrentFrame()*30/fps;
   const shots=[
     {start:0,end:90,x:481,y:874,z:1.08,dx:15,dy:-18,dz:.17},
     {start:90,end:180,x:270,y:485,z:1.72,dx:2,dy:4,dz:.03},

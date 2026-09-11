@@ -69,6 +69,7 @@ export async function POST(request: Request) {
   if (rejected) return rejected;
 
   let tempDirectory: string | null = null;
+  let deadline: ReturnType<typeof setTimeout> | undefined;
   const { cancelSignal, cancel } = makeCancelSignal();
   request.signal.addEventListener("abort", cancel, { once: true });
 
@@ -120,6 +121,8 @@ export async function POST(request: Request) {
       return Response.json({ error: resolved.error }, { status: 400 });
     }
     const inputProps = resolved as Record<string, unknown>;
+    // Leave time to respond before the admin's 200s deadline, even behind a buffering proxy.
+    if (body.id === "nickai-trading-desk") deadline = setTimeout(cancel, 190_000);
     tempDirectory = await mkdtemp(
       path.join(tmpdir(), "pixelnick-motion-export-"),
     );
@@ -182,6 +185,7 @@ export async function POST(request: Request) {
       { status: 500 },
     );
   } finally {
+    clearTimeout(deadline);
     request.signal.removeEventListener("abort", cancel);
     if (tempDirectory) {
       await rm(tempDirectory, { recursive: true, force: true }).catch(() => {});
