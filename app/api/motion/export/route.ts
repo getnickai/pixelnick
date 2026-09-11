@@ -1,10 +1,11 @@
 import { validSocialStory } from "@/remotion/compositions/nickai-social-story/props";
+import { validTradingDesk } from "@/remotion/compositions/nickai-trading-desk/props";
 import { randomUUID } from "node:crypto";
 import { cp, mkdtemp, readFile, rm } from "node:fs/promises";
 import { tmpdir } from "node:os";
 import path from "node:path";
 import { bundle } from "@remotion/bundler";
-import { renderMedia, selectComposition } from "@remotion/renderer";
+import { makeCancelSignal, renderMedia, selectComposition } from "@remotion/renderer";
 import { enableTailwind } from "@remotion/tailwind-v4";
 import { getMotionEntryMeta } from "@/remotion/manifest";
 import { TEMPLATES } from "@/remotion/compositions/workflow-template-card/data/templates.generated";
@@ -68,6 +69,8 @@ export async function POST(request: Request) {
   if (rejected) return rejected;
 
   let tempDirectory: string | null = null;
+  const { cancelSignal, cancel } = makeCancelSignal();
+  request.signal.addEventListener("abort", cancel, { once: true });
 
   try {
     const body = (await request.json()) as {
@@ -134,11 +137,14 @@ export async function POST(request: Request) {
       `${body.id}-${randomUUID()}.mp4`,
     );
 
+    request.signal.throwIfAborted();
+    const desk = body.id === "nickai-trading-desk";
     await renderMedia({
       composition,
       serveUrl,
       codec: "h264",
-      imageFormat: "png",
+      imageFormat: desk ? "jpeg" : "png",
+      jpegQuality: desk ? 95 : undefined,
       pixelFormat: "yuv420p",
       crf: body.id === "nickai-social-story" || body.id === "nickai-trading-desk" ? 18 : 14,
       x264Preset: body.id === "nickai-social-story" || body.id === "nickai-trading-desk" ? "fast" : "slow",
@@ -150,7 +156,8 @@ export async function POST(request: Request) {
         body.id === "launch-video-pr91" ||
         body.id === "nick-intro" ||
         body.id === "nick-outro",
-      concurrency: 1,
+      concurrency: desk ? 2 : 1,
+      cancelSignal,
     });
 
     const video = await readFile(outputLocation);
@@ -175,9 +182,9 @@ export async function POST(request: Request) {
       { status: 500 },
     );
   } finally {
+    request.signal.removeEventListener("abort", cancel);
     if (tempDirectory) {
       await rm(tempDirectory, { recursive: true, force: true }).catch(() => {});
     }
   }
 }
-import { validTradingDesk } from "@/remotion/compositions/nickai-trading-desk/props";
