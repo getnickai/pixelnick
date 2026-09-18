@@ -1,7 +1,8 @@
 import React, { useEffect, useState } from 'react';
-import { AbsoluteFill, Audio, Img, Sequence, cancelRender, continueRender, delayRender, interpolate, spring, staticFile, useCurrentFrame } from 'remotion';
+import { AbsoluteFill, Audio, Img, Sequence, cancelRender, continueRender, delayRender, interpolate, spring, staticFile, useCurrentFrame, useVideoConfig } from 'remotion';
 
 import type { SocialStoryProps } from './props';
+import { socialVideoFrames } from '../../social-video';
 
 const BLUE = '#0178FF';
 const INK = '#101318';
@@ -15,6 +16,11 @@ const ease = (f: number, start: number, length = 22) => {
   return 1 - Math.pow(1 - p, 3);
 };
 const pop = (f: number, start = 0) => spring({ frame: f - start, fps: FPS, config: { damping: 18, stiffness: 150, mass: 0.9 } });
+function useStoryFrame(story: SocialStoryProps) {
+  // Sequence-local useVideoConfig reports the scene duration, not the full film.
+  return useCurrentFrame() * DURATION / socialVideoFrames(1, story.render_options);
+}
+
 const mono: React.CSSProperties = { fontFamily: 'Menlo, monospace', fontSize: 21, letterSpacing: 1 };
 
 function Mark({ size = 46, white = false }: { size?: number; white?: boolean }) {
@@ -37,7 +43,7 @@ function Arrow({ color = INK, size = 52 }: { color?: string; size?: number }) {
 }
 
 function Intro({ story }: { story: SocialStoryProps }) {
-  const f = useCurrentFrame();
+  const f = useStoryFrame(story);
   const rush = ease(f, 100, 20);
   return <AbsoluteFill style={{ backgroundColor: PAPER, overflow: 'hidden' }}>
     <Header index="01" title={story.category} />
@@ -63,7 +69,7 @@ function Intro({ story }: { story: SocialStoryProps }) {
 }
 
 function Example({ story }: { story: SocialStoryProps }) {
-  const f = useCurrentFrame();
+  const f = useStoryFrame(story);
   const exit = ease(f, 114, 20);
   return <AbsoluteFill style={{ background: INK, color: PAPER, overflow: 'hidden' }}>
     <Header dark index="02" title="FOLLOW THE CONTEXT" />
@@ -81,7 +87,7 @@ function Example({ story }: { story: SocialStoryProps }) {
 }
 
 function Research({ story }: { story: SocialStoryProps }) {
-  const f = useCurrentFrame();
+  const f = useStoryFrame(story);
   const cards = [
     { x: 66, y: 537, r: -7, name: story.workflow.steps[0].label, detail: story.workflow.steps[0].detail, step: 10, icon: '01' },
     { x: 548, y: 533, r: 6, name: story.workflow.steps[1].label, detail: story.workflow.steps[1].detail, step: 23, icon: '02' },
@@ -104,7 +110,7 @@ function Research({ story }: { story: SocialStoryProps }) {
 }
 
 function Brief({ story }: { story: SocialStoryProps }) {
-  const f = useCurrentFrame();
+  const f = useStoryFrame(story);
   const fold = ease(f, 131, 19);
   const reveal = (start: number): React.CSSProperties => ({ opacity: ease(f, start, 17), transform: `translateY(${(1 - ease(f, start, 17)) * 32}px)` });
   return <AbsoluteFill style={{ background: PAPER, color: INK, overflow: 'hidden' }}>
@@ -126,7 +132,7 @@ function Brief({ story }: { story: SocialStoryProps }) {
 }
 
 function Outro({ story }: { story: SocialStoryProps }) {
-  const f = useCurrentFrame();
+  const f = useStoryFrame(story);
   return <AbsoluteFill style={{ background: LIME, color: INK, overflow: 'hidden' }}>
     <Header index="05" title="BUILD YOUR WORKFLOW" />
     <div style={{ position: 'absolute', right: -105, top: 148, width: 630, height: 630, border: `2px solid ${INK}22`, borderRadius: '50%', transform: `rotate(${f * .5}deg)` }}>
@@ -146,19 +152,22 @@ function Outro({ story }: { story: SocialStoryProps }) {
 }
 
 export function SocialStoryComposition(story: SocialStoryProps) {
+  const { durationInFrames } = useVideoConfig();
+  const at = (frame: number) => Math.round(frame * durationInFrames / DURATION);
+  const rate = DURATION / durationInFrames;
   const [fontHandle] = useState(() => delayRender('Load Nick brand typography'));
-  const f = useCurrentFrame();
+  const f = useStoryFrame(story);
   useEffect(() => {
     Promise.all([document.fonts.load('700 100px Duplet'), document.fonts.load('600 100px Duplet'), document.fonts.load('400 32px Duplet')]).then(() => continueRender(fontHandle)).catch(cancelRender);
   }, [fontHandle]);
   return <AbsoluteFill style={{ fontFamily: 'Duplet, sans-serif', background: PAPER, color: INK }}>
     <style>{`@font-face{font-family:Duplet;src:url('${staticFile('fonts/Duplet-Regular.woff')}');font-weight:400}@font-face{font-family:Duplet;src:url('${staticFile('fonts/Duplet-Semibold.woff')}');font-weight:600}@font-face{font-family:Duplet;src:url('${staticFile('fonts/Duplet-Bold.woff')}');font-weight:700}*{box-sizing:border-box}`}</style>
-    <Sequence from={0} durationInFrames={120}><Intro story={story} /></Sequence>
-    <Sequence from={120} durationInFrames={135}><Example story={story} /></Sequence>
-    <Sequence from={255} durationInFrames={120}><Research story={story} /></Sequence>
-    <Sequence from={375} durationInFrames={150}><Brief story={story} /></Sequence>
-    <Sequence from={525} durationInFrames={135}><Outro story={story} /></Sequence>
-    <Audio src={staticFile('audio/social-story.m4a')} volume={.7} />
+    <Sequence from={at(0)} durationInFrames={at(120) - at(0)}><Intro story={story} /></Sequence>
+    <Sequence from={at(120)} durationInFrames={at(255) - at(120)}><Example story={story} /></Sequence>
+    <Sequence from={at(255)} durationInFrames={at(375) - at(255)}><Research story={story} /></Sequence>
+    <Sequence from={at(375)} durationInFrames={at(525) - at(375)}><Brief story={story} /></Sequence>
+    <Sequence from={at(525)} durationInFrames={at(660) - at(525)}><Outro story={story} /></Sequence>
+    <Audio src={staticFile('audio/social-story.m4a')} playbackRate={rate} volume={.7 * (story.render_options?.audio_volume ?? 1)} />
     <div style={{ position: 'absolute', left: 0, bottom: 0, height: 5, width: `${100 * f / (DURATION - 1)}%`, background: f >= 525 ? INK : BLUE, zIndex: 99 }} />
   </AbsoluteFill>;
 }

@@ -1,8 +1,11 @@
+import { validSocialRenderOptions, type SocialRenderOptions } from '../../social-video';
+
 /** Wire contract mirrors ops-reposters-v2/src/lib/organic/story.ts. */
 interface StoryItem { label: string; detail: string }
 type Pair = [string, string];
 type Trio<T> = [T, T, T];
 export interface SocialStoryProps extends Record<string, unknown> {
+  render_options?: SocialRenderOptions;
   version: 1;
   category: string;
   hook: Pair;
@@ -22,7 +25,7 @@ export function validSocialStory(value: unknown): value is SocialStoryProps {
   const list = (v: unknown, n: number, check: (item: unknown) => boolean) => Array.isArray(v) && v.length === n && v.every(check);
   const pair = (v: unknown) => list(v, 2, (s) => line(s, 22));
   const item = (v: unknown) => object(v) && line(v.label, 24) && line(v.detail, 72);
-  return object(value) && value.version === 1 && line(value.category, 24) && pair(value.hook)
+  return object(value) && validSocialRenderOptions(value.render_options, 22) && value.version === 1 && line(value.category, 24) && pair(value.hook)
     && list(value.questions, 3, (s) => line(s, 28))
     && object(value.example) && line(value.example.title, 48) && list(value.example.items, 3, item)
     && object(value.workflow) && pair(value.workflow.title) && list(value.workflow.steps, 3, item)

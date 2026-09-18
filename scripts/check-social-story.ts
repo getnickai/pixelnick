@@ -1,5 +1,6 @@
 /** Run with bun scripts/check-social-story.ts; no browser, network or writes. */
 import assert from 'node:assert/strict';
+import { socialVideoFrames } from '../remotion/social-video';
 import { socialStoryDefaultProps, validSocialStory } from '../remotion/compositions/nickai-social-story/props';
 import { POST as exportVideo } from '../app/api/motion/export/route';
 import { POST as exportStill } from '../app/api/motion/still/route';
@@ -64,3 +65,24 @@ assert.throws(() => screenMatrix(0, 100, [[0,0],[1,0],[1,1],[0,1]]));
 assert.throws(() => screenMatrix(100, 100, [[0,0],[0,0],[0,0],[0,0]]));
 assert.throws(() => screenMatrix(100, 100, [[0],[1,0],[1,1],[0,1]]));
 console.log('Trading desk contract, source routing, render boundaries and perspective mapping pass.');
+
+for (const [story, validate, seconds, fps] of [
+  [socialStoryDefaultProps, validSocialStory, 22, 30],
+  [tradingDeskDefaultProps, validTradingDesk, 25, 24],
+] as const) {
+  assert.equal(socialVideoFrames(story.version), seconds * fps);
+  assert.equal(socialVideoFrames(story.version, { duration_seconds: 15 }), 15 * fps);
+  assert(validate({ ...story, render_options: { duration_seconds: 15, audio_volume: 0 } }));
+  for (const render_options of [null, { duration_seconds: seconds + 1 }, { duration_seconds: 11 }, { audio_volume: -1 }, { audio_volume: 2 }, { unknown: true }]) {
+    const inputProps = { ...story, render_options };
+    assert(!validate(inputProps));
+    for (const handler of [exportVideo, exportStill]) {
+      const res = await handler(new Request('http://localhost/api/motion/export', {
+        method: 'POST', headers: { 'Content-Type': 'application/json', 'x-render-key': process.env.MOTION_RENDER_KEY ?? '' },
+        body: JSON.stringify({ id: story.version === 1 ? 'nickai-social-story' : 'nickai-trading-desk', inputProps }),
+      }));
+      assert.equal(res.status, 400);
+    }
+  }
+}
+console.log('Custom duration, volume and both render boundaries pass.');

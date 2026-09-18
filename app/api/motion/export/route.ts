@@ -1,3 +1,4 @@
+import type { SocialRenderOptions } from '@/remotion/social-video';
 import { validSocialStory } from "@/remotion/compositions/nickai-social-story/props";
 import { validTradingDesk } from "@/remotion/compositions/nickai-trading-desk/props";
 import { randomUUID } from "node:crypto";
@@ -122,7 +123,7 @@ export async function POST(request: Request) {
     }
     const inputProps = resolved as Record<string, unknown>;
     // Leave time to respond before the admin's 200s deadline, even behind a buffering proxy.
-    if (body.id === "nickai-trading-desk") deadline = setTimeout(cancel, 190_000);
+    if (body.id === "nickai-trading-desk" || body.id === "nickai-social-story") deadline = setTimeout(cancel, 190_000);
     tempDirectory = await mkdtemp(
       path.join(tmpdir(), "pixelnick-motion-export-"),
     );
@@ -156,6 +157,7 @@ export async function POST(request: Request) {
       inputProps,
       // These compositions are intentionally silent; avoid an empty AAC track.
       muted:
+        ((desk || body.id === "nickai-social-story") && (inputProps.render_options as SocialRenderOptions | undefined)?.audio_volume === 0) ||
         body.id === "launch-video-pr91" ||
         body.id === "nick-intro" ||
         body.id === "nick-outro",

@@ -196,8 +196,10 @@ function Tablet({ frame, story }: { frame: number; story: TradingDeskProps }) {
 }
 
 function Desk({ story }: { story: TradingDeskProps }) {
-  const { fps }=useVideoConfig();
-  const f=useCurrentFrame()*30/fps;
+  const { fps, durationInFrames }=useVideoConfig();
+  const f=useCurrentFrame()*750/durationInFrames;
+  const rate=25*fps/durationInFrames;
+  const volume=story.render_options?.audio_volume ?? 1;
   const shots=[
     {start:0,end:90,x:481,y:874,z:1.08,dx:15,dy:-18,dz:.17},
     {start:90,end:180,x:270,y:485,z:1.72,dx:2,dy:4,dz:.03},
@@ -230,8 +232,8 @@ function Desk({ story }: { story: TradingDeskProps }) {
     {f<112?<div style={{position:'absolute',left:56,right:56,bottom:128,opacity:ease(f,7,17)*(1-ease(f,91,18)),textShadow:'0 3px 20px #000',fontSize:47,fontWeight:600,letterSpacing:-1.3,color:'#f3f1e9'}}>{story.hook}</div>:null}
     {f>=662?<div style={{position:'absolute',left:56,right:56,bottom:149,opacity:ease(f,665,24),display:'flex',alignItems:'center',gap:27,background:'#090d14c9',border:'1px solid #ffffff19',padding:'26px 29px',borderRadius:17}}><Mark size={76}/><div><div style={{fontSize:26,color:'#ced5df',marginBottom:9}}>{story.payoff}</div><div style={{fontSize:31,color:'#ced5df'}}>Try it for free now:</div><div style={{fontSize:59,fontWeight:600,letterSpacing:-2,color:'#fff'}}>getnick.ai</div></div></div>:null}
     <div style={{position:'absolute',left:56,bottom:45,color:'#d9dee7',opacity:.76,fontSize:20,textShadow:'0 2px 7px #000'}}>{story.review.models ? 'Illustrative setup · Scripted model replies' : 'Illustrative Nick workflow'}</div>
-    <Audio src={staticFile('nick-desk/bed.m4a')} loop volume={.37*(1-ease(f,720,29))}/>
-    <Audio src={staticFile('nick-desk/desk-sounds.m4a')} volume={.75}/>
+    <Audio src={staticFile('nick-desk/bed.m4a')} loop playbackRate={rate} volume={volume*.37*(1-ease(f,720,29))}/>
+    <Audio src={staticFile('nick-desk/desk-sounds.m4a')} playbackRate={rate} volume={volume*.75}/>
   </AbsoluteFill>;
 }
 

@@ -1,3 +1,5 @@
+import { validSocialRenderOptions, type SocialRenderOptions } from '../../social-video';
+
 /** Version-2 wire contract mirrors ops-reposters-v2/src/lib/organic/story.ts. */
 export const DESK_VENUES = ['Coinbase', 'Hyperliquid', 'OKX', 'Polymarket', 'Kalshi', 'Alpaca', 'Revolut', 'Trade[XYZ]'] as const;
 type Venue = typeof DESK_VENUES[number];
@@ -7,6 +9,7 @@ interface Quote { venue: 'Polymarket' | 'Kalshi'; ask_cents: number }
 type Trio<T> = [T, T, T];
 
 export interface TradingDeskProps extends Record<string, unknown> {
+  render_options?: SocialRenderOptions;
   version: 2;
   category: string;
   hook: string;
@@ -33,7 +36,7 @@ export function validTradingDesk(value: unknown): value is TradingDeskProps {
   const item = (v: unknown) => object(v) && line(v.label, 28) && line(v.detail, 112);
   const model = (v: unknown) => object(v) && line(v.name, 32) && line(v.focus, 28) && line(v.reply, 136);
   const quote = (v: unknown): v is Quote => object(v) && (v.venue === 'Polymarket' || v.venue === 'Kalshi') && typeof v.ask_cents === 'number' && Number.isInteger(v.ask_cents) && v.ask_cents >= 1 && v.ask_cents <= 99;
-  if (!object(value) || value.version !== 2 || !line(value.category, 32) || !line(value.hook, 56) || !line(value.prompt, 150)
+  if (!object(value) || !validSocialRenderOptions(value.render_options, 25) || value.version !== 2 || !line(value.category, 32) || !line(value.hook, 56) || !line(value.prompt, 150)
     || !Array.isArray(value.venues) || value.venues.length < 1 || value.venues.length > 6 || new Set(value.venues).size !== value.venues.length
     || !value.venues.every((v) => DESK_VENUES.includes(v))
     || !object(value.context) || !line(value.context.title, 80) || !trio(value.context.items, item)

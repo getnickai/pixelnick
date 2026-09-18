@@ -1,3 +1,4 @@
+import { socialVideoFrames } from './social-video';
 import { SocialStoryComposition } from "./compositions/nickai-social-story/composition";
 import { socialStoryDefaultProps } from "./compositions/nickai-social-story/props";
 /**
@@ -92,6 +93,7 @@ export const RemotionRoot: React.FC = () => {
         width={tradingDesk.width}
         height={tradingDesk.height}
         defaultProps={tradingDeskDefaultProps}
+        calculateMetadata={({ props }) => ({ durationInFrames: socialVideoFrames(2, props.render_options) })}
       />
       <Composition
         id="nickai-social-story"
@@ -101,6 +103,7 @@ export const RemotionRoot: React.FC = () => {
         width={socialStory.width}
         height={socialStory.height}
         defaultProps={socialStoryDefaultProps}
+        calculateMetadata={({ props }) => ({ durationInFrames: socialVideoFrames(1, props.render_options) })}
       />
       <Composition
         id="performance-card"
