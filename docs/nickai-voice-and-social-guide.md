@@ -85,6 +85,7 @@ The mechanisms, in the order a post uses them, and the compliant form of each.
 7. **Restraint as status**: short copy, calm voice, no exclamation marks. The strongest posts do not sell.
 8. **Native media on every post**: 3x median reach with media; video carries the outliers. Post 14:00 to 20:00 UTC.
 9. **Reply where the attention already is**: two replies under larger accounts' posts on the same topic within the hour of posting. The winning accounts reply more than they post.
+10. **Reply to trade ideas with an agent.** When an account posts a trade idea (a funding read, an odds gap, a setup, a "what if" on a market), reply with the one-sentence Nick agent that would run it, and the workflow it becomes: "Fade extreme funding rates" under a funding post, "Alert me when the Kalshi and Polymarket odds diverge by 5 points" under an odds post. The reply is the giveaway: the sentence, the nodes, the venues. It turns someone else's idea into a demo of the product without a pitch, and it reaches their audience, not ours. Rules: only on posts that state a mechanism (not price calls), never a performance claim, no link in the reply (the library link can follow if they ask), one reply per thread. Target feeds: the Data voices and Venues lists, plus the daily viral scan.
 
 What we refuse, even though it works for others: money promises and performance claims (banned by the content guide and the CFTC risk list), fear and loss framing, scarcity and urgency, engagement bait ("RT if", "drop your setup below"), hashtags, hype vocabulary, and copying a competitor's claim with our logo on it. The artifact-giveaway format is ours to use; the "it will make you a lot of money" caption that usually comes with it is not.
 
@@ -195,7 +196,7 @@ Keep these as X Lists on the brand account (Benchmarks, Founders, Data voices, V
 
 - One substantive post per weekday, 14:00 to 20:00 UTC, from the calendar; reactive posts when a venue or a model lab gives us a number to add to.
 - Launches get the 3-post thread and a film; everything else gets one post.
-- Two replies under larger accounts' posts on the same topic within the hour of posting.
+- Two replies under larger accounts' posts on the same topic within the hour of posting, plus one reply a day to a trade-idea post with the Nick agent that would run it (section 4, mechanism 10).
 - Measure likes + bookmarks, never impressions (a third of the biggest impression counts in our research look paid). Bookmarks per like above 0.3 means reference content: make more of it.
 - Monthly: re-pull the benchmark and competitor accounts (`scripts/research/x_pull_accounts.py` in the reposter admin, about $17), re-run the report, and update this guide if a format stops winning.
 
@@ -209,4 +210,4 @@ Keep these as X Lists on the brand account (Benchmarks, Founders, Data voices, V
 - Banned: profit, returns, win, beat, guaranteed, edge, alpha, swarm. Numbers are sourced market or product facts. CTA last: `Try it for free now: getnick.ai`.
 - Content types: one-sentence agent, day-0 model test, market data through Nick, value-first drops, proof, artifact giveaways, show the machine, launches.
 - Four tests: desk, noun, one idea, screenshot.
-- Score by likes + bookmarks. Reply twice. Re-pull monthly.
+- Score by likes + bookmarks. Reply twice, and once to a trade idea with the agent that runs it. Re-pull monthly.
