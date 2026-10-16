@@ -188,6 +188,8 @@ Keep these as X Lists on the brand account (Benchmarks, Founders, Data voices, V
 
 **Competitors to monitor**: @agenticscredit, @AIWayfinder, @TheoriqAI, @autonolas, @3commas_io, @cryptohopper, @virtuals_io, @numerai, @gizatechxyz, @ComposerTrade, @griffaindotcom.
 
+**Launch playbook lists (16 Oct 2026, Hyperliquid and prediction markets)**: the live source of truth is the allowlist on the reposter admin board (`/x/settings`), grouped by role. Core: @HyperliquidX, @chameleon_jeff, @Polymarket, @PolymarketIntel, @Domahhhh, @Kalshi, @shayne_coplan, @mansourtarek_. Top 10 reply targets (3 to 5 agent replies a day): @ThinkingUSD, @NateSilver538, @Cbb0fe, @lookonchain, @Kalshi_Crypto, @PolymarketMoney, @lxeagle17, @unusual_whales, @kirbyongeo, @aixbt_agent. Partners: @Outcomexyz (@OutcomeAK), @tradexyz, Kalshi crypto (@j0hnwang, @icobeast), @hydromancerxyz, @hypedexer, @recallnet; alternates @InsilicoTrading, @betmoardotfun, @sharexyz. Competitors to watch, never retweet: @senpi_ai (@betashop), @tread_fi, @the_nof1, @bankrbot, @HeyElsaAI, @autonolas. Avoid: @JamesWynnReal, @machibigbrother, @EmberCN, @stacy_muur; inactive @HyperFND, @HsakaTrades, @HypurrScan.
+
 **Watch, do not copy**: @milesdeutscher and @RohOnChain (the "Opus 5.5 + Jev = crack" and "10x quant CLAUDE.md" posts). Their format (artifact + model name + short caption) is exactly right; their captions promise money. We take the format and leave the promise.
 
 ---
