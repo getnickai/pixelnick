@@ -8,6 +8,7 @@ Organized by asset category:
 - `workflows/` — rendered workflow graphs (quant, alert, starter agents, component panels).
 - `logos/` — venue and model logo rows, and individual logo files.
 - `brand/` — brand elements (gradient banner).
+- `brand/nick-v1/` — **the Nick logo system v1.0, exact SVGs for every variant. Use these for any logo.** See its README.
 - `sources/` — render HTML/CSS/JS, Python compositors, and TypeScript fixtures used to generate the assets.
 
 Meta-agent chat **widgets** (the cards Nick renders inline in chat — price, portfolio, prediction markets, data readouts, trade confirmations) live in the app itself, not here, because there are 64 files (32 designs × light/dark) and the app serves them directly: `public/widget-library/{light,dark}/<slug>.png` (2× retina). Browse and download them in the pixelnick UI at **Engine → NickAI → Widget Library** (`/engine/nickai-widget-library`); each tile has copy-path and download. They are static captures of the REAL components from the nickai `/dev/cards` harness — re-capture after a design change with `scripts/capture-widget-library.ts` (see that file's header). Catalog + labels: `app/engine/nickai-widget-library/manifest.ts`.
