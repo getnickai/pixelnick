@@ -1,0 +1,81 @@
+{
+  "name": "nickai-outcome-xyz-demo",
+  "about": "NickAI x outcome.xyz integration walkthrough (Oct 2026). Source: 3050x2064 window recording, ~10 min. Part 1 trades outcome.xyz markets by chat, part 2 builds the BTC Daily Edge workflow (sped up ~8x).",
+  "crop": [2824, 1666, 112, 250],
+  "fps": 60,
+  "voice": { "voice_id": "MlIxnl4hUPbFzWffsZ76", "voice_name": "Louis - Friendly Instructor", "model_id": "eleven_v4" },
+  "music_prompt": "Instrumental only, no vocals. Modern minimal deep-house / downtempo electronic bed for a fintech product demo, 118 BPM, warm analog synth pads, soft plucked arpeggio, subtle sidechained kick and light hats, steady and confident, uncluttered midrange so a voiceover sits on top. Gentle 4-second fade-in, consistent energy throughout with a small lift halfway, clean ending. Duration about 4 minutes 30 seconds.",
+  "music_volume": 0.32,
+  "cards": {
+    "intro": {
+      "kicker": "NickAI × outcome.xyz",
+      "title": "Prediction markets on Hyperliquid,",
+      "accent": "traded by talking.",
+      "sub": "Live outcome.xyz account · real orders · every trade approved by you"
+    },
+    "bridge": {
+      "logo": false,
+      "kicker": "Part 2",
+      "title": "Automate it with a workflow",
+      "sub": "Describe a strategy · Nick builds it · it runs on a schedule"
+    },
+    "outro": {
+      "title": "Talk to outcome.xyz.",
+      "accent": "Automate it with workflows.",
+      "cta": "Try it for free now",
+      "url": "getnick.ai",
+      "fine": "Trading involves risk. Not financial advice."
+    }
+  },
+  "intro_line": "L00",
+  "outro_line": "O2",
+  "lines": {
+    "L00": "This is NickAI, now integrated with outcome.xyz, the prediction markets on Hyperliquid. Everything you'll see is a live account, driven by chat.",
+    "L01": "First, what's live on outcome.xyz? Nick pulls the markets, ranked by volume.",
+    "L02": "The BTC daily market, with live odds and price history, right in the chat.",
+    "L03": "The next Fed decision: Nick shows the odds and explains exactly how it resolves.",
+    "L04": "How much can I buy before slippage? Nick walks the order book and gives me a practical read.",
+    "L05": "My balance, straight from my Hyperliquid wallet.",
+    "L06": "Now let's trade. Ten Yes shares on the BTC daily, at market.",
+    "L06b": "Nick prepares the order, I approve, and it fills. There's the position on outcome.xyz.",
+    "L07": "A limit buy for twenty No shares at five cents. Nick flags that it's far below the market before I approve.",
+    "L07b": "And it's resting on the book on outcome.xyz.",
+    "L08": "Show my open orders, then cancel that one. One message.",
+    "L09": "My positions with P&L: average fill, current mark, and unrealized P&L.",
+    "L10": "Sell everything at market. Approve, filled, and the transaction is right there on Hyperliquid.",
+    "B0": "Now, what if this should run on its own? Let's turn it into a workflow.",
+    "W1": "I describe a strategy in plain English. Every fifteen minutes, check BTC's price on Hyperliquid and today's BTC daily market on outcome.xyz.",
+    "W2": "Estimate the fair odds. If they beat the market by more than eight points, buy Yes, or No if it's the other way, and message me on Telegram.",
+    "W3": "Nick picks the nodes and wires them on the canvas: outcome.xyz market data, a pricing function, the order nodes, and Telegram.",
+    "W4": "Then it validates the workflow and checks the math before handing it back.",
+    "W5": "Built and validated: ten nodes, eleven edges. Add a Telegram bot, and switch it on.",
+    "O2": "Prediction markets you can talk to, and automate. outcome.xyz, now on NickAI. Try it for free now at getnick.ai."
+  },
+  "blocks": [
+    { "prompt": "What prediction markets are live on outcome.xyz right now?", "part": "Part 1 · Trade by talking",
+      "segs": [["fit", 0.5, 12, 1.6], ["x1", 12, 20]], "lines": [["L01", 0]], "lim": 20.5 },
+    { "prompt": "Show me the BTC daily market on outcome.xyz", "part": "Part 1 · Trade by talking",
+      "segs": [["fit", 20.5, 33, 1.6], ["x1", 33, 44.5]], "lines": [["L02", 0]], "lim": 45 },
+    { "prompt": "What are the odds for the next Fed decision on outcome.xyz, and how does it resolve?", "part": "Part 1 · Trade by talking",
+      "segs": [["fit", 45, 57, 1.6], ["x1", 57, 69]], "lines": [["L03", 0]], "lim": 69.5 },
+    { "prompt": "Show me the order book for the BTC daily market. How much can I buy before slippage?", "part": "Part 1 · Trade by talking",
+      "segs": [["fit", 69.5, 100, 2.0], ["x1", 100, 112]], "lines": [["L04", 0]], "lim": 116 },
+    { "prompt": "What's my outcome.xyz balance?", "part": "Part 1 · Trade by talking",
+      "segs": [["fit", 116, 128, 1.4], ["x1", 128, 131.5]], "lines": [["L05", 0]], "lim": 132 },
+    { "prompt": "Buy 10 Yes shares on the BTC daily market on outcome.xyz at market", "part": "Part 1 · Trade by talking",
+      "segs": [["fit", 132, 140, 1.2], ["x1", 141, 152], ["x1", 155, 158]], "lines": [["L06", 0], ["L06b", 1]], "lim": 158.5 },
+    { "prompt": "Place a limit buy for 20 No shares on the BTC daily market at 0.05", "part": "Part 1 · Trade by talking",
+      "segs": [["fit", 159, 178, 1.8], ["x1", 178, 190], ["x1", 195.5, 201]], "lines": [["L07", 0], ["L07b", 2]], "lim": 202 },
+    { "prompt": "Show my open outcome.xyz orders, then cancel that one", "part": "Part 1 · Trade by talking",
+      "segs": [["fit", 205, 224, 1.6], ["x1", 224, 232]], "lines": [["L08", 0]], "lim": 233 },
+    { "prompt": "Show my outcome.xyz positions with P&L", "part": "Part 1 · Trade by talking",
+      "segs": [["fit", 233, 242, 1.2], ["x1", 242, 250]], "lines": [["L09", 0]], "lim": 251 },
+    { "prompt": "Sell all my BTC daily shares at market", "part": "Part 1 · Trade by talking",
+      "segs": [["fit", 251, 257, 1.0], ["x1", 257, 271], ["x1", 277, 281.5]], "lines": [["L10", 0]], "lim": 281.5 },
+    { "card": "bridge", "line": "B0" },
+    { "prompt": "Build me a workflow called \"BTC Daily Edge\" that runs every 15 minutes: get BTC's price from Hyperliquid and today's BTC daily market from outcome.xyz, estimate fair odds, buy 10 Yes (or No) shares on an 8+ point edge, and message me on Telegram",
+      "part": "Part 2 · Automate it", "long": true,
+      "segs": [["fit", 283, 296, 3.0], ["fit", 296, 365, 8.0], ["fit", 365, 572, 26.0], ["x1", 572, 583.2]],
+      "lines": [["W1", 0], ["W2", 1], ["W3", 2], ["W4", 2], ["W5", 3]], "lim": 583.2 }
+  ]
+}
