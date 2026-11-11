@@ -42,6 +42,12 @@ import { nickaiSocialCardDefaultProps } from "./compositions/nickai-social-card/
 import { NickaiOgCoverComposition } from "./compositions/nickai-og-cover/composition";
 import { nickaiOgCoverDefaultProps } from "./compositions/nickai-og-cover/props";
 import { WorkflowTemplateCardCard } from "./compositions/workflow-template-card/card-with-font";
+import { WorkflowRunCardCard } from "./compositions/workflow-run-card/card-with-font";
+import {
+  workflowRunCardDefaultProps,
+  calcWorkflowRunMetadata,
+} from "./compositions/workflow-run-card/props";
+import { WRC_DURATION, WRC_FPS } from "./compositions/workflow-run-card/timeline";
 import {
   workflowTemplateCardDefaultProps,
   calcWorkflowTemplateMetadata,
@@ -246,6 +252,18 @@ export const RemotionRoot: React.FC = () => {
         height={workflowTemplate.height}
         defaultProps={workflowTemplateCardDefaultProps}
         calculateMetadata={calcWorkflowTemplateMetadata}
+      />
+      {/* Workflow Run Card: a workflow executing once on the product's node
+          cards (Ready, Running, Run complete) with a run list and CTA. */}
+      <Composition
+        id="workflow-run-card"
+        component={WorkflowRunCardCard}
+        durationInFrames={WRC_DURATION}
+        fps={WRC_FPS}
+        width={650}
+        height={1136}
+        defaultProps={workflowRunCardDefaultProps}
+        calculateMetadata={calcWorkflowRunMetadata}
       />
       {/* Launch Video — 16:10 campaign film. The Duplet title and product
           statement flow through market data, workflow responses, and the

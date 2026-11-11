@@ -14,6 +14,7 @@
  */
 import { TEMPLATES } from "./compositions/workflow-template-card/data/templates.generated";
 import { wtcDuration } from "./compositions/workflow-template-card/timeline";
+import { WRC_DURATION, WRC_FPS } from "./compositions/workflow-run-card/timeline";
 import { gamePickDuration } from "./compositions/game-pick-card/props";
 import {
   LAUNCH_VIDEO_DURATION,
@@ -295,6 +296,15 @@ export const motionManifest: MotionEntryMeta[] = [
     height: 1136,
     fps: 30,
     durationInFrames: wtcDuration(TEMPLATES["btc-buy-the-dip"].nodes.length),
+  },
+  {
+    // Workflow Run Card: one run of a workflow on the product's node cards.
+    id: "workflow-run-card",
+    label: "Workflow Run Card",
+    width: 650,
+    height: 1136,
+    fps: WRC_FPS,
+    durationInFrames: WRC_DURATION,
   },
 ];
 
