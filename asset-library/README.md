@@ -97,3 +97,17 @@ cd asset-library/covers
 ```
 
 Sizes: `og` 1200x630 (social share / OpenGraph), `wide` 1920x1080 (16:9 video / YouTube), `square` 1080x1080 (Instagram). The CTA chip defaults to `Try for free at getnick.ai`. The design lives on a fixed 1200x630 stage that scales to any size, so editing `covers/cover-template.html` updates every format. Requires macOS with Google Chrome (renders headless). The site OG image (`public/og.png` in nicksitev2) is produced from this template at `og` size.
+
+## Workflow run videos
+
+`videos/workflow-runs/` holds renders of the `workflow-run-card` Remotion composition: one workflow executing on the product's own node cards (Ready, Running, Run complete), a run list, and the CTA. 650x1136, 30fps, about 9s, no audio. Each `.mp4` has a `.cover.png` (its final frame).
+
+| Video | Workflow |
+|---|---|
+| `videos/workflow-runs/NickAI-workflow-run-jensen-nvidia.mp4` | Jensen Huang Nvidia Turmoil: manual trigger, X + stocks + Polymarket data, LLM brief |
+
+Make another by passing new props (name, trigger, 1 to 3 sources, final node, CTA):
+
+```bash
+bunx remotion render workflow-run-card out.mp4 --props=props.json
+```
