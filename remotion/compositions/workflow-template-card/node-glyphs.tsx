@@ -67,6 +67,8 @@ export const NODE_GLYPHS: Record<string, NodeGlyph> = {
   "slack-notification": { typeLabel: "Slack", colorName: "purple", border: "#c27aff", icon: "#ad46ff", Icon: MessageSquare },
   "stocks-data": { typeLabel: "Stocks", colorName: "blue", border: "#51a2ff", icon: "#2b7fff", Icon: Database },
   polymarket: { typeLabel: "Polymarket", colorName: "violet", border: "#a684ff", icon: "#8e51ff", Icon: TrendingUp },
+  "polymarket-data": { typeLabel: "Polymarket", colorName: "violet", border: "#a684ff", icon: "#8e51ff", Icon: TrendingUp },
+  "twitter-data": { typeLabel: "X", colorName: "slate", border: "#90a1b9", icon: "#62748e", Icon: MessageSquare },
   storage: { typeLabel: "Storage", colorName: "slate", border: "#90a1b9", icon: "#62748e", Icon: Database },
 };
 

@@ -36,6 +36,8 @@ export type TemplateGraph = {
   nickDescription: string;
   /** First-person prompt typed in the intro, e.g. "Automate my BTC dip buying". */
   prompt: string;
+  /** Header pill; defaults to "Live trading agent". Set it for workflows that do not trade. */
+  badge?: string;
   nodes: TemplateNodeData[];
   edges: TemplateEdgeData[];
 };

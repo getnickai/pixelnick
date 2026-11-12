@@ -9,6 +9,7 @@
  *   bun scripts/render-wtc.ts                       # BTC-dip key-beat stills
  *   bun scripts/render-wtc.ts --mp4                 # BTC-dip stills + mp4
  *   bun scripts/render-wtc.ts --slug=eth-agent-ai --mp4
+ *   bun scripts/render-wtc.ts --json=graph.json --mp4  # any workflow graph (TemplateGraph shape)
  *   bun scripts/render-wtc.ts --ratio=landscape --mp4
  *   bun scripts/render-wtc.ts --all --mp4           # every template → mp4
  *   bun scripts/render-wtc.ts --all --mp4 --archive # … + copy to public/workflow-templates/
@@ -49,11 +50,15 @@ async function main() {
       "landscape (16:9) layout isn't implemented yet — the View + conveyor geometry are portrait-only. Use --ratio=portrait.",
     );
   }
-  const slug = argValue("--slug") ?? "btc-buy-the-dip";
+  // --json=<file>: render any workflow graph (TemplateGraph shape), not only library templates.
+  const jsonPath = argValue("--json");
+  const custom = jsonPath ? JSON.parse(fs.readFileSync(jsonPath, "utf8")) : null;
+  const graphs = custom ? { ...TEMPLATES, [custom.slug]: custom } : TEMPLATES;
+  const slug = custom?.slug ?? argValue("--slug") ?? "btc-buy-the-dip";
   const slugs = all ? TEMPLATE_SLUGS : [slug];
 
   for (const s of slugs) {
-    if (!TEMPLATES[s]) throw new Error(`Unknown template slug: ${s}`);
+    if (!graphs[s]) throw new Error(`Unknown template slug: ${s}`);
   }
 
   console.log("Bundling (tailwind override)…");
@@ -64,7 +69,7 @@ async function main() {
   fs.cpSync(PUBLIC_DIR, serveUrl, { recursive: true });
 
   for (const s of slugs) {
-    const inputProps = { template: TEMPLATES[s], ratio };
+    const inputProps = { template: graphs[s], ratio };
     const composition = await selectComposition({ serveUrl, id: ID, inputProps });
     console.log(
       `\n${s} [${ratio}]: ${composition.width}×${composition.height}, ${composition.durationInFrames}f @ ${composition.fps}fps`,

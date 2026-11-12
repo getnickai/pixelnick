@@ -155,7 +155,7 @@ export function WorkflowTemplateCardView({
         >
           <span className="size-2 rounded-full bg-white" />
           <span className="whitespace-nowrap text-sm font-semibold tracking-wide text-white">
-            Live trading agent
+            {template.badge ?? "Live trading agent"}
           </span>
         </div>
         <h1
