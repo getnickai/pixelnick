@@ -28,6 +28,17 @@ export const WRC_HOOK = 96;
 
 export type NodeRunState = "idle" | "running" | "completed";
 
+/** Run windows for the compact layout: n sources staggered, then the middle node, then the final node. */
+export function compactPlan(n: number) {
+  const stagger = 4;
+  const sources = Array.from({ length: n }, (_, i) => [58 + i * stagger, 96 + i * stagger] as const);
+  const lastDone = 96 + (n - 1) * stagger;
+  const middle = [lastDone + 6, lastDone + 30] as const;
+  const final = [middle[1] + 4, middle[1] + 46] as const;
+  const complete = final[1] + 4;
+  return { triggerStart: 30, triggerDone: 50, sources, middle, final, complete, duration: complete + 92 };
+}
+
 export function runState(frame: number, start: number, done: number): NodeRunState {
   if (frame < start) return "idle";
   if (frame < done) return "running";

@@ -1,13 +1,144 @@
 {
   "name": "The Huang Drama Money Maker",
   "hook": "The Huang Drama Money Maker",
-  "prompt": "Track the Huang drama for me.",
-  "trigger": { "type": "start", "title": "Manual scan", "detail": "Manual", "value": "Manual", "output": "Ran Nov 12, 15:51 UTC" },
+  "prompt": "Build me a trading desk on the Huang drama.",
+  "trigger": {
+    "type": "start",
+    "title": "Manual scan",
+    "detail": "Manual",
+    "value": "Manual"
+  },
   "sources": [
-    { "type": "twitter-data", "title": "Huang drama on X", "detail": "Huang · Nvidia · @elonmusk", "value": "Recent · Huang · Nvidia · Musk", "output": "Huang out, Kress interim CEO" },
-    { "type": "polymarket-data", "title": "SpaceX + CEO odds", "detail": "Polymarket", "value": "Search: Jensen Huang", "output": "Huang joins SpaceX by Dec 31: 8.45%" },
-    { "type": "stocks-data", "title": "NVDA + SPCX", "detail": "NVDA · SPCX", "value": "NVDA · SPCX", "output": "5 sessions: NVDA -16.6%, SPCX +3.5%" }
+    {
+      "type": "rss-feed",
+      "title": "Nvidia newsroom",
+      "detail": "nvidianews.nvidia.com",
+      "value": "Custom feed"
+    },
+    {
+      "type": "rss-feed",
+      "title": "SEC 8-K filings",
+      "detail": "EDGAR · NVDA",
+      "value": "Custom feed"
+    },
+    {
+      "type": "twitter-data",
+      "title": "Nvidia + CEO on X",
+      "detail": "@nvidia · Kress · Buck",
+      "value": "Relevancy"
+    },
+    {
+      "type": "twitter-data",
+      "title": "Huang on X",
+      "detail": "Huang · SpaceX · @elonmusk",
+      "value": "Relevancy"
+    },
+    {
+      "type": "rss-feed",
+      "title": "Newswire",
+      "detail": "CNBC · MarketWatch · Yahoo · TechCrunch",
+      "value": "Catalog"
+    },
+    {
+      "type": "polymarket-data",
+      "title": "Huang next move",
+      "detail": "Polymarket",
+      "value": "Search: Jensen Huang"
+    },
+    {
+      "type": "polymarket-data",
+      "title": "Nvidia CEO race odds",
+      "detail": "Polymarket",
+      "value": "Search: Nvidia CEO"
+    },
+    {
+      "type": "price-data",
+      "title": "NVDA perp 24/7",
+      "detail": "Hyperliquid · xyz:NVDA",
+      "value": "1h"
+    },
+    {
+      "type": "stocks-data",
+      "title": "NVDA + AI basket",
+      "detail": "NVDA · AMD · AVGO · TSM · MU · VRT · SPCX",
+      "value": "1d"
+    }
   ],
-  "final": { "type": "llm", "title": "Huang drama brief", "detail": "openai/gpt-5.6-sol", "value": "openai/gpt-5.6-sol", "output": "Next Nvidia CEO: Ian Buck at 32.5%" },
+  "middle": {
+    "type": "function",
+    "title": "Quant signals",
+    "detail": "Python",
+    "value": "Python"
+  },
+  "final": {
+    "type": "llm",
+    "title": "Trader brief",
+    "detail": "openai/gpt-5.6-sol",
+    "value": "openai/gpt-5.6-sol"
+  },
+  "rows": [
+    {
+      "step": "trigger",
+      "type": "start",
+      "title": "Manual scan",
+      "detail": "Manual",
+      "output": "Ran Nov 12, 16:02 UTC"
+    },
+    {
+      "step": [
+        0,
+        1
+      ],
+      "type": "rss-feed",
+      "title": "Nvidia newsroom + SEC 8-K",
+      "detail": "Primary sources",
+      "output": "Confirmed: CEO transition, 8-K Item 5.02"
+    },
+    {
+      "step": [
+        2,
+        3,
+        4
+      ],
+      "type": "twitter-data",
+      "title": "X + newswire",
+      "detail": "Nvidia, Huang, CEO search",
+      "output": "Reported vs rumor, ranked by engagement"
+    },
+    {
+      "step": [
+        5,
+        6
+      ],
+      "type": "polymarket-data",
+      "title": "Polymarket odds",
+      "detail": "Huang next move · CEO race",
+      "output": "Huang to SpaceX 9% · Ian Buck 36.6% norm."
+    },
+    {
+      "step": [
+        7,
+        8
+      ],
+      "type": "price-data",
+      "title": "NVDA perp + AI basket",
+      "detail": "Hyperliquid · stocks",
+      "output": "Perp 165.19, 1.8% under the last close"
+    },
+    {
+      "step": "middle",
+      "type": "function",
+      "title": "Quant signals",
+      "detail": "Returns, vol z-score, normalized odds",
+      "output": "NVDA lags the AI basket by 22 pts in 5d"
+    },
+    {
+      "step": "final",
+      "type": "llm",
+      "title": "Trader brief",
+      "detail": "openai/gpt-5.6-sol",
+      "output": "3 scenarios, 3 WATCH setups, no orders"
+    }
+  ],
   "cta": "Remix this workflow, try Nick for free"
 }

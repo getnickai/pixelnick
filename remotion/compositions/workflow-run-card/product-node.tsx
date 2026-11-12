@@ -4,7 +4,7 @@
  * `NodeIconTile`, node icons and `--node-{type}` colours). Every state change
  * is driven by the frame, never by CSS animation, so renders are deterministic.
  */
-import { Bot, CheckCircle2, LineChart, Loader2, TrendingUp, Zap } from "lucide-react";
+import { Bot, CheckCircle2, Code, LineChart, Loader2, Rss, TrendingUp, Zap } from "lucide-react";
 import type { NodeRunState } from "./timeline";
 import type { RunNode, RunNodeType } from "./props";
 
@@ -62,6 +62,8 @@ const LOOKS: Record<RunNodeType, NodeLook> = {
   "polymarket-data": { color: "#4d73ff", typeName: "Polymarket Data", Icon: PolymarketLogo },
   "price-data": { color: "#db7706", typeName: "Price Data", Icon: lucide(TrendingUp) },
   llm: { color: "#2563eb", typeName: "LLM", Icon: lucide(Bot) },
+  "rss-feed": { color: "#e7b008", typeName: "RSS Feed", Icon: lucide(Rss) },
+  function: { color: "#8244ee", typeName: "Function", Icon: lucide(Code) },
 };
 
 export const lookFor = (type: RunNodeType) => LOOKS[type];
@@ -170,6 +172,35 @@ export function ProductNodeCard({ node, state, frame }: { node: RunNode; state: 
           </div>
         </div>
       </div>
+    </div>
+  );
+}
+
+export const COMPACT_W = 196;
+export const COMPACT_H = 32;
+
+/** Compact layout (big workflows): the card's raised panel only, tile + title, same state shell. */
+export function CompactNodeCard({ node, state, frame }: { node: RunNode; state: NodeRunState; frame: number }) {
+  return (
+    <div
+      className="relative flex items-center gap-2"
+      style={{
+        width: COMPACT_W,
+        height: COMPACT_H,
+        padding: "0 10px 0 5px",
+        borderRadius: 10,
+        border: "1.5px solid",
+        backgroundColor: TOKENS.panel,
+        ...stateShell(state),
+      }}
+    >
+      <NodeTile type={node.type} size={22} />
+      <div className="min-w-0 flex-1 truncate text-[12.5px] font-semibold leading-4" style={{ color: TOKENS.textStrong }}>
+        {node.title}
+      </div>
+      {state !== "idle" ? <ExecIcon state={state} frame={frame} size={14} /> : null}
+      <Handle side="left" />
+      <Handle side="right" />
     </div>
   );
 }
