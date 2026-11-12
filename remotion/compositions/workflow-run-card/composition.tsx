@@ -7,8 +7,8 @@
  * legible size. Chrome (glow, logo, pill, headline, CTA) matches
  * `WorkflowTemplateCardView` so the two formats read as one family.
  */
-import { AbsoluteFill, Img, interpolate, staticFile, useCurrentFrame } from "remotion";
-import { CheckCircle2 } from "lucide-react";
+import { AbsoluteFill, Easing, Img, interpolate, Sequence, staticFile, useCurrentFrame } from "remotion";
+import { ArrowUp, Check, CheckCircle2 } from "lucide-react";
 import {
   CARD_H,
   CARD_W,
@@ -23,6 +23,7 @@ import {
 import type { RunNode, WorkflowRunCardProps } from "./props";
 import {
   WRC,
+  WRC_HOOK,
   type NodeRunState,
   runState,
   sourceDoneFrame,
@@ -112,7 +113,74 @@ function RunRow({ node, state, start, frame }: { node: RunNode; state: NodeRunSt
   );
 }
 
-export const WorkflowRunCardComposition: React.FC<WorkflowRunCardProps> = ({
+/** Optional opening: the hook in big type over the prompt being typed to Nick, then sent. */
+function HookIntro({ hook, prompt }: { hook: string; prompt: string }) {
+  const frame = useCurrentFrame();
+  const enter = interpolate(frame, [0, 8], [0, 1], { ...clamp01, easing: Easing.bezier(0.23, 1, 0.32, 1) });
+  const exit = interpolate(frame, [WRC_HOOK, WRC_HOOK + 12], [1, 0], clamp01);
+  const typed = Math.floor(interpolate(frame, [12, 50], [0, prompt.length], clamp01));
+  const sent = frame >= 80;
+  const press = interpolate(frame, [76, 80, 84], [1, 0.94, 1], clamp01);
+  // Longest word must fit the 456px inner width (~0.6em per capital); long hooks drop to 64px.
+  const longest = Math.max(...hook.split(" ").map((w) => w.length));
+  const size = Math.min(hook.length > 16 ? 64 : 88, Math.floor(440 / (0.6 * longest)));
+
+  return (
+    <AbsoluteFill className="bg-primary-1000 font-sans" style={{ opacity: exit }}>
+      <div
+        className="pointer-events-none absolute inset-0 bg-[radial-gradient(ellipse_90%_60%_at_50%_42%,var(--color-primary-500)_0%,transparent_60%)]"
+        style={{ opacity: 0.16 }}
+        aria-hidden
+      />
+      <div className="absolute left-16 top-[63px] h-[30px] w-[140.211px]">
+        <Img alt="NickAI" src={asset("logo.svg")} className="block size-full max-w-none" />
+      </div>
+      <div
+        className="absolute left-16 right-16 top-[260px] rounded-[24px] border border-white/15 bg-white/[0.025] p-8"
+        style={{ opacity: enter, transform: `scale(${0.97 + enter * 0.03})` }}
+      >
+        <p className="mb-6 text-[13px] font-semibold uppercase tracking-[0.16em] text-primary-300">Prompt to Nick</p>
+        <h1
+          className="font-heading font-bold uppercase leading-[0.95] tracking-[-0.045em] text-white"
+          style={{ fontSize: size }}
+        >
+          {hook}
+        </h1>
+        <p className="mt-7 min-h-[86px] text-[30px] font-medium leading-[1.35] tracking-[-0.02em] text-zinc-200">
+          {prompt.slice(0, typed)}
+          <span
+            className="ml-1 inline-block h-[29px] w-[3px] translate-y-1 bg-primary-400"
+            style={{ opacity: !sent && (frame < 50 || Math.floor(frame / 9) % 2 === 0) ? 1 : 0 }}
+          />
+        </p>
+        <div className="mt-6 flex justify-end">
+          <div
+            className="flex size-12 items-center justify-center rounded-full bg-primary-500 text-white"
+            style={{ transform: `scale(${press})` }}
+          >
+            {sent ? <Check size={26} strokeWidth={2.5} /> : <ArrowUp size={26} strokeWidth={2.5} />}
+          </div>
+        </div>
+      </div>
+    </AbsoluteFill>
+  );
+}
+
+/** With a `hook`, the intro plays first and the run starts WRC_HOOK frames later. */
+export const WorkflowRunCardComposition: React.FC<WorkflowRunCardProps> = (props) => {
+  const frame = useCurrentFrame();
+  if (!props.hook) return <RunCard {...props} />;
+  return (
+    <AbsoluteFill className="bg-primary-1000">
+      <Sequence from={WRC_HOOK}>
+        <RunCard {...props} />
+      </Sequence>
+      {frame < WRC_HOOK + 12 && <HookIntro hook={props.hook} prompt={props.prompt ?? ""} />}
+    </AbsoluteFill>
+  );
+};
+
+const RunCard: React.FC<WorkflowRunCardProps> = ({
   name,
   trigger,
   sources,

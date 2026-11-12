@@ -23,6 +23,9 @@ export const WRC = {
 
 export const WRC_DURATION = 272;
 
+/** Frames of the optional hook intro before the run (prompt typed, then sent). */
+export const WRC_HOOK = 96;
+
 export type NodeRunState = "idle" | "running" | "completed";
 
 export function runState(frame: number, start: number, done: number): NodeRunState {

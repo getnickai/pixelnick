@@ -5,7 +5,7 @@
  * JSON-serializable (Remotion v4). The graph is fixed in shape: one trigger,
  * up to three parallel data nodes, one final node (usually the LLM).
  */
-import { WRC_FPS, WRC_DURATION } from "./timeline";
+import { WRC_FPS, WRC_DURATION, WRC_HOOK } from "./timeline";
 
 /** Node types the card knows how to draw (product `iconType`s). */
 export type RunNodeType =
@@ -38,6 +38,10 @@ export type WorkflowRunCardProps = {
   cta: string;
   /** Public share link (app.getnick.ai/workflow/share/<token>), printed above the CTA. */
   link?: string;
+  /** Opening hook in big type, e.g. "The Huang Drama Money Maker". Adds WRC_HOOK frames before the run. */
+  hook?: string;
+  /** Prompt typed under the hook, e.g. "Track the Huang drama for me." */
+  prompt?: string;
 };
 
 export const workflowRunCardDefaultProps: WorkflowRunCardProps = {
@@ -74,11 +78,11 @@ export const workflowRunCardDefaultProps: WorkflowRunCardProps = {
 
 export const WRC_SIZE = [650, 1136] as const;
 
-export function calcWorkflowRunMetadata() {
+export function calcWorkflowRunMetadata({ props }: { props?: WorkflowRunCardProps } = {}) {
   return {
     width: WRC_SIZE[0],
     height: WRC_SIZE[1],
-    durationInFrames: WRC_DURATION,
+    durationInFrames: WRC_DURATION + (props?.hook ? WRC_HOOK : 0),
     fps: WRC_FPS,
   };
 }
