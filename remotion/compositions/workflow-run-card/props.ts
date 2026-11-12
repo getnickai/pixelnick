@@ -24,6 +24,8 @@ export type RunNode = {
   detail: string;
   /** The card's summary row (product `NodeValue`), e.g. "Recent · from:nvidia". */
   value: string;
+  /** Real result line from an actual run, e.g. "Nov 19 listing: 88.7%". Replaces `detail` once the node completes. Never invent it. */
+  output?: string;
 };
 
 export type WorkflowRunCardProps = {
@@ -34,6 +36,8 @@ export type WorkflowRunCardProps = {
   /** Runs once every source completes. */
   final: RunNode;
   cta: string;
+  /** Public share link (app.getnick.ai/workflow/share/<token>), printed above the CTA. */
+  link?: string;
 };
 
 export const workflowRunCardDefaultProps: WorkflowRunCardProps = {

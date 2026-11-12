@@ -97,9 +97,15 @@ function RunRow({ node, state, start, frame }: { node: RunNode; state: NodeRunSt
       <NodeTile type={node.type} size={36} />
       <div className="min-w-0 flex-1">
         <div className="truncate text-[19px] font-semibold leading-6 text-white">{node.title}</div>
-        <div className="truncate text-[14px] leading-5" style={{ color: TOKENS.textSub }}>
-          {node.detail}
-        </div>
+        {state === "completed" && node.output ? (
+          <div className="truncate text-[14px] font-medium leading-5" style={{ color: TOKENS.success }}>
+            {node.output}
+          </div>
+        ) : (
+          <div className="truncate text-[14px] leading-5" style={{ color: TOKENS.textSub }}>
+            {node.detail}
+          </div>
+        )}
       </div>
       <ExecIcon state={state} frame={frame} size={24} />
     </div>
@@ -112,6 +118,7 @@ export const WorkflowRunCardComposition: React.FC<WorkflowRunCardProps> = ({
   sources,
   final,
   cta,
+  link,
 }) => {
   const frame = useCurrentFrame();
 
@@ -247,6 +254,11 @@ export const WorkflowRunCardComposition: React.FC<WorkflowRunCardProps> = ({
 
         {/* CTA, as on the template card. */}
         <div className="absolute bottom-[45px] left-16 z-10 w-[520px]">
+          {link && (
+            <p className="mb-2 break-all text-[13px] font-medium leading-4 text-primary-300" style={{ opacity: banner }}>
+              {link.replace(/^https?:\/\//, "")}
+            </p>
+          )}
           <div className="flex items-stretch">
             <div className="relative h-[56px] w-[46px] shrink-0 rotate-180">
               <Img alt="" src={asset("cta-tab.svg")} className="absolute inset-0 block size-full max-w-none" />
