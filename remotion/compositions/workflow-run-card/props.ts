@@ -5,7 +5,10 @@
  * JSON-serializable (Remotion v4). The graph is fixed in shape: one trigger,
  * up to three parallel data nodes, one final node (usually the LLM).
  */
-import { WRC_FPS, WRC_DURATION } from "./timeline";
+import { WRC_FPS, WRC_DURATION, WRC_HOOK, compactPlan } from "./timeline";
+
+/** More than three sources, or a middle node, switches to the compact canvas. */
+export const isCompact = (p: { sources: unknown[]; middle?: unknown }) => p.sources.length > 3 || Boolean(p.middle);
 
 /** Node types the card knows how to draw (product `iconType`s). */
 export type RunNodeType =
@@ -14,7 +17,9 @@ export type RunNodeType =
   | "stocks-data"
   | "polymarket-data"
   | "price-data"
-  | "llm";
+  | "llm"
+  | "rss-feed"
+  | "function";
 
 export type RunNode = {
   type: RunNodeType;
@@ -24,16 +29,31 @@ export type RunNode = {
   detail: string;
   /** The card's summary row (product `NodeValue`), e.g. "Recent · from:nvidia". */
   value: string;
+  /** Real result line from an actual run, e.g. "Nov 19 listing: 88.7%". Replaces `detail` once the node completes. Never invent it. */
+  output?: string;
 };
+
+/** A run-list row; `step` says which node(s) it tracks (source indexes are grouped: done when all are). */
+export type RunLogRow = Omit<RunNode, "value"> & { step: "trigger" | "middle" | "final" | number[] };
 
 export type WorkflowRunCardProps = {
   name: string;
   trigger: RunNode;
-  /** Run in parallel after the trigger; 1–3 nodes. */
+  /** Run in parallel after the trigger. 1–3 use the full node cards; more (up to 9) switch to the compact layout. */
   sources: RunNode[];
-  /** Runs once every source completes. */
+  /** Optional processing node between the sources and the final node (e.g. a quant Function). Uses the compact layout. */
+  middle?: RunNode;
+  /** Runs once every source (and the middle node) completes. */
   final: RunNode;
+  /** Run-list rows; defaults to one row per node. Group sources to keep big workflows legible. */
+  rows?: RunLogRow[];
   cta: string;
+  /** Public share link (app.getnick.ai/workflow/share/<token>), printed above the CTA. */
+  link?: string;
+  /** Opening hook in big type, e.g. "The Huang Drama Money Maker". Adds WRC_HOOK frames before the run. */
+  hook?: string;
+  /** Prompt typed under the hook, e.g. "Track the Huang drama for me." */
+  prompt?: string;
 };
 
 export const workflowRunCardDefaultProps: WorkflowRunCardProps = {
@@ -70,11 +90,11 @@ export const workflowRunCardDefaultProps: WorkflowRunCardProps = {
 
 export const WRC_SIZE = [650, 1136] as const;
 
-export function calcWorkflowRunMetadata() {
+export function calcWorkflowRunMetadata({ props }: { props?: WorkflowRunCardProps } = {}) {
   return {
     width: WRC_SIZE[0],
     height: WRC_SIZE[1],
-    durationInFrames: WRC_DURATION,
+    durationInFrames: (props && isCompact(props) ? compactPlan(props.sources.length).duration : WRC_DURATION) + (props?.hook ? WRC_HOOK : 0),
     fps: WRC_FPS,
   };
 }
