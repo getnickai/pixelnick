@@ -1,0 +1,31 @@
+{
+  "_sample": "SAMPLE values for layout only. Replace every number with a real run before posting.",
+  "question": "Anthropic's day-one close above $1.5T?",
+  "market": {
+    "source": "Polymarket",
+    "label": "Above $1.5T on day one",
+    "oddsAtCall": 0.45,
+    "unit": "prob"
+  },
+  "call": {
+    "side": "NO",
+    "thesis": "Sample: the book thins out above $1.25T and listed comps trade lower into the print."
+  },
+  "trade": {
+    "kind": "paper",
+    "venue": "Polymarket",
+    "side": "NO",
+    "entry": 0.55,
+    "size": "$100"
+  },
+  "calledAt": "Nov 16, 14:00 UTC",
+  "resolvesAt": "Nov 19 close",
+  "status": "right",
+  "workflowName": "Anthropic IPO Watch",
+  "cta": "Make your own call, try Nick for free",
+  "resolution": {
+    "outcome": "NO",
+    "at": "Resolved Nov 19, after the close",
+    "finalValue": 1
+  }
+}

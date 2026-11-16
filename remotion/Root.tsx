@@ -13,7 +13,7 @@ import { socialStoryDefaultProps } from "./compositions/nickai-social-story/prop
  *   2. Add a <Composition> here so it's renderable to PNG/MP4.
  */
 import "./style.css";
-import { Composition } from "remotion";
+import { Composition, Still } from "remotion";
 import { PerformanceCardCard } from "./compositions/performance-card/card-with-font";
 import { performanceCardDefaultProps } from "./compositions/performance-card/props";
 import { SwarmCardComposition } from "./compositions/swarm-card/composition";
@@ -43,6 +43,8 @@ import { NickaiOgCoverComposition } from "./compositions/nickai-og-cover/composi
 import { nickaiOgCoverDefaultProps } from "./compositions/nickai-og-cover/props";
 import { WorkflowTemplateCardCard } from "./compositions/workflow-template-card/card-with-font";
 import { WorkflowRunCardCard } from "./compositions/workflow-run-card/card-with-font";
+import { CallCardComposition } from "./compositions/call-card/composition";
+import { callCardDefaultProps, CALL_CARD_SIZE } from "./compositions/call-card/props";
 import {
   workflowRunCardDefaultProps,
   calcWorkflowRunMetadata,
@@ -260,10 +262,19 @@ export const RemotionRoot: React.FC = () => {
         component={WorkflowRunCardCard}
         durationInFrames={WRC_DURATION}
         fps={WRC_FPS}
-        width={650}
-        height={1136}
+        width={1080}
+        height={1080}
         defaultProps={workflowRunCardDefaultProps}
         calculateMetadata={calcWorkflowRunMetadata}
+      />
+      {/* Call Card: a public call (open) or its receipt (right/wrong). Still:
+          bunx remotion still call-card out.png --props=data/calls/<file>.json --public-dir=public */}
+      <Still
+        id="call-card"
+        component={CallCardComposition}
+        width={CALL_CARD_SIZE[0]}
+        height={CALL_CARD_SIZE[1]}
+        defaultProps={callCardDefaultProps}
       />
       {/* Launch Video — 16:10 campaign film. The Duplet title and product
           statement flow through market data, workflow responses, and the

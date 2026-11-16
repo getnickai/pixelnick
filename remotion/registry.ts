@@ -69,6 +69,8 @@ import {
   type WorkflowTemplateCardProps,
 } from "./compositions/workflow-template-card/props";
 import { WorkflowRunCardComposition } from "./compositions/workflow-run-card/composition";
+import { CallCardComposition } from "./compositions/call-card/composition";
+import { callCardDefaultProps, type CallCardProps } from "./compositions/call-card/props";
 import {
   workflowRunCardDefaultProps,
   type WorkflowRunCardProps,
@@ -191,6 +193,10 @@ const componentBindings: Record<string, ComponentBinding> = {
     component: WorkflowRunCardComposition,
     defaultProps: workflowRunCardDefaultProps,
   } as ComponentBinding<WorkflowRunCardProps> as ComponentBinding,
+  "call-card": {
+    component: CallCardComposition,
+    defaultProps: callCardDefaultProps,
+  } as ComponentBinding<CallCardProps> as ComponentBinding,
   "nickai-og-cover": {
     component: NickaiOgCoverComposition,
     defaultProps: nickaiOgCoverDefaultProps,
