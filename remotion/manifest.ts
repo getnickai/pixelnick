@@ -301,10 +301,19 @@ export const motionManifest: MotionEntryMeta[] = [
     // Workflow Run Card: one run of a workflow on the product's node cards.
     id: "workflow-run-card",
     label: "Workflow Run Card",
-    width: 650,
-    height: 1136,
+    width: 1080,
+    height: 1080,
     fps: WRC_FPS,
     durationInFrames: WRC_DURATION,
+  },
+  {
+    // Call Card: a public call on a market (open) or its receipt (right/wrong). A still.
+    id: "call-card",
+    label: "Call Card",
+    width: 1080,
+    height: 1080,
+    fps: 30,
+    durationInFrames: 1,
   },
 ];
 

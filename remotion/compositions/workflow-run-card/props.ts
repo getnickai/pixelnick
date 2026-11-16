@@ -88,7 +88,8 @@ export const workflowRunCardDefaultProps: WorkflowRunCardProps = {
   cta: "Remix this agent, try Nick for free",
 };
 
-export const WRC_SIZE = [650, 1136] as const;
+/** Square, X-native (1:1). */
+export const WRC_SIZE = [1080, 1080] as const;
 
 export function calcWorkflowRunMetadata({ props }: { props?: WorkflowRunCardProps } = {}) {
   return {

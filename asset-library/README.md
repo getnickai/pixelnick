@@ -100,7 +100,7 @@ Sizes: `og` 1200x630 (social share / OpenGraph), `wide` 1920x1080 (16:9 video / 
 
 ## Workflow run videos
 
-`videos/workflow-runs/` holds renders of the `workflow-run-card` Remotion composition: one workflow executing on the product's own node cards (Ready, Running, Run complete), a run list, and the CTA. 650x1136, 30fps, about 9s, no audio. Each `.mp4` has a `.cover.png` (its final frame).
+`videos/workflow-runs/` holds renders of the `workflow-run-card` Remotion composition: one workflow executing on the product's own node cards (Ready, Running, Run complete), a run list, and the CTA. 1080x1080 (square, X-native) since the square layout; earlier renders are 650x1136. 30fps, about 9s, no audio. Each `.mp4` has a `.cover.png` (its final frame).
 
 | Video | Workflow |
 |---|---|

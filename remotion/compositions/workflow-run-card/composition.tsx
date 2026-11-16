@@ -23,7 +23,7 @@ import {
   StartNode,
   TOKENS,
 } from "./product-node";
-import { isCompact, type RunNode, type WorkflowRunCardProps } from "./props";
+import { WRC_SIZE, isCompact, type RunNode, type WorkflowRunCardProps } from "./props";
 import {
   WRC,
   WRC_HOOK,
@@ -37,9 +37,19 @@ import {
 const asset = (name: string) => staticFile(`figma/${name}`);
 
 /* ── Graph geometry, in canvas units (drawn at GRAPH_SCALE) ───────────────── */
-const GRAPH_SCALE = 0.9;
-const GRAPH_LEFT = 32;
-const GRAPH_TOP = 306;
+/* ── Square stage: laid out at 960, scaled up to the 1080 output ──────────── */
+const STAGE = 960;
+const PAD = 56;
+/** Graph (left column) and run list (right column) start here. */
+const COL_TOP = 270;
+const LEFT_W = 470;
+const LIST_X = 548;
+const LIST_W = STAGE - LIST_X - PAD;
+/** Room for the run list; rows shrink (and outputs drop to one line) past ~7 rows. */
+const LIST_AREA_H = 610;
+
+const GRAPH_SCALE = 0.72;
+const GRAPH_LEFT = PAD;
 const CANVAS_W = 651;
 const SOURCE_X = 117;
 const FINAL_X = CANVAS_W - CARD_W;
@@ -51,16 +61,11 @@ const START_TOP = MID_HANDLE_Y - START_D / 2;
 const FINAL_TOP = sourceTop(1);
 const CANVAS_H = sourceTop(2) + CARD_H;
 
-/* ── Run list ─────────────────────────────────────────────────────────────── */
-const LIST_TOP = 650;
-const ROW_H = 56;
-
-/* ── Compact layout (more than 3 sources or a middle node), unscaled ──────── */
-const COMPACT_TOP = 300;
+/* ── Compact layout (more than 3 sources or a middle node), drawn at COMPACT_SCALE ── */
+const COMPACT_SCALE = 0.9;
 const COMPACT_GAP = 5;
 const COMPACT_SRC_X = 92;
 const COMPACT_COL3_X = 326;
-const COMPACT_ROW_H = 42;
 const compactColH = (n: number) => n * COMPACT_H + (n - 1) * COMPACT_GAP;
 
 const clamp01 = { extrapolateLeft: "clamp", extrapolateRight: "clamp" } as const;
@@ -99,6 +104,7 @@ function CompactGraph({
   final,
   states,
   frame,
+  top,
 }: {
   trigger: RunNode;
   sources: RunNode[];
@@ -106,6 +112,7 @@ function CompactGraph({
   final: RunNode;
   states: { trigger: NodeRunState; sources: NodeRunState[]; middle: NodeRunState; final: NodeRunState };
   frame: number;
+  top: number;
 }) {
   const colH = compactColH(sources.length);
   const mid = colH / 2;
@@ -115,7 +122,10 @@ function CompactGraph({
   const fanInY = (middle ? middleY : finalY) + COMPACT_H / 2;
   const col3Mid = COMPACT_COL3_X + COMPACT_W / 2;
   return (
-    <div className="absolute left-16" style={{ top: COMPACT_TOP, width: 522, height: colH }}>
+    <div
+      className="absolute"
+      style={{ left: PAD, top, width: 522, height: colH, transform: `scale(${COMPACT_SCALE})`, transformOrigin: "top left" }}
+    >
       <svg className="absolute inset-0 overflow-visible" width={522} height={colH} aria-hidden>
         {sources.map((_, i) => (
           <Edge
@@ -179,23 +189,29 @@ function RunRow({
   height: number;
 }) {
   const t = interpolate(frame, [start, start + 8], [0, 1], clamp01);
+  const done = state === "completed" && node.output;
+  // Two lines for the output when the row has room, so real results don't truncate.
+  const clamp = height >= 70 ? 2 : 1;
   return (
     <div
-      className="absolute left-16 right-16 flex items-center gap-4"
+      className="absolute inset-x-0 flex items-center gap-3.5"
       style={{ height, opacity: t, transform: `translateY(${(1 - t) * 10}px)` }}
     >
-      <NodeTile type={node.type} size={36} />
+      <NodeTile type={node.type} size={38} />
       <div className="min-w-0 flex-1">
-        <div className="truncate text-[19px] font-semibold leading-6 text-white">{node.title}</div>
-        {state === "completed" && node.output ? (
-          <div className="truncate text-[14px] font-medium leading-5" style={{ color: TOKENS.success }}>
-            {node.output}
-          </div>
-        ) : (
-          <div className="truncate text-[14px] leading-5" style={{ color: TOKENS.textSub }}>
-            {node.detail}
-          </div>
-        )}
+        <div className="truncate text-[20px] font-semibold leading-[26px] text-white">{node.title}</div>
+        <div
+          className="overflow-hidden text-[16px] leading-5"
+          style={{
+            color: done ? TOKENS.success : TOKENS.textSub,
+            fontWeight: done ? 500 : 400,
+            display: "-webkit-box",
+            WebkitBoxOrient: "vertical",
+            WebkitLineClamp: clamp,
+          }}
+        >
+          {done ? node.output : node.detail}
+        </div>
       </div>
       <ExecIcon state={state} frame={frame} size={24} />
     </div>
@@ -210,9 +226,9 @@ function HookIntro({ hook, prompt }: { hook: string; prompt: string }) {
   const typed = Math.floor(interpolate(frame, [12, 50], [0, prompt.length], clamp01));
   const sent = frame >= 80;
   const press = interpolate(frame, [76, 80, 84], [1, 0.94, 1], clamp01);
-  // Longest word must fit the 456px inner width (~0.6em per capital); long hooks drop to 64px.
+  // Longest word must fit the 784px inner width (~0.6em per capital); long hooks drop to 84px.
   const longest = Math.max(...hook.split(" ").map((w) => w.length));
-  const size = Math.min(hook.length > 16 ? 64 : 88, Math.floor(440 / (0.6 * longest)));
+  const size = Math.min(hook.length > 16 ? 84 : 112, Math.floor(760 / (0.6 * longest)));
 
   return (
     <AbsoluteFill className="bg-primary-1000 font-sans" style={{ opacity: exit }}>
@@ -221,12 +237,12 @@ function HookIntro({ hook, prompt }: { hook: string; prompt: string }) {
         style={{ opacity: 0.16 }}
         aria-hidden
       />
-      <div className="absolute left-16 top-[63px] h-[30px] w-[140.211px]">
+      <div className="absolute left-[56px] top-[52px] h-[30px] w-[140.211px]">
         <Img alt="NickAI" src={asset("logo.svg")} className="block size-full max-w-none" />
       </div>
       <div
-        className="absolute left-16 right-16 top-[260px] rounded-[24px] border border-white/15 bg-white/[0.025] p-8"
-        style={{ opacity: enter, transform: `scale(${0.97 + enter * 0.03})` }}
+        className="absolute left-[56px] right-[56px] top-1/2 rounded-[24px] border border-white/15 bg-white/[0.025] p-10"
+        style={{ opacity: enter, transform: `translateY(-50%) scale(${0.97 + enter * 0.03})` }}
       >
         <p className="mb-6 text-[13px] font-semibold uppercase tracking-[0.16em] text-primary-300">Prompt to Nick</p>
         <h1
@@ -235,7 +251,7 @@ function HookIntro({ hook, prompt }: { hook: string; prompt: string }) {
         >
           {hook}
         </h1>
-        <p className="mt-7 min-h-[86px] text-[30px] font-medium leading-[1.35] tracking-[-0.02em] text-zinc-200">
+        <p className="mt-7 min-h-[86px] text-[34px] font-medium leading-[1.35] tracking-[-0.02em] text-zinc-200">
           {prompt.slice(0, typed)}
           <span
             className="ml-1 inline-block h-[29px] w-[3px] translate-y-1 bg-primary-400"
@@ -258,13 +274,23 @@ function HookIntro({ hook, prompt }: { hook: string; prompt: string }) {
 /** With a `hook`, the intro plays first and the run starts WRC_HOOK frames later. */
 export const WorkflowRunCardComposition: React.FC<WorkflowRunCardProps> = (props) => {
   const frame = useCurrentFrame();
-  if (!props.hook) return <RunCard {...props} />;
   return (
     <AbsoluteFill className="bg-primary-1000">
-      <Sequence from={WRC_HOOK}>
-        <RunCard {...props} />
-      </Sequence>
-      {frame < WRC_HOOK + 12 && <HookIntro hook={props.hook} prompt={props.prompt ?? ""} />}
+      <div
+        className="absolute left-0 top-0"
+        style={{ width: STAGE, height: STAGE, transform: `scale(${WRC_SIZE[0] / STAGE})`, transformOrigin: "top left" }}
+      >
+        {props.hook ? (
+          <>
+            <Sequence from={WRC_HOOK}>
+              <RunCard {...props} />
+            </Sequence>
+            {frame < WRC_HOOK + 12 && <HookIntro hook={props.hook} prompt={props.prompt ?? ""} />}
+          </>
+        ) : (
+          <RunCard {...props} />
+        )}
+      </div>
     </AbsoluteFill>
   );
 };
@@ -330,9 +356,11 @@ const RunCard: React.FC<WorkflowRunCardProps> = ({
         ...(middle && plan.middle ? [{ node: middle, state: middleState, start: plan.middle[0] }] : []),
         { node: final, state: finalState, start: plan.final[0] },
       ];
-  const listTop = compact ? COMPACT_TOP + compactColH(sources.length) + 22 : LIST_TOP;
-  const rowH = compact ? COMPACT_ROW_H : ROW_H;
-  const bannerTop = listTop + rowH * rows.length + (compact ? 10 : 14);
+  const rowH = Math.min(76, Math.floor(LIST_AREA_H / rows.length));
+  // Left block (graph + banner) is centred on the run list's height.
+  const graphH = compact ? compactColH(sources.length) * COMPACT_SCALE : CANVAS_H * GRAPH_SCALE;
+  const graphTop = COL_TOP + Math.max(0, (rowH * rows.length - graphH - 74) / 2);
+  const bannerTop = graphTop + graphH + 28;
   const nodeCount = sources.length + (middle ? 3 : 2);
 
   return (
@@ -344,7 +372,7 @@ const RunCard: React.FC<WorkflowRunCardProps> = ({
           style={{ opacity: 0.16 }}
           aria-hidden
         />
-        <div className="pointer-events-none absolute left-[-314.95px] top-[195.5px] h-[1206px] w-[1191.312px] opacity-90" aria-hidden>
+        <div className="pointer-events-none absolute left-[-115px] top-[-123px] h-[1206px] w-[1191.312px] opacity-90" aria-hidden>
           <div className="-scale-y-100">
             <div className="absolute inset-[-41.01%_-41.51%]">
               <Img alt="" src={asset("background-glow.svg")} className="block size-full max-w-none" />
@@ -353,12 +381,12 @@ const RunCard: React.FC<WorkflowRunCardProps> = ({
         </div>
 
         {/* Logo */}
-        <div className="absolute left-16 top-[63px] h-[30px] w-[140.211px]">
+        <div className="absolute left-[56px] top-[52px] h-[30px] w-[140.211px]">
           <Img alt="NickAI" src={asset("logo.svg")} className="block size-full max-w-none" />
         </div>
 
         {/* Status pill + headline */}
-        <div className="absolute left-16 right-16 top-[140px] flex flex-col gap-4">
+        <div className="absolute left-[56px] right-[56px] top-[116px] flex flex-col gap-4">
           <div
             className="inline-flex shrink-0 items-center gap-2 self-start rounded-full px-3.5 py-1.5"
             style={{ backgroundColor: PILL[status].bg, transform: `scale(${pillScale})`, transformOrigin: "left center" }}
@@ -366,7 +394,7 @@ const RunCard: React.FC<WorkflowRunCardProps> = ({
             <span className="size-2 rounded-full bg-white" />
             <span className="whitespace-nowrap text-sm font-semibold tracking-wide text-white">{PILL[status].label}</span>
           </div>
-          <h1 className="font-heading text-[40px] font-semibold leading-[1.1] text-white">{name}</h1>
+          <h1 className="font-heading text-[44px] font-semibold leading-[1.1] text-white">{name}</h1>
         </div>
 
         {compact ? (
@@ -377,6 +405,7 @@ const RunCard: React.FC<WorkflowRunCardProps> = ({
             final={final}
             states={{ trigger: triggerState, sources: sourceStates, middle: middleState, final: finalState }}
             frame={frame}
+            top={graphTop}
           />
         ) : (
           <>
@@ -385,7 +414,7 @@ const RunCard: React.FC<WorkflowRunCardProps> = ({
           className="absolute"
           style={{
             left: GRAPH_LEFT,
-            top: GRAPH_TOP,
+            top: graphTop,
             width: CANVAS_W,
             height: CANVAS_H,
             transform: `scale(${GRAPH_SCALE})`,
@@ -427,8 +456,8 @@ const RunCard: React.FC<WorkflowRunCardProps> = ({
           </>
         )}
 
-        {/* Run list */}
-        <div className="absolute inset-x-0" style={{ top: listTop }}>
+        {/* Run list (right column) */}
+        <div className="absolute" style={{ left: LIST_X, width: LIST_W, top: COL_TOP }}>
           {rows.map((r, i) => (
             <div key={r.node.title} className="absolute inset-x-0" style={{ top: i * rowH }}>
               <RunRow node={r.node} state={r.state} start={r.start} frame={frame} height={rowH} />
@@ -438,8 +467,10 @@ const RunCard: React.FC<WorkflowRunCardProps> = ({
 
         {/* Success banner */}
         <div
-          className="absolute left-16 right-16 flex items-center justify-between rounded-xl px-4"
+          className="absolute flex items-center justify-between rounded-xl px-4"
           style={{
+            left: PAD,
+            width: LEFT_W,
             top: bannerTop,
             height: 46,
             opacity: banner,
@@ -458,9 +489,9 @@ const RunCard: React.FC<WorkflowRunCardProps> = ({
         </div>
 
         {/* CTA, as on the template card. */}
-        <div className="absolute bottom-[45px] left-16 z-10 w-[520px]">
+        <div className="absolute bottom-[52px] left-[56px] z-10" style={{ width: LEFT_W }}>
           {link && (
-            <p className="mb-2 break-all text-[13px] font-medium leading-4 text-primary-300" style={{ opacity: banner }}>
+            <p className="mb-2 break-all text-[15px] font-medium leading-5 text-primary-300" style={{ opacity: banner }}>
               {link.replace(/^https?:\/\//, "")}
             </p>
           )}
